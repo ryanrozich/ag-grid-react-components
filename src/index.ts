@@ -13,6 +13,9 @@ import {
   resolveDateExpression
 } from './utils/dateExpressionParser';
 
+// Import CSS
+import './styles.css';
+
 export {
   RelativeDateFilter,
   RelativeDateFloatingFilter,

@@ -15,7 +15,7 @@ import {
   resolveDateExpression 
 } from '../utils/dateExpressionParser';
 
-import '../index.css';
+// CSS is imported at the root level
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd';
 
@@ -433,6 +433,7 @@ RelativeDateFilter.isFilterActive = () => false;
 RelativeDateFilter.doesFilterPass = () => false;
 RelativeDateFilter.getModel = () => null;
 RelativeDateFilter.setModel = () => {};
+RelativeDateFilter.getGui = () => document.createElement('div');
 RelativeDateFilter.afterGuiAttached = () => {};
 RelativeDateFilter.destroy = () => {};
 

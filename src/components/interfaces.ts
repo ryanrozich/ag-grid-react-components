@@ -1,4 +1,4 @@
-import { IFilterParams, IDoesFilterPassParams, IFilterComp } from 'ag-grid-community';
+import { IFilterParams, IFilterComp } from 'ag-grid-community';
 
 export type DateFilterType = 'equals' | 'notEqual' | 'lessThan' | 'greaterThan' | 'inRange';
 

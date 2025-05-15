@@ -21,8 +21,10 @@ export default defineConfig({
           'ag-grid-react': 'AgGridReact',
           'date-fns': 'dateFns',
         },
+        exports: 'named',
       },
     },
+    cssCodeSplit: false,
   },
   test: {
     globals: true,

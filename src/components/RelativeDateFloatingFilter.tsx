@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
   IFloatingFilterParams,
-  IFloatingFilter, 
-  FilterChangedEvent
+  IFloatingFilter
 } from 'ag-grid-community';
 import { format } from 'date-fns';
-import { DateFilterModel, DateFilterType } from './interfaces';
+import { DateFilterModel } from './interfaces';
 
 interface RelativeDateFloatingFilterParams extends IFloatingFilterParams {
   suppressFilterButton?: boolean;
@@ -82,11 +81,14 @@ const RelativeDateFloatingFilter: React.FC<RelativeDateFloatingFilterParams> & I
 
   // Listen for filter changes
   useEffect(() => {
-    props.api.addEventListener('filterChanged', (event: FilterChangedEvent) => {
-      const model = props.filterParams.filterParams.api.getFilterModel()[props.column.getColId()];
+    props.api.addEventListener('filterChanged', () => {
+      // Get filter model from column
+      const columnId = props.column.getColId();
+      const filterModel = props.api.getFilterModel();
+      const model = filterModel[columnId];
       onParentModelChanged(model);
     });
-  }, [props.api, props.column, props.filterParams, onParentModelChanged]);
+  }, [props.api, props.column, onParentModelChanged]);
 
   return (
     <div className="ag-floating-filter-body">
