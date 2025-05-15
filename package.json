@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "dev": "vite",
+    "demo": "vite",
     "build": "tsc -p tsconfig.build.json && vite build",
     "test": "vitest run",
     "test:watch": "vitest",
