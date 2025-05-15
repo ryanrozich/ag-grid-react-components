@@ -34,6 +34,7 @@
   "license": "MIT",
   "description": "A custom date filter for AG Grid that supports both absolute and relative date expressions",
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.7",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/react": "^19.1.4",

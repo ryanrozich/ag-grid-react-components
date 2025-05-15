@@ -194,7 +194,7 @@ const RelativeDateFilter: React.FC<DateFilterParams> & IDateFilterComp = (props)
   }, []);
 
   // Required AG Grid filter API implementation
-  const isFilterActive = useCallback((): boolean => {
+  const checkFilterActive = useCallback((): boolean => {
     return isFilterActive && isFilterValid;
   }, [isFilterActive, isFilterValid]);
 
@@ -284,7 +284,7 @@ const RelativeDateFilter: React.FC<DateFilterParams> & IDateFilterComp = (props)
 
   // AG Grid Filter API
   const api: IDateFilterComp = {
-    isFilterActive,
+    isFilterActive: checkFilterActive,
     doesFilterPass,
     getModel,
     setModel,

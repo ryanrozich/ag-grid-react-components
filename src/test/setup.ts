@@ -13,3 +13,7 @@ window.matchMedia = window.matchMedia || function() {
     },
   };
 };
+
+// Mock CSS imports
+vi.mock('../index.css', () => ({}));
+vi.mock('react-datepicker/dist/react-datepicker.css', () => ({}));
