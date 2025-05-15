@@ -1,8 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  IFloatingFilterParams,
-  IFloatingFilter
-} from 'ag-grid-community';
+import React, { useState, useCallback } from 'react';
+import { IFloatingFilterParams } from 'ag-grid-community';
 import { format } from 'date-fns';
 import { DateFilterModel } from './interfaces';
 
@@ -13,15 +10,18 @@ interface RelativeDateFloatingFilterParams extends IFloatingFilterParams {
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd';
 
-const RelativeDateFloatingFilter: React.FC<RelativeDateFloatingFilterParams> & IFloatingFilter = (props) => {
+const RelativeDateFloatingFilter = (props: RelativeDateFloatingFilterParams) => {
   const [displayValue, setDisplayValue] = useState<string>('');
   const dateFormat = props.dateFormat || DEFAULT_DATE_FORMAT;
 
-  // Create display text based on filter model
-  const createDisplayValue = useCallback((model: DateFilterModel | null): string => {
-    if (!model) return '';
+  // Update display when parent filter changes
+  const onParentModelChanged = useCallback((parentModel: DateFilterModel | null) => {
+    if (!parentModel) {
+      setDisplayValue('');
+      return;
+    }
     
-    const { type, mode, dateFrom, dateTo, expressionFrom, expressionTo } = model;
+    const { type, mode, dateFrom, dateTo, expressionFrom, expressionTo } = parentModel;
     
     let typeText = '';
     switch (type) {
@@ -48,47 +48,33 @@ const RelativeDateFloatingFilter: React.FC<RelativeDateFloatingFilterParams> & I
         const toText = dateTo ? format(dateTo, dateFormat) : '';
         
         if (fromText && toText) {
-          return `${fromText} to ${toText}`;
+          setDisplayValue(`${fromText} to ${toText}`);
         } else if (fromText) {
-          return `≥ ${fromText}`;
+          setDisplayValue(`≥ ${fromText}`);
         } else if (toText) {
-          return `≤ ${toText}`;
+          setDisplayValue(`≤ ${toText}`);
+        } else {
+          setDisplayValue('');
         }
-        return '';
       } else {
-        return dateFrom ? `${typeText} ${format(dateFrom, dateFormat)}` : '';
+        setDisplayValue(dateFrom ? `${typeText} ${format(dateFrom, dateFormat)}` : '');
       }
     } else { // Relative mode
       if (type === 'inRange') {
         if (expressionFrom && expressionTo) {
-          return `${expressionFrom} to ${expressionTo}`;
+          setDisplayValue(`${expressionFrom} to ${expressionTo}`);
         } else if (expressionFrom) {
-          return `≥ ${expressionFrom}`;
+          setDisplayValue(`≥ ${expressionFrom}`);
         } else if (expressionTo) {
-          return `≤ ${expressionTo}`;
+          setDisplayValue(`≤ ${expressionTo}`);
+        } else {
+          setDisplayValue('');
         }
-        return '';
       } else {
-        return expressionFrom ? `${typeText} ${expressionFrom}` : '';
+        setDisplayValue(expressionFrom ? `${typeText} ${expressionFrom}` : '');
       }
     }
   }, [dateFormat]);
-
-  // Update display when parent filter changes
-  const onParentModelChanged = useCallback((parentModel: any) => {
-    setDisplayValue(createDisplayValue(parentModel));
-  }, [createDisplayValue]);
-
-  // Listen for filter changes
-  useEffect(() => {
-    props.api.addEventListener('filterChanged', () => {
-      // Get filter model from column
-      const columnId = props.column.getColId();
-      const filterModel = props.api.getFilterModel();
-      const model = filterModel[columnId];
-      onParentModelChanged(model);
-    });
-  }, [props.api, props.column, onParentModelChanged]);
 
   return (
     <div className="ag-floating-filter-body">
@@ -98,8 +84,5 @@ const RelativeDateFloatingFilter: React.FC<RelativeDateFloatingFilterParams> & I
     </div>
   );
 };
-
-// Required AG Grid interface methods
-RelativeDateFloatingFilter.onParentModelChanged = () => {};
 
 export default RelativeDateFloatingFilter;

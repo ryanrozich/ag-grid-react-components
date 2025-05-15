@@ -48,14 +48,16 @@ const App: React.FC = () => {
     { 
       field: 'date', 
       headerName: 'Date (Object)',
-      filter: RelativeDateFilter,
-      floatingFilter: true,
-      floatingFilterComponent: RelativeDateFloatingFilter,
+      filter: 'agDateColumnFilter',
+      filterParams: {
+        filterOptions: ['equals', 'notEqual', 'greaterThan', 'lessThan', 'inRange'],
+        defaultOption: 'equals'
+      },
       valueFormatter: (params) => params.value ? format(params.value, 'yyyy-MM-dd') : ''
     },
     { 
       field: 'dateString', 
-      headerName: 'Date (String)', 
+      headerName: 'Date (String)',
       filter: RelativeDateFilter,
       floatingFilter: true,
       floatingFilterComponent: RelativeDateFloatingFilter

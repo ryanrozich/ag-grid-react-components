@@ -1,4 +1,4 @@
-import { IFilterParams, IFilterComp } from 'ag-grid-community';
+import { IFilterParams } from 'ag-grid-community';
 
 export type DateFilterType = 'equals' | 'notEqual' | 'lessThan' | 'greaterThan' | 'inRange';
 
@@ -41,24 +41,14 @@ export interface DateFilterParams extends IFilterParams {
    * Maximum date allowed in the date picker
    */
   maxDate?: Date;
-}
-
-/**
- * Interface for filter component following AG Grid v33.3.0 specs
- */
-export interface IDateFilterComp extends IFilterComp {
-  /**
-   * Gets the filter DOM element
-   */
-  getGui(): HTMLElement;
   
   /**
-   * Gets the filter state as a model
+   * Model for the filter
    */
-  getModel(): DateFilterModel | null;
-
+  model?: DateFilterModel;
+  
   /**
-   * Sets the filter state from a model
+   * Callback when model changes
    */
-  setModel(model: DateFilterModel | null): void;
+  onModelChange?: (model: DateFilterModel | null) => void;
 }

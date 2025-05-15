@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { IDoesFilterPassParams } from 'ag-grid-community';
+import React, { useState, useCallback, useMemo } from 'react';
+import { useGridFilter } from 'ag-grid-community';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
@@ -7,8 +7,7 @@ import {
   DateFilterType, 
   DateFilterMode, 
   DateFilterModel, 
-  DateFilterParams,
-  IDateFilterComp
+  DateFilterParams
 } from './interfaces';
 import { 
   parseDateExpression, 
@@ -19,35 +18,35 @@ import {
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd';
 
-const RelativeDateFilter: React.FC<DateFilterParams> & IDateFilterComp = (props) => {
-  // Main filter state
-  const [filterType, setFilterType] = useState<DateFilterType>('equals');
-  const [filterMode, setFilterMode] = useState<DateFilterMode>(props.defaultMode || 'absolute');
+const RelativeDateFilter = (props: DateFilterParams) => {
+  // Use the model from props or create initial state
+  const initialModel = props.model || null;
+  
+  // Filter state
+  const [filterType, setFilterType] = useState<DateFilterType>(initialModel?.type || 'equals');
+  const [filterMode, setFilterMode] = useState<DateFilterMode>(initialModel?.mode || props.defaultMode || 'absolute');
   
   // Date values
-  const [absoluteDateFrom, setAbsoluteDateFrom] = useState<Date | null>(null);
-  const [absoluteDateTo, setAbsoluteDateTo] = useState<Date | null>(null);
+  const [absoluteDateFrom, setAbsoluteDateFrom] = useState<Date | null>(
+    filterMode === 'absolute' && initialModel?.dateFrom ? initialModel.dateFrom : null
+  );
+  const [absoluteDateTo, setAbsoluteDateTo] = useState<Date | null>(
+    filterMode === 'absolute' && initialModel?.dateTo ? initialModel.dateTo : null
+  );
   
   // Expression values
-  const [expressionFrom, setExpressionFrom] = useState<string>('');
-  const [expressionTo, setExpressionTo] = useState<string>('');
+  const [expressionFrom, setExpressionFrom] = useState<string>(
+    filterMode === 'relative' && initialModel?.expressionFrom ? initialModel.expressionFrom : ''
+  );
+  const [expressionTo, setExpressionTo] = useState<string>(
+    filterMode === 'relative' && initialModel?.expressionTo ? initialModel.expressionTo : ''
+  );
   
   // Validation and resolution
   const [fromExpressionValid, setFromExpressionValid] = useState<boolean>(true);
   const [toExpressionValid, setToExpressionValid] = useState<boolean>(true);
   const [fromExpressionError, setFromExpressionError] = useState<string>('');
   const [toExpressionError, setToExpressionError] = useState<string>('');
-  
-  // Filter state management
-  const [isFilterActive, setIsFilterActive] = useState<boolean>(false);
-  
-  // References
-  const filterChangedCallback = useRef(props.filterChangedCallback);
-  
-  // Update ref if callback changes
-  useEffect(() => {
-    filterChangedCallback.current = props.filterChangedCallback;
-  }, [props.filterChangedCallback]);
 
   // Date format from props or default
   const dateFormat = props.dateFormat || DEFAULT_DATE_FORMAT;
@@ -97,47 +96,26 @@ const RelativeDateFilter: React.FC<DateFilterParams> & IDateFilterComp = (props)
     if (!expression) {
       setFromExpressionValid(true);
       setFromExpressionError('');
-      return;
+      return true;
     }
     
     const result = parseDateExpression(expression);
     setFromExpressionValid(result.isValid);
     setFromExpressionError(result.error || '');
+    return result.isValid;
   }, []);
 
   const validateToExpression = useCallback((expression: string) => {
     if (!expression) {
       setToExpressionValid(true);
       setToExpressionError('');
-      return;
+      return true;
     }
     
     const result = parseDateExpression(expression);
     setToExpressionValid(result.isValid);
     setToExpressionError(result.error || '');
-  }, []);
-
-  // Handle expression changes
-  const handleFromExpressionChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setExpressionFrom(value);
-    validateFromExpression(value);
-  }, [validateFromExpression]);
-
-  const handleToExpressionChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setExpressionTo(value);
-    validateToExpression(value);
-  }, [validateToExpression]);
-
-  // Toggle filter mode
-  const toggleFilterMode = useCallback(() => {
-    setFilterMode(prevMode => prevMode === 'absolute' ? 'relative' : 'absolute');
-  }, []);
-
-  // Handle type change
-  const handleTypeChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterType(e.target.value as DateFilterType);
+    return result.isValid;
   }, []);
 
   // Check if filter is valid
@@ -165,15 +143,154 @@ const RelativeDateFilter: React.FC<DateFilterParams> & IDateFilterComp = (props)
     absoluteDateFrom, absoluteDateTo
   ]);
 
+  // Build current model
+  const currentModel: DateFilterModel | null = useMemo(() => {
+    if (!isFilterValid) return null;
+    
+    return {
+      type: filterType,
+      mode: filterMode,
+      dateFrom: filterMode === 'absolute' ? absoluteDateFrom : resolvedDateFrom,
+      dateTo: filterMode === 'absolute' ? absoluteDateTo : resolvedDateTo,
+      expressionFrom: filterMode === 'relative' ? expressionFrom : undefined,
+      expressionTo: filterMode === 'relative' ? expressionTo : undefined
+    };
+  }, [
+    isFilterValid, filterType, filterMode, 
+    absoluteDateFrom, absoluteDateTo, 
+    resolvedDateFrom, resolvedDateTo, 
+    expressionFrom, expressionTo
+  ]);
+
+  // Model as string for floating filter
+  const getModelAsString = useCallback((): string => {
+    if (!currentModel) return '';
+    
+    if (currentModel.mode === 'absolute') {
+      if (currentModel.type === 'inRange' && currentModel.dateFrom && currentModel.dateTo) {
+        return `${format(currentModel.dateFrom, dateFormat)} to ${format(currentModel.dateTo, dateFormat)}`;
+      } else if (currentModel.dateFrom) {
+        let prefix = '';
+        switch (currentModel.type) {
+          case 'equals': prefix = '='; break;
+          case 'notEqual': prefix = '≠'; break;
+          case 'greaterThan': prefix = '>'; break;
+          case 'lessThan': prefix = '<'; break;
+        }
+        return `${prefix} ${format(currentModel.dateFrom, dateFormat)}`;
+      }
+    } else {
+      if (currentModel.type === 'inRange' && currentModel.expressionFrom && currentModel.expressionTo) {
+        return `${currentModel.expressionFrom} to ${currentModel.expressionTo}`;
+      } else if (currentModel.expressionFrom) {
+        let prefix = '';
+        switch (currentModel.type) {
+          case 'equals': prefix = '='; break;
+          case 'notEqual': prefix = '≠'; break;
+          case 'greaterThan': prefix = '>'; break;
+          case 'lessThan': prefix = '<'; break;
+        }
+        return `${prefix} ${currentModel.expressionFrom}`;
+      }
+    }
+    
+    return '';
+  }, [currentModel, dateFormat]);
+
+  // Filter implementation
+  const doesFilterPass = useCallback(({ node }) => {
+    if (!isFilterValid || !currentModel) return true;
+    
+    const cellValue = props.getValue(node);
+    const cellDate = parseValue(cellValue);
+    
+    if (!cellDate) return false;
+    
+    // Normalize dates for comparison (remove time component)
+    const normalizedCellDate = new Date(cellDate);
+    normalizedCellDate.setHours(0, 0, 0, 0);
+    
+    let normalizedDateFrom = null;
+    if (effectiveDateFrom) {
+      normalizedDateFrom = new Date(effectiveDateFrom);
+      normalizedDateFrom.setHours(0, 0, 0, 0);
+    }
+    
+    let normalizedDateTo = null;
+    if (effectiveDateTo) {
+      normalizedDateTo = new Date(effectiveDateTo);
+      normalizedDateTo.setHours(0, 0, 0, 0);
+    }
+    
+    switch (filterType) {
+      case 'equals':
+        return normalizedDateFrom 
+          ? normalizedCellDate.getTime() === normalizedDateFrom.getTime() 
+          : false;
+      
+      case 'notEqual':
+        return normalizedDateFrom 
+          ? normalizedCellDate.getTime() !== normalizedDateFrom.getTime() 
+          : true;
+      
+      case 'greaterThan':
+        return normalizedDateFrom 
+          ? normalizedCellDate.getTime() > normalizedDateFrom.getTime() 
+          : false;
+      
+      case 'lessThan':
+        return normalizedDateFrom 
+          ? normalizedCellDate.getTime() < normalizedDateFrom.getTime() 
+          : false;
+      
+      case 'inRange':
+        const fromPass = !normalizedDateFrom || normalizedCellDate.getTime() >= normalizedDateFrom.getTime();
+        const toPass = !normalizedDateTo || normalizedCellDate.getTime() <= normalizedDateTo.getTime();
+        return fromPass && toPass;
+      
+      default:
+        return false;
+    }
+  }, [
+    isFilterValid, currentModel, props.getValue, 
+    filterType, effectiveDateFrom, effectiveDateTo, parseValue
+  ]);
+
+  // Notify AG Grid when model changes
+  const notifyModelChange = useCallback(() => {
+    if (props.onModelChange) {
+      props.onModelChange(currentModel);
+    }
+  }, [props.onModelChange, currentModel]);
+
+  // Handle expression changes
+  const handleFromExpressionChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setExpressionFrom(value);
+    validateFromExpression(value);
+  }, [validateFromExpression]);
+
+  const handleToExpressionChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setExpressionTo(value);
+    validateToExpression(value);
+  }, [validateToExpression]);
+
+  // Toggle filter mode
+  const toggleFilterMode = useCallback(() => {
+    setFilterMode(prevMode => prevMode === 'absolute' ? 'relative' : 'absolute');
+  }, []);
+
+  // Handle type change
+  const handleTypeChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterType(e.target.value as DateFilterType);
+  }, []);
+
   // Apply the filter
   const applyFilter = useCallback(() => {
     if (!isFilterValid) return;
-    
-    setIsFilterActive(true);
-    if (filterChangedCallback.current) {
-      filterChangedCallback.current();
-    }
-  }, [isFilterValid]);
+    notifyModelChange();
+  }, [isFilterValid, notifyModelChange]);
 
   // Reset the filter
   const resetFilter = useCallback(() => {
@@ -186,124 +303,22 @@ const RelativeDateFilter: React.FC<DateFilterParams> & IDateFilterComp = (props)
     setToExpressionValid(true);
     setFromExpressionError('');
     setToExpressionError('');
-    setIsFilterActive(false);
     
-    if (filterChangedCallback.current) {
-      filterChangedCallback.current();
+    // Notify with null model
+    if (props.onModelChange) {
+      props.onModelChange(null);
     }
-  }, []);
+  }, [props.onModelChange]);
 
-  // Required AG Grid filter API implementation
-  const checkFilterActive = useCallback((): boolean => {
-    return isFilterActive && isFilterValid;
-  }, [isFilterActive, isFilterValid]);
-
-  const doesFilterPass = useCallback((params: IDoesFilterPassParams): boolean => {
-    if (!isFilterActive || !isFilterValid) return true;
-    
-    const cellValue = params.data[props.column.getColId()];
-    const cellDate = parseValue(cellValue);
-    
-    if (!cellDate) return false;
-    
-    switch (filterType) {
-      case 'equals':
-        return effectiveDateFrom ? 
-          cellDate.setHours(0, 0, 0, 0) === effectiveDateFrom.setHours(0, 0, 0, 0) : 
-          false;
-      
-      case 'notEqual':
-        return effectiveDateFrom ? 
-          cellDate.setHours(0, 0, 0, 0) !== effectiveDateFrom.setHours(0, 0, 0, 0) : 
-          true;
-      
-      case 'greaterThan':
-        return effectiveDateFrom ? 
-          cellDate.setHours(0, 0, 0, 0) > effectiveDateFrom.setHours(0, 0, 0, 0) : 
-          false;
-      
-      case 'lessThan':
-        return effectiveDateFrom ? 
-          cellDate.setHours(0, 0, 0, 0) < effectiveDateFrom.setHours(0, 0, 0, 0) : 
-          false;
-      
-      case 'inRange':
-        const fromPass = !effectiveDateFrom || cellDate.setHours(0, 0, 0, 0) >= effectiveDateFrom.setHours(0, 0, 0, 0);
-        const toPass = !effectiveDateTo || cellDate.setHours(0, 0, 0, 0) <= effectiveDateTo.setHours(0, 0, 0, 0);
-        return fromPass && toPass;
-      
-      default:
-        return false;
-    }
-  }, [
-    isFilterActive, isFilterValid, props.column, filterType, 
-    effectiveDateFrom, effectiveDateTo, parseValue
-  ]);
-
-  const getModel = useCallback((): DateFilterModel | null => {
-    if (!isFilterActive) return null;
-    
-    return {
-      type: filterType,
-      mode: filterMode,
-      dateFrom: filterMode === 'absolute' ? absoluteDateFrom : resolvedDateFrom,
-      dateTo: filterMode === 'absolute' ? absoluteDateTo : resolvedDateTo,
-      expressionFrom: filterMode === 'relative' ? expressionFrom : undefined,
-      expressionTo: filterMode === 'relative' ? expressionTo : undefined
-    };
-  }, [
-    isFilterActive, filterType, filterMode, 
-    absoluteDateFrom, absoluteDateTo, 
-    resolvedDateFrom, resolvedDateTo, 
-    expressionFrom, expressionTo
-  ]);
-
-  const setModel = useCallback((model: DateFilterModel | null): void => {
-    if (!model) {
-      resetFilter();
-      return;
-    }
-    
-    setFilterType(model.type);
-    setFilterMode(model.mode);
-    
-    if (model.mode === 'absolute') {
-      setAbsoluteDateFrom(model.dateFrom || null);
-      setAbsoluteDateTo(model.dateTo || null);
-      setExpressionFrom('');
-      setExpressionTo('');
-    } else {
-      setExpressionFrom(model.expressionFrom || '');
-      setExpressionTo(model.expressionTo || '');
-      validateFromExpression(model.expressionFrom || '');
-      validateToExpression(model.expressionTo || '');
-    }
-    
-    setIsFilterActive(true);
-  }, [resetFilter, validateFromExpression, validateToExpression]);
-
-  // Reference to container element
-  const containerRef = useRef<HTMLDivElement>(null);
-  
-  // AG Grid Filter API
-  const api: IDateFilterComp = {
-    isFilterActive: checkFilterActive,
+  // Register filter with AG Grid
+  useGridFilter({
     doesFilterPass,
-    getModel,
-    setModel,
-    getGui: () => {
-      return containerRef.current as HTMLElement;
-    },
-    // Required by AG Grid interface
-    afterGuiAttached: () => {},
-    destroy: () => {},
-  };
-
-  // Attach API methods to component instance
-  Object.assign(RelativeDateFilter, api);
+    getModelAsString,
+    isFilterActive: () => !!currentModel
+  });
 
   return (
-    <div ref={containerRef} className="ag-grid-date-filter p-4">
+    <div className="ag-grid-date-filter p-4">
       <div className="filter-header mb-3">
         <div className="filter-type mb-2">
           <select 
@@ -427,14 +442,5 @@ const RelativeDateFilter: React.FC<DateFilterParams> & IDateFilterComp = (props)
     </div>
   );
 };
-
-// Ensure component has the required AG Grid filter methods
-RelativeDateFilter.isFilterActive = () => false;
-RelativeDateFilter.doesFilterPass = () => false;
-RelativeDateFilter.getModel = () => null;
-RelativeDateFilter.setModel = () => {};
-RelativeDateFilter.getGui = () => document.createElement('div');
-RelativeDateFilter.afterGuiAttached = () => {};
-RelativeDateFilter.destroy = () => {};
 
 export default RelativeDateFilter;
