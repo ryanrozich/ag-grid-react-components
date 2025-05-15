@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.ag-grid-date-filter .toggle-button {
+  @apply px-3 py-1 text-sm rounded-md transition-colors duration-200;
+}
+
+.ag-grid-date-filter .toggle-button.active {
+  @apply bg-blue-500 text-white;
+}
+
+.ag-grid-date-filter .toggle-button.inactive {
+  @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+}
+
+.ag-grid-date-filter .relative-date-input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+.ag-grid-date-filter .resolved-date {
+  @apply text-xs text-gray-500 mt-1;
+}
+
+.ag-grid-date-filter .input-wrapper {
+  @apply mt-2;
+}
+
+.ag-grid-date-filter .filter-buttons {
+  @apply flex gap-2 mt-4;
+}
+
+.ag-grid-date-filter .filter-button {
+  @apply px-3 py-1 text-sm rounded-md transition-colors duration-200;
+}
+
+.ag-grid-date-filter .apply-button {
+  @apply bg-green-500 text-white hover:bg-green-600;
+}
+
+.ag-grid-date-filter .reset-button {
+  @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+}
+
+.ag-grid-date-filter .error-message {
+  @apply text-xs text-red-500 mt-1;
+}

@@ -1,0 +1,57 @@
+{
+  "name": "ag-grid-date-filter",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/ag-grid-date-filter.umd.js",
+  "module": "dist/ag-grid-date-filter.es.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "peerDependencies": {
+    "ag-grid-community": "^33.3.0",
+    "ag-grid-react": "^33.3.0",
+    "date-fns": "^4.0.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "keywords": [
+    "ag-grid",
+    "date-filter",
+    "react",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "description": "A custom date filter for AG Grid that supports both absolute and relative date expressions",
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@types/react": "^19.1.4",
+    "@types/react-datepicker": "^6.2.0",
+    "@types/react-dom": "^19.1.5",
+    "@vitejs/plugin-react": "^4.4.1",
+    "ag-grid-community": "^33.3.0",
+    "ag-grid-react": "^33.3.0",
+    "autoprefixer": "^10.4.21",
+    "date-fns": "^4.1.0",
+    "jsdom": "^26.1.0",
+    "postcss": "^8.5.3",
+    "react": "^19.1.0",
+    "react-datepicker": "^8.3.0",
+    "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.7",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.1.3"
+  }
+}
