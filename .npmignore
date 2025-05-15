@@ -1,0 +1,44 @@
+# Source files
+src/
+!/dist/
+
+# Development files
+.vscode/
+.idea/
+.DS_Store
+node_modules/
+coverage/
+.vitest-cache/
+
+# Configuration files
+.babelrc
+.eslintrc.js
+.eslintignore
+tsconfig.json
+tsconfig.node.json
+postcss.config.js
+tailwind.config.js
+vite.config.ts
+
+# Test files
+**/*.test.tsx
+**/*.test.ts
+**/__tests__/
+**/__mocks__/
+
+# Demo files
+src/demo/
+index.html
+
+# Git files
+.git/
+.github/
+.gitignore
+
+# Miscellaneous
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+prompt.md
+claude.md
+.claude/
