@@ -282,12 +282,18 @@ const RelativeDateFilter: React.FC<DateFilterParams> & IDateFilterComp = (props)
     setIsFilterActive(true);
   }, [resetFilter, validateFromExpression, validateToExpression]);
 
+  // Reference to container element
+  const containerRef = useRef<HTMLDivElement>(null);
+  
   // AG Grid Filter API
   const api: IDateFilterComp = {
     isFilterActive: checkFilterActive,
     doesFilterPass,
     getModel,
     setModel,
+    getGui: () => {
+      return containerRef.current as HTMLElement;
+    },
     // Required by AG Grid interface
     afterGuiAttached: () => {},
     destroy: () => {},
@@ -297,7 +303,7 @@ const RelativeDateFilter: React.FC<DateFilterParams> & IDateFilterComp = (props)
   Object.assign(RelativeDateFilter, api);
 
   return (
-    <div className="ag-grid-date-filter p-4">
+    <div ref={containerRef} className="ag-grid-date-filter p-4">
       <div className="filter-header mb-3">
         <div className="filter-type mb-2">
           <select 

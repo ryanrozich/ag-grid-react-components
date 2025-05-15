@@ -16,16 +16,19 @@ import {
 export {
   RelativeDateFilter,
   RelativeDateFloatingFilter,
-  // Types
-  DateFilterType,
-  DateFilterMode,
-  DateFilterModel,
-  DateFilterParams,
-  IDateFilterComp,
   // Utils
   parseDateExpression,
   isValidDateExpression,
   resolveDateExpression
+};
+
+// Export type definitions
+export type {
+  DateFilterType,
+  DateFilterMode,
+  DateFilterModel,
+  DateFilterParams,
+  IDateFilterComp
 };
 
 export default RelativeDateFilter;

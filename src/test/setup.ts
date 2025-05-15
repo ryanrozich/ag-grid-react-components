@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 
 // Mock matchMedia for tests
 window.matchMedia = window.matchMedia || function() {

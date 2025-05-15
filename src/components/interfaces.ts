@@ -48,6 +48,11 @@ export interface DateFilterParams extends IFilterParams {
  */
 export interface IDateFilterComp extends IFilterComp {
   /**
+   * Gets the filter DOM element
+   */
+  getGui(): HTMLElement;
+  
+  /**
    * Gets the filter state as a model
    */
   getModel(): DateFilterModel | null;
