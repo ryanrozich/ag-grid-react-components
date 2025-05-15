@@ -1,10 +1,17 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { createRoot } from 'react-dom/client';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import { ColDef, GridReadyEvent } from 'ag-grid-community';
+import { 
+  ColDef, 
+  GridReadyEvent, 
+  ModuleRegistry,
+  ClientSideRowModelModule 
+} from 'ag-grid-community';
 import { addDays, format } from 'date-fns';
+
+// Register AG Grid modules
+ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
 import RelativeDateFilter from '../components/RelativeDateFilter';
 import RelativeDateFloatingFilter from '../components/RelativeDateFloatingFilter';
