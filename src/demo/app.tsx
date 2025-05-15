@@ -4,26 +4,11 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { 
   ColDef, 
-  GridReadyEvent, 
-  ModuleRegistry,
-  ClientSideRowModelModule,
-  ColumnsToolPanelModule,
-  FiltersToolPanelModule,
-  MenuModule,
-  SetFilterModule,
-  MultiFilterModule
+  GridReadyEvent,
 } from 'ag-grid-community';
+// Import AG Grid Enterprise for additional features
+import 'ag-grid-enterprise';
 import { addDays, format } from 'date-fns';
-
-// Register AG Grid modules
-ModuleRegistry.registerModules([
-  ClientSideRowModelModule,
-  ColumnsToolPanelModule,
-  FiltersToolPanelModule,
-  MenuModule,
-  SetFilterModule,
-  MultiFilterModule
-]);
 
 import RelativeDateFilter from '../components/RelativeDateFilter';
 import RelativeDateFloatingFilter from '../components/RelativeDateFloatingFilter';

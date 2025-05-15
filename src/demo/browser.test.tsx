@@ -27,19 +27,16 @@ vi.mock('ag-grid-react', () => ({
   )
 }));
 
-// Mock module registry to avoid registration issues
+// Mock ag-grid modules
 vi.mock('ag-grid-community', async () => {
   return {
-    ModuleRegistry: {
-      registerModules: vi.fn()
-    },
-    ClientSideRowModelModule: {},
-    ColumnsToolPanelModule: {},
-    FiltersToolPanelModule: {},
-    MenuModule: {},
-    SetFilterModule: {},
-    MultiFilterModule: {}
+    GridReadyEvent: class {},
+    ColDef: class {}
   };
+});
+
+vi.mock('ag-grid-enterprise', () => {
+  return {};
 });
 
 describe('AG Grid Demo Browser Test', () => {
