@@ -1,0 +1,72 @@
+/* Basic layout and styles for the demo */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  color: #333;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.button-group {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #2563eb;
+}
+
+.instructions {
+  margin-top: 1rem;
+}
+
+.instructions h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.instructions ul {
+  list-style-type: disc;
+  margin-left: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.instructions li {
+  margin-bottom: 0.25rem;
+}
+
+/* AG Grid theme styles */
+.ag-theme-alpine {
+  width: 100%;
+  height: 600px;
+  --ag-header-height: 40px;
+  --ag-header-foreground-color: #374151;
+  --ag-header-background-color: #f3f4f6;
+  --ag-header-cell-hover-background-color: #e5e7eb;
+  --ag-header-cell-moving-background-color: #d1d5db;
+}

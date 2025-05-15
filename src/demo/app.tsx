@@ -9,7 +9,9 @@ import { addDays, format } from 'date-fns';
 import RelativeDateFilter from '../components/RelativeDateFilter';
 import RelativeDateFloatingFilter from '../components/RelativeDateFloatingFilter';
 
-import '../index.css';
+// Import demo styles
+import './styles.css';
+import '../styles.css';
 
 // Generate sample data
 const generateData = (count: number) => {
@@ -114,25 +116,19 @@ const App: React.FC = () => {
   }, [gridApi]);
   
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">AG Grid Date Filter Demo</h1>
+    <div className="container">
+      <h1>AG Grid Date Filter Demo</h1>
       
-      <div className="mb-4 flex gap-3">
-        <button 
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          onClick={saveFilterState}
-        >
+      <div className="button-group">
+        <button onClick={saveFilterState}>
           Save Filter to URL
         </button>
-        <button 
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          onClick={loadFilterState}
-        >
+        <button onClick={loadFilterState}>
           Load Filter from URL
         </button>
       </div>
       
-      <div className="ag-theme-alpine w-full h-[600px]">
+      <div className="ag-theme-alpine">
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}
@@ -144,9 +140,9 @@ const App: React.FC = () => {
         />
       </div>
       
-      <div className="mt-4">
-        <h2 className="text-lg font-semibold">Usage Instructions</h2>
-        <ul className="list-disc ml-5 mt-2">
+      <div className="instructions">
+        <h2>Usage Instructions</h2>
+        <ul>
           <li>Toggle between Absolute and Relative date modes</li>
           <li>For absolute dates, use the date picker</li>
           <li>For relative dates, enter expressions like "Today", "Today+7d", "Today-3m"</li>
@@ -159,6 +155,4 @@ const App: React.FC = () => {
   );
 };
 
-// Render the application
-const root = createRoot(document.getElementById('root')!);
-root.render(<App />);
+export default App;
