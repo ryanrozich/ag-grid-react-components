@@ -6,12 +6,24 @@ import {
   ColDef, 
   GridReadyEvent, 
   ModuleRegistry,
-  ClientSideRowModelModule 
+  ClientSideRowModelModule,
+  ColumnsToolPanelModule,
+  FiltersToolPanelModule,
+  MenuModule,
+  SetFilterModule,
+  MultiFilterModule
 } from 'ag-grid-community';
 import { addDays, format } from 'date-fns';
 
 // Register AG Grid modules
-ModuleRegistry.registerModules([ClientSideRowModelModule]);
+ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
+  ColumnsToolPanelModule,
+  FiltersToolPanelModule,
+  MenuModule,
+  SetFilterModule,
+  MultiFilterModule
+]);
 
 import RelativeDateFilter from '../components/RelativeDateFilter';
 import RelativeDateFloatingFilter from '../components/RelativeDateFloatingFilter';
@@ -81,10 +93,12 @@ const App: React.FC = () => {
     const data = generateData(100);
     setRowData(data);
     
-    // Resize columns to fit the available width
+    // Resize columns to fit the available width - only if columns exist
     setTimeout(() => {
-      params.api.sizeColumnsToFit();
-    });
+      if (params.columnApi.getAllDisplayedColumns().length > 0) {
+        params.api.sizeColumnsToFit();
+      }
+    }, 100);
   }, []);
   
   // Save filter state to URL
