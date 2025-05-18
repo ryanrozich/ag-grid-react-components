@@ -4,8 +4,7 @@ import {
   DateFilterType, 
   DateFilterMode, 
   DateFilterModel, 
-  DateFilterParams,
-  IDateFilterComp
+  DateFilterParams
 } from './components/interfaces';
 import { 
   parseDateExpression,
@@ -13,16 +12,30 @@ import {
   resolveDateExpression
 } from './utils/dateExpressionParser';
 
+import {
+  serializeFilterModel,
+  deserializeFilterModel,
+  saveFilterToHistory,
+  loadFilterFromUrl,
+  setupFilterStatePersistence
+} from './utils/filterStateUtils';
+
 // Import CSS
 import './styles.css';
 
 export {
   RelativeDateFilter,
   RelativeDateFloatingFilter,
-  // Utils
+  // Date expression utils
   parseDateExpression,
   isValidDateExpression,
-  resolveDateExpression
+  resolveDateExpression,
+  // Filter state utils
+  serializeFilterModel,
+  deserializeFilterModel,
+  saveFilterToHistory,
+  loadFilterFromUrl,
+  setupFilterStatePersistence
 };
 
 // Export type definitions
@@ -30,8 +43,13 @@ export type {
   DateFilterType,
   DateFilterMode,
   DateFilterModel,
-  DateFilterParams,
-  IDateFilterComp
+  DateFilterParams
 };
+
+// For AG Grid v33 compatibility
+// @ts-ignore - Add metadata for AG Grid to properly recognize components
+RelativeDateFilter.__AG_GRID_COMPONENT = true;
+// @ts-ignore - Add metadata for AG Grid to properly recognize components
+RelativeDateFloatingFilter.__AG_GRID_COMPONENT = true;
 
 export default RelativeDateFilter;

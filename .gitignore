@@ -29,3 +29,26 @@ coverage
 .vitest-cache
 
 **/.claude/settings.local.json
+
+# Ryan's notes and screenshots
+ryans_notes/
+
+# Screenshots and temporary files
+*.png
+simple-test.html
+clause copy.md
+clause*.md
+
+# Temporary test scripts
+scripts/diagnose-404.js
+scripts/test-filter-click.js
+scripts/test-ultra-minimal.js
+scripts/thorough-demo-check.js
+scripts/loader.js
+scripts/run-tsx.js
+
+# Generated CSS files
+src/combined.css
+
+# Development notes
+src/components/questions.md
