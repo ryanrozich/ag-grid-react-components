@@ -1,6 +1,6 @@
 # AG Grid Relative Date Filter
 
-A powerful custom date filter component for AG Grid (v33.3.0+) that supports both absolute dates and relative date expressions.
+A powerful custom date filter component for AG Grid (v33.3.0+) that supports both absolute dates and relative date expressions. Works with both Community and Enterprise editions of AG Grid.
 
 ## Features
 
@@ -11,14 +11,15 @@ A powerful custom date filter component for AG Grid (v33.3.0+) that supports bot
 - 🔍 **Comprehensive Filter Operations**:
   - Equals
   - Not Equals
-  - Greater Than
-  - Less Than
-  - In Range
+  - After (> or ≥ with configurable inclusivity)
+  - Before (< or ≤ with configurable inclusivity)
+  - In Range (with configurable inclusive/exclusive bounds)
 
 - 📊 **AG Grid Integration**:
-  - Compatible with AG Grid v33.3.0+
+  - Compatible with AG Grid v33.3.0+ (Community and Enterprise)
   - Supports floating filters
   - Full filter model serialization
+  - Enterprise features automatically enabled when available
 
 - 📱 **UI Features**:
   - Clean, responsive design with Tailwind CSS
@@ -34,17 +35,59 @@ npm install ag-grid-relative-date-filter
 
 ## Requirements
 
-- AG Grid Community v33.3.0 or later
+- AG Grid Community or Enterprise v33.3.0+
 - React 18 or later
 - date-fns v4 or later
+
+Enterprise features (like Filter Tool Panel) will be automatically enabled if AG Grid Enterprise is available, but are not required.
 
 ## Usage
 
 ```tsx
 import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
 
+// Import and register community modules
+import { 
+  ModuleRegistry,
+  ClientSideRowModelModule,
+  MenuModule,
+  themeAlpine
+} from 'ag-grid-community';
+
+// Register required community modules
+const modules = [
+  ClientSideRowModelModule,
+  MenuModule
+];
+
+// Optional: Conditionally use Enterprise modules if available
+let enterpriseModules = [];
+try {
+  // This will fail silently if ag-grid-enterprise is not installed
+  const agGridEnterprise = require('ag-grid-enterprise');
+  if (agGridEnterprise) {
+    const { 
+      SetFilterModule,
+      FiltersToolPanelModule
+    } = agGridEnterprise;
+    
+    enterpriseModules = [
+      SetFilterModule,
+      FiltersToolPanelModule
+    ];
+    console.log('AG Grid Enterprise features enabled');
+  }
+} catch (e) {
+  // Enterprise is not available - that's fine
+}
+
+// Register all available modules
+ModuleRegistry.registerModules([
+  ...modules,
+  ...enterpriseModules
+]);
+
+// Import the filter components
 import { 
   RelativeDateFilter, 
   RelativeDateFloatingFilter 
@@ -59,17 +102,39 @@ const columnDefs = [
     headerName: 'Date', 
     filter: RelativeDateFilter,
     floatingFilter: true,
-    floatingFilterComponent: RelativeDateFloatingFilter
+    floatingFilterComponent: RelativeDateFloatingFilter,
+    // Optional filter params
+    filterParams: {
+      defaultMode: 'absolute',
+      dateFormat: 'yyyy-MM-dd'
+    }
   }
 ];
 
 // In your component
 return (
-  <div className="ag-theme-alpine" style={{ height: 500, width: '100%' }}>
+  <div style={{ height: 500, width: '100%' }}>
     <AgGridReact
       rowData={rowData}
       columnDefs={columnDefs}
-      // ...other props
+      // Optional: Display the filters panel if Enterprise is available
+      sideBar={enterpriseModules.length > 0 ? {
+        toolPanels: [
+          {
+            id: 'filters',
+            labelDefault: 'Filters',
+            labelKey: 'filters',
+            iconKey: 'filter',
+            toolPanel: 'agFiltersToolPanel'
+          }
+        ]
+      } : undefined}
+      // Other props
+      defaultColDef={{
+        sortable: true,
+        filter: true,
+        floatingFilter: true
+      }}
     />
   </div>
 );
@@ -112,13 +177,127 @@ The filter component accepts the following configuration options:
   
   // Min/max date constraints for date picker
   minDate: new Date(),
-  maxDate: new Date()
+  maxDate: new Date(),
+  
+  // Configure whether 'before' filters are inclusive (<=) or exclusive (<)
+  // Defaults to false (exclusive)
+  beforeInclusive: false,
+  
+  // Configure whether 'after' filters are inclusive (>=) or exclusive (>)
+  // Defaults to false (exclusive)
+  afterInclusive: false,
+  
+  // Configure whether 'inRange' bounds are inclusive or exclusive
+  rangeInclusive: {
+    // Whether start date is inclusive (>=) or exclusive (>)
+    from: false,
+    // Whether end date is inclusive (<=) or exclusive (<)
+    to: false
+  }
 }
 ```
 
-## Filter Model Serialization
+## Inclusive/Exclusive Filter Boundaries
 
-The filter state can be serialized and stored in URL parameters for bookmarking:
+The date filter supports configurable inclusive or exclusive boundaries for date comparisons:
+
+### Basic Filters (Before/After)
+
+You can configure whether "Before" and "After" filters are inclusive or exclusive:
+
+```tsx
+// Column definition with inclusive boundaries
+{
+  field: 'date',
+  headerName: 'Date',
+  filter: RelativeDateFilter,
+  floatingFilter: true,
+  floatingFilterComponent: RelativeDateFloatingFilter,
+  filterParams: {
+    // Makes "Before" filters use <= instead of <
+    beforeInclusive: true,
+    
+    // Makes "After" filters use >= instead of >
+    afterInclusive: true
+  }
+}
+```
+
+### Range Filters
+
+For range filters, you can configure inclusivity for both the start and end of the range:
+
+```tsx
+// Column definition with inclusive range bounds
+{
+  field: 'date',
+  headerName: 'Date',
+  filter: RelativeDateFilter,
+  floatingFilter: true,
+  floatingFilterComponent: RelativeDateFloatingFilter,
+  filterParams: {
+    rangeInclusive: {
+      // Makes the start of the range inclusive [from, to)
+      from: true,
+      
+      // Makes the end of the range inclusive (from, to]
+      to: true
+      
+      // With both true, the range is fully inclusive [from, to]
+    }
+  }
+}
+```
+
+### Visual Indicators
+
+The filter UI automatically displays the appropriate comparison operators based on inclusivity settings:
+
+- **Exclusive Before**: `< 2023-05-16`
+- **Inclusive Before**: `≤ 2023-05-16`
+- **Exclusive After**: `> 2023-05-16`
+- **Inclusive After**: `≥ 2023-05-16`
+- **Range with various inclusivity**: `[2023-05-01 to 2023-05-16)` (inclusive start, exclusive end)
+
+## Filter State Inspection and Bookmarking
+
+The filter model is fully serializable, allowing for bookmarking, URL sharing, and browser history integration.
+
+### Filter Model Structure
+
+The filter model structure preserves all aspects of your filter configuration:
+
+```typescript
+// Example of a serialized absolute date filter
+{
+  "date": {                                   // Column field name
+    "type": "before",                         // Filter type: equals, notEqual, before, after, inRange
+    "mode": "absolute",                       // Mode: absolute or relative
+    "dateFrom": "2023-05-16T00:00:00.000Z",   // ISO string (for absolute dates)
+    "dateTo": null,                           // Second date for range filters
+    "fromInclusive": true,                    // Whether start is inclusive (>=)
+    "toInclusive": false                      // Whether end is inclusive (<=)
+  }
+}
+
+// Example of a serialized relative date filter
+{
+  "date": {
+    "type": "inRange",                        // Filter type: inRange
+    "mode": "relative",                       // Mode: relative
+    "expressionFrom": "Today-7d",             // Start date expression
+    "expressionTo": "Today",                  // End date expression
+    "dateFrom": "2023-05-09T00:00:00.000Z",   // Resolved start date (for filtering)
+    "dateTo": "2023-05-16T00:00:00.000Z",     // Resolved end date (for filtering)
+    "fromInclusive": true,                    // Whether start is inclusive
+    "toInclusive": true                       // Whether end is inclusive
+  }
+}
+```
+
+### Basic URL Bookmarking
+
+Store the filter state in the URL for bookmarking:
 
 ```tsx
 // Get the current filter model
@@ -136,6 +315,94 @@ const filterJson = url.searchParams.get('filter');
 if (filterJson) {
   const filterModel = JSON.parse(filterJson);
   gridApi.setFilterModel(filterModel);
+}
+```
+
+### Browser History Integration
+
+For a complete history integration with back button support, the package provides convenient utility functions:
+
+```tsx
+import { useEffect, useRef } from 'react';
+import { setupFilterStatePersistence } from 'ag-grid-relative-date-filter';
+
+function DataGrid() {
+  // AG Grid API reference
+  const gridApiRef = useRef(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
+  
+  // Setup filter state persistence when grid is ready
+  const onGridReady = (params) => {
+    gridApiRef.current = params.api;
+    
+    // Set up complete filter state persistence with one line
+    cleanupRef.current = setupFilterStatePersistence(params.api, {
+      paramName: 'filter', // URL parameter name
+      onFilterLoad: (model) => {
+        console.log('Filter loaded:', model);
+        // You could update other UI state here
+      },
+      onFilterSave: (model) => {
+        console.log('Filter saved:', model);
+        // You could sync with other components here
+      }
+    });
+  };
+  
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (cleanupRef.current) {
+        cleanupRef.current();
+      }
+    };
+  }, []);
+  
+  return (
+    <AgGridReact
+      onGridReady={onGridReady}
+      // other props
+    />
+  );
+}
+```
+
+### Filter State Utilities
+
+The package exports several utility functions for working with filter state:
+
+```tsx
+import {
+  // Serialize the filter model (handles Date objects)
+  serializeFilterModel,
+  
+  // Deserialize a filter model (converts strings back to Date objects)
+  deserializeFilterModel,
+  
+  // Save current filter to URL and browser history
+  saveFilterToHistory,
+  
+  // Load filter state from URL parameters
+  loadFilterFromUrl,
+  
+  // Set up complete filter state persistence
+  setupFilterStatePersistence
+} from 'ag-grid-relative-date-filter';
+
+// Manual usage example
+function saveCurrentFilter(gridApi) {
+  // Serialize and save the filter model to browser history
+  saveFilterToHistory(gridApi, {
+    paramName: 'filter', // URL parameter name
+    addToHistory: true   // Add as a new history entry vs. replacing current
+  });
+}
+
+function loadSavedFilter(gridApi) {
+  // Load filter from URL parameters
+  loadFilterFromUrl(gridApi, {
+    paramName: 'filter'  // URL parameter name to load from
+  });
 }
 ```
 
@@ -167,13 +434,91 @@ const date = resolveDateExpression('Today+7d');
 
 MIT
 
+## Server-Side Row Model Compatibility
+
+This filter component is fully compatible with AG Grid's Server-Side Row Model. When using with the Server-Side Row Model:
+
+1. The filter model has the same structure as with Client-Side Row Model:
+```json
+{
+  "date": {                      
+    "type": "inRange",              
+    "dateFrom": "2023-05-09T00:00:00.000Z",
+    "dateTo": "2023-05-16T00:00:00.000Z",
+    "fromInclusive": true,
+    "toInclusive": true
+  }
+}
+```
+
+2. You'll need to implement the server-side logic to interpret the filter model and apply the filter according to your database/API requirements. The filter model's inclusive/exclusive properties give you full control over how the date boundaries should be applied.
+
+3. For relative date expressions, the filter preserves both the expression and the resolved date value, allowing your server code to either:
+   - Use the resolved date directly (simpler approach)
+   - Re-evaluate the expression on the server (for time-shifted expressions like "Today")
+
+Sample server-side filter handling (assuming SQL):
+```javascript
+function buildSqlFilter(filterModel) {
+  const dateFilter = filterModel.date;
+  if (!dateFilter) return '';
+  
+  const { type, dateFrom, dateTo, fromInclusive, toInclusive } = dateFilter;
+  
+  switch (type) {
+    case 'equals':
+      return `date_column = '${formatDate(dateFrom)}'`;
+    case 'notEqual':
+      return `date_column != '${formatDate(dateFrom)}'`;
+    case 'before':
+      return `date_column ${toInclusive ? '<=' : '<'} '${formatDate(dateFrom)}'`;
+    case 'after':
+      return `date_column ${fromInclusive ? '>=' : '>'} '${formatDate(dateFrom)}'`;
+    case 'inRange':
+      return `date_column ${fromInclusive ? '>=' : '>'} '${formatDate(dateFrom)}' AND 
+              date_column ${toInclusive ? '<=' : '<'} '${formatDate(dateTo)}'`;
+    default:
+      return '';
+  }
+}
+```
+
+## Community vs Enterprise Edition
+
+This filter component is designed to work seamlessly with both Community and Enterprise editions of AG Grid.
+
+### Community Edition Features
+- All core filter functionality works in Community Edition
+- Supports floating filters
+- All filter operators (equals, not equals, before/after with inclusive/exclusive options)
+- Absolute and relative date modes
+- Filter model serialization
+- Comprehensive browser history integration
+
+### Additional Enterprise Edition Features 
+When AG Grid Enterprise is available, these features are automatically enabled:
+- Filters Tool Panel for managing multiple filters
+- Set Filter capabilities
+- Multi-filter capabilities
+- Advanced column management
+- Row grouping and aggregation with the filter
+
 ## Development
 
-To run the project in development mode:
+To run the project in development mode with the Enterprise edition:
 
 ```bash
 npm install
 npm run dev
+```
+
+To run the project with only Community edition features:
+```bash
+# Remove or rename node_modules/ag-grid-enterprise temporarily
+mv node_modules/ag-grid-enterprise node_modules/ag-grid-enterprise-disabled
+npm run dev
+# Restore when done
+mv node_modules/ag-grid-enterprise-disabled node_modules/ag-grid-enterprise
 ```
 
 To build the package for production:
@@ -186,4 +531,30 @@ To run tests:
 
 ```bash
 npm test
+```
+
+### Recent Fixes
+
+The following issues have been fixed in the latest update:
+
+1. **AG Grid Enterprise Dependency**: Fixed ESM import syntax in main.tsx to properly load AG Grid Enterprise modules
+2. **Custom Filter Visibility**: Updated grid configuration to ensure the custom filter appears when clicking the filter icon
+3. **Filter Click Testing**: Enhanced filter click test to properly locate and test custom filter elements
+4. **TypeScript in ESM Context**: Added support for running .tsx files directly in Node.js ESM context with custom loader
+
+### Additional Testing Scripts
+
+- `npm run test:filter-click`: Test clicking on filter icons to verify custom filter appears
+- `npm run run-tsx`: Helper script to run TypeScript files directly in Node.js
+
+### Running TypeScript Files Directly
+
+For development, you can now run TypeScript files directly:
+
+```bash
+# Run a .tsx file directly
+npm run run-tsx src/demo/some-test.tsx
+
+# Or use the script with arguments
+node scripts/run-tsx.js src/some-file.tsx arg1 arg2
 ```

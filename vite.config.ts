@@ -12,7 +12,7 @@ export default defineConfig({
       fileName: (format) => `ag-grid-date-filter.${format}.js`,
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'ag-grid-community', 'ag-grid-react', 'date-fns'],
+      external: ['react', 'react-dom', 'ag-grid-community', 'ag-grid-react', 'date-fns', 'ag-grid-enterprise'],
       output: {
         globals: {
           react: 'React',
@@ -20,11 +20,22 @@ export default defineConfig({
           'ag-grid-community': 'agGrid',
           'ag-grid-react': 'AgGridReact',
           'date-fns': 'dateFns',
+          'ag-grid-enterprise': 'agGridEnterprise',
         },
         exports: 'named',
       },
     },
     cssCodeSplit: false,
+  },
+  optimizeDeps: {
+    include: ['ag-grid-enterprise', 'ag-grid-community', 'ag-grid-react'],
+    force: true
+  },
+  server: {
+    hmr: true,
+    watch: {
+      usePolling: true
+    }
   },
   test: {
     globals: true,

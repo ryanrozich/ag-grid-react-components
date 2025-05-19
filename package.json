@@ -16,6 +16,9 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:browser": "node ./scripts/validate-demo.js",
+    "test:thorough": "node ./scripts/thorough-demo-check.js",
+    "test:filter-click": "node ./scripts/test-filter-click.js",
+    "run-tsx": "node ./scripts/run-tsx.js",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "prepublishOnly": "npm run test && npm run build"
@@ -26,6 +29,11 @@
     "date-fns": "^4.0.0",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "ag-grid-enterprise": {
+      "optional": true
+    }
   },
   "keywords": [
     "ag-grid",
@@ -40,6 +48,7 @@
     "@tailwindcss/postcss": "^4.1.7",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
+    "@types/node": "^20.10.0",
     "@types/react": "^19.1.4",
     "@types/react-datepicker": "^6.2.0",
     "@types/react-dom": "^19.1.5",
@@ -55,7 +64,7 @@
     "react": "^19.1.0",
     "react-datepicker": "^8.3.0",
     "react-dom": "^19.1.0",
-    "tailwindcss": "^4.1.7",
+    "tailwindcss": "^3.3.5",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "vitest": "^3.1.3"
