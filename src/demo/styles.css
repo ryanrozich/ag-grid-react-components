@@ -1,6 +1,8 @@
 /* Basic layout and styles for the demo */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   margin: 0;
   padding: 0;
   line-height: 1.6;
@@ -76,7 +78,7 @@ h1 {
 }
 
 .filter-badge::before {
-  content: '';
+  content: "";
   display: inline-block;
   width: 6px;
   height: 6px;
@@ -154,7 +156,7 @@ button:hover {
   --ag-header-background-color: #f3f4f6;
   --ag-header-cell-hover-background-color: #e5e7eb;
   --ag-header-cell-moving-background-color: #d1d5db;
-  
+
   /* Enterprise-specific styles */
   --ag-row-hover-color: rgba(224, 231, 255, 0.1);
   --ag-selected-row-background-color: rgba(79, 70, 229, 0.1);
@@ -191,7 +193,7 @@ button:hover {
 }
 
 .groupable-column::after {
-  content: '≡';
+  content: "≡";
   position: absolute;
   top: 7px;
   right: 24px;
@@ -285,13 +287,15 @@ button:hover {
   background-color: #f8fafc;
 }
 
-.ag-row-group-expanded, .ag-row-group-contracted {
+.ag-row-group-expanded,
+.ag-row-group-contracted {
   font-weight: 600;
   background-color: #f1f5f9 !important;
   border-bottom: 1px solid #e2e8f0 !important;
 }
 
-.ag-row-group-expanded:hover, .ag-row-group-contracted:hover {
+.ag-row-group-expanded:hover,
+.ag-row-group-contracted:hover {
   background-color: #e2e8f0 !important;
 }
 

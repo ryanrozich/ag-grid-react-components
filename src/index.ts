@@ -1,27 +1,26 @@
-import RelativeDateFilter from './components/RelativeDateFilter';
-import RelativeDateFloatingFilter from './components/RelativeDateFloatingFilter';
-import { 
-  DateFilterType, 
-  DateFilterMode, 
-  DateFilterModel, 
-  DateFilterParams
-} from './components/interfaces';
-import { 
+import RelativeDateFilter from "./components/RelativeDateFilter";
+import RelativeDateFloatingFilter from "./components/RelativeDateFloatingFilter";
+import {
+  DateFilterType,
+  DateFilterMode,
+  DateFilterModel,
+  DateFilterParams,
+} from "./components/interfaces";
+import {
   parseDateExpression,
   isValidDateExpression,
-  resolveDateExpression
-} from './utils/dateExpressionParser';
+  resolveDateExpression,
+} from "./utils/dateExpressionParser";
 
 import {
   serializeFilterModel,
   deserializeFilterModel,
-  saveFilterToHistory,
-  loadFilterFromUrl,
-  setupFilterStatePersistence
-} from './utils/filterStateUtils';
+  loadFilterStateFromUrl as loadFilterFromUrl,
+  setupFilterStatePersistence,
+} from "./utils/filterStateUtils";
 
 // Import CSS
-import './styles.css';
+import "./styles.css";
 
 export {
   RelativeDateFilter,
@@ -33,9 +32,8 @@ export {
   // Filter state utils
   serializeFilterModel,
   deserializeFilterModel,
-  saveFilterToHistory,
   loadFilterFromUrl,
-  setupFilterStatePersistence
+  setupFilterStatePersistence,
 };
 
 // Export type definitions
@@ -43,7 +41,7 @@ export type {
   DateFilterType,
   DateFilterMode,
   DateFilterModel,
-  DateFilterParams
+  DateFilterParams,
 };
 
 // For AG Grid v33 compatibility

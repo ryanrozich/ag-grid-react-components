@@ -1,8 +1,13 @@
-import { IFilterParams } from 'ag-grid-community';
+import { IFilterParams } from "ag-grid-community";
 
-export type DateFilterType = 'equals' | 'notEqual' | 'before' | 'after' | 'inRange';
+export type DateFilterType =
+  | "equals"
+  | "notEqual"
+  | "before"
+  | "after"
+  | "inRange";
 
-export type DateFilterMode = 'absolute' | 'relative';
+export type DateFilterMode = "absolute" | "relative";
 
 export interface DateFilterModel {
   type: DateFilterType;
@@ -18,6 +23,11 @@ export interface DateFilterModel {
 }
 
 export interface DateFilterParams extends IFilterParams {
+  /**
+   * Optional test id for testing purposes. If provided, will be used as data-testid on the filter root.
+   */
+  testId?: string;
+
   /**
    * Custom callback to parse date from cell values
    * If not provided, will try to parse with Date constructor
@@ -45,12 +55,12 @@ export interface DateFilterParams extends IFilterParams {
    * Maximum date allowed in the date picker
    */
   maxDate?: Date;
-  
+
   /**
    * Model for the filter
    */
   model?: DateFilterModel;
-  
+
   /**
    * Callback when model changes
    */

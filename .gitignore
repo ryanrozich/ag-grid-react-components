@@ -50,5 +50,8 @@ scripts/run-tsx.js
 # Generated CSS files
 src/combined.css
 
+# Local development tracking
+TODO.md
+
 # Development notes
 src/components/questions.md

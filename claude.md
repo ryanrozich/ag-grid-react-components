@@ -53,6 +53,7 @@ This repository contains a custom date filter component for AG Grid that support
 ### Components
 
 1. **RelativeDateFilter.tsx**: The main filter component that implements AG Grid's IFilter interface. It provides two date filtering modes:
+
    - Absolute Mode: Select specific dates via a date picker
    - Relative Mode: Enter expressions like "Today+7d" or "Today-3m"
 
@@ -61,6 +62,7 @@ This repository contains a custom date filter component for AG Grid that support
 ### Utilities
 
 1. **dateExpressionParser.ts**: Handles parsing and resolving relative date expressions like "Today+7d" using date-fns.
+
    - `parseDateExpression`: Parses expressions and validates them
    - `isValidDateExpression`: Checks if an expression is valid
    - `resolveDateExpression`: Resolves expressions to actual Date objects
@@ -73,6 +75,7 @@ This repository contains a custom date filter component for AG Grid that support
 ### Demo
 
 The package includes a comprehensive demo in `src/demo/working-demo.tsx` that showcases:
+
 - Both absolute and relative date filtering
 - Integration with AG Grid Enterprise features
 - Filter state persistence in the URL

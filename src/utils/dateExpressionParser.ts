@@ -1,6 +1,16 @@
-import { addDays, addMonths, addWeeks, addYears, subDays, subMonths, subWeeks, subYears, startOfDay } from 'date-fns';
+import {
+  addDays,
+  addMonths,
+  addWeeks,
+  addYears,
+  subDays,
+  subMonths,
+  subWeeks,
+  subYears,
+  startOfDay,
+} from "date-fns";
 
-export type DateUnit = 'd' | 'w' | 'm' | 'y';
+export type DateUnit = "d" | "w" | "m" | "y";
 
 export interface DateExpression {
   isValid: boolean;
@@ -14,22 +24,22 @@ export interface DateExpression {
  * @returns - Object containing validity, resolved date and optional error message
  */
 export function parseDateExpression(expression: string): DateExpression {
-  if (!expression || expression.trim() === '') {
+  if (!expression || expression.trim() === "") {
     return {
       isValid: false,
       resolvedDate: null,
-      error: 'Expression cannot be empty'
+      error: "Expression cannot be empty",
     };
   }
 
   // Standardize 'today' (case insensitive)
   const standardizedExpression = expression.trim().toLowerCase();
-  
+
   // Just 'today' by itself
-  if (standardizedExpression === 'today') {
+  if (standardizedExpression === "today") {
     return {
       isValid: true,
-      resolvedDate: startOfDay(new Date())
+      resolvedDate: startOfDay(new Date()),
     };
   }
 
@@ -41,7 +51,8 @@ export function parseDateExpression(expression: string): DateExpression {
     return {
       isValid: false,
       resolvedDate: null,
-      error: 'Invalid format. Use "Today", "Today+Nd", "Today-Nd" (where N is a number and d=days, w=weeks, m=months, y=years)'
+      error:
+        'Invalid format. Use "Today", "Today+Nd", "Today-Nd" (where N is a number and d=days, w=weeks, m=months, y=years)',
     };
   }
 
@@ -52,7 +63,7 @@ export function parseDateExpression(expression: string): DateExpression {
     return {
       isValid: false,
       resolvedDate: null,
-      error: 'Invalid number in expression'
+      error: "Invalid number in expression",
     };
   }
 
@@ -60,29 +71,33 @@ export function parseDateExpression(expression: string): DateExpression {
   let resultDate: Date;
 
   switch (unit as DateUnit) {
-    case 'd':
-      resultDate = operation === '+' ? addDays(today, amount) : subDays(today, amount);
+    case "d":
+      resultDate =
+        operation === "+" ? addDays(today, amount) : subDays(today, amount);
       break;
-    case 'w':
-      resultDate = operation === '+' ? addWeeks(today, amount) : subWeeks(today, amount);
+    case "w":
+      resultDate =
+        operation === "+" ? addWeeks(today, amount) : subWeeks(today, amount);
       break;
-    case 'm':
-      resultDate = operation === '+' ? addMonths(today, amount) : subMonths(today, amount);
+    case "m":
+      resultDate =
+        operation === "+" ? addMonths(today, amount) : subMonths(today, amount);
       break;
-    case 'y':
-      resultDate = operation === '+' ? addYears(today, amount) : subYears(today, amount);
+    case "y":
+      resultDate =
+        operation === "+" ? addYears(today, amount) : subYears(today, amount);
       break;
     default:
       return {
         isValid: false,
         resolvedDate: null,
-        error: 'Invalid unit. Use d=days, w=weeks, m=months, y=years'
+        error: "Invalid unit. Use d=days, w=weeks, m=months, y=years",
       };
   }
 
   return {
     isValid: true,
-    resolvedDate: resultDate
+    resolvedDate: resultDate,
   };
 }
 

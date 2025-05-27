@@ -6,10 +6,5 @@
     "declarationDir": "dist",
     "noEmit": false
   },
-  "exclude": [
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "src/test",
-    "src/demo"
-  ]
+  "exclude": ["**/*.test.ts", "**/*.test.tsx", "src/test", "src/demo"]
 }

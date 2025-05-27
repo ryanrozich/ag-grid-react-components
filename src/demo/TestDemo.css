@@ -1,0 +1,198 @@
+/* Test Demo Styles */
+.test-demo-container {
+  padding: 24px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  max-width: 1400px;
+  margin: 0 auto;
+  color: #333;
+}
+
+.header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.header h1 {
+  color: #1a365d;
+  margin: 0 0 12px 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.header .description {
+  color: #4a5568;
+  line-height: 1.6;
+  max-width: 800px;
+}
+
+/* Controls Section */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.control-group {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+button {
+  padding: 8px 16px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  background: white;
+  color: #2d3748;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button:hover:not(:disabled) {
+  background-color: #f7fafc;
+  border-color: #a0aec0;
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.toggle-button {
+  background-color: #edf2f7;
+  border-color: #cbd5e0;
+}
+
+.toggle-button.active {
+  background-color: #4299e1;
+  border-color: #3182ce;
+  color: white;
+}
+
+.clear-button {
+  background-color: #fff5f5;
+  border-color: #fed7d7;
+  color: #e53e3e;
+}
+
+.clear-button:hover:not(:disabled) {
+  background-color: #fff5f5;
+  border-color: #feb2b2;
+}
+
+/* Info Panels */
+.filter-info,
+.test-info {
+  flex: 1;
+  min-width: 300px;
+  margin: 0;
+  padding: 16px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.filter-info h3,
+.test-info h3 {
+  margin: 0 0 12px 0;
+  color: #2d3748;
+  font-size: 15px;
+  font-weight: 600;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.filter-model {
+  background-color: #f8fafc;
+  padding: 12px;
+  border-radius: 6px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 13px;
+  color: #4a5568;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+}
+
+.test-info p {
+  margin: 8px 0 0 0;
+  font-size: 14px;
+  color: #4a5568;
+}
+
+.test-info p:first-of-type {
+  margin-top: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .filter-info,
+  .test-info {
+    min-width: 100%;
+  }
+
+  .control-group {
+    flex-wrap: wrap;
+  }
+
+  button {
+    flex: 1;
+  }
+}
+
+/* AG Grid overrides */
+.ag-theme-quartz {
+  --ag-borders: solid 1px #e0e0e0;
+  --ag-row-border-width: 1px;
+  --ag-row-border-color: #f0f0f0;
+  --ag-header-background-color: #f8f9fa;
+  --ag-odd-row-background-color: #fafbfc;
+  --ag-row-hover-color: #f5f7f7;
+  --ag-selected-row-background-color: #e3f2fd;
+  --ag-font-size: 13px;
+  --ag-font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+  }
+
+  .filter-info,
+  .test-info {
+    margin: 10px 0;
+  }
+
+  .test-demo-container {
+    padding: 10px;
+  }
+}
