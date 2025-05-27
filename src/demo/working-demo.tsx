@@ -23,6 +23,16 @@ const myWarmTheme = themeQuartz.withPart(colorSchemeLightWarm);
 
 import { addDays, format, subDays } from "date-fns";
 
+// Type for row data
+interface RowData {
+  id: number;
+  name: string;
+  date: Date;
+  category: string;
+  value: number;
+  description?: string;
+}
+
 // Import AG Grid CSS - using the modern Quartz theme
 // No need to import ag-grid.css when using the theming API
 import "ag-grid-community/styles/ag-theme-quartz.css";
@@ -110,13 +120,13 @@ const generateData = (count: number) => {
 
 // Main application component
 const App: React.FC = () => {
-  const [rowData, setRowData] = useState<any[]>([]); // required for grid data
+  const [rowData, setRowData] = useState<RowData[]>([]); // required for grid data
   const gridRef = useRef<AgGridReact | null>(null);
   // gridApi is not used directly, so removed
   // Always show the tool panel since we removed the toggle button
   // Always show the tool panel (no toggle needed)
   const [filterStatus, setFilterStatus] = useState<string>("No filter applied");
-  const [_lastSortModel, _setLastSortModel] = useState<any[]>([]);
+  const [_lastSortModel, _setLastSortModel] = useState<ColDef[]>([]);
   const cleanupRef = useRef<(() => void) | null>(null);
 
   // Column definitions with more columns and styling
@@ -298,7 +308,7 @@ const App: React.FC = () => {
       sortable: true,
       cellRendererParams: {
         // Custom value formatter for total rows
-        totalValueGetter: (params: any) => {
+        totalValueGetter: (params: { node?: { level?: number }, value?: unknown }) => {
           // Check if this is the grand total (-1 level)
           const isRootLevel = params.node?.level === -1;
           if (isRootLevel) {
@@ -350,12 +360,13 @@ const App: React.FC = () => {
   // Apply filters to the fixed dataset using AG Grid's filter model
   const applyFilters = useCallback(
     (filter?: string) => {
+      if (!gridRef.current || !gridRef.current.api) return;
+      
       // First, set all rows regardless of filter (we'll use AG Grid's filtering)
       setRowData(initialData);
-
-      // Wait for data to be set, then apply filter model
-      setTimeout(() => {
-        if (!gridRef.current || !gridRef.current.api) return;
+      
+      // Apply filter model immediately - AG Grid will handle it when data updates
+      // No need for setTimeout - AG Grid's internal mechanisms handle this
 
         if (filter === "today") {
           // Create date filter model for "today" using our custom filter format
@@ -391,13 +402,10 @@ const App: React.FC = () => {
           gridRef.current.api.setFilterModel(filterModel);
         } else {
           // 'all' or undefined - clear all filters
-          if (
-            typeof (gridRef.current.api as any).setFilterModel === "function"
-          ) {
-            (gridRef.current.api as any).setFilterModel(null);
+          if (gridRef.current.api.setFilterModel) {
+            gridRef.current.api.setFilterModel(null);
           }
         }
-      }, 0);
     },
     [initialData],
   );
@@ -405,7 +413,7 @@ const App: React.FC = () => {
   // Handle grid ready event
   const onGridReady = useCallback(
     (params: GridReadyEvent) => {
-      console.log("Grid ready");
+      // Grid ready
 
       // Store API reference
       // gridApi is not used elsewhere, so do not set
@@ -414,13 +422,14 @@ const App: React.FC = () => {
       setRowData(initialData);
 
       // Size columns to fit
-      setTimeout(() => {
+      // Use AG Grid's onFirstDataRendered event instead of setTimeout
+      params.api.addEventListener('firstDataRendered', () => {
         // In AG Grid v33, columnApi was merged into the main api
         const columnDefs = params.api?.getColumnDefs();
         if (columnDefs && columnDefs.length > 0) {
           params.api?.sizeColumnsToFit();
         }
-      }, 100);
+      });
 
       // Setup filter changed listener to update status for manual filter changes
       params.api.addEventListener("filterChanged", () => {
@@ -491,45 +500,31 @@ const App: React.FC = () => {
             setFilterStatus(`Filters: ${filterDescriptions}`);
           }
         } catch (err) {
-          console.warn("Error updating filter status:", err);
+          // Error updating filter status
         }
       });
 
       // Open filters tool panel by default
-      setTimeout(() => {
-        params.api.openToolPanel("filters");
-      }, 200);
+      // AG Grid v33 can handle this immediately after grid is ready
+      params.api.openToolPanel("filters");
 
       // Check for filter parameters in URL
       const filterModel = loadFilterStateFromUrl();
       if (filterModel) {
         // Apply the filter to the grid
-        if (typeof (params.api as any).setFilterModel === "function") {
-          (params.api as any).setFilterModel(filterModel);
+        if (params.api.setFilterModel) {
+          params.api.setFilterModel(filterModel);
         }
         // Don't set a special status - let the filterChanged listener handle it
       }
 
       // Setup filter persistence and browser history
       const cleanup = setupFilterStatePersistence(params.api, {
-        onFilterLoad: (_model: any) => {
+        onFilterLoad: (_model: Record<string, unknown> | null) => {
           // Filter status will be updated by the filterChanged listener
         },
-        onFilterSave: (model: any) => {
-          // Just save the sort model when filters change
-          try {
-            if (
-              gridRef.current &&
-              gridRef.current.api &&
-              typeof (gridRef.current.api as any).getSortModel === "function"
-            ) {
-              _setLastSortModel(
-                (gridRef.current.api as any).getSortModel?.() ?? [],
-              );
-            }
-          } catch (err) {
-            console.warn("Error getting sort model during filter save:", err);
-          }
+        onFilterSave: (_model: Record<string, unknown> | null) => {
+          // Note: Sort model is preserved automatically by AG Grid
         },
       });
 
@@ -782,7 +777,7 @@ const App: React.FC = () => {
             paginationPageSizeSelector={[10, 20, 50, 100]}
             grandTotalRow="bottom"
             getRowClass={(params) => {
-              return params.node.rowIndex % 2 === 0 ? "ag-row-even" : "ag-row-odd";
+              return (params.node.rowIndex ?? 0) % 2 === 0 ? "ag-row-even" : "ag-row-odd";
             }}
           />
           </div>

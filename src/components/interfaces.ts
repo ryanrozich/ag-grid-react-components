@@ -32,7 +32,7 @@ export interface DateFilterParams extends IFilterParams {
    * Custom callback to parse date from cell values
    * If not provided, will try to parse with Date constructor
    */
-  dateParser?: (value: any) => Date | null;
+  dateParser?: (value: unknown) => Date | null;
 
   /**
    * Default filter mode (absolute or relative)

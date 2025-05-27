@@ -19,6 +19,17 @@ export interface DateExpression {
 }
 
 /**
+ * Sanitizes input to prevent injection attacks
+ * @param input - The input string to sanitize
+ * @returns - Sanitized string safe for processing
+ */
+function sanitizeExpression(input: string): string {
+  // Remove any characters that aren't alphanumeric, +, -, or spaces
+  // This prevents any script injection or special character attacks
+  return input.replace(/[^a-zA-Z0-9+\-\s]/g, '');
+}
+
+/**
  * Parse a relative date expression like 'Today', 'Today+7d', 'Today-3m', etc.
  * @param expression - The relative date expression to parse
  * @returns - Object containing validity, resolved date and optional error message
@@ -32,8 +43,29 @@ export function parseDateExpression(expression: string): DateExpression {
     };
   }
 
+  // Sanitize input first to prevent any injection attacks
+  const sanitized = sanitizeExpression(expression);
+  
+  // Check if sanitization removed characters (potential attack)
+  if (sanitized !== expression.trim()) {
+    return {
+      isValid: false,
+      resolvedDate: null,
+      error: "Expression contains invalid characters",
+    };
+  }
+  
+  // Limit expression length to prevent DoS
+  if (expression.length > 50) {
+    return {
+      isValid: false,
+      resolvedDate: null,
+      error: "Expression too long (max 50 characters)",
+    };
+  }
+
   // Standardize 'today' (case insensitive)
-  const standardizedExpression = expression.trim().toLowerCase();
+  const standardizedExpression = sanitized.trim().toLowerCase();
 
   // Just 'today' by itself
   if (standardizedExpression === "today") {
@@ -64,6 +96,23 @@ export function parseDateExpression(expression: string): DateExpression {
       isValid: false,
       resolvedDate: null,
       error: "Invalid number in expression",
+    };
+  }
+  
+  // Prevent extreme values that could cause issues
+  if (amount > 10000) {
+    return {
+      isValid: false,
+      resolvedDate: null,
+      error: "Number too large (max 10000)",
+    };
+  }
+  
+  if (amount === 0) {
+    return {
+      isValid: false,
+      resolvedDate: null,
+      error: "Number cannot be zero",
     };
   }
 

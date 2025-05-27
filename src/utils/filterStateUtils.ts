@@ -1,46 +1,168 @@
 /**
  * Utilities for working with filter state, serialization, and browser history
  */
-// import { DateFilterModel } from '../components/interfaces';
+import { GridApi } from 'ag-grid-community';
+import { logger } from './logger';
+
+/**
+ * Validates that an object is a safe filter model structure
+ * Prevents XSS attacks by ensuring only expected properties and types
+ */
+function isValidFilterModel(obj: unknown): boolean {
+  if (!obj || typeof obj !== 'object') return false;
+  
+  const typedObj = obj as Record<string, unknown>;
+  
+  // Whitelist of allowed filter properties
+  const allowedFilterProps = ['type', 'mode', 'dateFrom', 'dateTo', 'expressionFrom', 'expressionTo', 'fromInclusive', 'toInclusive', 'filter'];
+  const allowedTypes = ['equals', 'notEqual', 'before', 'after', 'inRange'];
+  const allowedModes = ['absolute', 'relative'];
+  
+  // Check each column filter
+  for (const columnKey of Object.keys(typedObj)) {
+    const columnFilter = typedObj[columnKey];
+    
+    // Column key should be alphanumeric with underscores only
+    if (!/^[a-zA-Z0-9_]+$/.test(columnKey)) {
+      logger.warn(`Invalid column key: ${columnKey}`);
+      return false;
+    }
+    
+    if (!columnFilter || typeof columnFilter !== 'object') continue;
+    
+    const typedFilter = columnFilter as Record<string, unknown>;
+    
+    // Check that only allowed properties exist
+    for (const prop of Object.keys(typedFilter)) {
+      if (!allowedFilterProps.includes(prop)) {
+        logger.warn(`Unexpected property in filter model: ${prop}`);
+        return false;
+      }
+    }
+    
+    // Validate type and mode if present
+    if (typedFilter.type && !allowedTypes.includes(String(typedFilter.type))) {
+      logger.warn(`Invalid filter type: ${typedFilter.type}`);
+      return false;
+    }
+    
+    if (typedFilter.mode && !allowedModes.includes(String(typedFilter.mode))) {
+      logger.warn(`Invalid filter mode: ${typedFilter.mode}`);
+      return false;
+    }
+    
+    // Validate date strings
+    if (typedFilter.dateFrom && typeof typedFilter.dateFrom === 'string') {
+      const date = new Date(typedFilter.dateFrom);
+      if (isNaN(date.getTime())) {
+        logger.warn(`Invalid dateFrom: ${typedFilter.dateFrom}`);
+        return false;
+      }
+    }
+    
+    if (typedFilter.dateTo && typeof typedFilter.dateTo === 'string') {
+      const date = new Date(typedFilter.dateTo);
+      if (isNaN(date.getTime())) {
+        logger.warn(`Invalid dateTo: ${typedFilter.dateTo}`);
+        return false;
+      }
+    }
+    
+    // Validate expressions (alphanumeric + basic operators)
+    if (typedFilter.expressionFrom && typeof typedFilter.expressionFrom === 'string') {
+      if (!/^[a-zA-Z0-9+\-\s]+$/.test(typedFilter.expressionFrom)) {
+        logger.warn(`Invalid expressionFrom: ${typedFilter.expressionFrom}`);
+        return false;
+      }
+    }
+    
+    if (typedFilter.expressionTo && typeof typedFilter.expressionTo === 'string') {
+      if (!/^[a-zA-Z0-9+\-\s]+$/.test(typedFilter.expressionTo)) {
+        logger.warn(`Invalid expressionTo: ${typedFilter.expressionTo}`);
+        return false;
+      }
+    }
+    
+    // Validate booleans
+    if (typedFilter.fromInclusive !== undefined && typeof typedFilter.fromInclusive !== 'boolean') {
+      logger.warn(`Invalid fromInclusive: ${typedFilter.fromInclusive}`);
+      return false;
+    }
+    
+    if (typedFilter.toInclusive !== undefined && typeof typedFilter.toInclusive !== 'boolean') {
+      logger.warn(`Invalid toInclusive: ${typedFilter.toInclusive}`);
+      return false;
+    }
+  }
+  
+  return true;
+}
+
+/**
+ * Safely parses JSON from URL parameters with validation
+ */
+function safeJsonParse(jsonString: string): Record<string, unknown> | null {
+  try {
+    const parsed = JSON.parse(jsonString);
+    
+    // Validate the parsed object structure
+    if (!isValidFilterModel(parsed)) {
+      logger.error('Invalid filter model structure');
+      return null;
+    }
+    
+    return parsed;
+  } catch (error) {
+    logger.error('Error parsing JSON:', error);
+    return null;
+  }
+}
 
 /**
  * Serializes date objects in filter models to ensure they can be properly
  * stringified and stored in URLs or local storage
  */
-export function serializeFilterModel(model: any): any {
-  if (!model) return model;
+export function serializeFilterModel(model: unknown): unknown {
+  if (!model || typeof model !== 'object') return model;
 
+  const typedModel = model as Record<string, unknown>;
+  
   // Create a new object to avoid mutating the original
-  const serialized = { ...model };
+  const serialized = { ...typedModel };
 
   // Process each column filter
   Object.keys(serialized).forEach((columnKey) => {
     const columnFilter = serialized[columnKey];
 
     // Check if it's our date filter (could be another filter type)
-    if (columnFilter && (columnFilter.dateFrom || columnFilter.dateTo)) {
-      // Convert dates to ISO strings
-      if (columnFilter.dateFrom instanceof Date) {
-        serialized[columnKey] = {
-          ...columnFilter,
-          dateFrom: columnFilter.dateFrom.toISOString(),
-        };
-      }
+    if (columnFilter && typeof columnFilter === 'object') {
+      const typedFilter = columnFilter as Record<string, unknown>;
+      
+      if (typedFilter.dateFrom || typedFilter.dateTo) {
+        // Convert dates to ISO strings
+        if (typedFilter.dateFrom instanceof Date) {
+          serialized[columnKey] = {
+            ...typedFilter,
+            dateFrom: typedFilter.dateFrom.toISOString(),
+          };
+        }
 
-      if (columnFilter.dateTo instanceof Date) {
-        serialized[columnKey] = {
-          ...serialized[columnKey], // Use the already updated object if dateFrom was processed
-          dateTo: columnFilter.dateTo.toISOString(),
-        };
-      }
+        if (typedFilter.dateTo instanceof Date) {
+          serialized[columnKey] = {
+            ...(serialized[columnKey] as Record<string, unknown> || typedFilter), // Use the already updated object if dateFrom was processed
+            dateTo: typedFilter.dateTo.toISOString(),
+          };
+        }
 
-      // Ensure inclusivity settings are preserved
-      if (serialized[columnKey].fromInclusive === undefined) {
-        serialized[columnKey].fromInclusive = false;
-      }
+        // Ensure inclusivity settings are preserved
+        const currentFilter = serialized[columnKey] as Record<string, unknown>;
+        if (currentFilter.fromInclusive === undefined) {
+          currentFilter.fromInclusive = false;
+        }
 
-      if (serialized[columnKey].toInclusive === undefined) {
-        serialized[columnKey].toInclusive = false;
+        if (currentFilter.toInclusive === undefined) {
+          currentFilter.toInclusive = false;
+        }
       }
     }
   });
@@ -52,35 +174,40 @@ export function serializeFilterModel(model: any): any {
  * Deserializes a filter model from JSON, converting ISO date strings
  * back to Date objects
  */
-export function deserializeFilterModel(serializedModel: any): any {
-  if (!serializedModel) return serializedModel;
+export function deserializeFilterModel(serializedModel: unknown): unknown {
+  if (!serializedModel || typeof serializedModel !== 'object') return serializedModel;
 
+  const typedModel = serializedModel as Record<string, unknown>;
+  
   // Create a new object to avoid mutating the original
-  const deserialized = { ...serializedModel };
+  const deserialized = { ...typedModel };
 
   // Process each column filter
   Object.keys(deserialized).forEach((columnKey) => {
     const columnFilter = deserialized[columnKey];
 
     // Check if it's a string-serialized date
-    if (
-      columnFilter &&
-      (typeof columnFilter.dateFrom === "string" ||
-        typeof columnFilter.dateTo === "string")
-    ) {
-      // Convert string dates back to Date objects
-      if (typeof columnFilter.dateFrom === "string" && columnFilter.dateFrom) {
-        deserialized[columnKey] = {
-          ...columnFilter,
-          dateFrom: new Date(columnFilter.dateFrom),
-        };
-      }
+    if (columnFilter && typeof columnFilter === 'object') {
+      const typedFilter = columnFilter as Record<string, unknown>;
+      
+      if (
+        typeof typedFilter.dateFrom === "string" ||
+        typeof typedFilter.dateTo === "string"
+      ) {
+        // Convert string dates back to Date objects
+        if (typeof typedFilter.dateFrom === "string" && typedFilter.dateFrom) {
+          deserialized[columnKey] = {
+            ...typedFilter,
+            dateFrom: new Date(typedFilter.dateFrom),
+          };
+        }
 
-      if (typeof columnFilter.dateTo === "string" && columnFilter.dateTo) {
-        deserialized[columnKey] = {
-          ...deserialized[columnKey], // Use the already updated object if dateFrom was processed
-          dateTo: new Date(columnFilter.dateTo),
-        };
+        if (typeof typedFilter.dateTo === "string" && typedFilter.dateTo) {
+          deserialized[columnKey] = {
+            ...(deserialized[columnKey] as Record<string, unknown> || typedFilter), // Use the already updated object if dateFrom was processed
+            dateTo: new Date(typedFilter.dateTo),
+          };
+        }
       }
     }
   });
@@ -92,9 +219,12 @@ export function deserializeFilterModel(serializedModel: any): any {
  * Updates the URL with the current filter state
  */
 export function updateUrlWithFilterState(
-  filterModel: any,
+  filterModel: Record<string, unknown> | null,
   paramName: string = "filter",
 ): void {
+  if (!filterModel) {
+    return;
+  }
   const serializedModel = serializeFilterModel(filterModel);
   const hasFilters = Object.keys(filterModel).length > 0;
 
@@ -131,11 +261,15 @@ export function loadFilterStateFromUrl(
 
   if (filterParam) {
     try {
-      // Parse the JSON string
-      const filterModel = JSON.parse(decodeURIComponent(filterParam));
+      // Safely parse the JSON string with validation
+      const filterModel = safeJsonParse(decodeURIComponent(filterParam));
+      if (!filterModel) {
+        logger.error("Invalid filter model from URL");
+        return null;
+      }
       return deserializeFilterModel(filterModel);
     } catch (error) {
-      console.error("Error parsing filter state from URL:", error);
+      logger.error("Error parsing filter state from URL:", error);
       return null;
     }
   }
@@ -147,11 +281,11 @@ export function loadFilterStateFromUrl(
  * Sets up filter state persistence with browser history integration
  */
 export function setupFilterStatePersistence(
-  gridApi: any,
+  gridApi: GridApi,
   options: {
     paramName?: string;
-    onFilterLoad?: (model: any) => void;
-    onFilterSave?: (model: any) => void;
+    onFilterLoad?: (model: Record<string, unknown> | null) => void;
+    onFilterSave?: (model: Record<string, unknown> | null) => void;
   } = {},
 ): () => void {
   const { paramName = "filter", onFilterLoad, onFilterSave } = options;
@@ -162,9 +296,17 @@ export function setupFilterStatePersistence(
 
   if (filterParam) {
     try {
-      // Direct parse from URL for initial load
-      const filterModel = JSON.parse(decodeURIComponent(filterParam));
-      const deserializedModel = deserializeFilterModel(filterModel);
+      // Safely parse from URL for initial load
+      const filterModel = safeJsonParse(decodeURIComponent(filterParam));
+      if (!filterModel) {
+        logger.error("Invalid filter model during initial load");
+        if (onFilterLoad) {
+          onFilterLoad({});
+        }
+        return () => {};
+      }
+      
+      const deserializedModel = deserializeFilterModel(filterModel) as Record<string, unknown>;
 
       // Apply the filter
       gridApi.setFilterModel(deserializedModel);
@@ -174,7 +316,7 @@ export function setupFilterStatePersistence(
         onFilterLoad(deserializedModel);
       }
     } catch (e) {
-      console.error("Error loading filter from URL:", e);
+      logger.error("Error loading filter from URL:", e);
     }
   } else if (onFilterLoad) {
     onFilterLoad({});
@@ -215,17 +357,7 @@ export function setupFilterStatePersistence(
   const handlePopState = (_event: PopStateEvent) => {
     if (!gridApi) return;
 
-    // Save current sort model to preserve it
-    let sortModel = null;
-
-    // For compatibility with AG Grid v33+
-    try {
-      if (typeof gridApi.getSortModel === "function") {
-        sortModel = gridApi.getSortModel();
-      }
-    } catch (err) {
-      console.warn("Error getting sort model in popstate handler:", err);
-    }
+    // Note: Sort model is preserved automatically by AG Grid
 
     // Try to get filter from the URL
     const url = new URL(window.location.href);
@@ -233,30 +365,30 @@ export function setupFilterStatePersistence(
 
     if (filterParam) {
       try {
-        // Parse filter from URL
-        const filterModel = JSON.parse(decodeURIComponent(filterParam));
-        const deserializedModel = deserializeFilterModel(filterModel);
+        // Safely parse filter from URL
+        const filterModel = safeJsonParse(decodeURIComponent(filterParam));
+        if (!filterModel) {
+          logger.error("Invalid filter model in popstate");
+          gridApi.setFilterModel({});
+          if (onFilterLoad) {
+            onFilterLoad({});
+          }
+          return;
+        }
+        
+        const deserializedModel = deserializeFilterModel(filterModel) as Record<string, unknown>;
 
         // Apply filter
         gridApi.setFilterModel(deserializedModel);
 
-        // Restore sort order if available
-        if (sortModel && sortModel.length > 0) {
-          try {
-            if (typeof gridApi.setSortModel === "function") {
-              gridApi.setSortModel(sortModel);
-            }
-          } catch (err) {
-            console.warn("Error setting sort model in popstate handler:", err);
-          }
-        }
+        // Sort order is preserved automatically by AG Grid
 
         // Notify callback
         if (onFilterLoad) {
           onFilterLoad(deserializedModel);
         }
       } catch (e) {
-        console.error("Error handling popstate:", e);
+        logger.error("Error handling popstate:", e);
         gridApi.setFilterModel({});
 
         if (onFilterLoad) {
@@ -267,16 +399,7 @@ export function setupFilterStatePersistence(
       // No filter in URL, clear filters
       gridApi.setFilterModel({});
 
-      // Restore sort order if available
-      if (sortModel && sortModel.length > 0) {
-        try {
-          if (typeof gridApi.setSortModel === "function") {
-            gridApi.setSortModel(sortModel);
-          }
-        } catch (err) {
-          console.warn("Error setting sort model in popstate handler:", err);
-        }
-      }
+      // Sort order is preserved automatically by AG Grid
 
       if (onFilterLoad) {
         onFilterLoad({});

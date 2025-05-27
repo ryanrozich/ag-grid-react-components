@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 // NOTE: In ag-grid v33, this is the correct import path
 import { useGridFilter } from "ag-grid-react";
+import { IRowNode } from "ag-grid-community";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
@@ -14,6 +15,7 @@ import {
   parseDateExpression,
   resolveDateExpression,
 } from "../utils/dateExpressionParser";
+import { logger } from "../utils/logger";
 
 // CSS is imported at the root level
 
@@ -65,7 +67,7 @@ const RelativeDateFilter = (props: DateFilterParams) => {
 
   // Parse cell values to date
   const parseValue = useCallback(
-    (value: any): Date | null => {
+    (value: unknown): Date | null => {
       if (props.dateParser) {
         return props.dateParser(value);
       }
@@ -261,7 +263,7 @@ const RelativeDateFilter = (props: DateFilterParams) => {
 
   // Filter implementation
   const doesFilterPass = useCallback(
-    ({ node }: { node: any }) => {
+    ({ node }: { node: IRowNode }) => {
       if (!isFilterValid || !currentModel) return true;
 
       const cellValue = props.getValue(node);
@@ -382,7 +384,7 @@ const RelativeDateFilter = (props: DateFilterParams) => {
     // In v33, we call onModelChange directly with our model
     if (props.onModelChange) {
       props.onModelChange(currentModel);
-      console.log("Filter model applied:", currentModel);
+      logger.log("Filter model applied:", currentModel);
     }
   }, [isFilterValid, currentModel, props.onModelChange]);
 
@@ -411,14 +413,14 @@ const RelativeDateFilter = (props: DateFilterParams) => {
     // Notify with null model
     if (props.onModelChange) {
       props.onModelChange(null);
-      console.log("Filter reset");
+      logger.log("Filter reset");
     }
   }, [props.onModelChange]);
 
   // React to model changes from AG Grid
   useEffect(() => {
     // Add debug log to help troubleshoot
-    console.log("Filter props received:", props);
+    logger.log("Filter props received:", props);
 
     if (props.model) {
       // Update filter state based on model
@@ -437,25 +439,25 @@ const RelativeDateFilter = (props: DateFilterParams) => {
 
   // Handle rows being loaded or changed
   const onNewRowsLoaded = useCallback(() => {
-    console.log("New rows loaded");
+    logger.log("New rows loaded");
     // No specific actions needed for relative date filter
   }, []);
 
   // Handle changes in any other filter
   const onAnyFilterChanged = useCallback(() => {
-    console.log("Other filters changed");
+    logger.log("Other filters changed");
     // No specific actions needed for relative date filter
   }, []);
 
   // Called after the GUI has been attached
   const afterGuiAttached = useCallback(() => {
-    console.log("Filter GUI attached");
+    logger.log("Filter GUI attached");
     // Focus on the first input if appropriate
   }, []);
 
   // Called before the GUI is detached
   const afterGuiDetached = useCallback(() => {
-    console.log("Filter GUI detached");
+    logger.log("Filter GUI detached");
     // Cleanup if needed
   }, []);
 
@@ -477,17 +479,22 @@ const RelativeDateFilter = (props: DateFilterParams) => {
   }, [currentModel]);
 
   // Deserialize a model from external state (e.g., URL parameters)
-  const deserializeModel = useCallback((model: any): DateFilterModel | null => {
-    if (!model) return null;
+  const deserializeModel = useCallback((model: unknown): DateFilterModel | null => {
+    if (!model || typeof model !== 'object') return null;
 
+    const typedModel = model as Record<string, unknown>;
+    
     // Convert ISO strings back to Date objects
     return {
-      ...model,
-      dateFrom: model.dateFrom ? new Date(model.dateFrom) : null,
-      dateTo: model.dateTo ? new Date(model.dateTo) : null,
+      type: typedModel.type as DateFilterType,
+      mode: typedModel.mode as DateFilterMode,
+      dateFrom: typedModel.dateFrom ? new Date(String(typedModel.dateFrom)) : null,
+      dateTo: typedModel.dateTo ? new Date(String(typedModel.dateTo)) : null,
+      expressionFrom: typedModel.expressionFrom as string | undefined,
+      expressionTo: typedModel.expressionTo as string | undefined,
       // Ensure inclusivity properties are preserved
-      fromInclusive: model.fromInclusive ?? false,
-      toInclusive: model.toInclusive ?? false,
+      fromInclusive: typedModel.fromInclusive as boolean | undefined ?? false,
+      toInclusive: typedModel.toInclusive as boolean | undefined ?? false,
     };
   }, []);
 
@@ -516,8 +523,8 @@ const RelativeDateFilter = (props: DateFilterParams) => {
 
     // AG Grid v33 provides the model to us when it wants to update the filter state externally
     setModel: useCallback(
-      (model: any) => {
-        console.log("setModel called with:", model);
+      (model: DateFilterModel | null) => {
+        logger.log("setModel called with:", model);
         if (!model) {
           resetFilter();
           return;
@@ -550,7 +557,7 @@ const RelativeDateFilter = (props: DateFilterParams) => {
     // For AG Grid v33, this is needed for UI display and menu interactions
     // Critical for proper filter menu behavior
     onUiChanged: useCallback(() => {
-      console.log("Filter UI changed");
+      logger.log("Filter UI changed");
       // This callback is triggered when AG Grid detects a UI component change
       // We don't need to do anything special here, but it must be defined
     }, []),
@@ -558,7 +565,7 @@ const RelativeDateFilter = (props: DateFilterParams) => {
     // AG Grid v33 destroys and recreates filters frequently,
     // this ensures proper cleanup when the filter is destroyed
     onFilterDestroyed: useCallback(() => {
-      console.log("Filter destroyed");
+      logger.log("Filter destroyed");
       // Any cleanup needed when the filter component is destroyed
     }, []),
   };
@@ -569,13 +576,13 @@ const RelativeDateFilter = (props: DateFilterParams) => {
   // In v33, filter button clicks should automatically trigger our filter
   // adding extra logging to help debug
   useEffect(() => {
-    console.log("RelativeDateFilter mounted with props:", props);
+    logger.log("RelativeDateFilter mounted with props:", props);
   }, []);
 
   // Log when component renders
-  console.log("RelativeDateFilter rendering, props:", props);
-  console.log("Current filter mode:", filterMode);
-  console.log("Current filter type:", filterType);
+  logger.debug("RelativeDateFilter rendering, props:", props);
+  logger.debug("Current filter mode:", filterMode);
+  logger.debug("Current filter type:", filterType);
 
   return (
     <div

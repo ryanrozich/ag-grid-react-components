@@ -4,6 +4,7 @@ import { IFloatingFilterParams } from "ag-grid-community";
 import { useGridFloatingFilter } from "ag-grid-react";
 import { format } from "date-fns";
 import { DateFilterModel } from "./interfaces";
+import { logger } from "../utils/logger";
 
 interface RelativeDateFloatingFilterParams extends IFloatingFilterParams {
   suppressFilterButton?: boolean;
@@ -22,7 +23,7 @@ const RelativeDateFloatingFilter = (
   // Update display when parent filter changes
   const onParentModelChanged = useCallback(
     (parentModel: DateFilterModel | null) => {
-      console.log("Floating filter received parent model:", parentModel);
+      logger.debug("Floating filter received parent model:", parentModel);
 
       if (!parentModel) {
         setDisplayValue("");
@@ -120,7 +121,7 @@ const RelativeDateFloatingFilter = (
 
   // Called after the GUI has been attached
   const afterGuiAttached = useCallback(() => {
-    console.log("Floating filter GUI attached");
+    logger.debug("Floating filter GUI attached");
     // No specific initialization needed
   }, []);
 
@@ -142,7 +143,7 @@ const RelativeDateFloatingFilter = (
   }, [props.currentParentModel, onParentModelChanged]);
 
   // Debug logging
-  console.log("RelativeDateFloatingFilter rendering, props:", props);
+  logger.debug("RelativeDateFloatingFilter rendering, props:", props);
 
   return (
     <div

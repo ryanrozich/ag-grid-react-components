@@ -100,7 +100,7 @@ export const TestDemo: React.FC = () => {
     (params: GridReadyEvent<TestRecord>) => {
       setGridRefs({ api: params.api });
       params.api.sizeColumnsToFit();
-      console.log("Grid ready with", rowData.length, "rows");
+      // Grid ready
     },
     [rowData.length],
   );
