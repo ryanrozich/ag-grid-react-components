@@ -263,13 +263,19 @@ const DateFilter = (props: DateFilterParams) => {
     }, [currentModel]),
     setModel: useCallback(
       (model: DateFilterModel | null) => {
+        console.log("DateFilter setModel called with:", model);
         if (!model) {
           resetFilter();
           return;
         }
         filterState.initializeFromModel(model);
+        console.log("Filter state initialized, current model:", currentModel);
+        // Notify AG Grid that the filter has changed
+        if (props.filterChangedCallback) {
+          props.filterChangedCallback();
+        }
       },
-      [resetFilter, filterState.initializeFromModel],
+      [resetFilter, filterState.initializeFromModel, props.filterChangedCallback, currentModel],
     ),
     onNewRowsLoaded: () => {
       // Handle new rows if needed

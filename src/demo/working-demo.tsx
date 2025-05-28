@@ -402,47 +402,52 @@ const App: React.FC = () => {
       // First, set all rows regardless of filter (we'll use AG Grid's filtering)
       setRowData(initialData);
 
-      // Apply filter model immediately - AG Grid will handle it when data updates
-      // No need for setTimeout - AG Grid's internal mechanisms handle this
+      // Apply filter model after a brief delay to ensure data is loaded
+      setTimeout(() => {
+        if (!gridRef.current?.api) return;
 
-      if (filter === "today") {
-        // Create date filter model for "today" using our custom filter format
-        const filterModel = {
-          date: {
-            type: "equals",
-            mode: "relative", // Use relative mode with our expression
-            expressionFrom: "Today",
-          },
-        };
-        gridRef.current.api.setFilterModel(filterModel);
-      } else if (filter === "upcoming") {
-        // Create date filter model for dates after today
-        const filterModel = {
-          date: {
-            type: "after",
-            mode: "relative",
-            expressionFrom: "Today",
-            fromInclusive: false, // Exclude today
-          },
-        };
-        gridRef.current.api.setFilterModel(filterModel);
-      } else if (filter === "past") {
-        // Create date filter model for dates before today
-        const filterModel = {
-          date: {
-            type: "before",
-            mode: "relative",
-            expressionFrom: "Today",
-            toInclusive: false, // Exclude today
-          },
-        };
-        gridRef.current.api.setFilterModel(filterModel);
-      } else {
-        // 'all' or undefined - clear all filters
-        if (gridRef.current.api.setFilterModel) {
-          gridRef.current.api.setFilterModel(null);
+        if (filter === "today") {
+          // Create date filter model for "today" using our custom filter format
+          const filterModel = {
+            date: {
+              type: "equals",
+              mode: "relative", // Use relative mode with our expression
+              expressionFrom: "Today",
+            },
+          };
+          console.log("Applying today filter model:", filterModel);
+          gridRef.current.api.setFilterModel(filterModel);
+        } else if (filter === "upcoming") {
+          // Create date filter model for dates after today
+          const filterModel = {
+            date: {
+              type: "after",
+              mode: "relative",
+              expressionFrom: "Today",
+              fromInclusive: false, // Exclude today
+            },
+          };
+          console.log("Applying today filter model:", filterModel);
+          gridRef.current.api.setFilterModel(filterModel);
+        } else if (filter === "past") {
+          // Create date filter model for dates before today
+          const filterModel = {
+            date: {
+              type: "before",
+              mode: "relative",
+              expressionFrom: "Today",
+              toInclusive: false, // Exclude today
+            },
+          };
+          console.log("Applying today filter model:", filterModel);
+          gridRef.current.api.setFilterModel(filterModel);
+        } else {
+          // 'all' or undefined - clear all filters
+          if (gridRef.current.api.setFilterModel) {
+            gridRef.current.api.setFilterModel(null);
+          }
         }
-      }
+      }, 100);
     },
     [initialData],
   );
