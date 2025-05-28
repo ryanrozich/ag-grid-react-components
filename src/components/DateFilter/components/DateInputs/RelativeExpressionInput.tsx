@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { format } from "date-fns";
 import { DateFilterType } from '../../types';
-// Import removed as it's not used
 
 interface RelativeExpressionInputProps {
   filterType: DateFilterType;
@@ -19,7 +18,7 @@ interface RelativeExpressionInputProps {
   className?: string;
 }
 
-export const RelativeExpressionInput: React.FC<RelativeExpressionInputProps> = ({
+const RelativeExpressionInputComponent: React.FC<RelativeExpressionInputProps> = ({
   filterType,
   expressionFrom,
   expressionTo,
@@ -34,15 +33,15 @@ export const RelativeExpressionInput: React.FC<RelativeExpressionInputProps> = (
   onKeyDown,
   className = ''
 }) => {
-  const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFromChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     onExpressionFromChange(value);
-  };
+  }, [onExpressionFromChange]);
 
-  const handleToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleToChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     onExpressionToChange(value);
-  };
+  }, [onExpressionToChange]);
 
   return (
     <div className={`relative-mode ${className}`}>
@@ -166,3 +165,25 @@ export const RelativeExpressionInput: React.FC<RelativeExpressionInputProps> = (
     </div>
   );
 };
+
+// Memoized component with custom comparison to prevent unnecessary re-renders
+export const RelativeExpressionInput = React.memo(RelativeExpressionInputComponent, (prevProps, nextProps) => {
+  // Compare all props except callbacks (assumed to be stable)
+  return (
+    prevProps.filterType === nextProps.filterType &&
+    prevProps.expressionFrom === nextProps.expressionFrom &&
+    prevProps.expressionTo === nextProps.expressionTo &&
+    prevProps.dateFormat === nextProps.dateFormat &&
+    prevProps.fromValid === nextProps.fromValid &&
+    prevProps.toValid === nextProps.toValid &&
+    prevProps.toError === nextProps.toError &&
+    prevProps.className === nextProps.className &&
+    // Compare resolved dates (null-safe comparison)
+    ((prevProps.resolvedDateFrom === null && nextProps.resolvedDateFrom === null) ||
+     (prevProps.resolvedDateFrom !== null && nextProps.resolvedDateFrom !== null &&
+      prevProps.resolvedDateFrom.getTime() === nextProps.resolvedDateFrom.getTime())) &&
+    ((prevProps.resolvedDateTo === null && nextProps.resolvedDateTo === null) ||
+     (prevProps.resolvedDateTo !== null && nextProps.resolvedDateTo !== null &&
+      prevProps.resolvedDateTo.getTime() === nextProps.resolvedDateTo.getTime()))
+  );
+});

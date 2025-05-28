@@ -103,7 +103,15 @@ coverage-report: test-coverage
 # Check bundle size
 bundle-size: build
   @echo "📦 Bundle Size Analysis:"
+  @echo "Main bundle files:"
   @du -sh dist/* | sort -h
+  @echo ""
+  @echo "📊 Detailed analysis:"
+  @ls -lah dist/ | grep -E '\.(js|css)' | awk '{print $5 "\t" $9}'
+  @echo ""
+  @echo "🎯 Target: <50KB gzipped total"
+  @echo "📈 Current totals:"
+  @find dist -name "*.js" -o -name "*.css" | xargs wc -c | tail -1
 
 # Development workflow with auto-checks
 dev-safe:

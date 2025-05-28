@@ -7,7 +7,7 @@ interface FilterModeToggleProps {
   className?: string;
 }
 
-export const FilterModeToggle: React.FC<FilterModeToggleProps> = ({
+const FilterModeToggleComponent: React.FC<FilterModeToggleProps> = ({
   mode,
   onModeChange,
   className = ''
@@ -74,3 +74,11 @@ export const FilterModeToggle: React.FC<FilterModeToggleProps> = ({
     </div>
   );
 };
+
+// Memoized component with custom comparison to prevent unnecessary re-renders
+export const FilterModeToggle = React.memo(FilterModeToggleComponent, (prevProps, nextProps) => {
+  // Only re-render if mode or className changes
+  // onModeChange is assumed to be stable (useCallback in parent)
+  return prevProps.mode === nextProps.mode && 
+         prevProps.className === nextProps.className;
+});

@@ -7,7 +7,7 @@ interface FilterActionsProps {
   className?: string;
 }
 
-export const FilterActions: React.FC<FilterActionsProps> = ({
+const FilterActionsComponent: React.FC<FilterActionsProps> = ({
   onReset,
   onApply,
   isValid,
@@ -40,3 +40,11 @@ export const FilterActions: React.FC<FilterActionsProps> = ({
     </div>
   );
 };
+
+// Memoized component with custom comparison to prevent unnecessary re-renders
+export const FilterActions = React.memo(FilterActionsComponent, (prevProps, nextProps) => {
+  // Only re-render if isValid or className changes
+  // onReset and onApply are assumed to be stable (useCallback in parent)
+  return prevProps.isValid === nextProps.isValid && 
+         prevProps.className === nextProps.className;
+});

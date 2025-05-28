@@ -4,7 +4,6 @@ import { IRowNode } from "ag-grid-community";
 import { format } from "date-fns";
 
 import { DateFilterParams, DateFilterModel } from "./types";
-import { parseDateExpression } from "../../utils/dateExpressionParser";
 import { logger } from "../../utils/logger";
 
 import {
@@ -16,6 +15,7 @@ import {
 } from "./components";
 
 import { useFilterState, useFilterValidation } from "./hooks";
+import { useDebouncedValidation } from "./hooks/useDebouncedValidation";
 
 const DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
@@ -35,6 +35,18 @@ const DateFilter = (props: DateFilterParams) => {
     expressionTo: filterState.expressionTo,
     fromExpressionValid: filterState.fromExpressionValid,
     toExpressionValid: filterState.toExpressionValid,
+  });
+
+  // Use debounced validation for better performance (300ms delay)
+  useDebouncedValidation({
+    expressionFrom: filterState.expressionFrom,
+    expressionTo: filterState.expressionTo,
+    filterMode: filterState.filterMode,
+    onFromValidityChange: filterState.setFromExpressionValid,
+    onToValidityChange: filterState.setToExpressionValid,
+    onToErrorChange: filterState.setToExpressionError,
+    validateToExpression: validation.validateToExpression,
+    debounceDelay: 300, // 300ms debounce for optimal UX
   });
 
   // Parse cell values to date
@@ -166,19 +178,16 @@ const DateFilter = (props: DateFilterParams) => {
     ],
   );
 
-  // Event handlers
+  // Event handlers - Simplified since validation is now debounced
   const handleExpressionFromChange = useCallback((value: string) => {
     filterState.setExpressionFrom(value);
-    const result = parseDateExpression(value);
-    filterState.setFromExpressionValid(result.isValid);
+    // Validation is handled by useDebouncedValidation hook with 300ms delay
   }, [filterState]);
 
   const handleExpressionToChange = useCallback((value: string) => {
     filterState.setExpressionTo(value);
-    const validationResult = validation.validateToExpression(value);
-    filterState.setToExpressionValid(validationResult.isValid);
-    filterState.setToExpressionError(validationResult.error);
-  }, [filterState, validation]);
+    // Validation is handled by useDebouncedValidation hook with 300ms delay
+  }, [filterState]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter" && validation.isFilterValid) {

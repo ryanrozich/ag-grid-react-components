@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { DateFilterType } from '../../types';
@@ -17,7 +17,7 @@ interface AbsoluteDatePickerProps {
   className?: string;
 }
 
-export const AbsoluteDatePicker: React.FC<AbsoluteDatePickerProps> = ({
+const AbsoluteDatePickerComponent: React.FC<AbsoluteDatePickerProps> = ({
   filterType,
   dateFrom,
   dateTo,
@@ -30,12 +30,12 @@ export const AbsoluteDatePicker: React.FC<AbsoluteDatePickerProps> = ({
   isFilterValid,
   className = ''
 }) => {
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter" && isFilterValid) {
       e.preventDefault();
       onApply();
     }
-  };
+  }, [isFilterValid, onApply]);
 
   return (
     <div className={`absolute-mode ${className}`}>
@@ -154,3 +154,28 @@ export const AbsoluteDatePicker: React.FC<AbsoluteDatePickerProps> = ({
     </div>
   );
 };
+
+// Memoized component with custom comparison to prevent unnecessary re-renders
+export const AbsoluteDatePicker = React.memo(AbsoluteDatePickerComponent, (prevProps, nextProps) => {
+  // Compare all props except callbacks (assumed to be stable)
+  return (
+    prevProps.filterType === nextProps.filterType &&
+    prevProps.dateFormat === nextProps.dateFormat &&
+    prevProps.isFilterValid === nextProps.isFilterValid &&
+    prevProps.className === nextProps.className &&
+    // Compare dates (null-safe comparison)
+    ((prevProps.dateFrom === null && nextProps.dateFrom === null) ||
+     (prevProps.dateFrom !== null && nextProps.dateFrom !== null &&
+      prevProps.dateFrom.getTime() === nextProps.dateFrom.getTime())) &&
+    ((prevProps.dateTo === null && nextProps.dateTo === null) ||
+     (prevProps.dateTo !== null && nextProps.dateTo !== null &&
+      prevProps.dateTo.getTime() === nextProps.dateTo.getTime())) &&
+    // Compare optional dates
+    ((prevProps.minDate === undefined && nextProps.minDate === undefined) ||
+     (prevProps.minDate !== undefined && nextProps.minDate !== undefined &&
+      prevProps.minDate.getTime() === nextProps.minDate.getTime())) &&
+    ((prevProps.maxDate === undefined && nextProps.maxDate === undefined) ||
+     (prevProps.maxDate !== undefined && nextProps.maxDate !== undefined &&
+      prevProps.maxDate.getTime() === nextProps.maxDate.getTime()))
+  );
+});
