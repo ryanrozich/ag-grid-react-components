@@ -79,7 +79,7 @@ describe("DateFilter Integration Tests", () => {
     it("should apply filter when Apply button is clicked", async () => {
       const mockFilterChangedCallback = vi.fn();
       const mockOnModelChange = vi.fn();
-      
+
       const props = createMockProps({
         filterChangedCallback: mockFilterChangedCallback,
         onModelChange: mockOnModelChange,
@@ -105,7 +105,7 @@ describe("DateFilter Integration Tests", () => {
     it("should reset filter when Clear button is clicked", async () => {
       const mockFilterChangedCallback = vi.fn();
       const mockOnModelChange = vi.fn();
-      
+
       const props = createMockProps({
         filterChangedCallback: mockFilterChangedCallback,
         onModelChange: mockOnModelChange,
@@ -204,9 +204,12 @@ describe("DateFilter Integration Tests", () => {
       });
 
       // Apply button should now be enabled (after debounce)
-      await waitFor(() => {
-        expect(applyButton).not.toBeDisabled();
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(applyButton).not.toBeDisabled();
+        },
+        { timeout: 1000 },
+      );
     });
   });
 
@@ -221,7 +224,7 @@ describe("DateFilter Integration Tests", () => {
 
       await waitFor(() => {
         const relativeInput = screen.getByTestId("relative-input");
-        
+
         // Type multiple characters rapidly
         fireEvent.change(relativeInput, { target: { value: "T" } });
         fireEvent.change(relativeInput, { target: { value: "To" } });
@@ -232,9 +235,12 @@ describe("DateFilter Integration Tests", () => {
 
       // Validation should be debounced, not called for each keystroke
       // We test this by ensuring the component doesn't crash and eventually validates
-      await waitFor(() => {
-        expect(screen.getByTestId("apply-button")).not.toBeDisabled();
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(screen.getByTestId("apply-button")).not.toBeDisabled();
+        },
+        { timeout: 1000 },
+      );
     });
   });
 
@@ -261,7 +267,7 @@ describe("DateFilter Integration Tests", () => {
       const mockOnModelChange = vi.fn(() => {
         throw new Error("Callback error");
       });
-      
+
       const props = createMockProps({
         onModelChange: mockOnModelChange,
         model: {
@@ -274,18 +280,20 @@ describe("DateFilter Integration Tests", () => {
       render(<DateFilter {...props} />);
 
       // Suppress console.error for this test
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       // Should throw when callback throws
       const applyButton = screen.getByTestId("apply-button");
-      
+
       expect(() => {
         fireEvent.click(applyButton);
       }).toThrow("Callback error");
 
       // Component should still be rendered
       expect(screen.getByTestId("date-filter-integration")).toBeInTheDocument();
-      
+
       consoleSpy.mockRestore();
     });
   });
@@ -300,8 +308,14 @@ describe("DateFilter Integration Tests", () => {
       expect(filterContainer).toBeInTheDocument();
 
       // Buttons should be accessible
-      expect(screen.getByTestId("apply-button")).toHaveAttribute("type", "button");
-      expect(screen.getByTestId("clear-button")).toHaveAttribute("type", "button");
+      expect(screen.getByTestId("apply-button")).toHaveAttribute(
+        "type",
+        "button",
+      );
+      expect(screen.getByTestId("clear-button")).toHaveAttribute(
+        "type",
+        "button",
+      );
     });
 
     it("should support keyboard navigation", () => {

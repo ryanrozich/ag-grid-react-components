@@ -1,24 +1,24 @@
-import { useState, useCallback } from 'react';
-import { DateFilterType, DateFilterMode, DateFilterModel } from '../types';
+import { useState, useCallback } from "react";
+import { DateFilterType, DateFilterMode, DateFilterModel } from "../types";
 
 interface UseFilterStateReturn {
   // Filter state
   filterType: DateFilterType;
   filterMode: DateFilterMode;
-  
+
   // Date values
   absoluteDateFrom: Date | null;
   absoluteDateTo: Date | null;
-  
+
   // Expression values
   expressionFrom: string;
   expressionTo: string;
-  
+
   // Validation state
   fromExpressionValid: boolean;
   toExpressionValid: boolean;
   toExpressionError: string;
-  
+
   // State setters
   setFilterType: (type: DateFilterType) => void;
   setFilterMode: (mode: DateFilterMode) => void;
@@ -29,7 +29,7 @@ interface UseFilterStateReturn {
   setFromExpressionValid: (valid: boolean) => void;
   setToExpressionValid: (valid: boolean) => void;
   setToExpressionError: (error: string) => void;
-  
+
   // Actions
   toggleFilterMode: () => void;
   resetState: () => void;
@@ -38,47 +38,49 @@ interface UseFilterStateReturn {
 
 // Helper functions to validate filter types and modes
 const isValidFilterType = (type: any): type is DateFilterType => {
-  return ['equals', 'notEqual', 'after', 'before', 'inRange'].includes(type);
+  return ["equals", "notEqual", "after", "before", "inRange"].includes(type);
 };
 
 const isValidFilterMode = (mode: any): mode is DateFilterMode => {
-  return ['absolute', 'relative'].includes(mode);
+  return ["absolute", "relative"].includes(mode);
 };
 
 export const useFilterState = (
   initialModel?: DateFilterModel | null,
-  defaultMode?: DateFilterMode
+  defaultMode?: DateFilterMode,
 ): UseFilterStateReturn => {
   // Filter state with validation
   const [filterType, setFilterType] = useState<DateFilterType>(
-    isValidFilterType(initialModel?.type) ? initialModel.type : "equals"
+    isValidFilterType(initialModel?.type) ? initialModel.type : "equals",
   );
   const [filterMode, setFilterMode] = useState<DateFilterMode>(
-    isValidFilterMode(initialModel?.mode) ? initialModel.mode : (defaultMode || "absolute")
+    isValidFilterMode(initialModel?.mode)
+      ? initialModel.mode
+      : defaultMode || "absolute",
   );
 
   // Date values
   const [absoluteDateFrom, setAbsoluteDateFrom] = useState<Date | null>(
     filterMode === "absolute" && initialModel?.dateFrom
       ? initialModel.dateFrom
-      : null
+      : null,
   );
   const [absoluteDateTo, setAbsoluteDateTo] = useState<Date | null>(
     filterMode === "absolute" && initialModel?.dateTo
       ? initialModel.dateTo
-      : null
+      : null,
   );
 
   // Expression values
   const [expressionFrom, setExpressionFrom] = useState<string>(
     filterMode === "relative" && initialModel?.expressionFrom
       ? initialModel.expressionFrom
-      : ""
+      : "",
   );
   const [expressionTo, setExpressionTo] = useState<string>(
     filterMode === "relative" && initialModel?.expressionTo
       ? initialModel.expressionTo
-      : ""
+      : "",
   );
 
   // Validation state
@@ -89,7 +91,7 @@ export const useFilterState = (
   // Toggle filter mode
   const toggleFilterMode = useCallback(() => {
     setFilterMode((prevMode) =>
-      prevMode === "absolute" ? "relative" : "absolute"
+      prevMode === "absolute" ? "relative" : "absolute",
     );
   }, []);
 
@@ -107,51 +109,54 @@ export const useFilterState = (
   }, [defaultMode]);
 
   // Initialize state from a model
-  const initializeFromModel = useCallback((model: DateFilterModel | null) => {
-    if (!model) {
-      resetState();
-      return;
-    }
+  const initializeFromModel = useCallback(
+    (model: DateFilterModel | null) => {
+      if (!model) {
+        resetState();
+        return;
+      }
 
-    setFilterType(model.type);
-    setFilterMode(model.mode);
-    
-    if (model.mode === "absolute") {
-      setAbsoluteDateFrom(model.dateFrom || null);
-      setAbsoluteDateTo(model.dateTo || null);
-      setExpressionFrom("");
-      setExpressionTo("");
-    } else {
-      setExpressionFrom(model.expressionFrom || "");
-      setExpressionTo(model.expressionTo || "");
-      setAbsoluteDateFrom(null);
-      setAbsoluteDateTo(null);
-    }
-    
-    // Reset validation state
-    setFromExpressionValid(true);
-    setToExpressionValid(true);
-    setToExpressionError("");
-  }, [resetState]);
+      setFilterType(model.type);
+      setFilterMode(model.mode);
+
+      if (model.mode === "absolute") {
+        setAbsoluteDateFrom(model.dateFrom || null);
+        setAbsoluteDateTo(model.dateTo || null);
+        setExpressionFrom("");
+        setExpressionTo("");
+      } else {
+        setExpressionFrom(model.expressionFrom || "");
+        setExpressionTo(model.expressionTo || "");
+        setAbsoluteDateFrom(null);
+        setAbsoluteDateTo(null);
+      }
+
+      // Reset validation state
+      setFromExpressionValid(true);
+      setToExpressionValid(true);
+      setToExpressionError("");
+    },
+    [resetState],
+  );
 
   return {
     // Filter state
     filterType,
     filterMode,
-    
+
     // Date values
     absoluteDateFrom,
     absoluteDateTo,
-    
+
     // Expression values
     expressionFrom,
     expressionTo,
-    
+
     // Validation state
     fromExpressionValid,
     toExpressionValid,
     toExpressionError,
-    
+
     // State setters
     setFilterType,
     setFilterMode,
@@ -162,7 +167,7 @@ export const useFilterState = (
     setFromExpressionValid,
     setToExpressionValid,
     setToExpressionError,
-    
+
     // Actions
     toggleFilterMode,
     resetState,

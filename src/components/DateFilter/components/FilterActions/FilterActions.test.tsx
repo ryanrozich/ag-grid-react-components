@@ -526,7 +526,9 @@ describe("FilterActions component", () => {
       const resetButton = screen.getByTestId("clear-button");
 
       // Suppress console.error for this test
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       // The error should be thrown when callback fails
       try {

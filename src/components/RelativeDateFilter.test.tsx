@@ -342,10 +342,10 @@ describe("DateFilter", () => {
     };
 
     const { container } = render(<DateFilter {...testProps} />);
-    
+
     // The DateFilter component should render successfully
     expect(container.firstChild).toBeTruthy();
-    
+
     // Test doesFilterPass functionality by checking filter is working
     const filterContainer = screen.getByRole("form", { name: "Date Filter" });
     expect(filterContainer).toBeTruthy();
@@ -392,12 +392,12 @@ describe("DateFilter", () => {
       },
     });
     render(<DateFilter {...props} />);
-    
+
     // Test keyboard interaction on apply button
     const applyButton = screen.getByTestId("apply-button");
     fireEvent.keyDown(applyButton, { key: "Enter", code: "Enter" });
     fireEvent.click(applyButton);
-    
+
     expect(filterChangedCallback).toHaveBeenCalled();
   });
 

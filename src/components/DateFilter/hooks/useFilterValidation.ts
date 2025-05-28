@@ -1,6 +1,9 @@
-import { useMemo, useCallback } from 'react';
-import { DateFilterType, DateFilterMode } from '../types';
-import { parseDateExpression, resolveDateExpression } from '../../../utils/dateExpressionParser';
+import { useMemo, useCallback } from "react";
+import { DateFilterType, DateFilterMode } from "../types";
+import {
+  parseDateExpression,
+  resolveDateExpression,
+} from "../../../utils/dateExpressionParser";
 
 interface UseFilterValidationProps {
   filterType: DateFilterType;
@@ -19,7 +22,11 @@ interface UseFilterValidationReturn {
   resolvedDateTo: Date | null;
   effectiveDateFrom: Date | null;
   effectiveDateTo: Date | null;
-  validateToExpression: (expression: string) => { isValid: boolean; error: string; resolvedDate: Date | null };
+  validateToExpression: (expression: string) => {
+    isValid: boolean;
+    error: string;
+    resolvedDate: Date | null;
+  };
 }
 
 export const useFilterValidation = ({
@@ -32,7 +39,6 @@ export const useFilterValidation = ({
   fromExpressionValid,
   toExpressionValid,
 }: UseFilterValidationProps): UseFilterValidationReturn => {
-
   // Resolved dates based on expressions
   const resolvedDateFrom = useMemo(() => {
     return filterMode === "relative" && expressionFrom
@@ -56,25 +62,36 @@ export const useFilterValidation = ({
   }, [filterMode, absoluteDateTo, resolvedDateTo]);
 
   // Validate "to" expression with additional business logic
-  const validateToExpression = useCallback((expression: string) => {
-    const parseResult = parseDateExpression(expression);
-    if (!parseResult.isValid) {
-      return { isValid: false, error: "Invalid expression", resolvedDate: null };
-    }
-
-    const resolvedDate = resolveDateExpression(expression);
-
-    // Additional validation for range filters
-    if (filterType === "inRange" && expressionFrom && expression) {
-      const fromDate = resolveDateExpression(expressionFrom);
-      
-      if (fromDate && resolvedDate && resolvedDate <= fromDate) {
-        return { isValid: false, error: "End date must be after start date", resolvedDate: null };
+  const validateToExpression = useCallback(
+    (expression: string) => {
+      const parseResult = parseDateExpression(expression);
+      if (!parseResult.isValid) {
+        return {
+          isValid: false,
+          error: "Invalid expression",
+          resolvedDate: null,
+        };
       }
-    }
 
-    return { isValid: true, error: "", resolvedDate };
-  }, [filterType, expressionFrom]);
+      const resolvedDate = resolveDateExpression(expression);
+
+      // Additional validation for range filters
+      if (filterType === "inRange" && expressionFrom && expression) {
+        const fromDate = resolveDateExpression(expressionFrom);
+
+        if (fromDate && resolvedDate && resolvedDate <= fromDate) {
+          return {
+            isValid: false,
+            error: "End date must be after start date",
+            resolvedDate: null,
+          };
+        }
+      }
+
+      return { isValid: true, error: "", resolvedDate };
+    },
+    [filterType, expressionFrom],
+  );
 
   // Overall filter validity
   const isFilterValid = useMemo(() => {
@@ -89,17 +106,15 @@ export const useFilterValidation = ({
       if (filterType === "inRange") {
         return Boolean(
           expressionFrom &&
-          expressionTo &&
-          fromExpressionValid &&
-          toExpressionValid &&
-          resolvedDateFrom !== null &&
-          resolvedDateTo !== null
+            expressionTo &&
+            fromExpressionValid &&
+            toExpressionValid &&
+            resolvedDateFrom !== null &&
+            resolvedDateTo !== null,
         );
       }
       return Boolean(
-        expressionFrom &&
-        fromExpressionValid &&
-        resolvedDateFrom !== null
+        expressionFrom && fromExpressionValid && resolvedDateFrom !== null,
       );
     }
   }, [

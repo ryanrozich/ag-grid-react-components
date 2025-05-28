@@ -189,6 +189,23 @@ const App: React.FC = () => {
           if (params.data?.isUpcoming) return "bg-blue-50";
           return "";
         },
+        enableValue: true,
+        // Custom aggregation functions for dates
+        aggFunc: null, // Allow all aggregation functions
+        // Ensure date values are comparable for MIN/MAX
+        comparator: (valueA, valueB) => {
+          if (valueA == null && valueB == null) return 0;
+          if (valueA == null) return -1;
+          if (valueB == null) return 1;
+          return valueA.getTime() - valueB.getTime();
+        },
+        // Custom aggregation value formatter for MIN/MAX results
+        aggValueFormatter: (params) => {
+          if (params.value && params.value instanceof Date) {
+            return format(params.value, "yyyy-MM-dd");
+          }
+          return params.value || "";
+        },
       },
       {
         field: "dueDate",
@@ -199,6 +216,23 @@ const App: React.FC = () => {
         valueFormatter: (params) =>
           params.value ? format(params.value, "yyyy-MM-dd") : "",
         width: 150,
+        enableValue: true,
+        // Custom aggregation functions for dates
+        aggFunc: null, // Allow all aggregation functions
+        // Ensure date values are comparable for MIN/MAX
+        comparator: (valueA, valueB) => {
+          if (valueA == null && valueB == null) return 0;
+          if (valueA == null) return -1;
+          if (valueB == null) return 1;
+          return valueA.getTime() - valueB.getTime();
+        },
+        // Custom aggregation value formatter for MIN/MAX results
+        aggValueFormatter: (params) => {
+          if (params.value && params.value instanceof Date) {
+            return format(params.value, "yyyy-MM-dd");
+          }
+          return params.value || "";
+        },
       },
       {
         field: "priority",
