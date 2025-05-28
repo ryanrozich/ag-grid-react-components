@@ -1,5 +1,5 @@
-import React from 'react';
-import { DateFilterMode } from '../../types';
+import React from "react";
+import { DateFilterMode } from "../../types";
 
 interface FilterModeToggleProps {
   mode: DateFilterMode;
@@ -10,10 +10,13 @@ interface FilterModeToggleProps {
 const FilterModeToggleComponent: React.FC<FilterModeToggleProps> = ({
   mode,
   onModeChange,
-  className = ''
+  className = "",
 }) => {
   return (
-    <div className={`filter-mode-section ${className}`} style={{ marginBottom: "1rem" }}>
+    <div
+      className={`filter-mode-section ${className}`}
+      style={{ marginBottom: "1rem" }}
+    >
       <label
         className="filter-label"
         style={{
@@ -28,6 +31,7 @@ const FilterModeToggleComponent: React.FC<FilterModeToggleProps> = ({
       </label>
       <div
         className="date-mode-selector"
+        data-testid="mode-toggle"
         style={{
           display: "flex",
           alignItems: "center",
@@ -76,9 +80,14 @@ const FilterModeToggleComponent: React.FC<FilterModeToggleProps> = ({
 };
 
 // Memoized component with custom comparison to prevent unnecessary re-renders
-export const FilterModeToggle = React.memo(FilterModeToggleComponent, (prevProps, nextProps) => {
-  // Only re-render if mode or className changes
-  // onModeChange is assumed to be stable (useCallback in parent)
-  return prevProps.mode === nextProps.mode && 
-         prevProps.className === nextProps.className;
-});
+export const FilterModeToggle = React.memo(
+  FilterModeToggleComponent,
+  (prevProps, nextProps) => {
+    // Only re-render if mode or className changes
+    // onModeChange is assumed to be stable (useCallback in parent)
+    return (
+      prevProps.mode === nextProps.mode &&
+      prevProps.className === nextProps.className
+    );
+  },
+);

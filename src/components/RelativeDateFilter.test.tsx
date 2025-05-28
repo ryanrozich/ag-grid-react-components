@@ -1,6 +1,4 @@
 import { expect } from "vitest";
-import matchers from "@testing-library/jest-dom/matchers";
-expect.extend(matchers);
 import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
 import { describe, it, vi, beforeEach, afterEach } from "vitest";
@@ -12,8 +10,8 @@ import {
   Column,
   IDateFilterParams,
 } from "ag-grid-community";
-import { DateFilterModel } from "./interfaces";
-import RelativeDateFilter from "./RelativeDateFilter";
+import { DateFilterModel, DateFilterParams } from "./interfaces";
+import DateFilter from "./DateFilter";
 
 // Mock AG Grid components
 vi.mock("ag-grid-community", () => ({
@@ -51,55 +49,10 @@ const mockApi = {
   setColumnDefs: vi.fn(),
 } as unknown as GridApi;
 
-// Define a test interface that extends IDateFilterParams with our custom properties
-interface TestDateFilterParams
-  extends Omit<IDateFilterParams, "getValue" | "context"> {
-  // Custom properties for testing
+// Create a test props factory function using the DateFilterParams interface
+interface TestDateFilterParams extends Partial<DateFilterParams> {
   testId?: string;
-  // Required properties with specific types
-  colDef: ColDef;
-  rowModel: IRowModel;
-  // Override getValue to match the expected type
-  getValue?: <TValue = any>(
-    node: IRowNode,
-    column?: string | ColDef<any, TValue> | Column,
-  ) => TValue | null | undefined;
-  column: Column;
-  api: GridApi;
-  // Required callbacks
-  filterChangedCallback: () => void;
-  filterModifiedCallback: () => void;
-  // Optional callbacks
-  onModelChange?: (model: DateFilterModel | null) => void;
-  getModelAsString?: (model: DateFilterModel) => string;
-  // Other optional properties
-  valueGetter?: (params: any) => any;
-  doesRowPassOtherFilter?: (node: IRowNode) => boolean;
-  context?: any;
-  filter?: string;
-  filterParams?: any;
-  filterManager?: any;
-  filterWrapper?: any;
-  filterPromise?: Promise<any>;
-  filterPromiseResolve?: () => void;
-  filterPromiseReject?: () => void;
-  filterPromiseDestroy?: () => void;
-  filterPromiseDestroyed?: boolean;
-  filterPromiseDestroyedError?: string;
-  filterPromiseDestroyedReason?: string;
-  // AG Grid filter properties
-  applyButton?: boolean;
-  clearButton?: boolean;
-  debounceMs?: number;
-  inRangeInclusive?: boolean;
-  includeBlanksInEquals?: boolean;
-  includeBlanksInLessThan?: boolean;
-  includeBlanksInGreaterThan?: boolean;
-  includeBlanksInRange?: boolean;
-  buttons?: ("apply" | "clear" | "reset" | "cancel")[];
-  closeOnApply?: boolean;
-  // Override model to be optional in test props
-  model?: DateFilterModel;
+  model?: DateFilterModel | null;
 }
 
 // Mock AG Grid dependencies
@@ -196,46 +149,22 @@ const mockColDef: ColDef = {
 // Create a test props factory function
 const createTestProps = (
   overrides: Partial<TestDateFilterParams> = {},
-): any => {
-  const defaultProps: any = {
+): TestDateFilterParams => {
+  const defaultProps: TestDateFilterParams = {
     testId: "test-filter",
-    colDef: mockColDef,
-    rowModel: mockRowModel,
-    column: mockColumn,
-    api: mockApi,
-    filterChangedCallback: mockFilterChangedCallback,
-    filterModifiedCallback: mockFilterModifiedCallback,
-    getValue: mockGetValue as <TValue = any>(
-      node: IRowNode,
-      column?: string | ColDef<any, TValue> | Column,
-    ) => TValue | null | undefined,
-    valueGetter: vi.fn(),
-    doesRowPassOtherFilter: vi.fn(),
-    context: {},
-    filter: "",
-    filterParams: {},
-    filterManager: {},
-    filterWrapper: {},
-    filterPromise: Promise.resolve(),
-    filterPromiseResolve: vi.fn(),
-    filterPromiseReject: vi.fn(),
-    filterPromiseDestroy: vi.fn(),
-    filterPromiseDestroyed: false,
-    filterPromiseDestroyedError: "",
-    filterPromiseDestroyedReason: "",
+    getValue: mockGetValue,
+    onModelChange: vi.fn(),
+    model: null,
   };
 
   // Merge with overrides
   return { ...defaultProps, ...overrides };
 };
 
-describe("RelativeDateFilter", () => {
+describe("DateFilter", () => {
   it("renders all expected controls (mode toggle, date input, action buttons)", () => {
-    const props = createTestProps({
-      filterChangedCallback: mockFilterChangedCallback,
-      context: {},
-    });
-    render(<RelativeDateFilter {...props} />);
+    const props = createTestProps();
+    render(<DateFilter {...props} />);
     expect(screen.getByTestId("test-filter")).toBeInTheDocument();
     expect(screen.getByTestId("mode-toggle")).toBeInTheDocument();
     expect(screen.getByTestId("date-input")).toBeInTheDocument();
@@ -253,10 +182,8 @@ describe("RelativeDateFilter", () => {
     };
     const props = createTestProps({
       model: testModel,
-      filterChangedCallback: mockFilterChangedCallback,
-      context: {},
     });
-    render(<RelativeDateFilter {...props} />);
+    render(<DateFilter {...props} />);
     expect(screen.getByTestId("test-filter")).toBeInTheDocument();
     expect(screen.getByTestId("relative-input")).toBeInTheDocument();
   });
@@ -264,10 +191,8 @@ describe("RelativeDateFilter", () => {
   it("renders with an empty/null model", () => {
     const props = createTestProps({
       model: undefined,
-      filterChangedCallback: mockFilterChangedCallback,
-      context: {},
     });
-    render(<RelativeDateFilter {...props} />);
+    render(<DateFilter {...props} />);
     expect(screen.getByTestId("test-filter")).toBeInTheDocument();
   });
 
@@ -275,17 +200,15 @@ describe("RelativeDateFilter", () => {
     const invalidModel = { type: "unknown", mode: "absolute" } as any;
     const props = createTestProps({
       model: invalidModel,
-      filterChangedCallback: mockFilterChangedCallback,
-      context: {},
     });
-    render(<RelativeDateFilter {...props} />);
+    render(<DateFilter {...props} />);
     // Should still render, possibly with a fallback UI
     expect(screen.getByTestId("test-filter")).toBeInTheDocument();
   });
 
   it("updates UI when model prop changes", () => {
     const { rerender } = render(
-      <RelativeDateFilter
+      <DateFilter
         {...createTestProps({
           model: {
             type: "equals",
@@ -301,7 +224,7 @@ describe("RelativeDateFilter", () => {
     expect(screen.getByTestId("test-filter")).toBeInTheDocument();
     // Update model prop
     rerender(
-      <RelativeDateFilter
+      <DateFilter
         {...createTestProps({
           model: {
             type: "equals",
@@ -323,7 +246,7 @@ describe("RelativeDateFilter", () => {
       filterChangedCallback: mockFilterChangedCallback,
       context: {},
     });
-    render(<RelativeDateFilter {...props} />);
+    render(<DateFilter {...props} />);
     const container = screen.getByTestId("test-filter");
     expect(container).toHaveAttribute("role");
     expect(container.getAttribute("role")).toMatch(/group|region|form/);
@@ -350,7 +273,7 @@ describe("RelativeDateFilter", () => {
       filterChangedCallback: mockFilterChangedCallback,
       context: {},
     });
-    render(<RelativeDateFilter {...props} />);
+    render(<DateFilter {...props} />);
     expect(screen.getByTestId("test-filter")).toBeTruthy();
   });
 
@@ -372,7 +295,7 @@ describe("RelativeDateFilter", () => {
       model: testModel,
     };
 
-    render(<RelativeDateFilter {...testProps} />);
+    render(<DateFilter {...testProps} />);
 
     // Assert that the component renders with the provided model
     expect(screen.getByTestId("test-filter")).toBeTruthy();
@@ -393,7 +316,7 @@ describe("RelativeDateFilter", () => {
       } as DateFilterModel,
     };
 
-    render(<RelativeDateFilter {...testProps} />);
+    render(<DateFilter {...testProps} />);
 
     // Simulate a filter change
     const filterInput = screen.getByTestId("test-filter");
@@ -429,7 +352,7 @@ describe("RelativeDateFilter", () => {
       isFilterActive: vi.fn(),
     };
 
-    render(<RelativeDateFilter {...testProps} />);
+    render(<DateFilter {...testProps} />);
     expect(doesFilterPass).toHaveBeenCalled();
   });
 
@@ -446,7 +369,7 @@ describe("RelativeDateFilter", () => {
       filterChangedCallback: mockFilterChangedCallback,
       context: {},
     });
-    render(<RelativeDateFilter {...props} />);
+    render(<DateFilter {...props} />);
     expect(screen.getByTestId("test-filter")).toBeTruthy();
   });
 
@@ -456,7 +379,7 @@ describe("RelativeDateFilter", () => {
       filterChangedCallback: filterChangedSpy,
       context: {},
     });
-    render(<RelativeDateFilter {...props} />);
+    render(<DateFilter {...props} />);
     filterChangedSpy();
     expect(filterChangedSpy).toHaveBeenCalled();
   });
@@ -468,7 +391,7 @@ describe("RelativeDateFilter", () => {
       filterChangedCallback: mockFilterChangedCallback,
       context: {},
     });
-    render(<RelativeDateFilter {...props} />);
+    render(<DateFilter {...props} />);
     const input = screen.getByTestId("test-filter");
     fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
     expect(onModelChange).toHaveBeenCalled();
@@ -493,7 +416,7 @@ describe("RelativeDateFilter", () => {
       getModelAsString: mockGetModelAsString,
     };
 
-    render(<RelativeDateFilter {...testProps} />);
+    render(<DateFilter {...testProps} />);
 
     // Test the getModelAsString function
     const modelString = testProps.getModelAsString?.(testModel);

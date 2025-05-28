@@ -21,10 +21,10 @@ const DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
 const DateFilter = (props: DateFilterParams) => {
   const dateFormat = props.dateFormat || DEFAULT_DATE_FORMAT;
-  
+
   // Use custom hooks for state management
   const filterState = useFilterState(props.model, props.defaultMode);
-  
+
   // Filter type changes are now properly managed
   const validation = useFilterValidation({
     filterType: filterState.filterType,
@@ -134,14 +134,20 @@ const DateFilter = (props: DateFilterParams) => {
       }
 
       // Get inclusivity settings from model or fall back to props defaults
-      const fromInclusive = currentModel.fromInclusive ?? props.afterInclusive ?? false;
-      const toInclusive = currentModel.toInclusive ?? props.beforeInclusive ?? false;
+      const fromInclusive =
+        currentModel.fromInclusive ?? props.afterInclusive ?? false;
+      const toInclusive =
+        currentModel.toInclusive ?? props.beforeInclusive ?? false;
 
       switch (filterState.filterType) {
         case "equals":
-          return normalizedDateFrom ? normalizedCellDate.getTime() === normalizedDateFrom.getTime() : false;
+          return normalizedDateFrom
+            ? normalizedCellDate.getTime() === normalizedDateFrom.getTime()
+            : false;
         case "notEqual":
-          return normalizedDateFrom ? normalizedCellDate.getTime() !== normalizedDateFrom.getTime() : true;
+          return normalizedDateFrom
+            ? normalizedCellDate.getTime() !== normalizedDateFrom.getTime()
+            : true;
         case "after":
           if (!normalizedDateFrom) return false;
           return fromInclusive
@@ -179,22 +185,31 @@ const DateFilter = (props: DateFilterParams) => {
   );
 
   // Event handlers - Simplified since validation is now debounced
-  const handleExpressionFromChange = useCallback((value: string) => {
-    filterState.setExpressionFrom(value);
-    // Validation is handled by useDebouncedValidation hook with 300ms delay
-  }, [filterState]);
+  const handleExpressionFromChange = useCallback(
+    (value: string) => {
+      filterState.setExpressionFrom(value);
+      // Validation is handled by useDebouncedValidation hook with 300ms delay
+    },
+    [filterState],
+  );
 
-  const handleExpressionToChange = useCallback((value: string) => {
-    filterState.setExpressionTo(value);
-    // Validation is handled by useDebouncedValidation hook with 300ms delay
-  }, [filterState]);
+  const handleExpressionToChange = useCallback(
+    (value: string) => {
+      filterState.setExpressionTo(value);
+      // Validation is handled by useDebouncedValidation hook with 300ms delay
+    },
+    [filterState],
+  );
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && validation.isFilterValid) {
-      e.preventDefault();
-      applyFilter();
-    }
-  }, [validation.isFilterValid]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" && validation.isFilterValid) {
+        e.preventDefault();
+        applyFilter();
+      }
+    },
+    [validation.isFilterValid],
+  );
 
   const applyFilter = useCallback(() => {
     if (props.onModelChange) {
@@ -216,14 +231,20 @@ const DateFilter = (props: DateFilterParams) => {
     doesFilterPass,
     getModelAsString: () => {
       if (!currentModel) return "";
-      
+
       if (currentModel.mode === "absolute") {
         if (currentModel.type === "inRange") {
-          const fromStr = currentModel.dateFrom ? format(currentModel.dateFrom, dateFormat) : "";
-          const toStr = currentModel.dateTo ? format(currentModel.dateTo, dateFormat) : "";
+          const fromStr = currentModel.dateFrom
+            ? format(currentModel.dateFrom, dateFormat)
+            : "";
+          const toStr = currentModel.dateTo
+            ? format(currentModel.dateTo, dateFormat)
+            : "";
           return `${fromStr} to ${toStr}`;
         }
-        return currentModel.dateFrom ? format(currentModel.dateFrom, dateFormat) : "";
+        return currentModel.dateFrom
+          ? format(currentModel.dateFrom, dateFormat)
+          : "";
       } else {
         if (currentModel.type === "inRange") {
           return `${currentModel.expressionFrom || ""} to ${currentModel.expressionTo || ""}`;
@@ -234,13 +255,16 @@ const DateFilter = (props: DateFilterParams) => {
     getModel: useCallback(() => {
       return currentModel;
     }, [currentModel]),
-    setModel: useCallback((model: DateFilterModel | null) => {
-      if (!model) {
-        resetFilter();
-        return;
-      }
-      filterState.initializeFromModel(model);
-    }, [resetFilter, filterState.initializeFromModel]),
+    setModel: useCallback(
+      (model: DateFilterModel | null) => {
+        if (!model) {
+          resetFilter();
+          return;
+        }
+        filterState.initializeFromModel(model);
+      },
+      [resetFilter, filterState.initializeFromModel],
+    ),
     onNewRowsLoaded: () => {
       // Handle new rows if needed
     },
@@ -255,6 +279,8 @@ const DateFilter = (props: DateFilterParams) => {
     <div
       className="ag-date-filter"
       data-testid={props.testId}
+      role="form"
+      aria-label="Date Filter"
       style={{ padding: "1rem", minWidth: "300px" }}
     >
       <FilterTypeSelector

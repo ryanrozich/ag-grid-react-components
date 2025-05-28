@@ -1,22 +1,25 @@
-import { useEffect } from 'react';
-import { useDebounce } from './useDebounce';
-import { parseDateExpression } from '../../../utils/dateExpressionParser';
+import { useEffect } from "react";
+import { useDebounce } from "./useDebounce";
+import { parseDateExpression } from "../../../utils/dateExpressionParser";
 
 interface UseDebouncedValidationProps {
   expressionFrom: string;
   expressionTo: string;
-  filterMode: 'absolute' | 'relative';
+  filterMode: "absolute" | "relative";
   onFromValidityChange: (valid: boolean) => void;
   onToValidityChange: (valid: boolean) => void;
   onToErrorChange: (error: string) => void;
-  validateToExpression: (expression: string) => { isValid: boolean; error: string };
+  validateToExpression: (expression: string) => {
+    isValid: boolean;
+    error: string;
+  };
   debounceDelay?: number;
 }
 
 /**
  * Custom hook that provides debounced validation for date expressions.
  * This prevents expensive validation from running on every keystroke.
- * 
+ *
  * @param props - Configuration for debounced validation
  */
 export const useDebouncedValidation = ({
@@ -35,7 +38,7 @@ export const useDebouncedValidation = ({
 
   // Validate from expression when it changes (debounced)
   useEffect(() => {
-    if (filterMode !== 'relative') return;
+    if (filterMode !== "relative") return;
 
     if (!debouncedExpressionFrom.trim()) {
       onFromValidityChange(true); // Empty is considered valid (no error state)
@@ -48,22 +51,28 @@ export const useDebouncedValidation = ({
 
   // Validate to expression when it changes (debounced)
   useEffect(() => {
-    if (filterMode !== 'relative') return;
+    if (filterMode !== "relative") return;
 
     if (!debouncedExpressionTo.trim()) {
       onToValidityChange(true); // Empty is considered valid
-      onToErrorChange('');
+      onToErrorChange("");
       return;
     }
 
     const validationResult = validateToExpression(debouncedExpressionTo);
     onToValidityChange(validationResult.isValid);
     onToErrorChange(validationResult.error);
-  }, [debouncedExpressionTo, filterMode, validateToExpression, onToValidityChange, onToErrorChange]);
+  }, [
+    debouncedExpressionTo,
+    filterMode,
+    validateToExpression,
+    onToValidityChange,
+    onToErrorChange,
+  ]);
 
   // Immediate validation for empty expressions (don't wait for debounce)
   useEffect(() => {
-    if (filterMode !== 'relative') return;
+    if (filterMode !== "relative") return;
 
     if (!expressionFrom.trim()) {
       onFromValidityChange(true);
@@ -71,11 +80,11 @@ export const useDebouncedValidation = ({
   }, [expressionFrom, filterMode, onFromValidityChange]);
 
   useEffect(() => {
-    if (filterMode !== 'relative') return;
+    if (filterMode !== "relative") return;
 
     if (!expressionTo.trim()) {
       onToValidityChange(true);
-      onToErrorChange('');
+      onToErrorChange("");
     }
   }, [expressionTo, filterMode, onToValidityChange, onToErrorChange]);
 };

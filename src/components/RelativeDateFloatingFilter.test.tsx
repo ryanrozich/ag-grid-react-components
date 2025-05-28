@@ -1,6 +1,4 @@
 import { expect } from "vitest";
-import matchers from "@testing-library/jest-dom/matchers";
-expect.extend(matchers);
 import { render, screen } from "@testing-library/react";
 import { describe, it, vi } from "vitest";
 import RelativeDateFloatingFilter from "./RelativeDateFloatingFilter";

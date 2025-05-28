@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface FilterActionsProps {
   onReset: () => void;
@@ -11,7 +11,7 @@ const FilterActionsComponent: React.FC<FilterActionsProps> = ({
   onReset,
   onApply,
   isValid,
-  className = ''
+  className = "",
 }) => {
   return (
     <div
@@ -26,6 +26,7 @@ const FilterActionsComponent: React.FC<FilterActionsProps> = ({
         className="filter-button reset-button"
         onClick={onReset}
         type="button"
+        data-testid="clear-button"
       >
         Reset
       </button>
@@ -34,6 +35,7 @@ const FilterActionsComponent: React.FC<FilterActionsProps> = ({
         onClick={onApply}
         disabled={!isValid}
         type="button"
+        data-testid="apply-button"
       >
         Apply
       </button>
@@ -42,9 +44,14 @@ const FilterActionsComponent: React.FC<FilterActionsProps> = ({
 };
 
 // Memoized component with custom comparison to prevent unnecessary re-renders
-export const FilterActions = React.memo(FilterActionsComponent, (prevProps, nextProps) => {
-  // Only re-render if isValid or className changes
-  // onReset and onApply are assumed to be stable (useCallback in parent)
-  return prevProps.isValid === nextProps.isValid && 
-         prevProps.className === nextProps.className;
-});
+export const FilterActions = React.memo(
+  FilterActionsComponent,
+  (prevProps, nextProps) => {
+    // Only re-render if isValid or className changes
+    // onReset and onApply are assumed to be stable (useCallback in parent)
+    return (
+      prevProps.isValid === nextProps.isValid &&
+      prevProps.className === nextProps.className
+    );
+  },
+);

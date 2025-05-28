@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { DateFilterType } from '../../types';
+import React, { useCallback } from "react";
+import { DateFilterType } from "../../types";
 
 interface FilterTypeSelectorProps {
   filterType: DateFilterType;
@@ -10,14 +10,20 @@ interface FilterTypeSelectorProps {
 const FilterTypeSelectorComponent: React.FC<FilterTypeSelectorProps> = ({
   filterType,
   onTypeChange,
-  className = ''
+  className = "",
 }) => {
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    onTypeChange(e.target.value as DateFilterType);
-  }, [onTypeChange]);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      onTypeChange(e.target.value as DateFilterType);
+    },
+    [onTypeChange],
+  );
 
   return (
-    <div className={`filter-type-section ${className}`} style={{ marginBottom: "1rem" }}>
+    <div
+      className={`filter-type-section ${className}`}
+      style={{ marginBottom: "1rem" }}
+    >
       <label
         className="filter-label"
         style={{
@@ -47,9 +53,14 @@ const FilterTypeSelectorComponent: React.FC<FilterTypeSelectorProps> = ({
 };
 
 // Memoized component with custom comparison to prevent unnecessary re-renders
-export const FilterTypeSelector = React.memo(FilterTypeSelectorComponent, (prevProps, nextProps) => {
-  // Only re-render if filterType or className changes
-  // onTypeChange is assumed to be stable (direct state setter from hook)
-  return prevProps.filterType === nextProps.filterType && 
-         prevProps.className === nextProps.className;
-});
+export const FilterTypeSelector = React.memo(
+  FilterTypeSelectorComponent,
+  (prevProps, nextProps) => {
+    // Only re-render if filterType or className changes
+    // onTypeChange is assumed to be stable (direct state setter from hook)
+    return (
+      prevProps.filterType === nextProps.filterType &&
+      prevProps.className === nextProps.className
+    );
+  },
+);

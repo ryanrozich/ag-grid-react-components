@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback } from "react";
 import { format } from "date-fns";
-import { DateFilterType } from '../../types';
+import { DateFilterType } from "../../types";
 
 interface RelativeExpressionInputProps {
   filterType: DateFilterType;
@@ -18,7 +18,9 @@ interface RelativeExpressionInputProps {
   className?: string;
 }
 
-const RelativeExpressionInputComponent: React.FC<RelativeExpressionInputProps> = ({
+const RelativeExpressionInputComponent: React.FC<
+  RelativeExpressionInputProps
+> = ({
   filterType,
   expressionFrom,
   expressionTo,
@@ -31,20 +33,26 @@ const RelativeExpressionInputComponent: React.FC<RelativeExpressionInputProps> =
   toValid,
   toError,
   onKeyDown,
-  className = ''
+  className = "",
 }) => {
-  const handleFromChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    onExpressionFromChange(value);
-  }, [onExpressionFromChange]);
+  const handleFromChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      onExpressionFromChange(value);
+    },
+    [onExpressionFromChange],
+  );
 
-  const handleToChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    onExpressionToChange(value);
-  }, [onExpressionToChange]);
+  const handleToChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      onExpressionToChange(value);
+    },
+    [onExpressionToChange],
+  );
 
   return (
-    <div className={`relative-mode ${className}`}>
+    <div className={`relative-mode ${className}`} data-testid="relative-input">
       <label
         className="filter-label"
         style={{
@@ -87,12 +95,18 @@ const RelativeExpressionInputComponent: React.FC<RelativeExpressionInputProps> =
           />
           <div style={{ minHeight: "1.25rem", marginTop: "0.25rem" }}>
             {!fromValid && expressionFrom && (
-              <div className="error-message" style={{ color: "#ef4444", fontSize: "0.75rem" }}>
+              <div
+                className="error-message"
+                style={{ color: "#ef4444", fontSize: "0.75rem" }}
+              >
                 Invalid expression
               </div>
             )}
             {fromValid && resolvedDateFrom && (
-              <div className="resolved-date" style={{ color: "#6b7280", fontSize: "0.75rem" }}>
+              <div
+                className="resolved-date"
+                style={{ color: "#6b7280", fontSize: "0.75rem" }}
+              >
                 Resolves to: {format(resolvedDateFrom, dateFormat)}
               </div>
             )}
@@ -120,12 +134,18 @@ const RelativeExpressionInputComponent: React.FC<RelativeExpressionInputProps> =
             />
             <div style={{ minHeight: "1.25rem", marginTop: "0.25rem" }}>
               {!toValid && expressionTo && (
-                <div className="error-message" style={{ color: "#ef4444", fontSize: "0.75rem" }}>
+                <div
+                  className="error-message"
+                  style={{ color: "#ef4444", fontSize: "0.75rem" }}
+                >
                   {toError || "Invalid expression"}
                 </div>
               )}
               {toValid && resolvedDateTo && (
-                <div className="resolved-date" style={{ color: "#6b7280", fontSize: "0.75rem" }}>
+                <div
+                  className="resolved-date"
+                  style={{ color: "#6b7280", fontSize: "0.75rem" }}
+                >
                   Resolves to: {format(resolvedDateTo, dateFormat)}
                 </div>
               )}
@@ -152,9 +172,7 @@ const RelativeExpressionInputComponent: React.FC<RelativeExpressionInputProps> =
         >
           Syntax Examples:
         </div>
-        <ul
-          style={{ paddingLeft: "1rem", color: "#6b7280", margin: "0" }}
-        >
+        <ul style={{ paddingLeft: "1rem", color: "#6b7280", margin: "0" }}>
           <li>Today</li>
           <li>Today+7d (7 days from today)</li>
           <li>Today-1m (1 month ago)</li>
@@ -167,23 +185,32 @@ const RelativeExpressionInputComponent: React.FC<RelativeExpressionInputProps> =
 };
 
 // Memoized component with custom comparison to prevent unnecessary re-renders
-export const RelativeExpressionInput = React.memo(RelativeExpressionInputComponent, (prevProps, nextProps) => {
-  // Compare all props except callbacks (assumed to be stable)
-  return (
-    prevProps.filterType === nextProps.filterType &&
-    prevProps.expressionFrom === nextProps.expressionFrom &&
-    prevProps.expressionTo === nextProps.expressionTo &&
-    prevProps.dateFormat === nextProps.dateFormat &&
-    prevProps.fromValid === nextProps.fromValid &&
-    prevProps.toValid === nextProps.toValid &&
-    prevProps.toError === nextProps.toError &&
-    prevProps.className === nextProps.className &&
-    // Compare resolved dates (null-safe comparison)
-    ((prevProps.resolvedDateFrom === null && nextProps.resolvedDateFrom === null) ||
-     (prevProps.resolvedDateFrom !== null && nextProps.resolvedDateFrom !== null &&
-      prevProps.resolvedDateFrom.getTime() === nextProps.resolvedDateFrom.getTime())) &&
-    ((prevProps.resolvedDateTo === null && nextProps.resolvedDateTo === null) ||
-     (prevProps.resolvedDateTo !== null && nextProps.resolvedDateTo !== null &&
-      prevProps.resolvedDateTo.getTime() === nextProps.resolvedDateTo.getTime()))
-  );
-});
+export const RelativeExpressionInput = React.memo(
+  RelativeExpressionInputComponent,
+  (prevProps, nextProps) => {
+    // Compare all props except callbacks (assumed to be stable)
+    return (
+      prevProps.filterType === nextProps.filterType &&
+      prevProps.expressionFrom === nextProps.expressionFrom &&
+      prevProps.expressionTo === nextProps.expressionTo &&
+      prevProps.dateFormat === nextProps.dateFormat &&
+      prevProps.fromValid === nextProps.fromValid &&
+      prevProps.toValid === nextProps.toValid &&
+      prevProps.toError === nextProps.toError &&
+      prevProps.className === nextProps.className &&
+      // Compare resolved dates (null-safe comparison)
+      ((prevProps.resolvedDateFrom === null &&
+        nextProps.resolvedDateFrom === null) ||
+        (prevProps.resolvedDateFrom !== null &&
+          nextProps.resolvedDateFrom !== null &&
+          prevProps.resolvedDateFrom.getTime() ===
+            nextProps.resolvedDateFrom.getTime())) &&
+      ((prevProps.resolvedDateTo === null &&
+        nextProps.resolvedDateTo === null) ||
+        (prevProps.resolvedDateTo !== null &&
+          nextProps.resolvedDateTo !== null &&
+          prevProps.resolvedDateTo.getTime() ===
+            nextProps.resolvedDateTo.getTime()))
+    );
+  },
+);

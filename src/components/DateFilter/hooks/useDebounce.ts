@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 /**
- * Custom hook for debouncing values to improve performance by reducing 
+ * Custom hook for debouncing values to improve performance by reducing
  * expensive operations like validation or API calls.
- * 
+ *
  * @param value - The value to debounce
  * @param delay - The delay in milliseconds (default: 300ms)
  * @returns The debounced value
@@ -27,7 +27,7 @@ export function useDebounce<T>(value: T, delay: number = 300): T {
 /**
  * Custom hook for debouncing callbacks to prevent excessive function calls.
  * Useful for form validation, search queries, etc.
- * 
+ *
  * @param callback - The function to debounce
  * @param delay - The delay in milliseconds (default: 300ms)
  * @param dependencies - Dependencies array for useCallback
@@ -36,7 +36,7 @@ export function useDebounce<T>(value: T, delay: number = 300): T {
 export function useDebouncedCallback<TArgs extends unknown[]>(
   callback: (...args: TArgs) => void,
   delay: number = 300,
-  _dependencies: React.DependencyList = []
+  _dependencies: React.DependencyList = [],
 ): (...args: TArgs) => void {
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
