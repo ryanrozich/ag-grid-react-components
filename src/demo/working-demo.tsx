@@ -51,7 +51,7 @@ const customStyles = `
 `;
 
 // Import our filter components
-import RelativeDateFilter from "../components/RelativeDateFilter";
+import RelativeDateFilter from "../components/DateFilter";
 import RelativeDateFloatingFilter from "../components/RelativeDateFloatingFilter";
 
 // Import filter state utilities

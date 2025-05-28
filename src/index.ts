@@ -1,4 +1,4 @@
-import RelativeDateFilter from "./components/RelativeDateFilter";
+import RelativeDateFilter from "./components/DateFilter";
 import RelativeDateFloatingFilter from "./components/RelativeDateFloatingFilter";
 import {
   DateFilterType,
