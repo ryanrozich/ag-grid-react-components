@@ -6,12 +6,12 @@ import React, {
   useEffect,
 } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { 
+import {
   ColDef,
   GridReadyEvent,
   SideBarDef,
   themeQuartz,
-  colorSchemeLightWarm
+  colorSchemeLightWarm,
 } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 
@@ -51,7 +51,7 @@ const customStyles = `
 `;
 
 // Import our filter components
-import RelativeDateFilter from "../components/DateFilter";
+import DateFilter from "../components/DateFilter";
 import RelativeDateFloatingFilter from "../components/RelativeDateFloatingFilter";
 
 // Import filter state utilities
@@ -342,7 +342,10 @@ const App: React.FC = () => {
       sortable: true,
       cellRendererParams: {
         // Custom value formatter for total rows
-        totalValueGetter: (params: { node?: { level?: number }, value?: unknown }) => {
+        totalValueGetter: (params: {
+          node?: { level?: number };
+          value?: unknown;
+        }) => {
           // Check if this is the grand total (-1 level)
           const isRootLevel = params.node?.level === -1;
           if (isRootLevel) {
@@ -395,51 +398,51 @@ const App: React.FC = () => {
   const applyFilters = useCallback(
     (filter?: string) => {
       if (!gridRef.current || !gridRef.current.api) return;
-      
+
       // First, set all rows regardless of filter (we'll use AG Grid's filtering)
       setRowData(initialData);
-      
+
       // Apply filter model immediately - AG Grid will handle it when data updates
       // No need for setTimeout - AG Grid's internal mechanisms handle this
 
-        if (filter === "today") {
-          // Create date filter model for "today" using our custom filter format
-          const filterModel = {
-            date: {
-              type: "equals",
-              mode: "relative", // Use relative mode with our expression
-              expressionFrom: "Today",
-            },
-          };
-          gridRef.current.api.setFilterModel(filterModel);
-        } else if (filter === "upcoming") {
-          // Create date filter model for dates after today
-          const filterModel = {
-            date: {
-              type: "after",
-              mode: "relative",
-              expressionFrom: "Today",
-              fromInclusive: false, // Exclude today
-            },
-          };
-          gridRef.current.api.setFilterModel(filterModel);
-        } else if (filter === "past") {
-          // Create date filter model for dates before today
-          const filterModel = {
-            date: {
-              type: "before",
-              mode: "relative",
-              expressionFrom: "Today",
-              toInclusive: false, // Exclude today
-            },
-          };
-          gridRef.current.api.setFilterModel(filterModel);
-        } else {
-          // 'all' or undefined - clear all filters
-          if (gridRef.current.api.setFilterModel) {
-            gridRef.current.api.setFilterModel(null);
-          }
+      if (filter === "today") {
+        // Create date filter model for "today" using our custom filter format
+        const filterModel = {
+          date: {
+            type: "equals",
+            mode: "relative", // Use relative mode with our expression
+            expressionFrom: "Today",
+          },
+        };
+        gridRef.current.api.setFilterModel(filterModel);
+      } else if (filter === "upcoming") {
+        // Create date filter model for dates after today
+        const filterModel = {
+          date: {
+            type: "after",
+            mode: "relative",
+            expressionFrom: "Today",
+            fromInclusive: false, // Exclude today
+          },
+        };
+        gridRef.current.api.setFilterModel(filterModel);
+      } else if (filter === "past") {
+        // Create date filter model for dates before today
+        const filterModel = {
+          date: {
+            type: "before",
+            mode: "relative",
+            expressionFrom: "Today",
+            toInclusive: false, // Exclude today
+          },
+        };
+        gridRef.current.api.setFilterModel(filterModel);
+      } else {
+        // 'all' or undefined - clear all filters
+        if (gridRef.current.api.setFilterModel) {
+          gridRef.current.api.setFilterModel(null);
         }
+      }
     },
     [initialData],
   );
@@ -457,7 +460,7 @@ const App: React.FC = () => {
 
       // Size columns to fit
       // Use AG Grid's onFirstDataRendered event instead of setTimeout
-      params.api.addEventListener('firstDataRendered', () => {
+      params.api.addEventListener("firstDataRendered", () => {
         // In AG Grid v33, columnApi was merged into the main api
         const columnDefs = params.api?.getColumnDefs();
         if (columnDefs && columnDefs.length > 0) {
@@ -482,7 +485,7 @@ const App: React.FC = () => {
                 // Handle our custom date filter
                 if (filter.type && filter.mode) {
                   let description = `${key}: `;
-                  
+
                   // Add the filter type
                   switch (filter.type) {
                     case "equals":
@@ -503,22 +506,30 @@ const App: React.FC = () => {
                     default:
                       description += filter.type;
                   }
-                  
+
                   // Add the value(s)
                   if (filter.mode === "relative") {
-                    if (filter.type === "inRange" && filter.expressionFrom && filter.expressionTo) {
+                    if (
+                      filter.type === "inRange" &&
+                      filter.expressionFrom &&
+                      filter.expressionTo
+                    ) {
                       description += ` ${filter.expressionFrom} and ${filter.expressionTo}`;
                     } else if (filter.expressionFrom) {
                       description += ` ${filter.expressionFrom}`;
                     }
                   } else if (filter.mode === "absolute") {
-                    if (filter.type === "inRange" && filter.dateFrom && filter.dateTo) {
+                    if (
+                      filter.type === "inRange" &&
+                      filter.dateFrom &&
+                      filter.dateTo
+                    ) {
                       description += ` ${format(filter.dateFrom, "MMM d")} and ${format(filter.dateTo, "MMM d")}`;
                     } else if (filter.dateFrom) {
                       description += ` ${format(filter.dateFrom, "MMM d, yyyy")}`;
                     }
                   }
-                  
+
                   return description;
                 }
 
@@ -526,7 +537,7 @@ const App: React.FC = () => {
                 if (filter.filter) {
                   return `${key}: "${filter.filter}"`;
                 }
-                
+
                 return key;
               })
               .join(" | ");
@@ -600,489 +611,531 @@ const App: React.FC = () => {
             padding: "2rem",
           }}
         >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "1.5rem",
-          }}
-        >
-          <h1
-            style={{
-              fontSize: "1.875rem",
-              fontWeight: "bold",
-              color: "#111827",
-            }}
-          >
-            AG Grid with Custom Date Filter
-          </h1>
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
-              gap: "0.75rem",
-              alignItems: "flex-end",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1.5rem",
             }}
           >
-            {/* Status display with improved styling */}
-            <div
+            <h1
               style={{
-                fontSize: "0.875rem",
-                color: "#4b5563",
-                backgroundColor: "#ffffff",
-                padding: "0.5rem 1rem",
-                borderRadius: "0.375rem",
-                border: "1px solid #e5e7eb",
-                marginBottom: "0.25rem",
-                minWidth: "280px",
-                textAlign: "center",
-                boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                fontSize: "1.875rem",
+                fontWeight: "bold",
+                color: "#111827",
               }}
             >
-              <span style={{ fontWeight: "bold", marginRight: "0.5rem" }}>
-                Status:
-              </span>
-              <span
-                style={{
-                  color: filterStatus.includes("No filter")
-                    ? "#6b7280"
-                    : "#1f2937",
-                  fontWeight: filterStatus.includes("No filter")
-                    ? "normal"
-                    : "medium",
-                }}
-              >
-                {filterStatus}
-              </span>
-            </div>
-            {/* Filter button row with improved styling - removed unnecessary buttons */}
+              AG Grid with Custom Date Filter
+            </h1>
             <div
               style={{
                 display: "flex",
+                flexDirection: "column",
                 gap: "0.75rem",
-                flexWrap: "wrap",
-                justifyContent: "flex-end",
+                alignItems: "flex-end",
               }}
             >
-              <button
-                onClick={() => applyFilters("all")}
+              {/* Status display with improved styling */}
+              <div
                 style={{
-                  padding: "0.6rem 1.2rem",
-                  backgroundColor: "#104ada",
-                  color: "white",
-                  borderRadius: "0.5rem",
-                  border: "none",
-                  cursor: "pointer",
-                  fontWeight: "600",
-                  boxShadow:
-                    "0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1)",
-                  display: "flex",
-                  alignItems: "center",
-                  transition: "all 0.15s ease",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = "#0e3bbb";
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = "#104ada";
-                  e.currentTarget.style.transform = "translateY(0)";
+                  fontSize: "0.875rem",
+                  color: "#4b5563",
+                  backgroundColor: "#ffffff",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "0.375rem",
+                  border: "1px solid #e5e7eb",
+                  marginBottom: "0.25rem",
+                  minWidth: "280px",
+                  textAlign: "center",
+                  boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
                 }}
               >
-                <span style={{ marginRight: "0.25rem" }}>🔄</span> All Items
-              </button>
-              <button
-                onClick={() => applyFilters("today")}
+                <span style={{ fontWeight: "bold", marginRight: "0.5rem" }}>
+                  Status:
+                </span>
+                <span
+                  style={{
+                    color: filterStatus.includes("No filter")
+                      ? "#6b7280"
+                      : "#1f2937",
+                    fontWeight: filterStatus.includes("No filter")
+                      ? "normal"
+                      : "medium",
+                  }}
+                >
+                  {filterStatus}
+                </span>
+              </div>
+              {/* Filter button row with improved styling - removed unnecessary buttons */}
+              <div
                 style={{
-                  padding: "0.6rem 1.2rem",
-                  backgroundColor: "#1457e2",
-                  color: "white",
-                  borderRadius: "0.5rem",
-                  border: "none",
-                  cursor: "pointer",
-                  fontWeight: "600",
-                  boxShadow:
-                    "0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1)",
                   display: "flex",
-                  alignItems: "center",
-                  transition: "all 0.15s ease",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = "#124ac9";
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = "#1457e2";
-                  e.currentTarget.style.transform = "translateY(0)";
+                  gap: "0.75rem",
+                  flexWrap: "wrap",
+                  justifyContent: "flex-end",
                 }}
               >
-                <span style={{ marginRight: "0.25rem" }}>📅</span> Today's Items
-              </button>
-              <button
-                onClick={() => applyFilters("upcoming")}
-                style={{
-                  padding: "0.6rem 1.2rem",
-                  backgroundColor: "#1967F2",
-                  color: "white",
-                  borderRadius: "0.5rem",
-                  border: "none",
-                  cursor: "pointer",
-                  fontWeight: "600",
-                  boxShadow:
-                    "0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1)",
-                  display: "flex",
-                  alignItems: "center",
-                  transition: "all 0.15s ease",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = "#1655d4";
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = "#1967F2";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
-              >
-                <span style={{ marginRight: "0.25rem" }}>⏩</span> Upcoming
-                Items
-              </button>
-              <button
-                onClick={() => applyFilters("past")}
-                style={{
-                  padding: "0.6rem 1.2rem",
-                  backgroundColor: "#0d3dc6",
-                  color: "white",
-                  borderRadius: "0.5rem",
-                  border: "none",
-                  cursor: "pointer",
-                  fontWeight: "600",
-                  boxShadow:
-                    "0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1)",
-                  display: "flex",
-                  alignItems: "center",
-                  transition: "all 0.15s ease",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = "#0b33a7";
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = "#0d3dc6";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
-              >
-                <span style={{ marginRight: "0.25rem" }}>⏪</span> Past Items
-              </button>
+                <button
+                  onClick={() => applyFilters("all")}
+                  style={{
+                    padding: "0.6rem 1.2rem",
+                    backgroundColor: "#104ada",
+                    color: "white",
+                    borderRadius: "0.5rem",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                    boxShadow:
+                      "0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1)",
+                    display: "flex",
+                    alignItems: "center",
+                    transition: "all 0.15s ease",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = "#0e3bbb";
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = "#104ada";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <span style={{ marginRight: "0.25rem" }}>🔄</span> All Items
+                </button>
+                <button
+                  onClick={() => applyFilters("today")}
+                  style={{
+                    padding: "0.6rem 1.2rem",
+                    backgroundColor: "#1457e2",
+                    color: "white",
+                    borderRadius: "0.5rem",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                    boxShadow:
+                      "0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1)",
+                    display: "flex",
+                    alignItems: "center",
+                    transition: "all 0.15s ease",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = "#124ac9";
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = "#1457e2";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <span style={{ marginRight: "0.25rem" }}>📅</span> Today's
+                  Items
+                </button>
+                <button
+                  onClick={() => applyFilters("upcoming")}
+                  style={{
+                    padding: "0.6rem 1.2rem",
+                    backgroundColor: "#1967F2",
+                    color: "white",
+                    borderRadius: "0.5rem",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                    boxShadow:
+                      "0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1)",
+                    display: "flex",
+                    alignItems: "center",
+                    transition: "all 0.15s ease",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = "#1655d4";
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = "#1967F2";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <span style={{ marginRight: "0.25rem" }}>⏩</span> Upcoming
+                  Items
+                </button>
+                <button
+                  onClick={() => applyFilters("past")}
+                  style={{
+                    padding: "0.6rem 1.2rem",
+                    backgroundColor: "#0d3dc6",
+                    color: "white",
+                    borderRadius: "0.5rem",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                    boxShadow:
+                      "0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1)",
+                    display: "flex",
+                    alignItems: "center",
+                    transition: "all 0.15s ease",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = "#0b33a7";
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = "#0d3dc6";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <span style={{ marginRight: "0.25rem" }}>⏪</span> Past Items
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-        <div
-          style={{
-            backgroundColor: "white",
-            borderRadius: "0.75rem",
-            boxShadow:
-              "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-            overflow: "hidden",
-            border: "1px solid #e5e7eb",
-            marginTop: "2rem",
-            height: "600px",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div style={{ height: "100%", padding: "2rem" }}>
-            <AgGridReact
-            ref={gridRef}
-            rowData={rowData}
-            columnDefs={columnDefs}
-            defaultColDef={defaultColDef}
-            autoGroupColumnDef={autoGroupColumnDef}
-            sideBar={sideBar}
-            domLayout="normal"
-            onGridReady={onGridReady}
-            theme={myWarmTheme}
-            components={{
-              agDateColumnFilter: RelativeDateFilter,
-              agDateColumnFloatingFilter: RelativeDateFloatingFilter,
-            }}
-            pagination={true}
-            paginationPageSize={20}
-            paginationPageSizeSelector={[10, 20, 50, 100]}
-            grandTotalRow="bottom"
-            getRowClass={(params) => {
-              return (params.node.rowIndex ?? 0) % 2 === 0 ? "ag-row-even" : "ag-row-odd";
-            }}
-          />
-          </div>
-        </div>
-        <div
-          style={{
-            marginTop: "2rem",
-            backgroundColor: "#f1f5f9",
-            borderRadius: "0.5rem",
-            padding: "2rem",
-          }}
-        >
-          <h2
+          <div
             style={{
-              fontSize: "1.25rem",
-              fontWeight: "bold",
-              color: "#1e293b",
-              marginBottom: "0.75rem",
+              backgroundColor: "white",
+              borderRadius: "0.75rem",
+              boxShadow:
+                "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+              overflow: "hidden",
+              border: "1px solid #e5e7eb",
+              marginTop: "2rem",
+              height: "600px",
+              display: "flex",
+              flexDirection: "column",
             }}
           >
-            AG Grid Custom Date Filter Components
-          </h2>
-          <div style={{ marginBottom: "1.5rem" }}>
-            <h3
-              style={{
-                fontSize: "1.125rem",
-                fontWeight: "600",
-                color: "#1f2937",
-                marginBottom: "0.5rem",
-              }}
-            >
-              📦 Components Provided
-            </h3>
-            <p style={{ color: "#4b5563", marginBottom: "0.75rem" }}>
-              This package provides two essential date filtering components for AG Grid:
-            </p>
-            <ul
-              style={{
-                listStyleType: "none",
-                paddingLeft: "0",
-                color: "#374151",
-              }}
-            >
-              <li style={{ marginBottom: "0.5rem" }}>
-                <strong>🔍 RelativeDateFilter</strong> - A powerful date filter that supports both absolute date selection via date picker and relative date expressions (e.g., "Today+7d"). Accessible through the column menu filter icon.
-              </li>
-              <li>
-                <strong>🎯 RelativeDateFloatingFilter</strong> - A companion floating filter that displays the current filter state in the column header and provides quick access to filter modification.
-              </li>
-            </ul>
+            <div style={{ height: "100%", padding: "2rem" }}>
+              <AgGridReact
+                ref={gridRef}
+                rowData={rowData}
+                columnDefs={columnDefs}
+                defaultColDef={defaultColDef}
+                autoGroupColumnDef={autoGroupColumnDef}
+                sideBar={sideBar}
+                domLayout="normal"
+                onGridReady={onGridReady}
+                theme={myWarmTheme}
+                components={{
+                  agDateColumnFilter: DateFilter,
+                  agDateColumnFloatingFilter: RelativeDateFloatingFilter,
+                }}
+                pagination={true}
+                paginationPageSize={20}
+                paginationPageSizeSelector={[10, 20, 50, 100]}
+                grandTotalRow="bottom"
+                getRowClass={(params) => {
+                  return (params.node.rowIndex ?? 0) % 2 === 0
+                    ? "ag-row-even"
+                    : "ag-row-odd";
+                }}
+              />
+            </div>
           </div>
-          <div style={{ marginBottom: "1.5rem" }}>
-            <h3
+          <div
+            style={{
+              marginTop: "2rem",
+              backgroundColor: "#f1f5f9",
+              borderRadius: "0.5rem",
+              padding: "2rem",
+            }}
+          >
+            <h2
               style={{
-                fontSize: "1.125rem",
-                fontWeight: "600",
-                color: "#1f2937",
-                marginBottom: "0.5rem",
+                fontSize: "1.25rem",
+                fontWeight: "bold",
+                color: "#1e293b",
+                marginBottom: "0.75rem",
               }}
             >
-              🏢 Enterprise Features Demonstrated
-            </h3>
-            <p style={{ color: "#4b5563", marginBottom: "0.75rem" }}>
-              This demo showcases several AG Grid Enterprise features (marked with (e)):
-            </p>
-            <ul
-              style={{
-                listStyleType: "disc",
-                paddingLeft: "1.5rem",
-                color: "#374151",
-              }}
-            >
-              <li>
-                <strong>Row Grouping & Aggregation</strong> - Drag columns to the "Row Groups" section in the sidebar to group data. See sum and average aggregations for numeric columns.
-              </li>
-              <li>
-                <strong>Grand Total Row</strong> - View aggregated totals for the entire dataset at the bottom of the grid.
-              </li>
-              <li>
-                <strong>Filter Tool Panel</strong> - Access all column filters in one place via the sidebar's filter tab.
-              </li>
-              <li>
-                <strong>Advanced Column Management</strong> - Use the columns tool panel to show/hide columns and manage grouping.
-              </li>
-            </ul>
-          </div>
-          <div style={{ marginBottom: "1.5rem" }}>
-            <h3
-              style={{
-                fontSize: "1.125rem",
-                fontWeight: "600",
-                color: "#1f2937",
-                marginBottom: "0.5rem",
-              }}
-            >
-              📅 Using Relative Date Expressions
-            </h3>
-            <p style={{ color: "#4b5563", marginBottom: "0.5rem" }}>
-              Click the filter icon on any date column and select "Relative Date" mode:
-            </p>
-            <ul
-              style={{
-                listStyleType: "disc",
-                paddingLeft: "1.5rem",
-                color: "#374151",
-              }}
-            >
-              <li>
-                <code
-                  style={{
-                    backgroundColor: "#f3f4f6",
-                    padding: "0.125rem 0.25rem",
-                    borderRadius: "0.25rem",
-                    fontSize: "0.875rem",
-                  }}
-                >
-                  Today
-                </code>{" "}
-                - Current date
-              </li>
-              <li>
-                <code
-                  style={{
-                    backgroundColor: "#f3f4f6",
-                    padding: "0.125rem 0.25rem",
-                    borderRadius: "0.25rem",
-                    fontSize: "0.875rem",
-                  }}
-                >
-                  Today+7d
-                </code>{" "}
-                - 7 days from today
-              </li>
-              <li>
-                <code
-                  style={{
-                    backgroundColor: "#f3f4f6",
-                    padding: "0.125rem 0.25rem",
-                    borderRadius: "0.25rem",
-                    fontSize: "0.875rem",
-                  }}
-                >
-                  Today-3m
-                </code>{" "}
-                - 3 months ago
-              </li>
-              <li>
-                <code
-                  style={{
-                    backgroundColor: "#f3f4f6",
-                    padding: "0.125rem 0.25rem",
-                    borderRadius: "0.25rem",
-                    fontSize: "0.875rem",
-                  }}
-                >
-                  Today+1y
-                </code>{" "}
-                - 1 year from today
-              </li>
-              <li>
-                Supported units: <strong>d</strong> (days), <strong>w</strong> (weeks), <strong>m</strong> (months), <strong>y</strong> (years)
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3
-              style={{
-                fontSize: "1.125rem",
-                fontWeight: "600",
-                color: "#1f2937",
-                marginBottom: "0.5rem",
-              }}
-            >
-              ⚡ Quick Filter Buttons
-            </h3>
-            <p style={{ color: "#4b5563", marginBottom: "0.5rem" }}>
-              Use the buttons above the grid for rapid filtering:
-            </p>
-            <ul
-              style={{
-                listStyleType: "disc",
-                paddingLeft: "1.5rem",
-                color: "#374151",
-              }}
-            >
-              <li>
-                <strong>All Items</strong> - Clear all date filters
-              </li>
-              <li>
-                <strong>Today's Items</strong> - Filter to today's date only
-              </li>
-              <li>
-                <strong>Upcoming Items</strong> - Show future dates
-              </li>
-              <li>
-                <strong>Past Items</strong> - Show past dates
-              </li>
-            </ul>
-          </div>
-          <div style={{ marginTop: "1.5rem" }}>
-            <h3
-              style={{
-                fontSize: "1.125rem",
-                fontWeight: "600",
-                color: "#1f2937",
-                marginBottom: "0.5rem",
-              }}
-            >
-              📊 Additional Demo Features
-            </h3>
-            <div
-              style={{
-                backgroundColor: "#f9fafb",
-                padding: "1rem",
-                borderRadius: "0.375rem",
-                marginBottom: "1rem",
-              }}
-            >
-              <p style={{ color: "#4b5563", marginBottom: "0.5rem" }}>
-                <strong>Visual Enhancements:</strong>
+              AG Grid Custom Date Filter Components
+            </h2>
+            <div style={{ marginBottom: "1.5rem" }}>
+              <h3
+                style={{
+                  fontSize: "1.125rem",
+                  fontWeight: "600",
+                  color: "#1f2937",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                📦 Components Provided
+              </h3>
+              <p style={{ color: "#4b5563", marginBottom: "0.75rem" }}>
+                This package provides two essential date filtering components
+                for AG Grid:
+              </p>
+              <ul
+                style={{
+                  listStyleType: "none",
+                  paddingLeft: "0",
+                  color: "#374151",
+                }}
+              >
+                <li style={{ marginBottom: "0.5rem" }}>
+                  <strong>🔍 RelativeDateFilter</strong> - A powerful date
+                  filter that supports both absolute date selection via date
+                  picker and relative date expressions (e.g., "Today+7d").
+                  Accessible through the column menu filter icon.
+                </li>
+                <li>
+                  <strong>🎯 RelativeDateFloatingFilter</strong> - A companion
+                  floating filter that displays the current filter state in the
+                  column header and provides quick access to filter
+                  modification.
+                </li>
+              </ul>
+            </div>
+            <div style={{ marginBottom: "1.5rem" }}>
+              <h3
+                style={{
+                  fontSize: "1.125rem",
+                  fontWeight: "600",
+                  color: "#1f2937",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                🏢 Enterprise Features Demonstrated
+              </h3>
+              <p style={{ color: "#4b5563", marginBottom: "0.75rem" }}>
+                This demo showcases several AG Grid Enterprise features (marked
+                with (e)):
               </p>
               <ul
                 style={{
                   listStyleType: "disc",
                   paddingLeft: "1.5rem",
                   color: "#374151",
-                  fontSize: "0.875rem",
                 }}
               >
-                <li>Alternating row colors for better readability</li>
-                <li>Warm color scheme theme applied to the grid</li>
-                <li>Pagination with configurable page sizes (10, 20, 50, 100 rows)</li>
-                <li>Fixed height grid (600px) with vertical scrolling</li>
-                <li>Grand total row showing sum aggregations at the bottom</li>
+                <li>
+                  <strong>Row Grouping & Aggregation</strong> - Drag columns to
+                  the "Row Groups" section in the sidebar to group data. See sum
+                  and average aggregations for numeric columns.
+                </li>
+                <li>
+                  <strong>Grand Total Row</strong> - View aggregated totals for
+                  the entire dataset at the bottom of the grid.
+                </li>
+                <li>
+                  <strong>Filter Tool Panel</strong> - Access all column filters
+                  in one place via the sidebar's filter tab.
+                </li>
+                <li>
+                  <strong>Advanced Column Management</strong> - Use the columns
+                  tool panel to show/hide columns and manage grouping.
+                </li>
               </ul>
             </div>
-            <div
-              style={{
-                backgroundColor: "#e0f2fe",
-                padding: "1rem",
-                borderRadius: "0.375rem",
-                border: "1px solid #7dd3fc",
-                marginBottom: "1rem",
-              }}
-            >
-              <p style={{ color: "#075985", fontWeight: "500", marginBottom: "0.25rem" }}>
-                💡 Try This:
+            <div style={{ marginBottom: "1.5rem" }}>
+              <h3
+                style={{
+                  fontSize: "1.125rem",
+                  fontWeight: "600",
+                  color: "#1f2937",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                📅 Using Relative Date Expressions
+              </h3>
+              <p style={{ color: "#4b5563", marginBottom: "0.5rem" }}>
+                Click the filter icon on any date column and select "Relative
+                Date" mode:
               </p>
-              <p style={{ color: "#0c4a6e", fontSize: "0.875rem" }}>
-                1. Click the filter icon on the Date column and switch to "Relative Date" mode<br/>
-                2. Enter "Today-7d" to see items from the past week<br/>
-                3. Drag the "Category" column to the Row Groups area to group by category<br/>
-                4. Check the grand total row at the bottom showing aggregated values<br/>
-                5. Use the Filter tool panel tab to see all active filters at once
-              </p>
+              <ul
+                style={{
+                  listStyleType: "disc",
+                  paddingLeft: "1.5rem",
+                  color: "#374151",
+                }}
+              >
+                <li>
+                  <code
+                    style={{
+                      backgroundColor: "#f3f4f6",
+                      padding: "0.125rem 0.25rem",
+                      borderRadius: "0.25rem",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    Today
+                  </code>{" "}
+                  - Current date
+                </li>
+                <li>
+                  <code
+                    style={{
+                      backgroundColor: "#f3f4f6",
+                      padding: "0.125rem 0.25rem",
+                      borderRadius: "0.25rem",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    Today+7d
+                  </code>{" "}
+                  - 7 days from today
+                </li>
+                <li>
+                  <code
+                    style={{
+                      backgroundColor: "#f3f4f6",
+                      padding: "0.125rem 0.25rem",
+                      borderRadius: "0.25rem",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    Today-3m
+                  </code>{" "}
+                  - 3 months ago
+                </li>
+                <li>
+                  <code
+                    style={{
+                      backgroundColor: "#f3f4f6",
+                      padding: "0.125rem 0.25rem",
+                      borderRadius: "0.25rem",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    Today+1y
+                  </code>{" "}
+                  - 1 year from today
+                </li>
+                <li>
+                  Supported units: <strong>d</strong> (days), <strong>w</strong>{" "}
+                  (weeks), <strong>m</strong> (months), <strong>y</strong>{" "}
+                  (years)
+                </li>
+              </ul>
             </div>
-            <div
-              style={{
-                backgroundColor: "#fef3c7",
-                padding: "1rem",
-                borderRadius: "0.375rem",
-                border: "1px solid #fde68a",
-              }}
-            >
-              <p style={{ color: "#92400e", fontSize: "0.875rem" }}>
-                <strong>Note on Enterprise Features:</strong> This demo uses AG Grid Enterprise to showcase row grouping, aggregation, filter tool panel, and grand totals. These features are marked with (e) in the AG Grid documentation and require a commercial license for production use.
+            <div>
+              <h3
+                style={{
+                  fontSize: "1.125rem",
+                  fontWeight: "600",
+                  color: "#1f2937",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                ⚡ Quick Filter Buttons
+              </h3>
+              <p style={{ color: "#4b5563", marginBottom: "0.5rem" }}>
+                Use the buttons above the grid for rapid filtering:
               </p>
+              <ul
+                style={{
+                  listStyleType: "disc",
+                  paddingLeft: "1.5rem",
+                  color: "#374151",
+                }}
+              >
+                <li>
+                  <strong>All Items</strong> - Clear all date filters
+                </li>
+                <li>
+                  <strong>Today's Items</strong> - Filter to today's date only
+                </li>
+                <li>
+                  <strong>Upcoming Items</strong> - Show future dates
+                </li>
+                <li>
+                  <strong>Past Items</strong> - Show past dates
+                </li>
+              </ul>
+            </div>
+            <div style={{ marginTop: "1.5rem" }}>
+              <h3
+                style={{
+                  fontSize: "1.125rem",
+                  fontWeight: "600",
+                  color: "#1f2937",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                📊 Additional Demo Features
+              </h3>
+              <div
+                style={{
+                  backgroundColor: "#f9fafb",
+                  padding: "1rem",
+                  borderRadius: "0.375rem",
+                  marginBottom: "1rem",
+                }}
+              >
+                <p style={{ color: "#4b5563", marginBottom: "0.5rem" }}>
+                  <strong>Visual Enhancements:</strong>
+                </p>
+                <ul
+                  style={{
+                    listStyleType: "disc",
+                    paddingLeft: "1.5rem",
+                    color: "#374151",
+                    fontSize: "0.875rem",
+                  }}
+                >
+                  <li>Alternating row colors for better readability</li>
+                  <li>Warm color scheme theme applied to the grid</li>
+                  <li>
+                    Pagination with configurable page sizes (10, 20, 50, 100
+                    rows)
+                  </li>
+                  <li>Fixed height grid (600px) with vertical scrolling</li>
+                  <li>
+                    Grand total row showing sum aggregations at the bottom
+                  </li>
+                </ul>
+              </div>
+              <div
+                style={{
+                  backgroundColor: "#e0f2fe",
+                  padding: "1rem",
+                  borderRadius: "0.375rem",
+                  border: "1px solid #7dd3fc",
+                  marginBottom: "1rem",
+                }}
+              >
+                <p
+                  style={{
+                    color: "#075985",
+                    fontWeight: "500",
+                    marginBottom: "0.25rem",
+                  }}
+                >
+                  💡 Try This:
+                </p>
+                <p style={{ color: "#0c4a6e", fontSize: "0.875rem" }}>
+                  1. Click the filter icon on the Date column and switch to
+                  "Relative Date" mode
+                  <br />
+                  2. Enter "Today-7d" to see items from the past week
+                  <br />
+                  3. Drag the "Category" column to the Row Groups area to group
+                  by category
+                  <br />
+                  4. Check the grand total row at the bottom showing aggregated
+                  values
+                  <br />
+                  5. Use the Filter tool panel tab to see all active filters at
+                  once
+                </p>
+              </div>
+              <div
+                style={{
+                  backgroundColor: "#fef3c7",
+                  padding: "1rem",
+                  borderRadius: "0.375rem",
+                  border: "1px solid #fde68a",
+                }}
+              >
+                <p style={{ color: "#92400e", fontSize: "0.875rem" }}>
+                  <strong>Note on Enterprise Features:</strong> This demo uses
+                  AG Grid Enterprise to showcase row grouping, aggregation,
+                  filter tool panel, and grand totals. These features are marked
+                  with (e) in the AG Grid documentation and require a commercial
+                  license for production use.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </div>
     </>
   );
