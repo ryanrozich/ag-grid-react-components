@@ -1,8 +1,8 @@
 /* Basic layout and styles for the demo */
 body {
   font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
-    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Open Sans", "Helvetica Neue", sans-serif;
   margin: 0;
   padding: 0;
   line-height: 1.6;
@@ -47,7 +47,7 @@ h1 {
 }
 
 .demo-filters h3 {
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.75rem;
   font-size: 1rem;
   font-weight: 600;
   color: #374151;
@@ -151,6 +151,7 @@ button:hover {
 .ag-theme-alpine {
   width: 100%;
   height: 600px;
+
   --ag-header-height: 40px;
   --ag-header-foreground-color: #374151;
   --ag-header-background-color: #f3f4f6;
@@ -158,9 +159,9 @@ button:hover {
   --ag-header-cell-moving-background-color: #d1d5db;
 
   /* Enterprise-specific styles */
-  --ag-row-hover-color: rgba(224, 231, 255, 0.1);
-  --ag-selected-row-background-color: rgba(79, 70, 229, 0.1);
-  --ag-range-selection-background-color: rgba(79, 70, 229, 0.2);
+  --ag-row-hover-color: rgb(224, 231, 255, 0.1);
+  --ag-selected-row-background-color: rgb(79, 70, 229, 0.1);
+  --ag-range-selection-background-color: rgb(79, 70, 229, 0.2);
   --ag-range-selection-border-color: #4f46e5;
 }
 
@@ -175,16 +176,16 @@ button:hover {
   background-color: #4f46e5 !important;
   border: 2px solid #4338ca !important;
   font-weight: bold;
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 0 0 2px rgb(79, 70, 229, 0.3);
 }
 
 /* Cell styles */
 .date-cell {
-  background-color: rgba(236, 253, 245, 0.4);
+  background-color: rgb(236, 253, 245, 0.4);
 }
 
 .date-cell:hover {
-  background-color: rgba(209, 250, 229, 0.6);
+  background-color: rgb(209, 250, 229, 0.6);
 }
 
 /* Groupable column header styles */
@@ -210,56 +211,56 @@ button:hover {
 }
 
 .date-string-cell {
-  background-color: rgba(239, 246, 255, 0.4);
+  background-color: rgb(239, 246, 255, 0.4);
 }
 
 .date-string-cell:hover {
-  background-color: rgba(219, 234, 254, 0.6);
+  background-color: rgb(219, 234, 254, 0.6);
 }
 
 .value-cell {
   font-weight: 500;
-  background-color: rgba(245, 243, 255, 0.4);
+  background-color: rgb(245, 243, 255, 0.4);
 }
 
 .value-cell:hover {
-  background-color: rgba(237, 233, 254, 0.6);
+  background-color: rgb(237, 233, 254, 0.6);
 }
 
 /* Status styles */
 .status-upcoming {
-  background-color: rgba(224, 242, 254, 0.4);
+  background-color: rgb(224, 242, 254, 0.4);
   color: #0369a1;
   font-weight: 500;
 }
 
 .status-current {
-  background-color: rgba(220, 252, 231, 0.4);
+  background-color: rgb(220, 252, 231, 0.4);
   color: #16a34a;
   font-weight: 500;
 }
 
 .status-past {
-  background-color: rgba(254, 226, 226, 0.4);
+  background-color: rgb(254, 226, 226, 0.4);
   color: #b91c1c;
   font-weight: 500;
 }
 
 /* Priority styles */
 .priority-high {
-  background-color: rgba(254, 226, 226, 0.4);
+  background-color: rgb(254, 226, 226, 0.4);
   color: #b91c1c;
   font-weight: 600;
 }
 
 .priority-medium {
-  background-color: rgba(254, 240, 215, 0.4);
+  background-color: rgb(254, 240, 215, 0.4);
   color: #b45309;
   font-weight: 500;
 }
 
 .priority-low {
-  background-color: rgba(219, 234, 254, 0.4);
+  background-color: rgb(219, 234, 254, 0.4);
   color: #1e40af;
   font-weight: 500;
 }

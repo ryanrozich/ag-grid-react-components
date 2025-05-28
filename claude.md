@@ -390,9 +390,10 @@ trunk git-hooks sync
 
 Trunk will automatically detect and configure appropriate linters for this project:
 
-- **ESLint**: JavaScript/TypeScript linting (already configured)
+- **ESLint**: JavaScript/TypeScript linting (needs configuration)
 - **Prettier**: Code formatting
 - **TypeScript**: Type checking
+- **Stylelint**: CSS/SCSS linting with Tailwind support (configured)
 - **Markdownlint**: Markdown file linting
 - **Gitleaks**: Secret scanning
 - **Hadolint**: Dockerfile linting (if applicable)

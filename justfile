@@ -41,6 +41,8 @@ test-filter-click:
 lint:
   @echo "ESLint temporarily skipped - needs configuration"
   # npm run lint
+  @echo "Running Stylelint..."
+  trunk check --filter=stylelint
 
 # Run Trunk checks
 check:
