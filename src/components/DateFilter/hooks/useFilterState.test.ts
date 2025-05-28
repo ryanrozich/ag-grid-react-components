@@ -1,7 +1,11 @@
 import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { useFilterState } from "./useFilterState";
-import { DateFilterModel, DateFilterType, DateFilterMode } from "../../../interfaces";
+import {
+  DateFilterModel,
+  DateFilterType,
+  DateFilterMode,
+} from "../../../interfaces";
 
 describe("useFilterState hook", () => {
   // Mock date to ensure consistent testing
@@ -77,7 +81,9 @@ describe("useFilterState hook", () => {
         // Missing dateFrom/dateTo
       };
 
-      const { result } = renderHook(() => useFilterState(model as DateFilterModel));
+      const { result } = renderHook(() =>
+        useFilterState(model as DateFilterModel),
+      );
 
       expect(result.current.filterType).toBe("after");
       expect(result.current.filterMode).toBe("absolute");
@@ -446,8 +452,12 @@ describe("useFilterState hook", () => {
 
       // Function references should be stable
       expect(result.current.setFilterType).toBe(initialSetters.setFilterType);
-      expect(result.current.toggleFilterMode).toBe(initialSetters.toggleFilterMode);
-      expect(result.current.setAbsoluteDateFrom).toBe(initialSetters.setAbsoluteDateFrom);
+      expect(result.current.toggleFilterMode).toBe(
+        initialSetters.toggleFilterMode,
+      );
+      expect(result.current.setAbsoluteDateFrom).toBe(
+        initialSetters.setAbsoluteDateFrom,
+      );
       expect(result.current.resetState).toBe(initialSetters.resetState);
     });
   });

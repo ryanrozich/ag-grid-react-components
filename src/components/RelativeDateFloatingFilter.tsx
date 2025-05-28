@@ -148,7 +148,7 @@ const RelativeDateFloatingFilter = (
   return (
     <div
       className="ag-floating-filter-body"
-      data-test-id="relative-date-floating-filter"
+      data-testid="relative-date-floating-filter"
     >
       <div
         className="ag-floating-filter-input text-sm"

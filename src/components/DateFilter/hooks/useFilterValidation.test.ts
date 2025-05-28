@@ -28,7 +28,7 @@ describe("useFilterValidation hook", () => {
           expressionTo: "",
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       expect(result.current.isFilterValid).toBe(true);
@@ -47,7 +47,7 @@ describe("useFilterValidation hook", () => {
           expressionTo: "",
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       expect(result.current.isFilterValid).toBe(false);
@@ -64,7 +64,7 @@ describe("useFilterValidation hook", () => {
           expressionTo: "",
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       expect(result.current.isFilterValid).toBe(true);
@@ -83,7 +83,7 @@ describe("useFilterValidation hook", () => {
           expressionTo: "",
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       expect(result.current.isFilterValid).toBe(false);
@@ -103,11 +103,13 @@ describe("useFilterValidation hook", () => {
             expressionTo: "",
             fromExpressionValid: true,
             toExpressionValid: true,
-          })
+          }),
         );
 
         expect(result.current.isFilterValid).toBe(true);
-        expect(result.current.effectiveDateFrom).toEqual(new Date("2023-01-15"));
+        expect(result.current.effectiveDateFrom).toEqual(
+          new Date("2023-01-15"),
+        );
       });
     });
   });
@@ -124,7 +126,7 @@ describe("useFilterValidation hook", () => {
           expressionTo: "",
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       expect(result.current.isFilterValid).toBe(true);
@@ -143,7 +145,7 @@ describe("useFilterValidation hook", () => {
           expressionTo: "",
           fromExpressionValid: false,
           toExpressionValid: true,
-        })
+        }),
       );
 
       expect(result.current.isFilterValid).toBe(false);
@@ -160,7 +162,7 @@ describe("useFilterValidation hook", () => {
           expressionTo: "Today+7d",
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       expect(result.current.isFilterValid).toBe(true);
@@ -179,7 +181,7 @@ describe("useFilterValidation hook", () => {
           expressionTo: "", // Missing end expression
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       expect(result.current.isFilterValid).toBe(false);
@@ -205,13 +207,15 @@ describe("useFilterValidation hook", () => {
             expressionTo: "",
             fromExpressionValid: true,
             toExpressionValid: true,
-          })
+          }),
         );
 
         const expectedDate = new Date(mockDate);
         expectedDate.setDate(expectedDate.getDate() + expectedDays);
-        
-        expect(result.current.resolvedDateFrom?.getTime()).toBe(expectedDate.getTime());
+
+        expect(result.current.resolvedDateFrom?.getTime()).toBe(
+          expectedDate.getTime(),
+        );
       });
     });
   });
@@ -228,7 +232,7 @@ describe("useFilterValidation hook", () => {
           expressionTo: "Today+7d",
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       expect(typeof result.current.validateToExpression).toBe("function");
@@ -245,7 +249,7 @@ describe("useFilterValidation hook", () => {
           expressionTo: "Today+7d",
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       // Valid expression
@@ -254,7 +258,8 @@ describe("useFilterValidation hook", () => {
       expect(validResult.resolvedDate).toBeDefined();
 
       // Invalid expression
-      const invalidResult = result.current.validateToExpression("InvalidExpression");
+      const invalidResult =
+        result.current.validateToExpression("InvalidExpression");
       expect(invalidResult.isValid).toBe(false);
       expect(invalidResult.resolvedDate).toBeNull();
     });
@@ -272,7 +277,7 @@ describe("useFilterValidation hook", () => {
           expressionTo: "",
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       expect(result.current.isFilterValid).toBe(false);
@@ -290,7 +295,7 @@ describe("useFilterValidation hook", () => {
           expressionTo: "InvalidExpression",
           fromExpressionValid: true,
           toExpressionValid: false,
-        })
+        }),
       );
 
       expect(result.current.isFilterValid).toBe(false);
@@ -305,12 +310,12 @@ describe("useFilterValidation hook", () => {
           filterType: "inRange",
           filterMode: "absolute",
           absoluteDateFrom: new Date("2023-01-31"), // Later date
-          absoluteDateTo: new Date("2023-01-01"),   // Earlier date
+          absoluteDateTo: new Date("2023-01-01"), // Earlier date
           expressionFrom: "",
           expressionTo: "",
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       // This should still be considered valid - the component might handle the swap internally
@@ -332,7 +337,7 @@ describe("useFilterValidation hook", () => {
           }),
         {
           initialProps: { expressionFrom: "Today" },
-        }
+        },
       );
 
       expect(result.current.isFilterValid).toBe(true);
@@ -359,7 +364,7 @@ describe("useFilterValidation hook", () => {
           expressionTo: "",
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       const firstValidation = result.current;
@@ -369,7 +374,9 @@ describe("useFilterValidation hook", () => {
 
       // Should return same object references due to memoization
       expect(result.current.isFilterValid).toBe(firstValidation.isFilterValid);
-      expect(result.current.effectiveDateFrom).toStrictEqual(firstValidation.effectiveDateFrom);
+      expect(result.current.effectiveDateFrom).toStrictEqual(
+        firstValidation.effectiveDateFrom,
+      );
     });
 
     it("should provide stable function references", () => {
@@ -383,14 +390,16 @@ describe("useFilterValidation hook", () => {
           expressionTo: "",
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       const initialValidateToExpression = result.current.validateToExpression;
 
       rerender();
 
-      expect(result.current.validateToExpression).toBe(initialValidateToExpression);
+      expect(result.current.validateToExpression).toBe(
+        initialValidateToExpression,
+      );
     });
   });
 
@@ -406,11 +415,13 @@ describe("useFilterValidation hook", () => {
           expressionTo: "",
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       expect(result.current.isFilterValid).toBe(true);
-      expect(result.current.effectiveDateFrom).toEqual(new Date("2023-01-15T15:30:00.000Z"));
+      expect(result.current.effectiveDateFrom).toEqual(
+        new Date("2023-01-15T15:30:00.000Z"),
+      );
     });
 
     it("should resolve expressions to consistent date format", () => {
@@ -424,7 +435,7 @@ describe("useFilterValidation hook", () => {
           expressionTo: "",
           fromExpressionValid: true,
           toExpressionValid: true,
-        })
+        }),
       );
 
       // Should resolve to start of day in current timezone

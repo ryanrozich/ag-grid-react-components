@@ -8,13 +8,13 @@ describe("FilterActions component", () => {
     it("should render both Reset and Apply buttons", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       expect(screen.getByTestId("clear-button")).toBeInTheDocument();
@@ -26,14 +26,14 @@ describe("FilterActions component", () => {
     it("should render with custom className", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
           className="custom-class"
-        />
+        />,
       );
 
       const container = screen.getByTestId("clear-button").parentElement;
@@ -43,13 +43,13 @@ describe("FilterActions component", () => {
     it("should have proper button types", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const resetButton = screen.getByTestId("clear-button");
@@ -62,13 +62,13 @@ describe("FilterActions component", () => {
     it("should have proper CSS classes", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const resetButton = screen.getByTestId("clear-button");
@@ -83,13 +83,13 @@ describe("FilterActions component", () => {
     it("should enable Apply button when isValid is true", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const applyButton = screen.getByTestId("apply-button");
@@ -99,13 +99,13 @@ describe("FilterActions component", () => {
     it("should disable Apply button when isValid is false", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={false}
-        />
+        />,
       );
 
       const applyButton = screen.getByTestId("apply-button");
@@ -115,14 +115,14 @@ describe("FilterActions component", () => {
     it("should always enable Reset button regardless of validity", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       // Test with valid state
       const { rerender } = render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       let resetButton = screen.getByTestId("clear-button");
@@ -134,7 +134,7 @@ describe("FilterActions component", () => {
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={false}
-        />
+        />,
       );
 
       resetButton = screen.getByTestId("clear-button");
@@ -146,13 +146,13 @@ describe("FilterActions component", () => {
     it("should call onReset when Reset button is clicked", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const resetButton = screen.getByTestId("clear-button");
@@ -165,13 +165,13 @@ describe("FilterActions component", () => {
     it("should call onApply when Apply button is clicked and enabled", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const applyButton = screen.getByTestId("apply-button");
@@ -184,13 +184,13 @@ describe("FilterActions component", () => {
     it("should not call onApply when Apply button is clicked but disabled", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={false}
-        />
+        />,
       );
 
       const applyButton = screen.getByTestId("apply-button");
@@ -202,13 +202,13 @@ describe("FilterActions component", () => {
     it("should handle multiple rapid clicks gracefully", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const resetButton = screen.getByTestId("clear-button");
@@ -233,13 +233,13 @@ describe("FilterActions component", () => {
     it("should respond to Enter key on Reset button", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const resetButton = screen.getByTestId("clear-button");
@@ -253,13 +253,13 @@ describe("FilterActions component", () => {
     it("should respond to Enter key on Apply button when enabled", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const applyButton = screen.getByTestId("apply-button");
@@ -271,13 +271,13 @@ describe("FilterActions component", () => {
     it("should be focusable via Tab key", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const resetButton = screen.getByTestId("clear-button");
@@ -298,18 +298,18 @@ describe("FilterActions component", () => {
     it("should have proper container styling", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const container = screen.getByTestId("clear-button").parentElement;
       const styles = window.getComputedStyle(container!);
-      
+
       expect(styles.display).toBe("flex");
       expect(styles.justifyContent).toBe("space-between");
       expect(styles.marginTop).toBe("1rem");
@@ -318,13 +318,13 @@ describe("FilterActions component", () => {
     it("should apply filter-buttons class to container", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const container = screen.getByTestId("clear-button").parentElement;
@@ -334,18 +334,18 @@ describe("FilterActions component", () => {
     it("should maintain button order (Reset left, Apply right)", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const container = screen.getByTestId("clear-button").parentElement;
       const buttons = container?.children;
-      
+
       expect(buttons?.[0]).toBe(screen.getByTestId("clear-button"));
       expect(buttons?.[1]).toBe(screen.getByTestId("apply-button"));
     });
@@ -355,7 +355,7 @@ describe("FilterActions component", () => {
     it("should not re-render when props haven't changed", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       const TestWrapper = ({ isValid }: { isValid: boolean }) => (
         <FilterActions
           onReset={mockOnReset}
@@ -365,10 +365,10 @@ describe("FilterActions component", () => {
       );
 
       const { rerender } = render(<TestWrapper isValid={true} />);
-      
+
       // Re-render with same props
       rerender(<TestWrapper isValid={true} />);
-      
+
       // Component should still be rendered correctly
       expect(screen.getByTestId("clear-button")).toBeInTheDocument();
       expect(screen.getByTestId("apply-button")).toBeInTheDocument();
@@ -377,13 +377,13 @@ describe("FilterActions component", () => {
     it("should re-render when isValid changes", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       const { rerender } = render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       // Check initial state
@@ -395,7 +395,7 @@ describe("FilterActions component", () => {
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={false}
-        />
+        />,
       );
 
       // Should reflect new state
@@ -405,14 +405,14 @@ describe("FilterActions component", () => {
     it("should re-render when className changes", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       const { rerender } = render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
           className="class1"
-        />
+        />,
       );
 
       let container = screen.getByTestId("clear-button").parentElement;
@@ -425,7 +425,7 @@ describe("FilterActions component", () => {
           onApply={mockOnApply}
           isValid={true}
           className="class2"
-        />
+        />,
       );
 
       container = screen.getByTestId("clear-button").parentElement;
@@ -438,13 +438,13 @@ describe("FilterActions component", () => {
     it("should have proper button semantics", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const resetButton = screen.getByTestId("clear-button");
@@ -457,13 +457,13 @@ describe("FilterActions component", () => {
     it("should have descriptive text content", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const resetButton = screen.getByTestId("clear-button");
@@ -476,17 +476,17 @@ describe("FilterActions component", () => {
     it("should maintain disabled state for screen readers", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={false}
-        />
+        />,
       );
 
       const applyButton = screen.getByTestId("apply-button");
-      
+
       expect(applyButton).toHaveAttribute("disabled");
       expect(applyButton.getAttribute("disabled")).toBe("");
     });
@@ -496,13 +496,13 @@ describe("FilterActions component", () => {
     it("should handle undefined className gracefully", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       expect(screen.getByTestId("clear-button")).toBeInTheDocument();
@@ -514,35 +514,42 @@ describe("FilterActions component", () => {
         throw new Error("Reset error");
       });
       const mockOnApply = vi.fn();
-      
+
       render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const resetButton = screen.getByTestId("clear-button");
-      
-      // This should not crash the component
-      expect(() => {
+
+      // Suppress console.error for this test
+      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      // The error should be thrown when callback fails
+      try {
         fireEvent.click(resetButton);
-      }).toThrow("Reset error");
-      
+      } catch (error) {
+        expect(error).toBeInstanceOf(Error);
+        expect((error as Error).message).toBe("Reset error");
+      }
+
       expect(mockOnReset).toHaveBeenCalled();
+      consoleSpy.mockRestore();
     });
 
     it("should maintain state consistency during rapid state changes", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
-      
+
       const { rerender } = render(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       // Rapidly toggle validity
@@ -551,15 +558,15 @@ describe("FilterActions component", () => {
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={false}
-        />
+        />,
       );
-      
+
       rerender(
         <FilterActions
           onReset={mockOnReset}
           onApply={mockOnApply}
           isValid={true}
-        />
+        />,
       );
 
       const applyButton = screen.getByTestId("apply-button");

@@ -8,7 +8,7 @@ describe("FilterModeToggle component", () => {
     it("should render with absolute mode selected", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />,
       );
 
       expect(screen.getByTestId("mode-toggle")).toBeInTheDocument();
@@ -27,7 +27,7 @@ describe("FilterModeToggle component", () => {
     it("should render with relative mode selected", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="relative" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="relative" onModeChange={mockOnModeChange} />,
       );
 
       // Check that relative mode is selected
@@ -46,7 +46,7 @@ describe("FilterModeToggle component", () => {
           mode="absolute"
           onModeChange={mockOnModeChange}
           className="custom-class"
-        />
+        />,
       );
 
       const container = screen.getByTestId("mode-toggle").parentElement;
@@ -56,7 +56,7 @@ describe("FilterModeToggle component", () => {
     it("should have proper ARIA label", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />,
       );
 
       const label = screen.getByText("Date Mode");
@@ -69,7 +69,7 @@ describe("FilterModeToggle component", () => {
     it("should call onModeChange when relative option is clicked in absolute mode", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />,
       );
 
       const relativeOption = screen.getByText("Relative Date");
@@ -81,7 +81,7 @@ describe("FilterModeToggle component", () => {
     it("should call onModeChange when absolute option is clicked in relative mode", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="relative" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="relative" onModeChange={mockOnModeChange} />,
       );
 
       const absoluteOption = screen.getByText("Specific Date");
@@ -93,7 +93,7 @@ describe("FilterModeToggle component", () => {
     it("should not call onModeChange when clicking the already selected option", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />,
       );
 
       const absoluteOption = screen.getByText("Specific Date");
@@ -105,7 +105,7 @@ describe("FilterModeToggle component", () => {
     it("should not call onModeChange when clicking the already selected relative option", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="relative" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="relative" onModeChange={mockOnModeChange} />,
       );
 
       const relativeOption = screen.getByText("Relative Date");
@@ -119,12 +119,12 @@ describe("FilterModeToggle component", () => {
     it("should apply correct styles for absolute mode", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />,
       );
 
       const absoluteOption = screen.getByText("Specific Date");
       const absoluteStyles = window.getComputedStyle(absoluteOption);
-      
+
       // Should have selected styles (blue background, white text)
       expect(absoluteStyles.backgroundColor).toBe("rgb(37, 99, 235)"); // #2563eb
       expect(absoluteStyles.color).toBe("rgb(255, 255, 255)");
@@ -132,7 +132,7 @@ describe("FilterModeToggle component", () => {
 
       const relativeOption = screen.getByText("Relative Date");
       const relativeStyles = window.getComputedStyle(relativeOption);
-      
+
       // Should have unselected styles (light background, dark text)
       expect(relativeStyles.backgroundColor).toBe("rgb(249, 250, 251)"); // #f9fafb
       expect(relativeStyles.color).toBe("rgb(55, 65, 81)"); // #374151
@@ -142,12 +142,12 @@ describe("FilterModeToggle component", () => {
     it("should apply correct styles for relative mode", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="relative" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="relative" onModeChange={mockOnModeChange} />,
       );
 
       const relativeOption = screen.getByText("Relative Date");
       const relativeStyles = window.getComputedStyle(relativeOption);
-      
+
       // Should have selected styles
       expect(relativeStyles.backgroundColor).toBe("rgb(37, 99, 235)");
       expect(relativeStyles.color).toBe("rgb(255, 255, 255)");
@@ -155,7 +155,7 @@ describe("FilterModeToggle component", () => {
 
       const absoluteOption = screen.getByText("Specific Date");
       const absoluteStyles = window.getComputedStyle(absoluteOption);
-      
+
       // Should have unselected styles
       expect(absoluteStyles.backgroundColor).toBe("rgb(249, 250, 251)");
       expect(absoluteStyles.color).toBe("rgb(55, 65, 81)");
@@ -165,7 +165,7 @@ describe("FilterModeToggle component", () => {
     it("should have cursor pointer for clickable options", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />,
       );
 
       const absoluteOption = screen.getByText("Specific Date");
@@ -178,7 +178,7 @@ describe("FilterModeToggle component", () => {
     it("should have proper user-select none style", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />,
       );
 
       const absoluteOption = screen.getByText("Specific Date");
@@ -193,7 +193,7 @@ describe("FilterModeToggle component", () => {
     it("should have proper role attributes", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />,
       );
 
       const absoluteOption = screen.getByText("Specific Date");
@@ -207,11 +207,11 @@ describe("FilterModeToggle component", () => {
     it("should be keyboard accessible", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />,
       );
 
       const relativeOption = screen.getByText("Relative Date");
-      
+
       // Test keyboard navigation
       fireEvent.keyDown(relativeOption, { key: "Enter", code: "Enter" });
       // For now, we only test click events, but this could be extended for keyboard support
@@ -220,7 +220,7 @@ describe("FilterModeToggle component", () => {
     it("should have proper semantic structure", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />,
       );
 
       // Should have a label
@@ -244,12 +244,12 @@ describe("FilterModeToggle component", () => {
       };
 
       const { rerender } = render(<TestWrapper mode="absolute" />);
-      
+
       const initialRenderCount = renderCount;
-      
+
       // Re-render with same props
       rerender(<TestWrapper mode="absolute" />);
-      
+
       // Component should be memoized, but the wrapper will still re-render
       // This test verifies the basic structure is working
       expect(screen.getByTestId("mode-toggle")).toBeInTheDocument();
@@ -257,29 +257,39 @@ describe("FilterModeToggle component", () => {
 
     it("should re-render when mode changes", () => {
       const mockOnModeChange = vi.fn();
-      
+
       const { rerender } = render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />,
       );
 
       // Check initial state
-      expect(screen.getByText("Specific Date").parentElement).toHaveClass("selected");
+      expect(screen.getByText("Specific Date").parentElement).toHaveClass(
+        "selected",
+      );
 
       // Change mode
       rerender(
-        <FilterModeToggle mode="relative" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="relative" onModeChange={mockOnModeChange} />,
       );
 
       // Should reflect new state
-      expect(screen.getByText("Relative Date").parentElement).toHaveClass("selected");
-      expect(screen.getByText("Specific Date").parentElement).not.toHaveClass("selected");
+      expect(screen.getByText("Relative Date").parentElement).toHaveClass(
+        "selected",
+      );
+      expect(screen.getByText("Specific Date").parentElement).not.toHaveClass(
+        "selected",
+      );
     });
 
     it("should re-render when className changes", () => {
       const mockOnModeChange = vi.fn();
-      
+
       const { rerender } = render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} className="class1" />
+        <FilterModeToggle
+          mode="absolute"
+          onModeChange={mockOnModeChange}
+          className="class1"
+        />,
       );
 
       let container = screen.getByTestId("mode-toggle").parentElement;
@@ -287,7 +297,11 @@ describe("FilterModeToggle component", () => {
 
       // Change className
       rerender(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} className="class2" />
+        <FilterModeToggle
+          mode="absolute"
+          onModeChange={mockOnModeChange}
+          className="class2"
+        />,
       );
 
       container = screen.getByTestId("mode-toggle").parentElement;
@@ -300,7 +314,7 @@ describe("FilterModeToggle component", () => {
     it("should handle undefined className gracefully", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />,
       );
 
       expect(screen.getByTestId("mode-toggle")).toBeInTheDocument();
@@ -309,11 +323,11 @@ describe("FilterModeToggle component", () => {
     it("should handle rapid clicks gracefully", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />,
       );
 
       const relativeOption = screen.getByText("Relative Date");
-      
+
       // Click multiple times rapidly
       fireEvent.click(relativeOption);
       fireEvent.click(relativeOption);
@@ -326,7 +340,7 @@ describe("FilterModeToggle component", () => {
     it("should maintain visual state consistency", () => {
       const mockOnModeChange = vi.fn();
       render(
-        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />
+        <FilterModeToggle mode="absolute" onModeChange={mockOnModeChange} />,
       );
 
       const absoluteOption = screen.getByText("Specific Date");
@@ -339,7 +353,7 @@ describe("FilterModeToggle component", () => {
       // Both should have exactly one of the CSS classes (either selected or not)
       const absoluteClasses = absoluteOption.parentElement?.className || "";
       const relativeClasses = relativeOption.parentElement?.className || "";
-      
+
       expect(absoluteClasses.includes("selected")).toBe(true);
       expect(relativeClasses.includes("selected")).toBe(false);
     });

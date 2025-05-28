@@ -215,16 +215,22 @@ const DateFilter = (props: DateFilterParams) => {
     if (props.onModelChange) {
       props.onModelChange(currentModel);
     }
+    if (props.filterChangedCallback) {
+      props.filterChangedCallback();
+    }
     logger.debug("Applied filter:", currentModel);
-  }, [props.onModelChange, currentModel]);
+  }, [props.onModelChange, props.filterChangedCallback, currentModel]);
 
   const resetFilter = useCallback(() => {
     filterState.resetState();
     if (props.onModelChange) {
       props.onModelChange(null);
     }
+    if (props.filterChangedCallback) {
+      props.filterChangedCallback();
+    }
     logger.debug("Reset filter");
-  }, [filterState, props.onModelChange]);
+  }, [filterState, props.onModelChange, props.filterChangedCallback]);
 
   // Register with AG Grid
   const callbacks = {

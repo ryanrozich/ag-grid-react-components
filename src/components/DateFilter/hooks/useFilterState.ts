@@ -36,16 +36,25 @@ interface UseFilterStateReturn {
   initializeFromModel: (model: DateFilterModel | null) => void;
 }
 
+// Helper functions to validate filter types and modes
+const isValidFilterType = (type: any): type is DateFilterType => {
+  return ['equals', 'notEqual', 'after', 'before', 'inRange'].includes(type);
+};
+
+const isValidFilterMode = (mode: any): mode is DateFilterMode => {
+  return ['absolute', 'relative'].includes(mode);
+};
+
 export const useFilterState = (
   initialModel?: DateFilterModel | null,
   defaultMode?: DateFilterMode
 ): UseFilterStateReturn => {
-  // Filter state
+  // Filter state with validation
   const [filterType, setFilterType] = useState<DateFilterType>(
-    initialModel?.type || "equals"
+    isValidFilterType(initialModel?.type) ? initialModel.type : "equals"
   );
   const [filterMode, setFilterMode] = useState<DateFilterMode>(
-    initialModel?.mode || defaultMode || "absolute"
+    isValidFilterMode(initialModel?.mode) ? initialModel.mode : (defaultMode || "absolute")
   );
 
   // Date values

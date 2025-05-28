@@ -19,7 +19,7 @@ interface UseFilterValidationReturn {
   resolvedDateTo: Date | null;
   effectiveDateFrom: Date | null;
   effectiveDateTo: Date | null;
-  validateToExpression: (expression: string) => { isValid: boolean; error: string };
+  validateToExpression: (expression: string) => { isValid: boolean; error: string; resolvedDate: Date | null };
 }
 
 export const useFilterValidation = ({
@@ -59,20 +59,21 @@ export const useFilterValidation = ({
   const validateToExpression = useCallback((expression: string) => {
     const parseResult = parseDateExpression(expression);
     if (!parseResult.isValid) {
-      return { isValid: false, error: "Invalid expression" };
+      return { isValid: false, error: "Invalid expression", resolvedDate: null };
     }
+
+    const resolvedDate = resolveDateExpression(expression);
 
     // Additional validation for range filters
     if (filterType === "inRange" && expressionFrom && expression) {
       const fromDate = resolveDateExpression(expressionFrom);
-      const toDate = resolveDateExpression(expression);
       
-      if (fromDate && toDate && toDate <= fromDate) {
-        return { isValid: false, error: "End date must be after start date" };
+      if (fromDate && resolvedDate && resolvedDate <= fromDate) {
+        return { isValid: false, error: "End date must be after start date", resolvedDate: null };
       }
     }
 
-    return { isValid: true, error: "" };
+    return { isValid: true, error: "", resolvedDate };
   }, [filterType, expressionFrom]);
 
   // Overall filter validity
