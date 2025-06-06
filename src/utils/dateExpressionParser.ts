@@ -26,7 +26,7 @@ export interface DateExpression {
 function sanitizeExpression(input: string): string {
   // Remove any characters that aren't alphanumeric, +, -, or spaces
   // This prevents any script injection or special character attacks
-  return input.replace(/[^a-zA-Z0-9+\-\s]/g, '');
+  return input.replace(/[^a-zA-Z0-9+\-\s]/g, "");
 }
 
 /**
@@ -45,7 +45,7 @@ export function parseDateExpression(expression: string): DateExpression {
 
   // Sanitize input first to prevent any injection attacks
   const sanitized = sanitizeExpression(expression);
-  
+
   // Check if sanitization removed characters (potential attack)
   if (sanitized !== expression.trim()) {
     return {
@@ -54,7 +54,7 @@ export function parseDateExpression(expression: string): DateExpression {
       error: "Expression contains invalid characters",
     };
   }
-  
+
   // Limit expression length to prevent DoS
   if (expression.length > 50) {
     return {
@@ -98,7 +98,7 @@ export function parseDateExpression(expression: string): DateExpression {
       error: "Invalid number in expression",
     };
   }
-  
+
   // Prevent extreme values that could cause issues
   if (amount > 10000) {
     return {
@@ -107,7 +107,7 @@ export function parseDateExpression(expression: string): DateExpression {
       error: "Number too large (max 10000)",
     };
   }
-  
+
   if (amount === 0) {
     return {
       isValid: false,

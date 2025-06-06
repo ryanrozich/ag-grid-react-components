@@ -4,4 +4,4 @@ export type {
   DateFilterMode,
   DateFilterModel,
   DateFilterParams,
-} from '../../interfaces';
+} from "../../interfaces";

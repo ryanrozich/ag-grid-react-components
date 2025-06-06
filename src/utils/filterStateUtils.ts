@@ -1,37 +1,47 @@
 /**
  * Utilities for working with filter state, serialization, and browser history
  */
-import { GridApi } from 'ag-grid-community';
-import { logger } from './logger';
+import { GridApi } from "ag-grid-community";
+import { logger } from "./logger";
 
 /**
  * Validates that an object is a safe filter model structure
  * Prevents XSS attacks by ensuring only expected properties and types
  */
 function isValidFilterModel(obj: unknown): boolean {
-  if (!obj || typeof obj !== 'object') return false;
-  
+  if (!obj || typeof obj !== "object") return false;
+
   const typedObj = obj as Record<string, unknown>;
-  
+
   // Whitelist of allowed filter properties
-  const allowedFilterProps = ['type', 'mode', 'dateFrom', 'dateTo', 'expressionFrom', 'expressionTo', 'fromInclusive', 'toInclusive', 'filter'];
-  const allowedTypes = ['equals', 'notEqual', 'before', 'after', 'inRange'];
-  const allowedModes = ['absolute', 'relative'];
-  
+  const allowedFilterProps = [
+    "type",
+    "mode",
+    "dateFrom",
+    "dateTo",
+    "expressionFrom",
+    "expressionTo",
+    "fromInclusive",
+    "toInclusive",
+    "filter",
+  ];
+  const allowedTypes = ["equals", "notEqual", "before", "after", "inRange"];
+  const allowedModes = ["absolute", "relative"];
+
   // Check each column filter
   for (const columnKey of Object.keys(typedObj)) {
     const columnFilter = typedObj[columnKey];
-    
+
     // Column key should be alphanumeric with underscores only
     if (!/^[a-zA-Z0-9_]+$/.test(columnKey)) {
       logger.warn(`Invalid column key: ${columnKey}`);
       return false;
     }
-    
-    if (!columnFilter || typeof columnFilter !== 'object') continue;
-    
+
+    if (!columnFilter || typeof columnFilter !== "object") continue;
+
     const typedFilter = columnFilter as Record<string, unknown>;
-    
+
     // Check that only allowed properties exist
     for (const prop of Object.keys(typedFilter)) {
       if (!allowedFilterProps.includes(prop)) {
@@ -39,62 +49,74 @@ function isValidFilterModel(obj: unknown): boolean {
         return false;
       }
     }
-    
+
     // Validate type and mode if present
     if (typedFilter.type && !allowedTypes.includes(String(typedFilter.type))) {
       logger.warn(`Invalid filter type: ${typedFilter.type}`);
       return false;
     }
-    
+
     if (typedFilter.mode && !allowedModes.includes(String(typedFilter.mode))) {
       logger.warn(`Invalid filter mode: ${typedFilter.mode}`);
       return false;
     }
-    
+
     // Validate date strings
-    if (typedFilter.dateFrom && typeof typedFilter.dateFrom === 'string') {
+    if (typedFilter.dateFrom && typeof typedFilter.dateFrom === "string") {
       const date = new Date(typedFilter.dateFrom);
       if (isNaN(date.getTime())) {
         logger.warn(`Invalid dateFrom: ${typedFilter.dateFrom}`);
         return false;
       }
     }
-    
-    if (typedFilter.dateTo && typeof typedFilter.dateTo === 'string') {
+
+    if (typedFilter.dateTo && typeof typedFilter.dateTo === "string") {
       const date = new Date(typedFilter.dateTo);
       if (isNaN(date.getTime())) {
         logger.warn(`Invalid dateTo: ${typedFilter.dateTo}`);
         return false;
       }
     }
-    
+
     // Validate expressions (alphanumeric + basic operators)
-    if (typedFilter.expressionFrom && typeof typedFilter.expressionFrom === 'string') {
+    if (
+      typedFilter.expressionFrom &&
+      typeof typedFilter.expressionFrom === "string"
+    ) {
       if (!/^[a-zA-Z0-9+\-\s]+$/.test(typedFilter.expressionFrom)) {
         logger.warn(`Invalid expressionFrom: ${typedFilter.expressionFrom}`);
         return false;
       }
     }
-    
-    if (typedFilter.expressionTo && typeof typedFilter.expressionTo === 'string') {
+
+    if (
+      typedFilter.expressionTo &&
+      typeof typedFilter.expressionTo === "string"
+    ) {
       if (!/^[a-zA-Z0-9+\-\s]+$/.test(typedFilter.expressionTo)) {
         logger.warn(`Invalid expressionTo: ${typedFilter.expressionTo}`);
         return false;
       }
     }
-    
+
     // Validate booleans
-    if (typedFilter.fromInclusive !== undefined && typeof typedFilter.fromInclusive !== 'boolean') {
+    if (
+      typedFilter.fromInclusive !== undefined &&
+      typeof typedFilter.fromInclusive !== "boolean"
+    ) {
       logger.warn(`Invalid fromInclusive: ${typedFilter.fromInclusive}`);
       return false;
     }
-    
-    if (typedFilter.toInclusive !== undefined && typeof typedFilter.toInclusive !== 'boolean') {
+
+    if (
+      typedFilter.toInclusive !== undefined &&
+      typeof typedFilter.toInclusive !== "boolean"
+    ) {
       logger.warn(`Invalid toInclusive: ${typedFilter.toInclusive}`);
       return false;
     }
   }
-  
+
   return true;
 }
 
@@ -104,16 +126,16 @@ function isValidFilterModel(obj: unknown): boolean {
 function safeJsonParse(jsonString: string): Record<string, unknown> | null {
   try {
     const parsed = JSON.parse(jsonString);
-    
+
     // Validate the parsed object structure
     if (!isValidFilterModel(parsed)) {
-      logger.error('Invalid filter model structure');
+      logger.error("Invalid filter model structure");
       return null;
     }
-    
+
     return parsed;
   } catch (error) {
-    logger.error('Error parsing JSON:', error);
+    logger.error("Error parsing JSON:", error);
     return null;
   }
 }
@@ -123,10 +145,10 @@ function safeJsonParse(jsonString: string): Record<string, unknown> | null {
  * stringified and stored in URLs or local storage
  */
 export function serializeFilterModel(model: unknown): unknown {
-  if (!model || typeof model !== 'object') return model;
+  if (!model || typeof model !== "object") return model;
 
   const typedModel = model as Record<string, unknown>;
-  
+
   // Create a new object to avoid mutating the original
   const serialized = { ...typedModel };
 
@@ -135,9 +157,9 @@ export function serializeFilterModel(model: unknown): unknown {
     const columnFilter = serialized[columnKey];
 
     // Check if it's our date filter (could be another filter type)
-    if (columnFilter && typeof columnFilter === 'object') {
+    if (columnFilter && typeof columnFilter === "object") {
       const typedFilter = columnFilter as Record<string, unknown>;
-      
+
       if (typedFilter.dateFrom || typedFilter.dateTo) {
         // Convert dates to ISO strings
         if (typedFilter.dateFrom instanceof Date) {
@@ -149,7 +171,8 @@ export function serializeFilterModel(model: unknown): unknown {
 
         if (typedFilter.dateTo instanceof Date) {
           serialized[columnKey] = {
-            ...(serialized[columnKey] as Record<string, unknown> || typedFilter), // Use the already updated object if dateFrom was processed
+            ...((serialized[columnKey] as Record<string, unknown>) ||
+              typedFilter), // Use the already updated object if dateFrom was processed
             dateTo: typedFilter.dateTo.toISOString(),
           };
         }
@@ -175,10 +198,11 @@ export function serializeFilterModel(model: unknown): unknown {
  * back to Date objects
  */
 export function deserializeFilterModel(serializedModel: unknown): unknown {
-  if (!serializedModel || typeof serializedModel !== 'object') return serializedModel;
+  if (!serializedModel || typeof serializedModel !== "object")
+    return serializedModel;
 
   const typedModel = serializedModel as Record<string, unknown>;
-  
+
   // Create a new object to avoid mutating the original
   const deserialized = { ...typedModel };
 
@@ -187,9 +211,9 @@ export function deserializeFilterModel(serializedModel: unknown): unknown {
     const columnFilter = deserialized[columnKey];
 
     // Check if it's a string-serialized date
-    if (columnFilter && typeof columnFilter === 'object') {
+    if (columnFilter && typeof columnFilter === "object") {
       const typedFilter = columnFilter as Record<string, unknown>;
-      
+
       if (
         typeof typedFilter.dateFrom === "string" ||
         typeof typedFilter.dateTo === "string"
@@ -204,7 +228,8 @@ export function deserializeFilterModel(serializedModel: unknown): unknown {
 
         if (typeof typedFilter.dateTo === "string" && typedFilter.dateTo) {
           deserialized[columnKey] = {
-            ...(deserialized[columnKey] as Record<string, unknown> || typedFilter), // Use the already updated object if dateFrom was processed
+            ...((deserialized[columnKey] as Record<string, unknown>) ||
+              typedFilter), // Use the already updated object if dateFrom was processed
             dateTo: new Date(typedFilter.dateTo),
           };
         }
@@ -305,8 +330,11 @@ export function setupFilterStatePersistence(
         }
         return () => {};
       }
-      
-      const deserializedModel = deserializeFilterModel(filterModel) as Record<string, unknown>;
+
+      const deserializedModel = deserializeFilterModel(filterModel) as Record<
+        string,
+        unknown
+      >;
 
       // Apply the filter
       gridApi.setFilterModel(deserializedModel);
@@ -375,8 +403,11 @@ export function setupFilterStatePersistence(
           }
           return;
         }
-        
-        const deserializedModel = deserializeFilterModel(filterModel) as Record<string, unknown>;
+
+        const deserializedModel = deserializeFilterModel(filterModel) as Record<
+          string,
+          unknown
+        >;
 
         // Apply filter
         gridApi.setFilterModel(deserializedModel);

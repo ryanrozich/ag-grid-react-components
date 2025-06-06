@@ -1,158 +1,184 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Manual Filter Test</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        .test-section {
-            margin: 20px 0;
-            padding: 15px;
-            background: #f5f5f5;
-            border-radius: 5px;
-        }
-        button {
-            margin: 5px;
-            padding: 8px 15px;
-            cursor: pointer;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-        #logs {
-            background: #fff;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin: 10px 0;
-            font-family: monospace;
-            font-size: 12px;
-            max-height: 300px;
-            overflow: auto;
-        }
-        .log-entry {
-            margin: 2px 0;
-            padding: 2px;
-        }
-        .log-quickfilter { color: #0066cc; }
-        .log-datefilter { color: #cc6600; }
-        .log-usefilterstate { color: #009900; }
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 15px;
+        background: #f5f5f5;
+        border-radius: 5px;
+      }
+      button {
+        margin: 5px;
+        padding: 8px 15px;
+        cursor: pointer;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      #logs {
+        background: #fff;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin: 10px 0;
+        font-family: monospace;
+        font-size: 12px;
+        max-height: 300px;
+        overflow: auto;
+      }
+      .log-entry {
+        margin: 2px 0;
+        padding: 2px;
+      }
+      .log-quickfilter {
+        color: #0066cc;
+      }
+      .log-datefilter {
+        color: #cc6600;
+      }
+      .log-usefilterstate {
+        color: #009900;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Manual Filter Testing</h1>
-    
+
     <div class="test-section">
-        <h2>Test Different Filter Models</h2>
-        <button onclick="testToday()">Test Today Filter</button>
-        <button onclick="testThisWeek()">Test This Week Filter</button>
-        <button onclick="testClear()">Clear Filter</button>
-        <button onclick="getCurrentFilter()">Get Current Filter</button>
-        <button onclick="clearLogs()">Clear Logs</button>
+      <h2>Test Different Filter Models</h2>
+      <button onclick="testToday()">Test Today Filter</button>
+      <button onclick="testThisWeek()">Test This Week Filter</button>
+      <button onclick="testClear()">Clear Filter</button>
+      <button onclick="getCurrentFilter()">Get Current Filter</button>
+      <button onclick="clearLogs()">Clear Logs</button>
     </div>
-    
+
     <div id="logs">
-        <div class="log-entry">Logs will appear here...</div>
+      <div class="log-entry">Logs will appear here...</div>
     </div>
-    
+
     <div class="test-section">
-        <iframe src="http://localhost:5174/" width="100%" height="600" style="border: 1px solid #ccc;"></iframe>
+      <iframe
+        src="http://localhost:5174/"
+        width="100%"
+        height="600"
+        style="border: 1px solid #ccc"
+      ></iframe>
     </div>
-    
+
     <script>
-        let frameWindow = null;
-        
-        // Capture console messages
-        const originalConsole = console.log;
-        console.log = function(...args) {
-            originalConsole.apply(console, args);
-            
-            const message = args.join(' ');
-            if (message.includes('[QuickFilter]') || message.includes('[DateFilter]') || message.includes('[useFilterState]')) {
-                addLog(message, getLogClass(message));
-            }
+      let frameWindow = null;
+
+      // Capture console messages
+      const originalConsole = console.log;
+      console.log = function (...args) {
+        originalConsole.apply(console, args);
+
+        const message = args.join(" ");
+        if (
+          message.includes("[QuickFilter]") ||
+          message.includes("[DateFilter]") ||
+          message.includes("[useFilterState]")
+        ) {
+          addLog(message, getLogClass(message));
+        }
+      };
+
+      function getLogClass(message) {
+        if (message.includes("[QuickFilter]")) return "log-quickfilter";
+        if (message.includes("[DateFilter]")) return "log-datefilter";
+        if (message.includes("[useFilterState]")) return "log-usefilterstate";
+        return "";
+      }
+
+      function addLog(message, className = "") {
+        const logs = document.getElementById("logs");
+        const entry = document.createElement("div");
+        entry.className = `log-entry ${className}`;
+        entry.textContent = new Date().toLocaleTimeString() + ": " + message;
+        logs.appendChild(entry);
+        logs.scrollTop = logs.scrollHeight;
+      }
+
+      function clearLogs() {
+        document.getElementById("logs").innerHTML =
+          '<div class="log-entry">Logs cleared...</div>';
+      }
+
+      function testToday() {
+        addLog("=== TESTING TODAY FILTER ===");
+        const testModel = {
+          mode: "relative",
+          type: "equals",
+          expressionFrom: "Today",
         };
-        
-        function getLogClass(message) {
-            if (message.includes('[QuickFilter]')) return 'log-quickfilter';
-            if (message.includes('[DateFilter]')) return 'log-datefilter'; 
-            if (message.includes('[useFilterState]')) return 'log-usefilterstate';
-            return '';
-        }
-        
-        function addLog(message, className = '') {
-            const logs = document.getElementById('logs');
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${className}`;
-            entry.textContent = new Date().toLocaleTimeString() + ': ' + message;
-            logs.appendChild(entry);
-            logs.scrollTop = logs.scrollHeight;
-        }
-        
-        function clearLogs() {
-            document.getElementById('logs').innerHTML = '<div class="log-entry">Logs cleared...</div>';
-        }
-        
-        function testToday() {
-            addLog('=== TESTING TODAY FILTER ===');
-            const testModel = {
-                mode: 'relative',
-                type: 'equals',
-                expressionFrom: 'Today'
-            };
-            addLog('Test model: ' + JSON.stringify(testModel));
-            
-            // We'll need to trigger this through the iframe
-            postMessageToFrame('applyTestFilter', { columnId: 'date', filterModel: testModel });
-        }
-        
-        function testThisWeek() {
-            addLog('=== TESTING THIS WEEK FILTER ===');
-            const testModel = {
-                mode: 'relative',
-                type: 'inRange',
-                expressionFrom: 'Today-6d',
-                expressionTo: 'Today+1d'
-            };
-            addLog('Test model: ' + JSON.stringify(testModel));
-            
-            postMessageToFrame('applyTestFilter', { columnId: 'date', filterModel: testModel });
-        }
-        
-        function testClear() {
-            addLog('=== TESTING CLEAR FILTER ===');
-            postMessageToFrame('clearFilter', { columnId: 'date' });
-        }
-        
-        function getCurrentFilter() {
-            addLog('=== GETTING CURRENT FILTER ===');
-            postMessageToFrame('getCurrentFilter', {});
-        }
-        
-        function postMessageToFrame(action, data) {
-            const iframe = document.querySelector('iframe');
-            if (iframe && iframe.contentWindow) {
-                iframe.contentWindow.postMessage({ action, data }, '*');
-            } else {
-                addLog('ERROR: Could not access iframe');
-            }
-        }
-        
-        // Listen for messages from iframe
-        window.addEventListener('message', (event) => {
-            if (event.data && event.data.response) {
-                addLog('Response from iframe: ' + JSON.stringify(event.data.response));
-            }
+        addLog("Test model: " + JSON.stringify(testModel));
+
+        // We'll need to trigger this through the iframe
+        postMessageToFrame("applyTestFilter", {
+          columnId: "date",
+          filterModel: testModel,
         });
-        
-        addLog('Manual test page loaded. Use buttons to test different filter scenarios.');
+      }
+
+      function testThisWeek() {
+        addLog("=== TESTING THIS WEEK FILTER ===");
+        const testModel = {
+          mode: "relative",
+          type: "inRange",
+          expressionFrom: "Today-6d",
+          expressionTo: "Today+1d",
+        };
+        addLog("Test model: " + JSON.stringify(testModel));
+
+        postMessageToFrame("applyTestFilter", {
+          columnId: "date",
+          filterModel: testModel,
+        });
+      }
+
+      function testClear() {
+        addLog("=== TESTING CLEAR FILTER ===");
+        postMessageToFrame("clearFilter", { columnId: "date" });
+      }
+
+      function getCurrentFilter() {
+        addLog("=== GETTING CURRENT FILTER ===");
+        postMessageToFrame("getCurrentFilter", {});
+      }
+
+      function postMessageToFrame(action, data) {
+        const iframe = document.querySelector("iframe");
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.postMessage({ action, data }, "*");
+        } else {
+          addLog("ERROR: Could not access iframe");
+        }
+      }
+
+      // Listen for messages from iframe
+      window.addEventListener("message", (event) => {
+        if (event.data && event.data.response) {
+          addLog(
+            "Response from iframe: " + JSON.stringify(event.data.response),
+          );
+        }
+      });
+
+      addLog(
+        "Manual test page loaded. Use buttons to test different filter scenarios.",
+      );
     </script>
-</body>
+  </body>
 </html>

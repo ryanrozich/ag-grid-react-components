@@ -1,8 +1,20 @@
 import { Category, Priority, Status } from "./types";
 
-export const CATEGORIES: Category[] = ["Task", "Meeting", "Event", "Reminder", "Deadline"];
+export const CATEGORIES: Category[] = [
+  "Task",
+  "Meeting",
+  "Event",
+  "Reminder",
+  "Deadline",
+];
 export const PRIORITIES: Priority[] = ["Low", "Medium", "High", "Urgent"];
-export const STATUSES: Status[] = ["Pending", "In Progress", "Completed", "Cancelled", "Delayed"];
+export const STATUSES: Status[] = [
+  "Pending",
+  "In Progress",
+  "Completed",
+  "Cancelled",
+  "Delayed",
+];
 
 export const CATEGORY_STYLES = {
   Task: "bg-blue-50 text-blue-800",

@@ -14,13 +14,8 @@ const FilterModeToggleComponent: React.FC<FilterModeToggleProps> = ({
   className = "",
 }) => {
   return (
-    <div
-      className={`${styles.filterModeSection} ${className}`}
-    >
-      <label
-        id="date-mode-label"
-        className={styles.filterLabel}
-      >
+    <div className={`${styles.filterModeSection} ${className}`}>
+      <label id="date-mode-label" className={styles.filterLabel}>
         Date Mode
       </label>
       <div
@@ -61,12 +56,9 @@ const FilterModeToggleComponent: React.FC<FilterModeToggleProps> = ({
           Relative Date
         </button>
       </div>
-      <div
-        id="date-mode-description"
-        className="sr-only"
-        aria-live="polite"
-      >
-        Choose between specific dates or relative date expressions like &quot;Today+7d&quot;
+      <div id="date-mode-description" className="sr-only" aria-live="polite">
+        Choose between specific dates or relative date expressions like
+        &quot;Today+7d&quot;
       </div>
     </div>
   );

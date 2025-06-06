@@ -16,4 +16,9 @@ export interface RowData {
 
 export type Category = "Task" | "Meeting" | "Event" | "Reminder" | "Deadline";
 export type Priority = "Low" | "Medium" | "High" | "Urgent";
-export type Status = "Pending" | "In Progress" | "Completed" | "Cancelled" | "Delayed";
+export type Status =
+  | "Pending"
+  | "In Progress"
+  | "Completed"
+  | "Cancelled"
+  | "Delayed";

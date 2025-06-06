@@ -1,13 +1,13 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import type { ColDef, GridApi, GridOptions } from "ag-grid-community";
-import { 
-  RelativeDateFilter, 
+import {
+  RelativeDateFilter,
   RelativeDateFloatingFilter,
   QuickFilterDropdown,
   DATE_FILTER_PRESETS,
   setupFilterStatePersistence,
-  serializeFilterModel
+  serializeFilterModel,
 } from "../index";
 import { generateData } from "./data/generator";
 import "./styles/demo.css";
@@ -79,7 +79,7 @@ export const ComponentsShowcase: React.FC = () => {
         filter: "agSetColumnFilter",
       },
     ],
-    []
+    [],
   );
 
   const defaultColDef: ColDef = useMemo(
@@ -89,12 +89,12 @@ export const ComponentsShowcase: React.FC = () => {
       resizable: true,
       floatingFilter: false,
     }),
-    []
+    [],
   );
 
   const onGridReady = useCallback((params: any) => {
     setGridApi(params.api);
-    
+
     // Set up URL persistence
     const cleanup = setupFilterStatePersistence(params.api, {
       onFilterLoad: (model) => {
@@ -110,112 +110,148 @@ export const ComponentsShowcase: React.FC = () => {
   }, []);
 
   // Showcase sections
-  const sections: ShowcaseSection[] = useMemo(() => [
-    {
-      id: "date-filter",
-      title: "Relative Date Filter",
-      description: "A powerful date filter supporting both absolute dates and relative expressions like 'Today+7d'",
-      component: (
-        <div className="showcase-section">
-          <div className="section-content">
-            <h3>Features:</h3>
-            <ul>
-              <li>Switch between absolute date picker and relative expressions</li>
-              <li>Support for complex expressions: Today+7d, StartOfMonth-1M</li>
-              <li>Real-time validation with resolved date preview</li>
-              <li>All standard filter operations: equals, not equals, before, after, in range</li>
-            </ul>
-            <div className="example-expressions">
-              <h4>Try these expressions:</h4>
-              <code>Today</code>
-              <code>Today+7d</code>
-              <code>StartOfMonth</code>
-              <code>EndOfYear-1M</code>
-              <code>Now+3h</code>
+  const sections: ShowcaseSection[] = useMemo(
+    () => [
+      {
+        id: "date-filter",
+        title: "Relative Date Filter",
+        description:
+          "A powerful date filter supporting both absolute dates and relative expressions like 'Today+7d'",
+        component: (
+          <div className="showcase-section">
+            <div className="section-content">
+              <h3>Features:</h3>
+              <ul>
+                <li>
+                  Switch between absolute date picker and relative expressions
+                </li>
+                <li>
+                  Support for complex expressions: Today+7d, StartOfMonth-1M
+                </li>
+                <li>Real-time validation with resolved date preview</li>
+                <li>
+                  All standard filter operations: equals, not equals, before,
+                  after, in range
+                </li>
+              </ul>
+              <div className="example-expressions">
+                <h4>Try these expressions:</h4>
+                <code>Today</code>
+                <code>Today+7d</code>
+                <code>StartOfMonth</code>
+                <code>EndOfYear-1M</code>
+                <code>Now+3h</code>
+              </div>
             </div>
           </div>
-        </div>
-      ),
-    },
-    {
-      id: "quick-filter",
-      title: "Quick Filter Dropdown",
-      description: "Apply predefined filters with a single click using a customizable dropdown",
-      component: (
-        <div className="showcase-section">
-          <div className="toolbar">
-            <QuickFilterDropdown
-              api={gridApi!}
-              columnId="date"
-              options={DATE_FILTER_PRESETS}
-              placeholder="Select time period"
-              showDescriptions={true}
-              className="showcase-dropdown"
-              onFilterChange={(option) => {
-                console.log("Quick filter applied:", option);
-              }}
-            />
-            
-            <QuickFilterDropdown
-              api={gridApi!}
-              columnId="date"
-              options={[
-                { id: "all", label: "All Items", filterModel: null, icon: "🌍" },
-                { id: "recent", label: "Recent (7d)", filterModel: {
-                  mode: "relative",
-                  type: "inRange",
-                  expressionFrom: "Today-7d",
-                  expressionTo: "Today"
-                }, icon: "📅" },
-                { id: "future", label: "Future", filterModel: {
-                  mode: "relative",
-                  type: "after",
-                  expressionFrom: "Today"
-                }, icon: "🔮" },
-              ]}
-              placeholder="Custom filters"
-              showDescriptions={false}
-              className="showcase-dropdown"
-            />
+        ),
+      },
+      {
+        id: "quick-filter",
+        title: "Quick Filter Dropdown",
+        description:
+          "Apply predefined filters with a single click using a customizable dropdown",
+        component: (
+          <div className="showcase-section">
+            <div className="toolbar">
+              <QuickFilterDropdown
+                api={gridApi!}
+                columnId="date"
+                options={DATE_FILTER_PRESETS}
+                placeholder="Select time period"
+                showDescriptions={true}
+                className="showcase-dropdown"
+                onFilterChange={(option) => {
+                  console.log("Quick filter applied:", option);
+                }}
+              />
+
+              <QuickFilterDropdown
+                api={gridApi!}
+                columnId="date"
+                options={[
+                  {
+                    id: "all",
+                    label: "All Items",
+                    filterModel: null,
+                    icon: "🌍",
+                  },
+                  {
+                    id: "recent",
+                    label: "Recent (7d)",
+                    filterModel: {
+                      mode: "relative",
+                      type: "inRange",
+                      expressionFrom: "Today-7d",
+                      expressionTo: "Today",
+                    },
+                    icon: "📅",
+                  },
+                  {
+                    id: "future",
+                    label: "Future",
+                    filterModel: {
+                      mode: "relative",
+                      type: "after",
+                      expressionFrom: "Today",
+                    },
+                    icon: "🔮",
+                  },
+                ]}
+                placeholder="Custom filters"
+                showDescriptions={false}
+                className="showcase-dropdown"
+              />
+            </div>
+            <div className="section-content">
+              <h3>Features:</h3>
+              <ul>
+                <li>Predefined filter options with icons and descriptions</li>
+                <li>Keyboard navigation support</li>
+                <li>Search functionality for large option lists</li>
+                <li>Customizable trigger content</li>
+                <li>Works with any AG Grid column</li>
+              </ul>
+            </div>
           </div>
-          <div className="section-content">
-            <h3>Features:</h3>
-            <ul>
-              <li>Predefined filter options with icons and descriptions</li>
-              <li>Keyboard navigation support</li>
-              <li>Search functionality for large option lists</li>
-              <li>Customizable trigger content</li>
-              <li>Works with any AG Grid column</li>
-            </ul>
+        ),
+      },
+      {
+        id: "url-state",
+        title: "URL State Persistence",
+        description:
+          "Automatically sync filter state with the URL for shareable links and browser history support",
+        component: (
+          <div className="showcase-section">
+            <div className="section-content">
+              <h3>Current Filter State:</h3>
+              <pre className="state-display">
+                {gridApi
+                  ? JSON.stringify(
+                      serializeFilterModel(gridApi.getFilterModel()),
+                      null,
+                      2,
+                    )
+                  : "No filters applied"}
+              </pre>
+              <h3>Features:</h3>
+              <ul>
+                <li>Automatic URL synchronization</li>
+                <li>Browser back/forward button support</li>
+                <li>Shareable filter links</li>
+                <li>Proper Date object serialization</li>
+                <li>Customizable parameter name</li>
+              </ul>
+              <p className="hint">
+                Try applying filters and watch the URL update!
+              </p>
+            </div>
           </div>
-        </div>
-      ),
-    },
-    {
-      id: "url-state",
-      title: "URL State Persistence",
-      description: "Automatically sync filter state with the URL for shareable links and browser history support",
-      component: (
-        <div className="showcase-section">
-          <div className="section-content">
-            <h3>Current Filter State:</h3>
-            <pre className="state-display">
-              {gridApi ? JSON.stringify(serializeFilterModel(gridApi.getFilterModel()), null, 2) : "No filters applied"}
-            </pre>
-            <h3>Features:</h3>
-            <ul>
-              <li>Automatic URL synchronization</li>
-              <li>Browser back/forward button support</li>
-              <li>Shareable filter links</li>
-              <li>Proper Date object serialization</li>
-              <li>Customizable parameter name</li>
-            </ul>
-            <p className="hint">Try applying filters and watch the URL update!</p>
-          </div>
-        </div>
-      ),
-    },
-  ], [gridApi]);
+        ),
+      },
+    ],
+    [gridApi],
+  );
 
   const gridOptions: GridOptions = {
     animateRows: true,
@@ -258,17 +294,23 @@ export const ComponentsShowcase: React.FC = () => {
 
       <div className="showcase-content">
         <div className="showcase-info">
-          {sections.find(s => s.id === activeSection)?.component}
+          {sections.find((s) => s.id === activeSection)?.component}
         </div>
 
         <div className="grid-container">
           <h2>Live Demo Grid</h2>
           <p className="grid-hint">
-            {activeSection === "date-filter" && "Click on the Date column filter to try the relative date filter"}
-            {activeSection === "quick-filter" && "Use the dropdowns above to quickly filter the date column"}
-            {activeSection === "url-state" && "Apply any filters and check your browser's URL"}
+            {activeSection === "date-filter" &&
+              "Click on the Date column filter to try the relative date filter"}
+            {activeSection === "quick-filter" &&
+              "Use the dropdowns above to quickly filter the date column"}
+            {activeSection === "url-state" &&
+              "Apply any filters and check your browser's URL"}
           </p>
-          <div className="ag-theme-quartz" style={{ height: 500, width: "100%" }}>
+          <div
+            className="ag-theme-quartz"
+            style={{ height: 500, width: "100%" }}
+          >
             <AgGridReact
               columnDefs={columnDefs}
               defaultColDef={defaultColDef}
@@ -283,7 +325,11 @@ export const ComponentsShowcase: React.FC = () => {
       <footer className="showcase-footer">
         <p>
           View source on{" "}
-          <a href="https://github.com/your-username/ag-grid-react-components" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://github.com/your-username/ag-grid-react-components"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             GitHub
           </a>
         </p>

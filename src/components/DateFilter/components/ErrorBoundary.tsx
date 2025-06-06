@@ -38,12 +38,15 @@ class DateFilterErrorBoundary extends Component<
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log the error details
-    logger.error(`DateFilter Error in ${this.props.componentName || "Unknown Component"}`, {
-      error: error.message,
-      stack: error.stack,
-      componentStack: errorInfo.componentStack,
-      timestamp: new Date().toISOString(),
-    });
+    logger.error(
+      `DateFilter Error in ${this.props.componentName || "Unknown Component"}`,
+      {
+        error: error.message,
+        stack: error.stack,
+        componentStack: errorInfo.componentStack,
+        timestamp: new Date().toISOString(),
+      },
+    );
 
     // Call custom error handler if provided
     if (this.props.onError) {
@@ -107,7 +110,8 @@ class DateFilterErrorBoundary extends Component<
               color: "#7f1d1d",
             }}
           >
-            {this.state.error?.message || "Something went wrong with the date filter"}
+            {this.state.error?.message ||
+              "Something went wrong with the date filter"}
           </div>
           <button
             onClick={this.handleRetry}
@@ -130,40 +134,42 @@ class DateFilterErrorBoundary extends Component<
             Try Again
           </button>
           {/* eslint-disable-next-line no-undef */}
-          {typeof process !== "undefined" && process.env?.NODE_ENV === "development" && this.state.errorInfo && (
-            <details
-              style={{
-                marginTop: "1rem",
-                padding: "0.5rem",
-                backgroundColor: "#fee2e2",
-                borderRadius: "0.25rem",
-                fontSize: "0.625rem",
-                textAlign: "left",
-              }}
-            >
-              <summary style={{ cursor: "pointer", fontWeight: "600" }}>
-                Error Details (Development)
-              </summary>
-              <pre
+          {typeof process !== "undefined" &&
+            process.env?.NODE_ENV === "development" &&
+            this.state.errorInfo && (
+              <details
                 style={{
-                  marginTop: "0.5rem",
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-word",
+                  marginTop: "1rem",
+                  padding: "0.5rem",
+                  backgroundColor: "#fee2e2",
+                  borderRadius: "0.25rem",
+                  fontSize: "0.625rem",
+                  textAlign: "left",
                 }}
               >
-                {this.state.error?.stack}
-              </pre>
-              <pre
-                style={{
-                  marginTop: "0.5rem",
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-word",
-                }}
-              >
-                {this.state.errorInfo.componentStack}
-              </pre>
-            </details>
-          )}
+                <summary style={{ cursor: "pointer", fontWeight: "600" }}>
+                  Error Details (Development)
+                </summary>
+                <pre
+                  style={{
+                    marginTop: "0.5rem",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {this.state.error?.stack}
+                </pre>
+                <pre
+                  style={{
+                    marginTop: "0.5rem",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {this.state.errorInfo.componentStack}
+                </pre>
+              </details>
+            )}
         </div>
       );
     }

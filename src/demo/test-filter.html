@@ -1,55 +1,58 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
+  <head>
     <title>Test Filter Display</title>
     <script>
-        function testFilter() {
-            console.log('Testing filter display...');
-            
-            // Find all filter elements
-            const filters = document.querySelectorAll('.ag-grid-date-filter');
-            console.log('Found filters:', filters.length);
-            
-            filters.forEach((filter, index) => {
-                console.log(`Filter ${index}:`, {
-                    visible: filter.offsetParent !== null,
-                    display: window.getComputedStyle(filter).display,
-                    visibility: window.getComputedStyle(filter).visibility,
-                    height: filter.offsetHeight,
-                    width: filter.offsetWidth,
-                    innerHTML: filter.innerHTML.substring(0, 100) + '...'
-                });
-                
-                // Check for relative mode
-                const relativeMode = filter.querySelector('.relative-mode');
-                if (relativeMode) {
-                    console.log('Relative mode element found:', {
-                        visible: relativeMode.offsetParent !== null,
-                        display: window.getComputedStyle(relativeMode).display,
-                        height: relativeMode.offsetHeight
-                    });
-                    
-                    // Check for input
-                    const input = relativeMode.querySelector('input[type="text"]');
-                    if (input) {
-                        console.log('Input found:', {
-                            value: input.value,
-                            visible: input.offsetParent !== null,
-                            disabled: input.disabled
-                        });
-                    }
-                }
+      function testFilter() {
+        console.log("Testing filter display...");
+
+        // Find all filter elements
+        const filters = document.querySelectorAll(".ag-grid-date-filter");
+        console.log("Found filters:", filters.length);
+
+        filters.forEach((filter, index) => {
+          console.log(`Filter ${index}:`, {
+            visible: filter.offsetParent !== null,
+            display: window.getComputedStyle(filter).display,
+            visibility: window.getComputedStyle(filter).visibility,
+            height: filter.offsetHeight,
+            width: filter.offsetWidth,
+            innerHTML: filter.innerHTML.substring(0, 100) + "...",
+          });
+
+          // Check for relative mode
+          const relativeMode = filter.querySelector(".relative-mode");
+          if (relativeMode) {
+            console.log("Relative mode element found:", {
+              visible: relativeMode.offsetParent !== null,
+              display: window.getComputedStyle(relativeMode).display,
+              height: relativeMode.offsetHeight,
             });
-        }
-        
-        // Run test when page loads
-        window.addEventListener('load', () => {
-            setTimeout(testFilter, 2000); // Wait for AG Grid to initialize
+
+            // Check for input
+            const input = relativeMode.querySelector('input[type="text"]');
+            if (input) {
+              console.log("Input found:", {
+                value: input.value,
+                visible: input.offsetParent !== null,
+                disabled: input.disabled,
+              });
+            }
+          }
         });
+      }
+
+      // Run test when page loads
+      window.addEventListener("load", () => {
+        setTimeout(testFilter, 2000); // Wait for AG Grid to initialize
+      });
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Open the console and check the filter display diagnostics</h1>
-    <p>Then open the main demo at http://localhost:5174/ and run testFilter() in the console</p>
-</body>
+    <p>
+      Then open the main demo at http://localhost:5174/ and run testFilter() in
+      the console
+    </p>
+  </body>
 </html>

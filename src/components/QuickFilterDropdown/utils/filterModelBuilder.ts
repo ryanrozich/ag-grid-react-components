@@ -7,17 +7,20 @@ import type { QuickFilterOption } from "../types";
 export function applyQuickFilter(
   api: GridApi,
   columnId: string,
-  option: QuickFilterOption | null
+  option: QuickFilterOption | null,
 ): void {
   if (!api || !columnId) {
-    console.warn("[QuickFilter] Missing api or columnId", { api: !!api, columnId });
+    console.warn("[QuickFilter] Missing api or columnId", {
+      api: !!api,
+      columnId,
+    });
     return;
   }
 
   console.log("[QuickFilter] Applying filter:", {
     option: option?.label,
     columnId,
-    filterModel: option?.filterModel
+    filterModel: option?.filterModel,
   });
 
   // Get current filter model
@@ -38,7 +41,12 @@ export function applyQuickFilter(
     }
   } else if (option.filterModel) {
     // Use the provided filter model
-    console.log("[QuickFilter] Setting filter model for column", columnId, ":", option.filterModel);
+    console.log(
+      "[QuickFilter] Setting filter model for column",
+      columnId,
+      ":",
+      option.filterModel,
+    );
     currentModel[columnId] = option.filterModel;
   } else {
     // Clear filter if no model provided
@@ -46,27 +54,35 @@ export function applyQuickFilter(
   }
 
   console.log("[QuickFilter] Final filter model to apply:", currentModel);
-  
+
   // Apply the updated filter model
   api.setFilterModel(currentModel);
-  
-  console.log("[QuickFilter] Filter model applied. Checking what was actually set:");
+
+  console.log(
+    "[QuickFilter] Filter model applied. Checking what was actually set:",
+  );
   setTimeout(async () => {
     const actualModel = api.getFilterModel();
-    console.log("[QuickFilter] Actual filter model after setting:", actualModel);
-    
+    console.log(
+      "[QuickFilter] Actual filter model after setting:",
+      actualModel,
+    );
+
     // Also check the filter instance
     try {
       const checkInstance = await api.getColumnFilterInstance(columnId);
       console.log("[QuickFilter] Filter instance:", checkInstance);
-      if (checkInstance && typeof checkInstance.getModel === 'function') {
-        console.log("[QuickFilter] Filter instance model:", checkInstance.getModel());
+      if (checkInstance && typeof checkInstance.getModel === "function") {
+        console.log(
+          "[QuickFilter] Filter instance model:",
+          checkInstance.getModel(),
+        );
       }
     } catch (error) {
       console.log("[QuickFilter] Error getting filter instance:", error);
     }
   }, 100);
-  
+
   // Force grid to update
   api.onFilterChanged();
 }
@@ -77,7 +93,7 @@ export function applyQuickFilter(
 export function getActiveFilterOption(
   api: GridApi,
   columnId: string,
-  options: QuickFilterOption[]
+  options: QuickFilterOption[],
 ): QuickFilterOption | null {
   if (!api || !columnId) {
     return null;
@@ -98,7 +114,9 @@ export function getActiveFilterOption(
         // For dynamic filters, we can't easily compare
         return false;
       }
-      return JSON.stringify(option.filterModel) === JSON.stringify(columnFilter);
+      return (
+        JSON.stringify(option.filterModel) === JSON.stringify(columnFilter)
+      );
     }) || null
   );
 }

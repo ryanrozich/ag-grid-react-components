@@ -59,7 +59,7 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
     return options.filter(
       (option) =>
         option.label.toLowerCase().includes(query) ||
-        option.description?.toLowerCase().includes(query)
+        option.description?.toLowerCase().includes(query),
     );
   }, [options, state.searchQuery]);
 
@@ -77,7 +77,7 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
       onFilterChange?.(option);
       triggerRef.current?.focus();
     },
-    [api, columnId, onFilterChange]
+    [api, columnId, onFilterChange],
   );
 
   // Handle click outside
@@ -119,7 +119,7 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
               ...prev,
               highlightedIndex: Math.min(
                 prev.highlightedIndex + 1,
-                filteredOptions.length - 1
+                filteredOptions.length - 1,
               ),
             }));
           }
@@ -174,12 +174,15 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
           }
       }
     },
-    [state.isOpen, state.highlightedIndex, filteredOptions, handleSelectOption]
+    [state.isOpen, state.highlightedIndex, filteredOptions, handleSelectOption],
   );
 
   // Scroll highlighted option into view
   useEffect(() => {
-    if (state.highlightedIndex >= 0 && optionRefs.current[state.highlightedIndex]) {
+    if (
+      state.highlightedIndex >= 0 &&
+      optionRefs.current[state.highlightedIndex]
+    ) {
       optionRefs.current[state.highlightedIndex]?.scrollIntoView({
         block: "nearest",
         behavior: "smooth",
@@ -194,15 +197,19 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
     }
   }, [state.isOpen]);
 
-  const positionClass = styles[
-    `position${position
-      .split("-")
-      .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-      .join("")}` as keyof typeof styles
-  ];
+  const positionClass =
+    styles[
+      `position${position
+        .split("-")
+        .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+        .join("")}` as keyof typeof styles
+    ];
 
   return (
-    <div ref={containerRef} className={`${styles.container} ${className || ""}`}>
+    <div
+      ref={containerRef}
+      className={`${styles.container} ${className || ""}`}
+    >
       <button
         ref={triggerRef}
         type="button"

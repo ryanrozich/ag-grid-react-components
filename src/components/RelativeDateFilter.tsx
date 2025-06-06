@@ -479,24 +479,30 @@ const RelativeDateFilter = (props: DateFilterParams) => {
   }, [currentModel]);
 
   // Deserialize a model from external state (e.g., URL parameters)
-  const deserializeModel = useCallback((model: unknown): DateFilterModel | null => {
-    if (!model || typeof model !== 'object') return null;
+  const deserializeModel = useCallback(
+    (model: unknown): DateFilterModel | null => {
+      if (!model || typeof model !== "object") return null;
 
-    const typedModel = model as Record<string, unknown>;
-    
-    // Convert ISO strings back to Date objects
-    return {
-      type: typedModel.type as DateFilterType,
-      mode: typedModel.mode as DateFilterMode,
-      dateFrom: typedModel.dateFrom ? new Date(String(typedModel.dateFrom)) : null,
-      dateTo: typedModel.dateTo ? new Date(String(typedModel.dateTo)) : null,
-      expressionFrom: typedModel.expressionFrom as string | undefined,
-      expressionTo: typedModel.expressionTo as string | undefined,
-      // Ensure inclusivity properties are preserved
-      fromInclusive: typedModel.fromInclusive as boolean | undefined ?? false,
-      toInclusive: typedModel.toInclusive as boolean | undefined ?? false,
-    };
-  }, []);
+      const typedModel = model as Record<string, unknown>;
+
+      // Convert ISO strings back to Date objects
+      return {
+        type: typedModel.type as DateFilterType,
+        mode: typedModel.mode as DateFilterMode,
+        dateFrom: typedModel.dateFrom
+          ? new Date(String(typedModel.dateFrom))
+          : null,
+        dateTo: typedModel.dateTo ? new Date(String(typedModel.dateTo)) : null,
+        expressionFrom: typedModel.expressionFrom as string | undefined,
+        expressionTo: typedModel.expressionTo as string | undefined,
+        // Ensure inclusivity properties are preserved
+        fromInclusive:
+          (typedModel.fromInclusive as boolean | undefined) ?? false,
+        toInclusive: (typedModel.toInclusive as boolean | undefined) ?? false,
+      };
+    },
+    [],
+  );
 
   // Register filter with AG Grid
   // For v33, we need to provide these callbacks
@@ -826,7 +832,9 @@ const RelativeDateFilter = (props: DateFilterParams) => {
                 color: "#374151",
               }}
             >
-              {filterType === "inRange" ? "Date Expression Range" : "Date Expression"}
+              {filterType === "inRange"
+                ? "Date Expression Range"
+                : "Date Expression"}
             </label>
             <div
               style={{
@@ -863,12 +871,18 @@ const RelativeDateFilter = (props: DateFilterParams) => {
                 />
                 <div style={{ minHeight: "1.25rem", marginTop: "0.25rem" }}>
                   {!fromExpressionValid && expressionFrom && (
-                    <div className="error-message" style={{ color: "#ef4444", fontSize: "0.75rem" }}>
+                    <div
+                      className="error-message"
+                      style={{ color: "#ef4444", fontSize: "0.75rem" }}
+                    >
                       Invalid expression
                     </div>
                   )}
                   {fromExpressionValid && resolvedDateFrom && (
-                    <div className="resolved-date" style={{ color: "#6b7280", fontSize: "0.75rem" }}>
+                    <div
+                      className="resolved-date"
+                      style={{ color: "#6b7280", fontSize: "0.75rem" }}
+                    >
                       Resolves to: {format(resolvedDateFrom, dateFormat)}
                     </div>
                   )}
@@ -896,12 +910,18 @@ const RelativeDateFilter = (props: DateFilterParams) => {
                   />
                   <div style={{ minHeight: "1.25rem", marginTop: "0.25rem" }}>
                     {!toExpressionValid && expressionTo && (
-                      <div className="error-message" style={{ color: "#ef4444", fontSize: "0.75rem" }}>
+                      <div
+                        className="error-message"
+                        style={{ color: "#ef4444", fontSize: "0.75rem" }}
+                      >
                         {toExpressionError || "Invalid expression"}
                       </div>
                     )}
                     {toExpressionValid && resolvedDateTo && (
-                      <div className="resolved-date" style={{ color: "#6b7280", fontSize: "0.75rem" }}>
+                      <div
+                        className="resolved-date"
+                        style={{ color: "#6b7280", fontSize: "0.75rem" }}
+                      >
                         Resolves to: {format(resolvedDateTo, dateFormat)}
                       </div>
                     )}

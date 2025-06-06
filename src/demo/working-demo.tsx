@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+} from "react";
 import { AgGridReact } from "ag-grid-react";
 import {
   GridReadyEvent,
@@ -20,17 +26,27 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 // Import our components and utilities
 import DateFilter from "../components/DateFilter";
 import RelativeDateFloatingFilter from "../components/RelativeDateFloatingFilter";
-import { setupFilterStatePersistence, loadFilterStateFromUrl } from "../utils/filterStateUtils";
+import {
+  setupFilterStatePersistence,
+  loadFilterStateFromUrl,
+} from "../utils/filterStateUtils";
 
 // Import demo modules
 import { RowData } from "./data/types";
 import { generateData } from "./data/generator";
 import { createColumnDefs } from "./config/columnDefs";
-import { createDefaultColDef, createAutoGroupColumnDef, createSideBar } from "./config/gridConfig";
+import {
+  createDefaultColDef,
+  createAutoGroupColumnDef,
+  createSideBar,
+} from "./config/gridConfig";
 import { DocumentationPanel } from "./components/DocumentationPanel";
 
 // Import the production QuickFilterDropdown component
-import { QuickFilterDropdown, DATE_FILTER_PRESETS } from "../components/QuickFilterDropdown";
+import {
+  QuickFilterDropdown,
+  DATE_FILTER_PRESETS,
+} from "../components/QuickFilterDropdown";
 import type { QuickFilterOption } from "../components/QuickFilterDropdown";
 
 // Import demo styles
@@ -94,7 +110,7 @@ const App: React.FC = () => {
         setFilterStatus(hasFilters ? "Filter active" : "No filter applied");
       });
     },
-    [initialData]
+    [initialData],
   );
 
   // Cleanup on unmount

@@ -5,14 +5,18 @@ A collection of powerful, reusable React components for AG Grid (v33.3.0+) that 
 ## 🚀 Features
 
 ### 📅 Relative Date Filter
+
 A custom date filter that supports both absolute dates and relative date expressions:
+
 - **Dual Mode Support**: Switch between date picker and expression mode
 - **Relative Expressions**: Use expressions like "Today+7d", "StartOfMonth-1M"
 - **Comprehensive Operations**: Equals, Not Equals, After, Before, In Range
 - **Real-time Validation**: Shows resolved dates for relative expressions
 
 ### 🎯 Quick Filter Dropdown
+
 A dropdown component for applying predefined filters quickly:
+
 - **Preset Options**: Pre-configured filter options for common scenarios
 - **Customizable**: Define your own filter presets
 - **Keyboard Navigation**: Full keyboard support
@@ -20,7 +24,9 @@ A dropdown component for applying predefined filters quickly:
 - **Icons & Descriptions**: Rich UI with icons and descriptions
 
 ### 🔗 URL State Serializer
+
 Utilities for persisting AG Grid filter state in the URL:
+
 - **Browser History Integration**: Back/forward button support
 - **Shareable Links**: Share filtered views via URL
 - **Automatic Sync**: Keeps URL and grid state in sync
@@ -44,7 +50,10 @@ npm install ag-grid-react-components
 
 ```tsx
 import { AgGridReact } from "ag-grid-react";
-import { RelativeDateFilter, RelativeDateFloatingFilter } from "ag-grid-react-components";
+import {
+  RelativeDateFilter,
+  RelativeDateFloatingFilter,
+} from "ag-grid-react-components";
 import "ag-grid-react-components/dist/style.css";
 
 const columnDefs = [
@@ -65,7 +74,10 @@ const columnDefs = [
 ### Quick Filter Dropdown
 
 ```tsx
-import { QuickFilterDropdown, DATE_FILTER_PRESETS } from "ag-grid-react-components";
+import {
+  QuickFilterDropdown,
+  DATE_FILTER_PRESETS,
+} from "ag-grid-react-components";
 
 function MyToolbar({ api }) {
   return (
@@ -107,6 +119,7 @@ The Relative Date Filter supports powerful expressions:
 - **Period Start/End**: `StartOfMonth`, `EndOfYear`, `StartOfWeek+1w`
 
 ### Units
+
 - `d` - days
 - `w` - weeks
 - `M` - months
@@ -153,6 +166,7 @@ The components use CSS modules and can be customized via CSS variables:
 ## 🧪 Testing
 
 Components are thoroughly tested with:
+
 - Unit tests (Vitest + React Testing Library)
 - Integration tests with AG Grid
 - E2E tests (Playwright)

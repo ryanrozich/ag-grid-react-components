@@ -34,7 +34,7 @@ describe("DateFilterErrorBoundary", () => {
       render(
         <DateFilterErrorBoundary>
           <div data-testid="child-component">Child content</div>
-        </DateFilterErrorBoundary>
+        </DateFilterErrorBoundary>,
       );
 
       expect(screen.getByTestId("child-component")).toBeInTheDocument();
@@ -46,7 +46,7 @@ describe("DateFilterErrorBoundary", () => {
         <DateFilterErrorBoundary>
           <div data-testid="child-1">Child 1</div>
           <div data-testid="child-2">Child 2</div>
-        </DateFilterErrorBoundary>
+        </DateFilterErrorBoundary>,
       );
 
       expect(screen.getByTestId("child-1")).toBeInTheDocument();
@@ -59,7 +59,7 @@ describe("DateFilterErrorBoundary", () => {
       render(
         <DateFilterErrorBoundary>
           <AlwaysThrowComponent />
-        </DateFilterErrorBoundary>
+        </DateFilterErrorBoundary>,
       );
 
       expect(screen.getByRole("alert")).toBeInTheDocument();
@@ -69,12 +69,14 @@ describe("DateFilterErrorBoundary", () => {
     });
 
     it("should display custom fallback UI when provided", () => {
-      const customFallback = <div data-testid="custom-fallback">Custom error UI</div>;
+      const customFallback = (
+        <div data-testid="custom-fallback">Custom error UI</div>
+      );
 
       render(
         <DateFilterErrorBoundary fallback={customFallback}>
           <AlwaysThrowComponent />
-        </DateFilterErrorBoundary>
+        </DateFilterErrorBoundary>,
       );
 
       expect(screen.getByTestId("custom-fallback")).toBeInTheDocument();
@@ -88,24 +90,26 @@ describe("DateFilterErrorBoundary", () => {
       render(
         <DateFilterErrorBoundary onError={mockErrorHandler}>
           <AlwaysThrowComponent />
-        </DateFilterErrorBoundary>
+        </DateFilterErrorBoundary>,
       );
 
       expect(mockErrorHandler).toHaveBeenCalledWith(
         expect.any(Error),
         expect.objectContaining({
           componentStack: expect.any(String),
-        })
+        }),
       );
     });
 
     it("should include component name in error logs", async () => {
-      const { logger } = await vi.importActual("../../../utils/logger") as any;
+      const { logger } = (await vi.importActual(
+        "../../../utils/logger",
+      )) as any;
 
       render(
         <DateFilterErrorBoundary componentName="TestComponent">
           <AlwaysThrowComponent />
-        </DateFilterErrorBoundary>
+        </DateFilterErrorBoundary>,
       );
 
       expect(logger.error).toHaveBeenCalledWith(
@@ -115,12 +119,14 @@ describe("DateFilterErrorBoundary", () => {
           stack: expect.any(String),
           componentStack: expect.any(String),
           timestamp: expect.any(String),
-        })
+        }),
       );
     });
 
     it("should handle errors in custom error handler gracefully", async () => {
-      const { logger } = await vi.importActual("../../../utils/logger") as any;
+      const { logger } = (await vi.importActual(
+        "../../../utils/logger",
+      )) as any;
       const faultyErrorHandler = vi.fn(() => {
         throw new Error("Error handler failed");
       });
@@ -128,13 +134,13 @@ describe("DateFilterErrorBoundary", () => {
       render(
         <DateFilterErrorBoundary onError={faultyErrorHandler}>
           <AlwaysThrowComponent />
-        </DateFilterErrorBoundary>
+        </DateFilterErrorBoundary>,
       );
 
       expect(faultyErrorHandler).toHaveBeenCalled();
       expect(logger.error).toHaveBeenCalledWith(
         "Error in custom error handler",
-        { error: expect.any(Error) }
+        { error: expect.any(Error) },
       );
     });
   });
@@ -172,7 +178,7 @@ describe("DateFilterErrorBoundary", () => {
       render(
         <DateFilterErrorBoundary>
           <AlwaysThrowComponent />
-        </DateFilterErrorBoundary>
+        </DateFilterErrorBoundary>,
       );
 
       expect(screen.getByRole("alert")).toBeInTheDocument();
@@ -191,7 +197,7 @@ describe("DateFilterErrorBoundary", () => {
       render(
         <DateFilterErrorBoundary>
           <AlwaysThrowComponent />
-        </DateFilterErrorBoundary>
+        </DateFilterErrorBoundary>,
       );
 
       const errorElement = screen.getByRole("alert");
@@ -202,12 +208,12 @@ describe("DateFilterErrorBoundary", () => {
       render(
         <DateFilterErrorBoundary>
           <AlwaysThrowComponent />
-        </DateFilterErrorBoundary>
+        </DateFilterErrorBoundary>,
       );
 
       const retryButton = screen.getByText("Try Again");
       expect(retryButton).toBeInTheDocument();
-      
+
       // Should be focusable
       retryButton.focus();
       expect(retryButton).toHaveFocus();
@@ -228,10 +234,12 @@ describe("DateFilterErrorBoundary", () => {
       render(
         <DateFilterErrorBoundary>
           <AlwaysThrowComponent />
-        </DateFilterErrorBoundary>
+        </DateFilterErrorBoundary>,
       );
 
-      expect(screen.getByText("Error Details (Development)")).toBeInTheDocument();
+      expect(
+        screen.getByText("Error Details (Development)"),
+      ).toBeInTheDocument();
 
       // Restore environment
       process.env.NODE_ENV = originalEnv;
@@ -245,10 +253,12 @@ describe("DateFilterErrorBoundary", () => {
       render(
         <DateFilterErrorBoundary>
           <AlwaysThrowComponent />
-        </DateFilterErrorBoundary>
+        </DateFilterErrorBoundary>,
       );
 
-      expect(screen.queryByText("Error Details (Development)")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Error Details (Development)"),
+      ).not.toBeInTheDocument();
 
       // Restore environment
       process.env.NODE_ENV = originalEnv;
@@ -266,17 +276,19 @@ describe("DateFilterErrorBoundary", () => {
       render(
         <DateFilterErrorBoundary>
           <ComponentWithNoMessage />
-        </DateFilterErrorBoundary>
+        </DateFilterErrorBoundary>,
       );
 
-      expect(screen.getByText("Something went wrong with the date filter")).toBeInTheDocument();
+      expect(
+        screen.getByText("Something went wrong with the date filter"),
+      ).toBeInTheDocument();
     });
 
     it("should display specific error message when available", () => {
       render(
         <DateFilterErrorBoundary>
           <AlwaysThrowComponent />
-        </DateFilterErrorBoundary>
+        </DateFilterErrorBoundary>,
       );
 
       expect(screen.getByText("Component always throws")).toBeInTheDocument();

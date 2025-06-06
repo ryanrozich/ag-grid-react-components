@@ -42,7 +42,9 @@ const getStatusClass = (value: string) => {
 };
 
 // Helper function to get date cell class
-const getDateCellClass = (params: { data?: { isToday?: boolean; isPast?: boolean; isUpcoming?: boolean } }) => {
+const getDateCellClass = (params: {
+  data?: { isToday?: boolean; isPast?: boolean; isUpcoming?: boolean };
+}) => {
   if (params.data?.isToday) return "bg-green-100 font-bold";
   if (params.data?.isPast) return "bg-gray-100 text-gray-600";
   if (params.data?.isUpcoming) return "bg-blue-50";
@@ -66,7 +68,9 @@ const dateAggValueFormatter = (params: { value?: unknown }): string => {
 };
 
 // Helper function for value cell class
-const getValueCellClass = (params: { node?: { footer?: boolean; level?: number } }) => {
+const getValueCellClass = (params: {
+  node?: { footer?: boolean; level?: number };
+}) => {
   const classes = ["font-mono", "text-right"];
 
   // Check if this is a total row (footer node)

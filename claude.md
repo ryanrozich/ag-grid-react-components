@@ -362,6 +362,7 @@ npm run format:check
 ```
 
 Prettier will automatically:
+
 - Format TypeScript/JavaScript files
 - Format CSS/SCSS files
 - Format JSON files

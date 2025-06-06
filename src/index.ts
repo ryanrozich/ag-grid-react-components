@@ -4,7 +4,10 @@ import RelativeDateFloatingFilter from "./components/RelativeDateFloatingFilter"
 export { RelativeDateFilter, RelativeDateFloatingFilter };
 
 // Quick Filter Dropdown
-import { QuickFilterDropdown, DATE_FILTER_PRESETS } from "./components/QuickFilterDropdown";
+import {
+  QuickFilterDropdown,
+  DATE_FILTER_PRESETS,
+} from "./components/QuickFilterDropdown";
 export { QuickFilterDropdown, DATE_FILTER_PRESETS };
 
 // Date Filter Types

@@ -14,7 +14,7 @@ const expectedModels = {
     expressionFrom: "Today",
   },
   thisWeek: {
-    mode: "relative", 
+    mode: "relative",
     type: "inRange",
     expressionFrom: "Today-6d",
     expressionTo: "Today+1d",
@@ -34,8 +34,14 @@ Object.entries(expectedModels).forEach(([key, model]) => {
 // Test filter model application
 console.log("\n=== Testing Filter Model Application ===");
 console.log("The QuickFilterDropdown should:");
-console.log("1. Call api.setFilterModel with the column filter wrapped in an object");
-console.log("2. The DateFilter component should receive the model via setModel callback");
-console.log("3. The DateFilter should then apply the filter via doesFilterPass");
+console.log(
+  "1. Call api.setFilterModel with the column filter wrapped in an object",
+);
+console.log(
+  "2. The DateFilter component should receive the model via setModel callback",
+);
+console.log(
+  "3. The DateFilter should then apply the filter via doesFilterPass",
+);
 
 export {};

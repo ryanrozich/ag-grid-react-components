@@ -21,13 +21,8 @@ const FilterTypeSelectorComponent: React.FC<FilterTypeSelectorProps> = ({
   );
 
   return (
-    <div
-      className={`${styles.filterTypeSection} ${className}`}
-    >
-      <label
-        htmlFor="filter-type-select"
-        className={styles.filterLabel}
-      >
+    <div className={`${styles.filterTypeSection} ${className}`}>
+      <label htmlFor="filter-type-select" className={styles.filterLabel}>
         Filter Type
       </label>
       <select
@@ -49,7 +44,8 @@ const FilterTypeSelectorComponent: React.FC<FilterTypeSelectorProps> = ({
         className={styles.screenReaderOnly}
         aria-live="polite"
       >
-        Choose how to filter dates: equals a specific date, not equal to a date, after a date, before a date, or within a date range
+        Choose how to filter dates: equals a specific date, not equal to a date,
+        after a date, before a date, or within a date range
       </div>
     </div>
   );

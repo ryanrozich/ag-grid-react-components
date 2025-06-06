@@ -42,23 +42,21 @@ const AbsoluteDatePickerComponent: React.FC<AbsoluteDatePickerProps> = ({
   );
 
   return (
-    <div className={`${styles.dateInputsContainer} ${className}`} data-testid="date-input">
-      <label
-        htmlFor="date-picker-from"
-        className={styles.inputLabel}
-      >
+    <div
+      className={`${styles.dateInputsContainer} ${className}`}
+      data-testid="date-input"
+    >
+      <label htmlFor="date-picker-from" className={styles.inputLabel}>
         {filterType === "inRange" ? "Date Range" : "Date"}
       </label>
       <div
-        className={filterType === "inRange" ? styles.inputRow : styles.inputGroup}
+        className={
+          filterType === "inRange" ? styles.inputRow : styles.inputGroup
+        }
       >
         <div className={styles.inputWrapper}>
           {filterType === "inRange" && (
-            <span
-              className={styles.inputLabel}
-            >
-              From:
-            </span>
+            <span className={styles.inputLabel}>From:</span>
           )}
           <DatePicker
             id="date-picker-from"
@@ -96,10 +94,7 @@ const AbsoluteDatePickerComponent: React.FC<AbsoluteDatePickerProps> = ({
         </div>
         {filterType === "inRange" && (
           <div className={styles.inputWrapper}>
-            <label
-              htmlFor="date-picker-to"
-              className={styles.inputLabel}
-            >
+            <label htmlFor="date-picker-to" className={styles.inputLabel}>
               To:
             </label>
             <DatePicker
@@ -138,11 +133,9 @@ const AbsoluteDatePickerComponent: React.FC<AbsoluteDatePickerProps> = ({
           </div>
         )}
       </div>
-      <div
-        id="date-picker-instructions"
-        className={styles.screenReaderOnly}
-      >
-        Use arrow keys to navigate calendar, Enter to select date, Escape to close
+      <div id="date-picker-instructions" className={styles.screenReaderOnly}>
+        Use arrow keys to navigate calendar, Enter to select date, Escape to
+        close
       </div>
     </div>
   );

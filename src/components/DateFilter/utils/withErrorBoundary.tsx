@@ -12,10 +12,11 @@ interface WithErrorBoundaryOptions {
  */
 export function withErrorBoundary<P extends object>(
   WrappedComponent: ComponentType<P>,
-  options: WithErrorBoundaryOptions = {}
+  options: WithErrorBoundaryOptions = {},
 ) {
-  const displayName = WrappedComponent.displayName || WrappedComponent.name || "Component";
-  
+  const displayName =
+    WrappedComponent.displayName || WrappedComponent.name || "Component";
+
   const WithErrorBoundaryComponent = (props: P) => {
     return (
       <DateFilterErrorBoundary
@@ -29,7 +30,7 @@ export function withErrorBoundary<P extends object>(
   };
 
   WithErrorBoundaryComponent.displayName = `withErrorBoundary(${displayName})`;
-  
+
   return WithErrorBoundaryComponent;
 }
 
@@ -60,7 +61,7 @@ export function useErrorHandler() {
  */
 export async function safeAsync<T>(
   operation: () => Promise<T>,
-  onError?: (error: Error) => void
+  onError?: (error: Error) => void,
 ): Promise<T | null> {
   try {
     return await operation();
@@ -80,7 +81,7 @@ export async function safeAsync<T>(
 export function safeSync<T>(
   operation: () => T,
   defaultValue: T,
-  onError?: (error: Error) => void
+  onError?: (error: Error) => void,
 ): T {
   try {
     return operation();

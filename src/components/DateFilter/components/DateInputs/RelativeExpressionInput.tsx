@@ -53,14 +53,17 @@ const RelativeExpressionInputComponent: React.FC<
   );
 
   return (
-    <div className={`${styles.dateInputsContainer} ${className}`} data-testid="relative-input">
-      <label
-        className={styles.inputLabel}
-      >
+    <div
+      className={`${styles.dateInputsContainer} ${className}`}
+      data-testid="relative-input"
+    >
+      <label className={styles.inputLabel}>
         {filterType === "inRange" ? "Date Expression Range" : "Date Expression"}
       </label>
       <div
-        className={filterType === "inRange" ? styles.inputRow : styles.inputGroup}
+        className={
+          filterType === "inRange" ? styles.inputRow : styles.inputGroup
+        }
       >
         <div className={styles.inputWrapper}>
           {filterType === "inRange" && (
@@ -83,7 +86,11 @@ const RelativeExpressionInputComponent: React.FC<
             onChange={handleFromChange}
             onKeyDown={onKeyDown}
             placeholder="e.g., Today, Today+7d"
-            aria-label={filterType === "inRange" ? "Start date expression" : "Date expression"}
+            aria-label={
+              filterType === "inRange"
+                ? "Start date expression"
+                : "Date expression"
+            }
             aria-describedby="expression-from-help expression-from-status"
             aria-invalid={!fromValid && expressionFrom ? "true" : "false"}
           />
@@ -111,11 +118,9 @@ const RelativeExpressionInputComponent: React.FC<
               </div>
             )}
           </div>
-          <div
-            id="expression-from-help"
-            className="sr-only"
-          >
-            Enter relative date expressions like Today, Today+7d, Today-1m, or Today+2w
+          <div id="expression-from-help" className="sr-only">
+            Enter relative date expressions like Today, Today+7d, Today-1m, or
+            Today+2w
           </div>
         </div>
         {filterType === "inRange" && (
@@ -169,10 +174,7 @@ const RelativeExpressionInputComponent: React.FC<
                 </div>
               )}
             </div>
-            <div
-              id="expression-to-help"
-              className="sr-only"
-            >
+            <div id="expression-to-help" className="sr-only">
               Enter end date expression for range filtering
             </div>
           </div>

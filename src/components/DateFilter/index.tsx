@@ -24,10 +24,10 @@ const DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
 const DateFilterComponent = (props: DateFilterParams) => {
   console.log("[DateFilter] Component instantiated with props:", props);
-  
+
   const dateFormat = props.dateFormat || DEFAULT_DATE_FORMAT;
   const { handleError } = useErrorHandler();
-  
+
   // Destructure props for useCallback dependencies
   const {
     filterChangedCallback,
@@ -38,7 +38,7 @@ const DateFilterComponent = (props: DateFilterParams) => {
     beforeInclusive,
     rangeInclusive,
     model: initialModel,
-    defaultMode
+    defaultMode,
   } = props;
 
   // Use custom hooks for state management
@@ -130,7 +130,12 @@ const DateFilterComponent = (props: DateFilterParams) => {
   // Filter implementation
   const doesFilterPass = useCallback(
     ({ node }: { node: IRowNode }) => {
-      logger.debug("[DateFilter] doesFilterPass called, currentModel:", currentModel, "isValid:", validation.isFilterValid);
+      logger.debug(
+        "[DateFilter] doesFilterPass called, currentModel:",
+        currentModel,
+        "isValid:",
+        validation.isFilterValid,
+      );
       if (!validation.isFilterValid || !currentModel) return true;
 
       const cellValue = getValue(node);
@@ -157,8 +162,7 @@ const DateFilterComponent = (props: DateFilterParams) => {
       // Get inclusivity settings from model or fall back to props defaults
       const fromInclusive =
         currentModel.fromInclusive ?? afterInclusive ?? false;
-      const toInclusive =
-        currentModel.toInclusive ?? beforeInclusive ?? false;
+      const toInclusive = currentModel.toInclusive ?? beforeInclusive ?? false;
 
       switch (filterState.filterType) {
         case "equals":
@@ -224,7 +228,10 @@ const DateFilterComponent = (props: DateFilterParams) => {
   );
 
   const applyFilter = useCallback(() => {
-    logger.debug("[DateFilter] applyFilter called with currentModel:", currentModel);
+    logger.debug(
+      "[DateFilter] applyFilter called with currentModel:",
+      currentModel,
+    );
     if (onModelChange) {
       onModelChange(currentModel);
     }
@@ -295,44 +302,44 @@ const DateFilterComponent = (props: DateFilterParams) => {
       (model: DateFilterModel | null) => {
         console.log("[DateFilter] setModel called with:", model);
         logger.debug("[DateFilter] setModel called with:", model);
-        
+
         if (!model) {
           console.log("[DateFilter] No model provided, resetting filter");
           resetFilter();
           return;
         }
-        
+
         console.log("[DateFilter] Current filter state before setting model:", {
           filterType: filterState.filterType,
           filterMode: filterState.filterMode,
           expressionFrom: filterState.expressionFrom,
-          expressionTo: filterState.expressionTo
+          expressionTo: filterState.expressionTo,
         });
-        
+
         filterState.initializeFromModel(model);
-        
+
         console.log("[DateFilter] Filter state after setting model:", {
           filterType: filterState.filterType,
           filterMode: filterState.filterMode,
           expressionFrom: filterState.expressionFrom,
-          expressionTo: filterState.expressionTo
+          expressionTo: filterState.expressionTo,
         });
-        
+
         logger.debug("Filter state initialized from model:", model);
-        
+
         // Trigger filter update immediately after state initialization
         // This ensures the grid knows the filter has changed
         if (filterChangedCallback) {
-          console.log("[DateFilter] Calling filterChangedCallback after setModel");
-          logger.debug("[DateFilter] Calling filterChangedCallback after setModel");
+          console.log(
+            "[DateFilter] Calling filterChangedCallback after setModel",
+          );
+          logger.debug(
+            "[DateFilter] Calling filterChangedCallback after setModel",
+          );
           filterChangedCallback();
         }
       },
-      [
-        resetFilter,
-        filterState,
-        filterChangedCallback,
-      ],
+      [resetFilter, filterState, filterChangedCallback],
     ),
     onNewRowsLoaded: () => {
       // Handle new rows if needed

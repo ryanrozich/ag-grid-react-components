@@ -15,9 +15,7 @@ const FilterActionsComponent: React.FC<FilterActionsProps> = ({
   className = "",
 }) => {
   return (
-    <div
-      className={`${styles.filterButtons} ${className}`}
-    >
+    <div className={`${styles.filterButtons} ${className}`}>
       <button
         className={`${styles.filterButton} ${styles.resetButton}`}
         onClick={onReset}
@@ -39,7 +37,11 @@ const FilterActionsComponent: React.FC<FilterActionsProps> = ({
         disabled={!isValid}
         type="button"
         data-testid="apply-button"
-        aria-label={isValid ? "Apply the current filter settings" : "Cannot apply filter - invalid settings"}
+        aria-label={
+          isValid
+            ? "Apply the current filter settings"
+            : "Cannot apply filter - invalid settings"
+        }
         aria-describedby="apply-button-status"
         onKeyDown={(e) => {
           if ((e.key === "Enter" || e.key === " ") && isValid) {
@@ -55,7 +57,9 @@ const FilterActionsComponent: React.FC<FilterActionsProps> = ({
         className={styles.screenReaderOnly}
         aria-live="polite"
       >
-        {isValid ? "Filter is ready to apply" : "Please complete filter settings to apply"}
+        {isValid
+          ? "Filter is ready to apply"
+          : "Please complete filter settings to apply"}
       </div>
     </div>
   );
