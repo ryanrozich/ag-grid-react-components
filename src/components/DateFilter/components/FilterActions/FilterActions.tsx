@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./FilterActions.module.css";
 
 interface FilterActionsProps {
   onReset: () => void;
@@ -15,30 +16,47 @@ const FilterActionsComponent: React.FC<FilterActionsProps> = ({
 }) => {
   return (
     <div
-      className={`filter-buttons ${className}`}
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        marginTop: "1rem",
-      }}
+      className={`${styles.filterButtons} ${className}`}
     >
       <button
-        className="filter-button reset-button"
+        className={`${styles.filterButton} ${styles.resetButton}`}
         onClick={onReset}
         type="button"
         data-testid="clear-button"
+        aria-label="Reset filter to clear all selections"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onReset();
+          }
+        }}
       >
         Reset
       </button>
       <button
-        className="filter-button apply-button"
+        className={`${styles.filterButton} ${styles.applyButton}`}
         onClick={onApply}
         disabled={!isValid}
         type="button"
         data-testid="apply-button"
+        aria-label={isValid ? "Apply the current filter settings" : "Cannot apply filter - invalid settings"}
+        aria-describedby="apply-button-status"
+        onKeyDown={(e) => {
+          if ((e.key === "Enter" || e.key === " ") && isValid) {
+            e.preventDefault();
+            onApply();
+          }
+        }}
       >
         Apply
       </button>
+      <div
+        id="apply-button-status"
+        className={styles.screenReaderOnly}
+        aria-live="polite"
+      >
+        {isValid ? "Filter is ready to apply" : "Please complete filter settings to apply"}
+      </div>
     </div>
   );
 };

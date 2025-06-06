@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Filter Test</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module">
+        // Import the test component
+        import FilterTest from '/src/demo/filter-test.tsx';
+        import React from 'react';
+        import ReactDOM from 'react-dom/client';
+        
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(FilterTest));
+    </script>
+</body>
+</html>

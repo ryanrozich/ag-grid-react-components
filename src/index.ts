@@ -1,18 +1,35 @@
+// Date Filter Components
 import RelativeDateFilter from "./components/DateFilter";
 import RelativeDateFloatingFilter from "./components/RelativeDateFloatingFilter";
-import {
+export { RelativeDateFilter, RelativeDateFloatingFilter };
+
+// Quick Filter Dropdown
+import { QuickFilterDropdown, DATE_FILTER_PRESETS } from "./components/QuickFilterDropdown";
+export { QuickFilterDropdown, DATE_FILTER_PRESETS };
+
+// Date Filter Types
+export type {
   DateFilterType,
   DateFilterMode,
   DateFilterModel,
   DateFilterParams,
 } from "./components/interfaces";
-import {
+
+// Quick Filter Types
+export type {
+  QuickFilterOption,
+  QuickFilterDropdownProps,
+} from "./components/QuickFilterDropdown";
+
+// Date Expression Utilities
+export {
   parseDateExpression,
   isValidDateExpression,
   resolveDateExpression,
 } from "./utils/dateExpressionParser";
 
-import {
+// Filter State Utilities (URL Serialization)
+export {
   serializeFilterModel,
   deserializeFilterModel,
   loadFilterStateFromUrl as loadFilterFromUrl,
@@ -22,32 +39,11 @@ import {
 // Import CSS
 import "./styles.css";
 
-export {
-  RelativeDateFilter,
-  RelativeDateFloatingFilter,
-  // Date expression utils
-  parseDateExpression,
-  isValidDateExpression,
-  resolveDateExpression,
-  // Filter state utils
-  serializeFilterModel,
-  deserializeFilterModel,
-  loadFilterFromUrl,
-  setupFilterStatePersistence,
-};
-
-// Export type definitions
-export type {
-  DateFilterType,
-  DateFilterMode,
-  DateFilterModel,
-  DateFilterParams,
-};
-
 // For AG Grid v33 compatibility
 // @ts-ignore - Add metadata for AG Grid to properly recognize components
 RelativeDateFilter.__AG_GRID_COMPONENT = true;
 // @ts-ignore - Add metadata for AG Grid to properly recognize components
 RelativeDateFloatingFilter.__AG_GRID_COMPONENT = true;
 
+// Default export remains the RelativeDateFilter for backward compatibility
 export default RelativeDateFilter;

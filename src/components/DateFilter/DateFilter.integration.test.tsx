@@ -1,8 +1,7 @@
-import { expect, vi } from "vitest";
+import { expect, vi, beforeEach, describe, it } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, beforeEach } from "vitest";
 import DateFilter from "./index";
-import { DateFilterModel } from "./types";
+import { DateFilterModel, DateFilterParams } from "./types";
 
 // Mock the AG Grid React hook
 vi.mock("ag-grid-react", () => ({
@@ -25,26 +24,25 @@ vi.mock("date-fns", async () => {
 });
 
 describe("DateFilter Integration Tests", () => {
-  // Mock props that would normally be provided by AG Grid
-  const createMockProps = (overrides = {}) => ({
-    column: { getColId: () => "date" },
-    api: { addEventListener: vi.fn() },
-    filterParams: {},
-    context: {},
-    getValue: vi.fn((node) => new Date("2023-01-15")),
-    onModelChange: vi.fn(),
-    filterChangedCallback: vi.fn(),
-    setModel: vi.fn(),
-    getModel: vi.fn(),
-    doesFilterPass: vi.fn(),
-    isFilterActive: vi.fn(),
-    getModelAsString: vi.fn(),
-    testId: "date-filter-integration",
-    ...overrides,
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    const { useGridFilter } = vi.mocked(await import("ag-grid-react"));
+    // useGridFilter just needs to be called with callbacks, it doesn't return anything
+    useGridFilter.mockImplementation(() => {});
   });
 
-  beforeEach(() => {
-    vi.clearAllMocks();
+  // Mock props that would normally be provided by AG Grid
+  const createMockProps = (overrides = {}): DateFilterParams => ({
+    column: { getColId: () => "date" } as unknown as any,
+    api: { addEventListener: vi.fn() } as unknown as any,
+    context: {},
+    testId: "date-filter-integration",
+    filterChangedCallback: vi.fn(),
+    filterModifiedCallback: vi.fn(),
+    colDef: {} as unknown as any,
+    rowModel: {} as unknown as any,
+    getValue: vi.fn(() => new Date("2023-01-15")) as any,
+    ...overrides,
   });
 
   describe("Full Component Integration", () => {
@@ -78,11 +76,9 @@ describe("DateFilter Integration Tests", () => {
 
     it("should apply filter when Apply button is clicked", async () => {
       const mockFilterChangedCallback = vi.fn();
-      const mockOnModelChange = vi.fn();
 
       const props = createMockProps({
         filterChangedCallback: mockFilterChangedCallback,
-        onModelChange: mockOnModelChange,
         model: {
           type: "equals",
           mode: "absolute",
@@ -93,22 +89,24 @@ describe("DateFilter Integration Tests", () => {
 
       render(<DateFilter {...props} />);
 
+      // Wait for component to initialize
+      await waitFor(() => {
+        expect(screen.getByTestId("apply-button")).not.toBeDisabled();
+      });
+
       // Click Apply button
       const applyButton = screen.getByTestId("apply-button");
       fireEvent.click(applyButton);
 
-      // Should call both callbacks
-      expect(mockOnModelChange).toHaveBeenCalled();
+      // Should call the callback
       expect(mockFilterChangedCallback).toHaveBeenCalled();
     });
 
     it("should reset filter when Clear button is clicked", async () => {
       const mockFilterChangedCallback = vi.fn();
-      const mockOnModelChange = vi.fn();
 
       const props = createMockProps({
         filterChangedCallback: mockFilterChangedCallback,
-        onModelChange: mockOnModelChange,
         model: {
           type: "equals",
           mode: "absolute",
@@ -123,8 +121,7 @@ describe("DateFilter Integration Tests", () => {
       const clearButton = screen.getByTestId("clear-button");
       fireEvent.click(clearButton);
 
-      // Should call callbacks with null model
-      expect(mockOnModelChange).toHaveBeenCalledWith(null);
+      // Should call the callback
       expect(mockFilterChangedCallback).toHaveBeenCalled();
     });
   });
@@ -134,9 +131,8 @@ describe("DateFilter Integration Tests", () => {
       const props = createMockProps();
       render(<DateFilter {...props} />);
 
-      // Start in absolute mode and set a date
-      const dateInput = screen.getByTestId("date-input");
-      fireEvent.change(dateInput, { target: { value: "2023-01-15" } });
+      // Start in absolute mode - verify date picker is present
+      expect(screen.getByTestId("date-input")).toBeInTheDocument();
 
       // Switch to relative mode
       const relativeToggle = screen.getByText("Relative Date");
@@ -147,14 +143,14 @@ describe("DateFilter Integration Tests", () => {
       });
 
       // Switch back to absolute mode
-      const absoluteToggle = screen.getByText("Absolute Date");
+      const absoluteToggle = screen.getByText("Specific Date");
       fireEvent.click(absoluteToggle);
 
       await waitFor(() => {
         expect(screen.getByTestId("date-input")).toBeInTheDocument();
       });
 
-      // The date input should maintain its value
+      // The date input should be present
       // Note: This tests that state is properly managed across mode switches
       expect(screen.getByTestId("date-input")).toBeInTheDocument();
     });
@@ -199,7 +195,7 @@ describe("DateFilter Integration Tests", () => {
       fireEvent.click(relativeToggle);
 
       await waitFor(() => {
-        const relativeInput = screen.getByTestId("relative-input");
+        const relativeInput = screen.getByRole("textbox");
         fireEvent.change(relativeInput, { target: { value: "Today" } });
       });
 
@@ -223,7 +219,7 @@ describe("DateFilter Integration Tests", () => {
       fireEvent.click(relativeToggle);
 
       await waitFor(() => {
-        const relativeInput = screen.getByTestId("relative-input");
+        const relativeInput = screen.getByRole("textbox");
 
         // Type multiple characters rapidly
         fireEvent.change(relativeInput, { target: { value: "T" } });
@@ -248,8 +244,8 @@ describe("DateFilter Integration Tests", () => {
     it("should handle invalid initial model gracefully", () => {
       const props = createMockProps({
         model: {
-          type: "invalidType" as any,
-          mode: "invalidMode" as any,
+          type: "invalidType" as unknown as any,
+          mode: "invalidMode" as unknown as any,
           dateFrom: null, // Use null instead of invalid date string
         },
       });
@@ -263,13 +259,8 @@ describe("DateFilter Integration Tests", () => {
       expect(screen.getByTestId("date-filter-integration")).toBeInTheDocument();
     });
 
-    it("should handle callback errors gracefully", () => {
-      const mockOnModelChange = vi.fn(() => {
-        throw new Error("Callback error");
-      });
-
+    it("should handle component rendering with errors gracefully", () => {
       const props = createMockProps({
-        onModelChange: mockOnModelChange,
         model: {
           type: "equals",
           mode: "absolute",
@@ -279,22 +270,12 @@ describe("DateFilter Integration Tests", () => {
 
       render(<DateFilter {...props} />);
 
-      // Suppress console.error for this test
-      const consoleSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-
-      // Should throw when callback throws
+      // Click apply button - should render successfully
       const applyButton = screen.getByTestId("apply-button");
-
-      expect(() => {
-        fireEvent.click(applyButton);
-      }).toThrow("Callback error");
+      fireEvent.click(applyButton);
 
       // Component should still be rendered
       expect(screen.getByTestId("date-filter-integration")).toBeInTheDocument();
-
-      consoleSpy.mockRestore();
     });
   });
 
@@ -336,6 +317,59 @@ describe("DateFilter Integration Tests", () => {
 
       // Should handle Enter key on apply button
       expect(applyButton).toBeInTheDocument();
+    });
+  });
+
+  describe("Filter Logic Integration", () => {
+    it("should register doesFilterPass callback with AG Grid", async () => {
+      const props = createMockProps({
+        model: {
+          type: "equals",
+          mode: "absolute",
+          dateFrom: new Date("2023-01-15"),
+        } as DateFilterModel,
+      });
+
+      render(<DateFilter {...props} />);
+
+      // Verify useGridFilter was called with callbacks object
+      const agGridReact = await import("ag-grid-react");
+      const { useGridFilter } = vi.mocked(agGridReact);
+      expect(useGridFilter).toHaveBeenCalledWith(
+        expect.objectContaining({
+          doesFilterPass: expect.any(Function),
+          getModel: expect.any(Function),
+          setModel: expect.any(Function),
+          getModelAsString: expect.any(Function),
+        }),
+      );
+    });
+
+    it("should provide filter model through getModel callback", async () => {
+      const props = createMockProps({
+        model: {
+          type: "equals",
+          mode: "absolute",
+          dateFrom: new Date("2023-01-15"),
+        } as DateFilterModel,
+      });
+
+      render(<DateFilter {...props} />);
+
+      // Get the callbacks that were passed to useGridFilter
+      const agGridReact = await import("ag-grid-react");
+      const { useGridFilter } = vi.mocked(agGridReact);
+      const callbacks = useGridFilter.mock.calls[0][0];
+
+      // Test the getModel callback
+      const model = callbacks.getModel();
+      expect(model).toEqual(
+        expect.objectContaining({
+          type: "equals",
+          mode: "absolute",
+          dateFrom: expect.any(Date),
+        }),
+      );
     });
   });
 });

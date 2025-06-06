@@ -111,20 +111,34 @@ export const useFilterState = (
   // Initialize state from a model
   const initializeFromModel = useCallback(
     (model: DateFilterModel | null) => {
+      console.log("[useFilterState] initializeFromModel called with:", model);
+      
       if (!model) {
+        console.log("[useFilterState] No model, resetting state");
         resetState();
         return;
       }
 
+      console.log("[useFilterState] Setting filter type to:", model.type);
       setFilterType(model.type);
+      
+      console.log("[useFilterState] Setting filter mode to:", model.mode);
       setFilterMode(model.mode);
 
       if (model.mode === "absolute") {
+        console.log("[useFilterState] Setting absolute dates:", {
+          from: model.dateFrom,
+          to: model.dateTo
+        });
         setAbsoluteDateFrom(model.dateFrom || null);
         setAbsoluteDateTo(model.dateTo || null);
         setExpressionFrom("");
         setExpressionTo("");
       } else {
+        console.log("[useFilterState] Setting relative expressions:", {
+          from: model.expressionFrom,
+          to: model.expressionTo
+        });
         setExpressionFrom(model.expressionFrom || "");
         setExpressionTo(model.expressionTo || "");
         setAbsoluteDateFrom(null);

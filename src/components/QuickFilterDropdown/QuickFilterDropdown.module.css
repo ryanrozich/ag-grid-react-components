@@ -1,0 +1,413 @@
+/* Container and positioning */
+.container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Trigger button */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  min-width: 10rem;
+  white-space: nowrap;
+}
+
+.trigger:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.trigger:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+.triggerActive {
+  color: #1f2937;
+  background-color: #f3f4f6;
+  border-color: #3b82f6;
+}
+
+.triggerIcon {
+  display: flex;
+  align-items: center;
+  margin-left: 0.25rem;
+  transition: transform 0.2s ease;
+}
+
+.triggerIconOpen {
+  transform: rotate(180deg);
+}
+
+/* Dropdown panel */
+.dropdown {
+  position: absolute;
+  margin-top: 0.5rem;
+  min-width: 14rem;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  opacity: 0;
+  transform: translateY(-0.5rem);
+  visibility: hidden;
+  transition: all 0.15s ease-in-out;
+  z-index: 50;
+  max-height: 20rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdownOpen {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+/* Position variants */
+.positionBottomLeft {
+  left: 0;
+  top: 100%;
+}
+
+.positionBottomRight {
+  right: 0;
+  top: 100%;
+}
+
+.positionTopLeft {
+  left: 0;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.positionTopRight {
+  right: 0;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+/* Search input */
+.searchContainer {
+  padding: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  color: #374151;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.searchInput:focus {
+  outline: none;
+  background-color: white;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Options list */
+.optionsList {
+  overflow-y: auto;
+  padding: 0.25rem 0;
+  flex: 1;
+}
+
+/* Individual option */
+.option {
+  display: flex;
+  align-items: flex-start;
+  padding: 0.625rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.option:hover {
+  background-color: #f3f4f6;
+}
+
+.option:focus {
+  outline: none;
+  background-color: #e5e7eb;
+}
+
+.optionHighlighted {
+  background-color: #f3f4f6;
+}
+
+.optionSelected {
+  background-color: #eff6ff;
+  color: #1e40af;
+}
+
+.optionSelected:hover {
+  background-color: #dbeafe;
+}
+
+.optionDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.optionDisabled:hover {
+  background-color: transparent;
+}
+
+/* Option content */
+.optionIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.75rem;
+  font-size: 1rem;
+}
+
+.optionContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.optionLabel {
+  font-weight: 500;
+  color: inherit;
+  display: block;
+  margin-bottom: 0.125rem;
+}
+
+.optionDescription {
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.25;
+}
+
+.optionSelected .optionDescription {
+  color: #3b82f6;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 0.25rem 0;
+}
+
+/* Empty state */
+.emptyState {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Loading state */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #6b7280;
+}
+
+/* Chevron icon */
+.chevron {
+  width: 1rem;
+  height: 1rem;
+  color: #6b7280;
+}
+
+/* Focus trap helper */
+.focusTrap {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownOpen.positionBottomLeft,
+.dropdownOpen.positionBottomRight {
+  animation: slideDown 0.15s ease-out;
+}
+
+.dropdownOpen.positionTopLeft,
+.dropdownOpen.positionTopRight {
+  animation: slideUp 0.15s ease-out;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .trigger {
+    color: #e5e7eb;
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+
+  .trigger:hover {
+    background-color: #374151;
+    border-color: #4b5563;
+  }
+
+  .triggerActive {
+    color: #f3f4f6;
+    background-color: #374151;
+    border-color: #3b82f6;
+  }
+
+  .dropdown {
+    background-color: #1f2937;
+    border-color: #374151;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3),
+      0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  }
+
+  .searchInput {
+    color: #e5e7eb;
+    background-color: #111827;
+    border-color: #374151;
+  }
+
+  .searchInput:focus {
+    background-color: #1f2937;
+  }
+
+  .option {
+    color: #e5e7eb;
+  }
+
+  .option:hover {
+    background-color: #374151;
+  }
+
+  .option:focus {
+    background-color: #4b5563;
+  }
+
+  .optionHighlighted {
+    background-color: #374151;
+  }
+
+  .optionSelected {
+    background-color: #1e3a8a;
+    color: #93bbfc;
+  }
+
+  .optionSelected:hover {
+    background-color: #1e40af;
+  }
+
+  .optionDescription {
+    color: #9ca3af;
+  }
+
+  .optionSelected .optionDescription {
+    color: #60a5fa;
+  }
+
+  .divider {
+    background-color: #374151;
+  }
+
+  .emptyState,
+  .loading {
+    color: #9ca3af;
+  }
+
+  .chevron {
+    color: #9ca3af;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .trigger:focus {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  .searchInput:focus {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+    box-shadow: none;
+  }
+
+  .option:focus {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .trigger,
+  .triggerIcon,
+  .dropdown,
+  .option {
+    transition: none;
+  }
+
+  .dropdownOpen.positionBottomLeft,
+  .dropdownOpen.positionBottomRight,
+  .dropdownOpen.positionTopLeft,
+  .dropdownOpen.positionTopRight {
+    animation: none;
+  }
+}

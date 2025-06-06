@@ -1,0 +1,186 @@
+/* Grid Theme Overrides */
+.ag-theme-quartz .ag-row-even {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.ag-theme-quartz .ag-row-odd {
+  background-color: white;
+}
+
+.ag-theme-quartz .ag-row-hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Demo Container Styles */
+.demo-container {
+  padding: 2rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.demo-content {
+  max-width: 90rem;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 2rem;
+}
+
+.demo-header {
+  margin-bottom: 2rem;
+}
+
+.demo-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.demo-subtitle {
+  font-size: 1.125rem;
+  color: #64748b;
+}
+
+/* Controls Section */
+.demo-controls {
+  background-color: #f8fafc;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.controls-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.controls-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.filter-status {
+  color: #0891b2;
+  font-weight: 600;
+}
+
+/* Documentation Panel */
+.documentation-panel {
+  margin-top: 2rem;
+  background-color: #f1f5f9;
+  border-radius: 0.5rem;
+  padding: 2rem;
+}
+
+.doc-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 0.75rem;
+}
+
+.doc-section {
+  margin-bottom: 1.5rem;
+}
+
+.doc-heading {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.doc-subheading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.doc-text {
+  color: #4b5563;
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.doc-list {
+  list-style-type: none;
+  padding-left: 0;
+  color: #374151;
+}
+
+.doc-list-item {
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.doc-list-item::before {
+  content: "•";
+  position: absolute;
+  left: 0.5rem;
+  color: #6b7280;
+}
+
+.doc-list-numbered {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
+.doc-list-numbered .doc-list-item {
+  padding-left: 0.5rem;
+}
+
+.doc-list-numbered .doc-list-item::before {
+  display: none;
+}
+
+.doc-note {
+  background-color: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.doc-subsection {
+  margin-top: 0.75rem;
+}
+
+/* Code Inline Styles */
+code {
+  background-color: #e5e7eb;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+}
+
+/* Status Display Component */
+.status-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-icon {
+  font-size: 1.125rem;
+}
+
+.status-text {
+  font-weight: 600;
+}
+
+/* Grid Container */
+.grid-container {
+  height: 600px;
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}

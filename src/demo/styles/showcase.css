@@ -1,0 +1,208 @@
+.components-showcase {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.showcase-header {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  color: white;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.showcase-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.showcase-header p {
+  font-size: 1.25rem;
+  opacity: 0.9;
+}
+
+.showcase-nav {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0 2rem;
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.nav-button {
+  padding: 1rem 1.5rem;
+  border: none;
+  background: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-button:hover {
+  color: #374151;
+}
+
+.nav-button.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+.showcase-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.showcase-info {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.showcase-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+.showcase-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.showcase-section li {
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  color: #4b5563;
+}
+
+.showcase-section li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: 600;
+}
+
+.example-expressions {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f3f4f6;
+  border-radius: 6px;
+}
+
+.example-expressions h4 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 0.75rem;
+}
+
+.example-expressions code {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  margin: 0.25rem;
+  background: #e5e7eb;
+  color: #1f2937;
+  border-radius: 4px;
+  font-family: "Courier New", monospace;
+  font-size: 0.875rem;
+}
+
+.toolbar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.showcase-dropdown {
+  min-width: 200px;
+}
+
+.state-display {
+  background: #1f2937;
+  color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  font-family: "Courier New", monospace;
+  margin: 1rem 0;
+}
+
+.hint {
+  color: #6b7280;
+  font-style: italic;
+  font-size: 0.875rem;
+  margin-top: 1rem;
+}
+
+.grid-container {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.grid-container h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #111827;
+}
+
+.grid-hint {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.showcase-footer {
+  background: #1f2937;
+  color: #f3f4f6;
+  padding: 2rem;
+  text-align: center;
+  margin-top: 4rem;
+}
+
+.showcase-footer a {
+  color: #60a5fa;
+  text-decoration: none;
+}
+
+.showcase-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .showcase-header {
+    padding: 2rem 1rem;
+  }
+  
+  .showcase-header h1 {
+    font-size: 2rem;
+  }
+  
+  .showcase-content {
+    padding: 1rem;
+  }
+  
+  .showcase-info,
+  .grid-container {
+    padding: 1.5rem;
+  }
+}

@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { DateFilterType } from "../../types";
+import styles from "./DateInputs.module.css";
 
 interface AbsoluteDatePickerProps {
   filterType: DateFilterType;
@@ -41,40 +42,26 @@ const AbsoluteDatePickerComponent: React.FC<AbsoluteDatePickerProps> = ({
   );
 
   return (
-    <div className={`absolute-mode ${className}`} data-testid="date-input">
+    <div className={`${styles.dateInputsContainer} ${className}`} data-testid="date-input">
       <label
-        className="filter-label"
-        style={{
-          display: "block",
-          marginBottom: "0.25rem",
-          fontSize: "0.875rem",
-          fontWeight: "500",
-          color: "#374151",
-        }}
+        htmlFor="date-picker-from"
+        className={styles.inputLabel}
       >
         {filterType === "inRange" ? "Date Range" : "Date"}
       </label>
       <div
-        style={{
-          display: "flex",
-          gap: "0.75rem",
-          flexDirection: filterType === "inRange" ? "row" : "column",
-        }}
+        className={filterType === "inRange" ? styles.inputRow : styles.inputGroup}
       >
-        <div className="input-wrapper" style={{ flex: "1" }}>
+        <div className={styles.inputWrapper}>
           {filterType === "inRange" && (
             <span
-              style={{
-                fontSize: "0.75rem",
-                color: "#6b7280",
-                marginBottom: "0.25rem",
-                display: "block",
-              }}
+              className={styles.inputLabel}
             >
               From:
             </span>
           )}
           <DatePicker
+            id="date-picker-from"
             selected={dateFrom}
             onChange={onDateFromChange}
             dateFormat={dateFormat}
@@ -83,7 +70,6 @@ const AbsoluteDatePickerComponent: React.FC<AbsoluteDatePickerProps> = ({
             minDate={minDate}
             maxDate={maxDate}
             onKeyDown={handleKeyDown}
-            inline
             showMonthDropdown
             showYearDropdown
             dropdownMode="select"
@@ -104,32 +90,28 @@ const AbsoluteDatePickerComponent: React.FC<AbsoluteDatePickerProps> = ({
                 fn: () => ({}),
               },
             ]}
+            aria-label={filterType === "inRange" ? "Start date" : "Date"}
+            aria-describedby="date-picker-instructions"
           />
         </div>
         {filterType === "inRange" && (
-          <div className="input-wrapper" style={{ flex: "1" }}>
+          <div className={styles.inputWrapper}>
             <label
-              className="filter-label"
-              style={{
-                display: "block",
-                marginBottom: "0.25rem",
-                fontSize: "0.875rem",
-                fontWeight: "500",
-                color: "#374151",
-              }}
+              htmlFor="date-picker-to"
+              className={styles.inputLabel}
             >
               To:
             </label>
             <DatePicker
+              id="date-picker-to"
               selected={dateTo}
               onChange={onDateToChange}
               dateFormat={dateFormat}
-              placeholderText="Select date"
+              placeholderText="Select end date"
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               minDate={minDate}
               maxDate={maxDate}
               onKeyDown={handleKeyDown}
-              inline
               showMonthDropdown
               showYearDropdown
               dropdownMode="select"
@@ -150,9 +132,17 @@ const AbsoluteDatePickerComponent: React.FC<AbsoluteDatePickerProps> = ({
                   fn: () => ({}),
                 },
               ]}
+              aria-label="End date"
+              aria-describedby="date-picker-instructions"
             />
           </div>
         )}
+      </div>
+      <div
+        id="date-picker-instructions"
+        className={styles.screenReaderOnly}
+      >
+        Use arrow keys to navigate calendar, Enter to select date, Escape to close
       </div>
     </div>
   );

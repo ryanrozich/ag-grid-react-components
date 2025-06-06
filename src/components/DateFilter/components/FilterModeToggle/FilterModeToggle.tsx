@@ -1,5 +1,6 @@
 import React from "react";
 import { DateFilterMode } from "../../types";
+import styles from "./FilterModeToggle.module.css";
 
 interface FilterModeToggleProps {
   mode: DateFilterMode;
@@ -14,66 +15,58 @@ const FilterModeToggleComponent: React.FC<FilterModeToggleProps> = ({
 }) => {
   return (
     <div
-      className={`filter-mode-section ${className}`}
-      style={{ marginBottom: "1rem" }}
+      className={`${styles.filterModeSection} ${className}`}
     >
       <label
-        className="filter-label"
-        style={{
-          display: "block",
-          marginBottom: "0.25rem",
-          fontSize: "0.875rem",
-          fontWeight: "500",
-          color: "#374151",
-        }}
+        id="date-mode-label"
+        className={styles.filterLabel}
       >
         Date Mode
       </label>
       <div
-        className="date-mode-selector"
+        className={styles.dateModeSelector}
         data-testid="mode-toggle"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          border: "1px solid #d1d5db",
-          borderRadius: "0.375rem",
-          overflow: "hidden",
-        }}
+        role="radiogroup"
+        aria-labelledby="date-mode-label"
+        aria-describedby="date-mode-description"
       >
-        <div
-          className={`date-mode-option ${mode === "absolute" ? "selected" : ""}`}
-          style={{
-            flex: "1",
-            padding: "0.5rem",
-            textAlign: "center",
-            cursor: "pointer",
-            backgroundColor: mode === "absolute" ? "#2563eb" : "#f9fafb",
-            color: mode === "absolute" ? "#ffffff" : "#374151",
-            fontWeight: mode === "absolute" ? "600" : "400",
-            transition: "background-color 0.2s, color 0.2s",
-            userSelect: "none",
-          }}
+        <button
+          className={`${styles.dateModeOption} ${mode === "absolute" ? styles.selected : ""}`}
+          role="radio"
+          aria-checked={mode === "absolute"}
+          tabIndex={mode === "absolute" ? 0 : -1}
           onClick={() => mode !== "absolute" && onModeChange()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              if (mode !== "absolute") onModeChange();
+            }
+          }}
         >
           Specific Date
-        </div>
-        <div
-          className={`date-mode-option ${mode === "relative" ? "selected" : ""}`}
-          style={{
-            flex: "1",
-            padding: "0.5rem",
-            textAlign: "center",
-            cursor: "pointer",
-            backgroundColor: mode === "relative" ? "#2563eb" : "#f9fafb",
-            color: mode === "relative" ? "#ffffff" : "#374151",
-            fontWeight: mode === "relative" ? "600" : "400",
-            transition: "background-color 0.2s, color 0.2s",
-            userSelect: "none",
-          }}
+        </button>
+        <button
+          className={`${styles.dateModeOption} ${mode === "relative" ? styles.selected : ""}`}
+          role="radio"
+          aria-checked={mode === "relative"}
+          tabIndex={mode === "relative" ? 0 : -1}
           onClick={() => mode !== "relative" && onModeChange()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              if (mode !== "relative") onModeChange();
+            }
+          }}
         >
           Relative Date
-        </div>
+        </button>
+      </div>
+      <div
+        id="date-mode-description"
+        className="sr-only"
+        aria-live="polite"
+      >
+        Choose between specific dates or relative date expressions like &quot;Today+7d&quot;
       </div>
     </div>
   );

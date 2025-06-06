@@ -8,8 +8,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
-      name: "AGGridDateFilter",
-      fileName: (format) => `ag-grid-date-filter.${format}.js`,
+      name: "AGGridReactComponents",
+      fileName: (format) => `ag-grid-react-components.${format}.js`,
     },
     rollupOptions: {
       external: [

@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { DateFilterType } from "../../types";
+import styles from "./FilterTypeSelector.module.css";
 
 interface FilterTypeSelectorProps {
   filterType: DateFilterType;
@@ -21,26 +22,21 @@ const FilterTypeSelectorComponent: React.FC<FilterTypeSelectorProps> = ({
 
   return (
     <div
-      className={`filter-type-section ${className}`}
-      style={{ marginBottom: "1rem" }}
+      className={`${styles.filterTypeSection} ${className}`}
     >
       <label
-        className="filter-label"
-        style={{
-          display: "block",
-          marginBottom: "0.25rem",
-          fontSize: "0.875rem",
-          fontWeight: "500",
-          color: "#374151",
-        }}
+        htmlFor="filter-type-select"
+        className={styles.filterLabel}
       >
         Filter Type
       </label>
       <select
-        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+        id="filter-type-select"
+        className={styles.filterTypeSelect}
         value={filterType}
         onChange={handleChange}
-        style={{ width: "100%" }}
+        aria-label="Select filter type"
+        aria-describedby="filter-type-description"
       >
         <option value="equals">Equals</option>
         <option value="notEqual">Not Equal</option>
@@ -48,6 +44,13 @@ const FilterTypeSelectorComponent: React.FC<FilterTypeSelectorProps> = ({
         <option value="before">Before</option>
         <option value="inRange">In Range</option>
       </select>
+      <div
+        id="filter-type-description"
+        className={styles.screenReaderOnly}
+        aria-live="polite"
+      >
+        Choose how to filter dates: equals a specific date, not equal to a date, after a date, before a date, or within a date range
+      </div>
     </div>
   );
 };

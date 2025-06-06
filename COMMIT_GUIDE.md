@@ -9,7 +9,7 @@ This project uses **Conventional Commits** for clear, structured commit messages
 ## Quick Start
 
 ```bash
-just commit  # Interactive commit helper
+npm run commit  # Interactive commit helper
 ```
 
 ## Commit Types
@@ -87,7 +87,7 @@ See migration guide in README.
 
 ## Interactive Mode
 
-When you run `just commit`, you'll be prompted for:
+When you run `npm run commit`, you'll be prompted for:
 
 1. **Type of change** (feat, fix, etc.)
 2. **Scope** (optional)

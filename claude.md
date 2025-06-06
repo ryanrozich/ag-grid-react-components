@@ -2,131 +2,105 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Primary Workflow: Using Just
-
-**IMPORTANT**: This project uses `just` as the primary command runner. All commands should be run through `just` rather than directly using npm, trunk, or other tools. This ensures:
-
-- Consistent command execution
-- Proper sequencing of checks
-- Unified interface for all project tasks
-
-To see all available commands, simply run:
-
-```bash
-just
-```
-
-## Prerequisites
-
-This project uses `just` as a command runner. If `just` is not installed, install it first:
-
-```bash
-# macOS
-brew install just
-
-# Linux
-curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
-
-# Or via cargo (if Rust is installed)
-cargo install just
-```
-
 ## Commands
 
-**IMPORTANT**: Always use `just` commands instead of npm/trunk commands directly. This ensures consistency and includes necessary checks.
+This project uses npm scripts for all commands. To see available commands, run `npm run` or check the scripts section in `package.json`.
 
 ### Development
 
 ```bash
 # Start development server
-just dev
+npm run dev
 
 # Start development with quality checks first
-just dev-safe
+npm run dev:safe
 
 # Build the library
-just build
+npm run build
 
 # Preview the built package
-just preview
+npm run preview
 ```
 
 ### Testing
 
 ```bash
-# Run all tests
-just test
+# Run all tests (unit + e2e)
+npm test
+
+# Run unit tests only
+npm run test:unit
 
 # Run tests in watch mode
-just test-watch
+npm run test:watch
 
 # Run tests with coverage
-just test-coverage
+npm run test:coverage
 
 # Run specific test file
-just test-file "DateFilter.test"
+npm run test:file -- DateFilter.test
 
-# Browser test to validate demo
-just test-browser
+# E2E tests
+npm run test:e2e           # Run playwright tests
+npm run test:e2e:ui        # Open playwright UI
+npm run test:e2e:debug     # Debug mode
+npm run test:e2e:headed    # Run with visible browser
 
-# Test clicking on filter icons
-just test-filter-click
+# Browser tests
+npm run test:browser       # Validate demo works
+npm run test:filter-click  # Test filter clicking
+
+# Generate and open coverage report
+npm run coverage:report
 ```
 
 ### Code Quality
 
 ```bash
 # Run linter
-just lint
+npm run lint
 
-# Run Trunk comprehensive checks
-just check
+# Lint CSS files
+npm run lint:styles
 
-# Auto-fix formatting issues
-just fmt
+# Format code
+npm run format
 
-# Run ALL quality checks (lint + trunk + tests)
-just quality
+# Check formatting without changing files
+npm run format:check
+
+# Type checking
+npm run typecheck
+
+# Run format check + typecheck
+npm run check
+
+# Run all quality checks
+npm run quality
 
 # Pre-commit check (format + quality)
-just pre-commit
+npm run pre-commit
 ```
 
-**CRITICAL**: Always run `just pre-commit` before committing code. This runs formatting and all quality checks.
+**CRITICAL**: Always run `npm run pre-commit` before committing code. This runs formatting and all quality checks.
 
 ### Utility Commands
 
 ```bash
-# Install/update dependencies
-just install
-just update-deps
+# Install dependencies
+npm install
 
-# Clean and fresh build
-just clean
-just fresh
+# Clean build artifacts
+npm run clean
 
-# Show component architecture
-just show-architecture
+# Fresh start (clean + install + build)
+npm run fresh
 
 # Check bundle size
-just bundle-size
-
-# Create new component
-just new-component MyComponent
-
-# Show refactoring TODOs
-just show-todos
+npm run bundle-size
 
 # Run TypeScript file directly
-just run-tsx src/demo/test.tsx
-```
-
-### Quick Reference
-
-```bash
-just          # Show all available commands
-just qa       # Alias for pre-commit
-just ci       # Run quality + build (for CI)
+npm run run-tsx src/demo/test.tsx
 ```
 
 ### Commits and Releases
@@ -135,7 +109,7 @@ just ci       # Run quality + build (for CI)
 
 ```bash
 # Create a conventional commit interactively
-just commit
+npm run commit
 
 # This will prompt you for:
 # - Type (feat, fix, docs, style, refactor, test, chore)
@@ -149,15 +123,18 @@ just commit
 
 ```bash
 # Create a new release (auto-determines version from commits)
-just release
+npm run release
 
 # Specific version bumps
-just release-patch   # 1.0.0 → 1.0.1
-just release-minor   # 1.0.0 → 1.1.0
-just release-major   # 1.0.0 → 2.0.0
+npm run release:patch   # 1.0.0 → 1.0.1
+npm run release:minor   # 1.0.0 → 1.1.0
+npm run release:major   # 1.0.0 → 2.0.0
 
 # Preview what would happen
-just release-dry-run
+npm run release:dry-run
+
+# Create the very first release (for new projects)
+npm run release:first
 ```
 
 The release process will:
@@ -294,34 +271,29 @@ When implementing or modifying features:
 3. Test both the component in isolation and its integration with AG Grid
 4. For any new filter capabilities, update both the main filter and floating filter
 5. Ensure backward compatibility with existing filter models
-6. Run `just pre-commit` before committing to ensure all quality standards are met
+6. Run `npm run pre-commit` before committing to ensure all quality standards are met
 
 ### Standard Development Workflow
 
 ```bash
 # 1. Start your work
-just dev-safe         # Runs quality checks before starting dev server
+npm run dev:safe         # Runs quality checks before starting dev server
 
 # 2. During development
-just test-watch       # Keep tests running in another terminal
-just check           # Periodically check for issues
+npm run test:watch       # Keep tests running in another terminal
+npm run check           # Periodically check for issues
 
 # 3. Before committing
-just pre-commit      # Formats code and runs all checks
+npm run pre-commit      # Formats code and runs all checks
 
 # 4. Create your commit
-just commit          # Interactive conventional commit
+npm run commit          # Interactive conventional commit
 # OR use git with conventional format:
 # git commit -m "feat(components): add date range support"
 # git commit -m "fix(utils): correct timezone handling"
 
-# 5. Creating new components
-just new-component ComponentName
-just test-file ComponentName.test
-
-# 6. Check your work
-just bundle-size     # Ensure bundle size is reasonable
-just show-architecture # Verify component structure
+# 5. Check your work
+npm run bundle-size     # Ensure bundle size is reasonable
 ```
 
 ### Commit Message Format
@@ -352,14 +324,23 @@ Examples:
 The codebase uses Vitest with React Testing Library for unit testing:
 
 1. **Unit Tests**: Test individual functions and components in isolation
-2. **Browser Tests**: Validate that the demo works correctly in a real browser using Puppeteer
-3. **Manual Testing**: Use scripts to help with manual testing scenarios
+2. **Integration Tests**: Test DateFilter with AG Grid using AGGridTestHarness
+3. **E2E Tests**: Playwright tests for browser validation
+4. **Browser Tests**: Validate that the demo works correctly using Puppeteer
+
+### Testing Utilities
+
+- **AGGridTestHarness**: Test component for AG Grid integration testing
+- **agGridTestUtils.ts**: Helper functions for testing AG Grid components
+- **Test fixtures**: Consistent test data in `tests/fixtures/testData.ts`
 
 ## Supported Configurations
 
 - AG Grid versions: 33.3.0+
-- React versions: 18+ or 19+
+- React versions: 18 or later
 - date-fns versions: 4+
+- Node.js: 18+
+- TypeScript: 5+
 
 ## Important Notes
 
@@ -368,47 +349,24 @@ The codebase uses Vitest with React Testing Library for unit testing:
 - All date filter operations support configurable inclusive/exclusive boundaries
 - The filter model is serializable for bookmarking and browser history integration
 
-## Trunk.io Setup
+## Prettier Configuration
 
-This project uses Trunk for comprehensive code quality checks. To set up Trunk:
+This project uses Prettier for code formatting. Prettier is integrated into the workflow:
 
 ```bash
-# Install Trunk
-curl https://get.trunk.io -fsSL | bash
+# Format all files
+npm run format
 
-# Initialize Trunk in the project
-trunk init
-
-# Run your first check
-trunk check
-
-# Set up Git hooks for pre-commit checks
-trunk git-hooks sync
+# Check if files are formatted correctly
+npm run format:check
 ```
 
-### Trunk Configuration
+Prettier will automatically:
+- Format TypeScript/JavaScript files
+- Format CSS/SCSS files
+- Format JSON files
+- Format Markdown files
 
-Trunk will automatically detect and configure appropriate linters for this project:
+The configuration follows standard Prettier defaults with minimal customization to ensure consistency across the codebase.
 
-- **ESLint**: JavaScript/TypeScript linting (needs configuration)
-- **Prettier**: Code formatting
-- **TypeScript**: Type checking
-- **Stylelint**: CSS/SCSS linting with Tailwind support (configured)
-- **Markdownlint**: Markdown file linting
-- **Gitleaks**: Secret scanning
-- **Hadolint**: Dockerfile linting (if applicable)
-
-### Daily Workflow with Trunk
-
-1. **Before starting work**: `trunk upgrade` to ensure latest tool versions
-2. **During development**: `trunk check` to catch issues early
-3. **Before committing**: `trunk fmt` to auto-fix formatting
-4. **CI Integration**: Trunk can be integrated into CI/CD pipelines
-
-### Why Trunk?
-
-- **Unified Interface**: One command for all code quality tools
-- **Incremental Checking**: Only checks changed files for speed
-- **Auto-fixing**: Can automatically fix many issues
-- **Tool Management**: Handles tool installation and updates
-- **Consistency**: Ensures same tool versions across team
+**Note**: Always run `npm run format` before committing or use `npm run pre-commit` which includes formatting.

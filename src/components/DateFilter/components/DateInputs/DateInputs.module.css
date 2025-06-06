@@ -1,0 +1,120 @@
+.dateInputsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.inputLabel {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.inputSeparator {
+  color: #6b7280;
+  font-weight: 500;
+  padding: 0 0.25rem;
+}
+
+.inputWrapper {
+  flex: 1;
+  position: relative;
+}
+
+.errorMessage {
+  color: #dc2626;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.validMessage {
+  color: #059669;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.textInput {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background-color: white;
+  transition: border-color 0.2s;
+}
+
+.textInput:hover:not(:disabled) {
+  border-color: #9ca3af;
+}
+
+.textInput:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.textInput:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.textInput.error {
+  border-color: #dc2626;
+}
+
+.textInput.error:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.textInput.valid {
+  border-color: #059669;
+}
+
+.screenReaderOnly {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* DatePicker specific styles */
+:global(.react-datepicker-wrapper) {
+  width: 100%;
+}
+
+:global(.react-datepicker__input-container input) {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background-color: white;
+  transition: border-color 0.2s;
+}
+
+:global(.react-datepicker__input-container input:hover) {
+  border-color: #9ca3af;
+}
+
+:global(.react-datepicker__input-container input:focus) {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
