@@ -11,7 +11,7 @@ import type {
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import {
   RelativeDateFilter,
-  RelativeDateFloatingFilter,
+  // RelativeDateFloatingFilter, // Temporarily commented for testing
   QuickFilterDropdown,
   setupFilterStatePersistence,
   serializeFilterModel,
@@ -244,7 +244,8 @@ export const ComponentsShowcaseComplete: React.FC<
         width: 150,
         filter: RelativeDateFilter,
         floatingFilter: true,
-        floatingFilterComponent: RelativeDateFloatingFilter,
+        // Test: Using automatic floating filter via getModelAsString()
+        // floatingFilterComponent: RelativeDateFloatingFilter,
         filterParams: {
           buttons: ["reset", "apply"],
           closeOnApply: true,
