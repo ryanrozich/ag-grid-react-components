@@ -10,26 +10,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 💥 BREAKING CHANGES
 
 - **Removed RelativeDateFloatingFilter component**: AG Grid now provides an automatic read-only floating filter when `floatingFilter: true` is set. The RelativeDateFilter's `getModelAsString()` method provides the display text.
-  
+
   **Migration Guide:**
+
   ```typescript
   // Before:
-  import { RelativeDateFilter, RelativeDateFloatingFilter } from 'ag-grid-react-components';
-  
-  columnDefs = [{
-    filter: RelativeDateFilter,
-    floatingFilter: true,
-    floatingFilterComponent: RelativeDateFloatingFilter
-  }];
-  
+  import {
+    RelativeDateFilter,
+    RelativeDateFloatingFilter,
+  } from "ag-grid-react-components";
+
+  columnDefs = [
+    {
+      filter: RelativeDateFilter,
+      floatingFilter: true,
+      floatingFilterComponent: RelativeDateFloatingFilter,
+    },
+  ];
+
   // After:
-  import { RelativeDateFilter } from 'ag-grid-react-components';
-  
-  columnDefs = [{
-    filter: RelativeDateFilter,
-    floatingFilter: true
-    // No floatingFilterComponent needed!
-  }];
+  import { RelativeDateFilter } from "ag-grid-react-components";
+
+  columnDefs = [
+    {
+      filter: RelativeDateFilter,
+      floatingFilter: true,
+      // No floatingFilterComponent needed!
+    },
+  ];
   ```
 
 ### ✨ Added

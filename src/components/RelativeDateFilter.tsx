@@ -198,6 +198,13 @@ const RelativeDateFilter = (props: DateFilterParams) => {
   const getModelAsString = useCallback((): string => {
     if (!currentModel) return "";
 
+    logger.debug("getModelAsString called with model:", {
+      type: currentModel.type,
+      mode: currentModel.mode,
+      expressionFrom: currentModel.expressionFrom,
+      fromInclusive: currentModel.fromInclusive,
+    });
+
     // Get inclusivity settings from model
     const fromInclusive = currentModel.fromInclusive ?? false;
     const toInclusive = currentModel.toInclusive ?? false;
@@ -227,7 +234,11 @@ const RelativeDateFilter = (props: DateFilterParams) => {
             prefix = toInclusive ? "≤" : "<";
             break;
         }
-        return `${prefix} ${format(currentModel.dateFrom, dateFormat)}`;
+        const result = prefix 
+          ? `${prefix} ${format(currentModel.dateFrom, dateFormat)}`
+          : format(currentModel.dateFrom, dateFormat);
+        logger.debug("getModelAsString (absolute) returning:", result);
+        return result;
       }
     } else {
       if (
@@ -253,8 +264,16 @@ const RelativeDateFilter = (props: DateFilterParams) => {
           case "before":
             prefix = toInclusive ? "≤" : "<";
             break;
+          default:
+            logger.warn("Unknown filter type in getModelAsString:", currentModel.type);
         }
-        return `${prefix} ${currentModel.expressionFrom}`;
+        logger.debug("Filter type:", currentModel.type, "Prefix:", prefix, "fromInclusive:", fromInclusive);
+        // Always include the prefix for clarity
+        const result = prefix 
+          ? `${prefix} ${currentModel.expressionFrom}` 
+          : currentModel.expressionFrom;
+        logger.debug("getModelAsString returning:", result);
+        return result;
       }
     }
 
