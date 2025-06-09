@@ -234,7 +234,7 @@ const RelativeDateFilter = (props: DateFilterParams) => {
             prefix = toInclusive ? "≤" : "<";
             break;
         }
-        const result = prefix 
+        const result = prefix
           ? `${prefix} ${format(currentModel.dateFrom, dateFormat)}`
           : format(currentModel.dateFrom, dateFormat);
         logger.debug("getModelAsString (absolute) returning:", result);
@@ -265,12 +265,22 @@ const RelativeDateFilter = (props: DateFilterParams) => {
             prefix = toInclusive ? "≤" : "<";
             break;
           default:
-            logger.warn("Unknown filter type in getModelAsString:", currentModel.type);
+            logger.warn(
+              "Unknown filter type in getModelAsString:",
+              currentModel.type,
+            );
         }
-        logger.debug("Filter type:", currentModel.type, "Prefix:", prefix, "fromInclusive:", fromInclusive);
+        logger.debug(
+          "Filter type:",
+          currentModel.type,
+          "Prefix:",
+          prefix,
+          "fromInclusive:",
+          fromInclusive,
+        );
         // Always include the prefix for clarity
-        const result = prefix 
-          ? `${prefix} ${currentModel.expressionFrom}` 
+        const result = prefix
+          ? `${prefix} ${currentModel.expressionFrom}`
           : currentModel.expressionFrom;
         logger.debug("getModelAsString returning:", result);
         return result;

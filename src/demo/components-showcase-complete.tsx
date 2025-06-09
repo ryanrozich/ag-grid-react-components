@@ -18,6 +18,8 @@ import {
 import { generateData } from "./data/generator";
 import { CodeBlock } from "./components/CodeBlock";
 import { AnchorHeading } from "./components/AnchorHeading";
+import AvatarCellRenderer from "./components/AvatarCellRenderer";
+import CategoryCellRenderer from "./components/CategoryCellRenderer";
 // import { SimpleCodeBlock as CodeBlock } from "./components/SimpleCodeBlock";
 import "./styles/showcase-dark.css";
 import "./styles/code-override.css";
@@ -234,16 +236,22 @@ export const ComponentsShowcaseComplete: React.FC<
       {
         field: "category",
         headerName: "Category",
-        width: 120,
+        width: 140,
         filter: "agSetColumnFilter",
+        cellRenderer: CategoryCellRenderer,
+      },
+      {
+        field: "assignee",
+        headerName: "Assignee",
+        width: 200,
+        filter: "agTextColumnFilter",
+        cellRenderer: AvatarCellRenderer,
       },
       {
         field: "date",
         headerName: "Date",
         width: 150,
         filter: RelativeDateFilter,
-        floatingFilter: true,
-        // Using automatic floating filter via getModelAsString()
         filterParams: {
           buttons: ["reset", "apply"],
           closeOnApply: true,
