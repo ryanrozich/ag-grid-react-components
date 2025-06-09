@@ -9,7 +9,6 @@ import type {
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import {
   RelativeDateFilter,
-  RelativeDateFloatingFilter,
   QuickFilterDropdown,
   setupFilterStatePersistence,
   serializeFilterModel,
@@ -97,7 +96,6 @@ export const ComponentsShowcaseDark: React.FC = () => {
         width: 150,
         filter: RelativeDateFilter,
         floatingFilter: true,
-        floatingFilterComponent: RelativeDateFloatingFilter,
         filterParams: {
           buttons: ["reset", "apply"],
           closeOnApply: true,
@@ -306,7 +304,6 @@ export const ComponentsShowcaseDark: React.FC = () => {
     field: "date",
     filter: RelativeDateFilter,
     floatingFilter: true,
-    floatingFilterComponent: RelativeDateFloatingFilter
   }]}
 />
 
@@ -455,14 +452,13 @@ npm install ag-grid-community ag-grid-react ag-grid-enterprise date-fns`}</code>
               </h3>
               <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
                 <pre className="text-sm text-gray-300">
-                  <code>{`import { RelativeDateFilter, RelativeDateFloatingFilter } from 'ag-grid-react-components';
+                  <code>{`import { RelativeDateFilter } from 'ag-grid-react-components';
 
 const columnDefs = [
   {
     field: 'date',
     filter: RelativeDateFilter,
     floatingFilter: true,
-    floatingFilterComponent: RelativeDateFloatingFilter,
     filterParams: {
       buttons: ['reset', 'apply'],
       closeOnApply: true

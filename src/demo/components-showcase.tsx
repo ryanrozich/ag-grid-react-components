@@ -4,7 +4,6 @@ import type { ColDef, GridApi, GridOptions } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import {
   RelativeDateFilter,
-  RelativeDateFloatingFilter,
   QuickFilterDropdown,
   DATE_FILTER_PRESETS,
   setupFilterStatePersistence,
@@ -62,7 +61,6 @@ export const ComponentsShowcase: React.FC = () => {
         width: 150,
         filter: RelativeDateFilter,
         floatingFilter: true,
-        floatingFilterComponent: RelativeDateFloatingFilter,
         filterParams: {
           buttons: ["reset", "apply"],
           closeOnApply: true,
@@ -234,20 +232,6 @@ export const ComponentsShowcase: React.FC = () => {
                         </p>
                       </div>
                     </li>
-                    <li className="flex items-start">
-                      <span className="text-blue-600 mr-2">•</span>
-                      <div>
-                        <code className="bg-blue-50 px-2 py-1 rounded text-xs text-blue-700 font-medium">
-                          RelativeDateFloatingFilter
-                        </code>
-                        <span className="text-slate-500 ml-2 text-xs">
-                          (Optional)
-                        </span>
-                        <p className="text-xs text-slate-600 mt-1">
-                          Displays active filter state in column header
-                        </p>
-                      </div>
-                    </li>
                   </ul>
                 </div>
 
@@ -326,7 +310,6 @@ export const ComponentsShowcase: React.FC = () => {
   field: "date",
   filter: RelativeDateFilter,
   floatingFilter: true,
-  floatingFilterComponent: RelativeDateFloatingFilter,
   filterParams: {
     buttons: ["reset", "apply"],
     closeOnApply: true,

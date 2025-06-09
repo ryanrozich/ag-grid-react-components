@@ -50,10 +50,7 @@ npm install ag-grid-react-components
 
 ```tsx
 import { AgGridReact } from "ag-grid-react";
-import {
-  RelativeDateFilter,
-  RelativeDateFloatingFilter,
-} from "ag-grid-react-components";
+import { RelativeDateFilter } from "ag-grid-react-components";
 import "ag-grid-react-components/dist/style.css";
 
 const columnDefs = [
@@ -61,7 +58,8 @@ const columnDefs = [
     field: "date",
     filter: RelativeDateFilter,
     floatingFilter: true,
-    floatingFilterComponent: RelativeDateFloatingFilter,
+    // The floating filter is automatically provided by AG Grid
+    // using the filter's getModelAsString() method
     filterParams: {
       // Optional: customize the filter
       buttons: ["reset", "apply"],

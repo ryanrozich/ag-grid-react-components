@@ -22,8 +22,8 @@ A date filter that supports both absolute dates and relative expressions.
 {
   field: 'date',
   filter: RelativeDateFilter,
-  floatingFilter: true,
-  floatingFilterComponent: RelativeDateFloatingFilter
+  floatingFilter: true
+  // Floating filter is automatically provided via getModelAsString()
 }
 ```
 

@@ -25,7 +25,6 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 
 // Import our components and utilities
 import DateFilter from "../components/DateFilter";
-import RelativeDateFloatingFilter from "../components/RelativeDateFloatingFilter";
 import {
   setupFilterStatePersistence,
   loadFilterStateFromUrl,
@@ -172,7 +171,6 @@ const App: React.FC = () => {
             suppressMenuHide={true}
             components={{
               agDateColumnFilter: DateFilter,
-              agDateColumnFloatingFilter: RelativeDateFloatingFilter,
             }}
             // Style the group footer rows
             groupRowRendererParams={{

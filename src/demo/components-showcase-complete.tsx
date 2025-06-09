@@ -11,7 +11,6 @@ import type {
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import {
   RelativeDateFilter,
-  // RelativeDateFloatingFilter, // Temporarily commented for testing
   QuickFilterDropdown,
   setupFilterStatePersistence,
   serializeFilterModel,
@@ -244,8 +243,7 @@ export const ComponentsShowcaseComplete: React.FC<
         width: 150,
         filter: RelativeDateFilter,
         floatingFilter: true,
-        // Test: Using automatic floating filter via getModelAsString()
-        // floatingFilterComponent: RelativeDateFloatingFilter,
+        // Using automatic floating filter via getModelAsString()
         filterParams: {
           buttons: ["reset", "apply"],
           closeOnApply: true,
@@ -511,8 +509,7 @@ export const ComponentsShowcaseComplete: React.FC<
   columnDefs={[{
     field: "date",
     filter: RelativeDateFilter,
-    floatingFilter: true,
-    floatingFilterComponent: RelativeDateFloatingFilter
+    floatingFilter: true
   }]}
 />
 
@@ -640,11 +637,6 @@ export const ComponentsShowcaseComplete: React.FC<
       // Components Section
       { id: "components", label: "Components", isSection: true },
       { id: "relativedatefilter", label: "RelativeDateFilter", indent: true },
-      {
-        id: "relativedatefloatingfilter",
-        label: "RelativeDateFloatingFilter",
-        indent: true,
-      },
       { id: "quickfilterdropdown", label: "QuickFilterDropdown", indent: true },
 
       // Demo Guide Section
@@ -1024,8 +1016,7 @@ yarn add ag-grid-community ag-grid-react ag-grid-enterprise date-fns`}
                             code={`import React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { 
-  RelativeDateFilter, 
-  RelativeDateFloatingFilter,
+  RelativeDateFilter,
   QuickFilterDropdown,
   setupFilterStatePersistence
 } from 'ag-grid-react-components';
@@ -1040,7 +1031,6 @@ function App() {
       headerName: 'Date',
       filter: RelativeDateFilter,
       floatingFilter: true,
-      floatingFilterComponent: RelativeDateFloatingFilter,
     },
     {
       field: 'status',
@@ -1164,15 +1154,14 @@ function App() {
                             Basic Usage
                           </AnchorHeading>
                           <CodeBlock
-                            code={`import { RelativeDateFilter, RelativeDateFloatingFilter } from 'ag-grid-react-components';
+                            code={`import { RelativeDateFilter } from 'ag-grid-react-components';
 
 const columnDefs = [
   {
     field: 'dateField',
     headerName: 'Date',
     filter: RelativeDateFilter,
-    floatingFilter: true,
-    floatingFilterComponent: RelativeDateFloatingFilter,
+    floatingFilter: true
   }
 ];`}
                             language="typescript"
@@ -1287,7 +1276,6 @@ const columnDefs = [
     headerName: 'Date',
     filter: RelativeDateFilter,
     floatingFilter: true,
-    floatingFilterComponent: RelativeDateFloatingFilter,
     filterParams: {
       buttons: ['reset', 'apply', 'clear'],
       closeOnApply: false,
@@ -1300,160 +1288,6 @@ const columnDefs = [
 ];`}
                             language="typescript"
                           />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* RelativeDateFloatingFilter */}
-                {activeDocSection === "relativedatefloatingfilter" && (
-                  <div className="space-y-8">
-                    <div>
-                      <AnchorHeading
-                        level={1}
-                        id="relative-date-floating-filter"
-                      >
-                        RelativeDateFloatingFilter
-                      </AnchorHeading>
-                      <p className="text-gray-300 mb-6">
-                        A companion floating filter component that displays the
-                        current filter state in the column header.
-                      </p>
-
-                      <div className="space-y-8">
-                        <div>
-                          <AnchorHeading
-                            level={2}
-                            id="floating-filter-overview"
-                          >
-                            Overview
-                          </AnchorHeading>
-                          <p className="text-gray-300 mb-4">
-                            The RelativeDateFloatingFilter component works in
-                            conjunction with RelativeDateFilter to provide a
-                            seamless filtering experience. It displays the
-                            current filter state in the column header, allowing
-                            users to see active filters at a glance.
-                          </p>
-
-                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
-                            <AnchorHeading
-                              level={3}
-                              id="floating-filter-key-features"
-                            >
-                              Key Features
-                            </AnchorHeading>
-                            <ul className="space-y-2 text-sm text-gray-300">
-                              <li>
-                                ✓ Displays active filter values in the header
-                              </li>
-                              <li>
-                                ✓ Shows relative expressions in human-readable
-                                format
-                              </li>
-                              <li>
-                                ✓ Indicates when multiple conditions are active
-                              </li>
-                              <li>✓ Provides quick clear functionality</li>
-                              <li>✓ Synchronizes with the main filter</li>
-                            </ul>
-                          </div>
-                        </div>
-
-                        <div>
-                          <AnchorHeading level={2} id="floating-filter-usage">
-                            Usage
-                          </AnchorHeading>
-                          <CodeBlock
-                            code={`const columnDefs = [
-  {
-    field: 'dateField',
-    headerName: 'Date',
-    filter: RelativeDateFilter,
-    floatingFilter: true,  // Enable floating filters
-    floatingFilterComponent: RelativeDateFloatingFilter,
-  }
-];`}
-                            language="tsx"
-                          />
-                        </div>
-
-                        <div>
-                          <AnchorHeading
-                            level={2}
-                            id="floating-filter-display-examples"
-                          >
-                            Display Examples
-                          </AnchorHeading>
-                          <div className="space-y-4">
-                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
-                              <p className="text-sm text-gray-400 mb-2">
-                                Single condition:
-                              </p>
-                              <p className="text-white font-mono">= Today+7d</p>
-                            </div>
-                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
-                              <p className="text-sm text-gray-400 mb-2">
-                                Range condition:
-                              </p>
-                              <p className="text-white font-mono">
-                                Today-7d → Today+7d
-                              </p>
-                            </div>
-                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
-                              <p className="text-sm text-gray-400 mb-2">
-                                Multiple conditions:
-                              </p>
-                              <p className="text-white font-mono">
-                                (Multiple conditions)
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div>
-                          <AnchorHeading level={2} id="integration-notes">
-                            Integration Notes
-                          </AnchorHeading>
-                          <ul className="space-y-2 text-gray-300">
-                            <li className="flex items-start">
-                              <span className="text-gray-500 mr-2">•</span>
-                              The floating filter automatically syncs with the
-                              main filter
-                            </li>
-                            <li className="flex items-start">
-                              <span className="text-gray-500 mr-2">•</span>
-                              No additional configuration is required beyond
-                              setting the component
-                            </li>
-                            <li className="flex items-start">
-                              <span className="text-gray-500 mr-2">•</span>
-                              Works with both Community and Enterprise editions
-                              of AG Grid
-                            </li>
-                            <li className="flex items-start">
-                              <span className="text-gray-500 mr-2">•</span>
-                              Respects the same date formats as the main filter
-                            </li>
-                          </ul>
-                        </div>
-
-                        <div className="bg-blue-900/20 rounded-lg p-6 border border-blue-800/50">
-                          <AnchorHeading
-                            level={3}
-                            id="pro-tip"
-                            className="text-lg font-semibold text-blue-300 mb-3"
-                          >
-                            💡 Pro Tip
-                          </AnchorHeading>
-                          <p className="text-gray-300">
-                            Floating filters are part of AG Grid Community
-                            edition and provide immediate visual feedback about
-                            active filters. They're especially useful in
-                            data-heavy applications where users need to quickly
-                            understand the current filter state.
-                          </p>
                         </div>
                       </div>
                     </div>
@@ -3859,8 +3693,7 @@ const mockColumn = createMockColumn({ field: 'date' });`}
                             code={`import React, { useState, useCallback } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { 
-  RelativeDateFilter, 
-  RelativeDateFloatingFilter,
+  RelativeDateFilter,
   QuickFilterDropdown,
   setupFilterStatePersistence,
   DATE_FILTER_PRESETS
@@ -3883,7 +3716,6 @@ function DateFilterGrid() {
       headerName: 'Date',
       filter: RelativeDateFilter,
       floatingFilter: true,
-      floatingFilterComponent: RelativeDateFloatingFilter,
       filterParams: {
         buttons: ['reset', 'apply'],
         closeOnApply: true

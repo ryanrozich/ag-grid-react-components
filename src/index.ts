@@ -1,7 +1,6 @@
 // Date Filter Components
 import RelativeDateFilter from "./components/DateFilter";
-import RelativeDateFloatingFilter from "./components/RelativeDateFloatingFilter";
-export { RelativeDateFilter, RelativeDateFloatingFilter };
+export { RelativeDateFilter };
 
 // Quick Filter Dropdown
 import {
@@ -45,8 +44,6 @@ import "./styles.css";
 // For AG Grid v33 compatibility
 // @ts-ignore - Add metadata for AG Grid to properly recognize components
 RelativeDateFilter.__AG_GRID_COMPONENT = true;
-// @ts-ignore - Add metadata for AG Grid to properly recognize components
-RelativeDateFloatingFilter.__AG_GRID_COMPONENT = true;
 
 // Default export remains the RelativeDateFilter for backward compatibility
 export default RelativeDateFilter;

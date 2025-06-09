@@ -52,7 +52,6 @@ const customStyles = `
 
 // Import our filter components
 import DateFilter from "../components/DateFilter";
-import RelativeDateFloatingFilter from "../components/RelativeDateFloatingFilter";
 
 // Import filter state utilities
 import {
@@ -821,7 +820,6 @@ const App: React.FC = () => {
                 theme={myWarmTheme}
                 components={{
                   agDateColumnFilter: DateFilter,
-                  agDateColumnFloatingFilter: RelativeDateFloatingFilter,
                 }}
                 pagination={true}
                 paginationPageSize={20}
@@ -880,12 +878,6 @@ const App: React.FC = () => {
                   filter that supports both absolute date selection via date
                   picker and relative date expressions (e.g., "Today+7d").
                   Accessible through the column menu filter icon.
-                </li>
-                <li>
-                  <strong>🎯 RelativeDateFloatingFilter</strong> - A companion
-                  floating filter that displays the current filter state in the
-                  column header and provides quick access to filter
-                  modification.
                 </li>
               </ul>
             </div>

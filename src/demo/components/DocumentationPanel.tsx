@@ -8,8 +8,7 @@ export const DocumentationPanel: React.FC = () => {
       <section className="doc-section">
         <h3 className="doc-heading">📦 Components Provided</h3>
         <p className="doc-text">
-          This package provides two essential date filtering components for AG
-          Grid:
+          This package provides essential date filtering components for AG Grid:
         </p>
         <ul className="doc-list">
           <li className="doc-list-item">
@@ -17,11 +16,6 @@ export const DocumentationPanel: React.FC = () => {
             supports both absolute date selection via date picker and relative
             date expressions (e.g., "Today+7d"). Accessible through the column
             menu filter icon.
-          </li>
-          <li className="doc-list-item">
-            <strong>🎯 RelativeDateFloatingFilter</strong> - A companion
-            floating filter that displays the current filter state in the column
-            header and provides quick access to filter modification.
           </li>
         </ul>
       </section>
