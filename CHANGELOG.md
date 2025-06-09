@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 💥 BREAKING CHANGES
+
+- **Removed RelativeDateFloatingFilter component**: AG Grid now provides an automatic read-only floating filter when `floatingFilter: true` is set. The RelativeDateFilter's `getModelAsString()` method provides the display text.
+  
+  **Migration Guide:**
+  ```typescript
+  // Before:
+  import { RelativeDateFilter, RelativeDateFloatingFilter } from 'ag-grid-react-components';
+  
+  columnDefs = [{
+    filter: RelativeDateFilter,
+    floatingFilter: true,
+    floatingFilterComponent: RelativeDateFloatingFilter
+  }];
+  
+  // After:
+  import { RelativeDateFilter } from 'ag-grid-react-components';
+  
+  columnDefs = [{
+    filter: RelativeDateFilter,
+    floatingFilter: true
+    // No floatingFilterComponent needed!
+  }];
+  ```
+
+### ✨ Added
+
+- React Router integration for deep linking to documentation sections
+- Anchor links for all documentation headings (Confluence-style, on the right)
+- Automatic floating filter support via `getModelAsString()` implementation
+
+### 🔧 Changed
+
+- Simplified codebase by removing redundant floating filter component
+- Updated all demos to use automatic floating filter
+- Enhanced documentation with proper navigation and deep linking
+
 ## [1.0.0] - 2025-06-08
 
 ### 🎉 Initial Release
@@ -22,9 +59,6 @@ This is the first official release of ag-grid-react-components, a collection of 
   - Expression input for relative dates (e.g., "Today+7d", "StartOfMonth-1M")
   - All standard AG Grid filter operations (equals, not equals, before, after, in range)
   - Real-time validation with resolved date preview
-- **RelativeDateFloatingFilter**: Companion floating filter component
-  - Displays current filter state in column header
-  - Quick filter clearing
 - **QuickFilterDropdown**: Dropdown for applying preset filters
   - Pre-configured date range options
   - Customizable filter presets
