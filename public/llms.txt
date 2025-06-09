@@ -1,0 +1,116 @@
+# AG Grid React Components
+
+> Enterprise-ready date filtering components for AG Grid
+
+## Overview
+
+This project provides advanced date filtering components for AG Grid React applications. The components support relative date expressions (like "Today-7d"), quick filter presets, and automatic URL state persistence.
+
+## Components
+
+### RelativeDateFilter
+A date filter that supports both absolute dates and relative expressions.
+
+**Features:**
+- Toggle between date picker and expression input
+- Relative expressions: Today, Today-7d, StartOfMonth, etc.
+- All standard filter operations (equals, before, after, in range)
+- Real-time validation
+
+**Usage:**
+```typescript
+{
+  field: 'date',
+  filter: RelativeDateFilter,
+  floatingFilter: true,
+  floatingFilterComponent: RelativeDateFloatingFilter
+}
+```
+
+### QuickFilterDropdown
+A dropdown component for applying predefined filters with one click.
+
+**Features:**
+- Works with any column type (not just dates)
+- Combine multiple filters in one action
+- Customizable options with icons and descriptions
+- Keyboard navigation support
+
+**Usage:**
+```typescript
+<QuickFilterDropdown
+  api={gridApi}
+  columnId="date"
+  options={filterOptions}
+  placeholder="Select filter"
+/>
+```
+
+### URL State Persistence
+Automatically sync filter state with URL for shareable links.
+
+**Features:**
+- Automatic URL synchronization
+- Browser history support
+- Proper Date serialization
+- Configurable parameter name
+
+**Usage:**
+```typescript
+setupFilterStatePersistence(gridApi, {
+  onFilterLoad: (model) => console.log('Loaded:', model),
+  onFilterSave: (model) => console.log('Saved:', model)
+});
+```
+
+## Date Expression Syntax
+
+Pattern: `[Anchor][Operator][Value][Unit]`
+
+**Anchors:**
+- Today - Current date at midnight
+- Now - Current date and time
+- StartOfWeek - Monday
+- EndOfWeek - Sunday
+- StartOfMonth - First day of month
+- EndOfMonth - Last day of month
+- StartOfYear - January 1st
+- EndOfYear - December 31st
+
+**Units:**
+- d - days (Today-7d)
+- w - weeks (Today+2w)
+- M - months (StartOfMonth-1M)
+- y - years (StartOfYear+1y)
+- h - hours (Now-3h)
+- m - minutes (Now+30m)
+
+## Installation
+
+```bash
+npm install ag-grid-react-components
+
+# Peer dependencies
+npm install ag-grid-community ag-grid-react ag-grid-enterprise date-fns
+```
+
+## Requirements
+
+- React 18+
+- AG Grid 33.3.0+
+- AG Grid Enterprise (for filter components)
+- date-fns 4+
+
+## License
+
+MIT License - Free for commercial and non-commercial use.
+
+## Links
+
+- GitHub: https://github.com/ryanrozich/ag-grid-react-components
+- NPM: https://www.npmjs.com/package/ag-grid-react-components
+- Demo: https://demo.rozich.net/ag-grid-react-components/
+
+## Author
+
+Created by Ryan Rozich. Not affiliated with AG Grid Ltd.

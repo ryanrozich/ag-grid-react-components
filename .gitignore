@@ -28,6 +28,10 @@ dist-ssr
 coverage
 .vitest-cache
 
+# Deployment
+dist-demo
+.wrangler
+
 **/.claude/settings.local.json
 
 # Ryan's notes and screenshots

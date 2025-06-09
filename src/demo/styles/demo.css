@@ -1,6 +1,9 @@
+/* Import fonts */
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap");
+
 /* Grid Theme Overrides */
 .ag-theme-quartz .ag-row-even {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgb(0, 0, 0, 0.03);
 }
 
 .ag-theme-quartz .ag-row-odd {
@@ -8,7 +11,7 @@
 }
 
 .ag-theme-quartz .ag-row-hover {
-  background-color: rgba(0, 0, 0, 0.05) !important;
+  background-color: rgb(0, 0, 0, 0.05) !important;
 }
 
 /* Demo Container Styles */
@@ -24,8 +27,8 @@
   background-color: white;
   border-radius: 0.75rem;
   box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    0 4px 6px -1px rgb(0, 0, 0, 0.1),
+    0 2px 4px -1px rgb(0, 0, 0, 0.06);
   padding: 2rem;
 }
 
@@ -159,7 +162,9 @@ code {
   background-color: #e5e7eb;
   padding: 0.125rem 0.375rem;
   border-radius: 0.25rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family:
+    "Fira Code", ui-monospace, "SFMono-Regular", "Menlo", "Monaco", "Consolas",
+    monospace;
   font-size: 0.875rem;
 }
 
@@ -185,4 +190,83 @@ code {
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   overflow: hidden;
+}
+
+/* Grand Total Row Styling */
+.ag-theme-quartz .ag-row-level--1 {
+  background-color: #1e293b !important;
+  color: white !important;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border-top: 2px solid #0891b2;
+}
+
+.ag-theme-quartz .ag-row-level--1 .ag-cell {
+  background-color: #1e293b !important;
+  color: white !important;
+  border-color: #334155 !important;
+}
+
+.ag-theme-quartz .ag-row-level--1:hover {
+  background-color: #334155 !important;
+}
+
+.ag-theme-quartz .ag-row-level--1:hover .ag-cell {
+  background-color: #334155 !important;
+}
+
+/* Special styling for the grand total value cell */
+.ag-theme-quartz .ag-row-level--1 .ag-cell[col-id="value"] {
+  color: #fbbf24 !important;
+  font-size: 1.2rem;
+  text-shadow: 0 1px 2px rgb(0, 0, 0, 0.2);
+}
+
+/* Group Footer Row Styling */
+.ag-theme-quartz .ag-row-footer {
+  background-color: #f3f4f6 !important;
+  font-weight: 600;
+  border-top: 1px solid #d1d5db;
+  border-bottom: 2px solid #9ca3af;
+}
+
+.ag-theme-quartz .ag-row-footer .ag-cell {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+}
+
+.ag-theme-quartz .ag-row-footer:hover {
+  background-color: #e5e7eb !important;
+}
+
+.ag-theme-quartz .ag-row-footer:hover .ag-cell {
+  background-color: #e5e7eb !important;
+}
+
+/* Group Total Footer (for nested groups) */
+.ag-theme-quartz .ag-row-total-footer {
+  background-color: #e5e7eb !important;
+  font-weight: 700;
+  border-top: 2px solid #9ca3af;
+  border-bottom: 2px solid #6b7280;
+}
+
+.ag-theme-quartz .ag-row-total-footer .ag-cell {
+  background-color: #e5e7eb !important;
+  color: #1f2937 !important;
+}
+
+.ag-theme-quartz .ag-row-total-footer:hover {
+  background-color: #d1d5db !important;
+}
+
+.ag-theme-quartz .ag-row-total-footer:hover .ag-cell {
+  background-color: #d1d5db !important;
+}
+
+/* Styling for aggregate value cells in footer rows */
+.ag-theme-quartz .ag-row-footer .ag-cell[col-id="value"],
+.ag-theme-quartz .ag-row-total-footer .ag-cell[col-id="value"] {
+  color: #0891b2 !important;
+  font-weight: 700;
 }

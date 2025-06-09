@@ -14,6 +14,22 @@ export const createAutoGroupColumnDef = (): ColDef => ({
   minWidth: 220,
   sortable: true,
   cellRendererParams: {
+    footerValueGetter: (params: {
+      node?: { level?: number; footer?: boolean };
+      value?: unknown;
+    }) => {
+      const isFooter = params.node?.footer;
+      if (!isFooter) return undefined;
+
+      // Check if this is the grand total (-1 level)
+      const isRootLevel = params.node?.level === -1;
+      if (isRootLevel) {
+        return "Grand Total";
+      }
+
+      // For group footers, show subtotal with the group value
+      return `Subtotal (${params.value ?? ""})`;
+    },
     totalValueGetter: (params: {
       node?: { level?: number };
       value?: unknown;
@@ -25,8 +41,9 @@ export const createAutoGroupColumnDef = (): ColDef => ({
       }
 
       // For group totals, include the group value
-      return `Subtotal: ${params.value ?? ""}`;
+      return `Total (${params.value ?? ""})`;
     },
+    suppressCount: true,
   },
 });
 

@@ -273,6 +273,58 @@ When implementing or modifying features:
 5. Ensure backward compatibility with existing filter models
 6. Run `npm run pre-commit` before committing to ensure all quality standards are met
 
+### IMPORTANT: Documentation and Demo Updates
+
+**When making changes to components, ALWAYS update both:**
+
+1. **README.md** - Update the documentation to reflect:
+
+   - New features or APIs
+   - Updated examples
+   - Changed behavior
+   - Installation/usage instructions
+   - TypeScript interfaces
+
+2. **Demo Application** (`src/demo/components-showcase-complete.tsx`):
+   - Add examples of new features
+   - Update existing examples if behavior changes
+   - Ensure all component capabilities are demonstrated
+   - Test that the demo runs correctly with `npm run dev`
+
+This ensures users have accurate documentation and working examples of all features.
+
+### Demo Feature Documentation
+
+When making notable changes to the demo that showcase AG Grid features or serve as implementation examples, you MUST also:
+
+1. **Update Demo Documentation** - In the Demo Guide section of `components-showcase-complete.tsx`:
+
+   - Document any new AG Grid features enabled (e.g., grand totals, group totals, custom cell renderers)
+   - Note which features are Enterprise vs Community
+   - Add implementation details if they serve as good examples for users
+   - Include links to relevant AG Grid documentation
+
+2. **Create GitHub Documentation** - If the feature implementation is substantial:
+
+   - Create a corresponding documentation page in the GitHub repository
+   - Document the implementation approach
+   - Include code examples
+   - Explain any design decisions
+
+3. **Keep Information in Sync** - Ensure consistency between:
+   - Demo documentation in the showcase
+   - GitHub repository documentation
+   - README.md
+   - llms.txt
+
+Examples of demo features that should be documented:
+
+- Custom cell renderers (avatar renderer, category pills)
+- Aggregation features (grand totals, group totals)
+- Filtering implementations
+- Styling customizations
+- Performance optimizations
+
 ### Standard Development Workflow
 
 ```bash
@@ -349,6 +401,19 @@ The codebase uses Vitest with React Testing Library for unit testing:
 - All date filter operations support configurable inclusive/exclusive boundaries
 - The filter model is serializable for bookmarking and browser history integration
 
+## Demo Deployment
+
+The demo is deployed to https://demo.rozich.net/ag-grid-react-components/ using a custom Cloudflare Workers architecture. This deployment system allows hosting multiple demos under a single domain with edge caching and global distribution.
+
+For detailed information about the deployment architecture and how to deploy updates, see [DEMO-DEPLOYMENT.md](./DEMO-DEPLOYMENT.md).
+
+Key points:
+
+- Uses Cloudflare Workers for routing and R2 for asset storage
+- Automatic deployment via GitHub Actions on push to main
+- Demo router repository: https://github.com/ryanrozich/demo-router-worker
+- All infrastructure fits within Cloudflare's free tier
+
 ## Prettier Configuration
 
 This project uses Prettier for code formatting. Prettier is integrated into the workflow:
@@ -371,3 +436,50 @@ Prettier will automatically:
 The configuration follows standard Prettier defaults with minimal customization to ensure consistency across the codebase.
 
 **Note**: Always run `npm run format` before committing or use `npm run pre-commit` which includes formatting.
+
+## CRITICAL: Documentation Synchronization
+
+**When making ANY changes to component functionality or APIs, you MUST update ALL of the following:**
+
+1. **README.md** - Main repository documentation
+
+   - Component APIs and parameters
+   - Usage examples
+   - Installation instructions
+   - Feature descriptions
+
+2. **Demo Documentation** (`src/demo/components-showcase-complete.tsx`)
+
+   - Update the docs page sections
+   - Update code examples
+   - Update parameter tables
+   - Update feature lists
+
+3. **llms.txt** (`public/llms.txt`)
+   - Keep component descriptions current
+   - Update usage examples
+   - Maintain accurate feature lists
+
+**Synchronization Checklist:**
+
+- [ ] Component parameter changes → Update ALL documentation
+- [ ] New features → Document in README, demo docs, and llms.txt
+- [ ] API changes → Update all code examples everywhere
+- [ ] Bug fixes that change behavior → Note in documentation
+- [ ] New expressions or operators → Document in expressions section
+
+**Documentation Standards:**
+
+- Use consistent terminology across all docs
+- Keep code examples working and tested
+- Maintain the same level of detail in all locations
+- Update version numbers if applicable
+
+**Remember:** The demo site documentation IS the primary documentation for many users. It must always be accurate and complete.
+
+# important-instruction-reminders
+
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User.

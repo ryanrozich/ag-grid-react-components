@@ -30,7 +30,7 @@
 
 .trigger:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgb(59, 130, 246, 0.1);
   border-color: #3b82f6;
 }
 
@@ -60,8 +60,8 @@
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    0 10px 15px -3px rgb(0, 0, 0, 0.1),
+    0 4px 6px -2px rgb(0, 0, 0, 0.05);
   opacity: 0;
   transform: translateY(-0.5rem);
   visibility: hidden;
@@ -125,7 +125,7 @@
   outline: none;
   background-color: white;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgb(59, 130, 246, 0.1);
 }
 
 /* Options list */
@@ -261,22 +261,24 @@
 }
 
 /* Animations */
-@keyframes slideDown {
+@keyframes slide-down {
   from {
     opacity: 0;
     transform: translateY(-0.5rem);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes slideUp {
+@keyframes slide-up {
   from {
     opacity: 0;
     transform: translateY(0.5rem);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -285,12 +287,12 @@
 
 .dropdownOpen.positionBottomLeft,
 .dropdownOpen.positionBottomRight {
-  animation: slideDown 0.15s ease-out;
+  animation: slide-down 0.15s ease-out;
 }
 
 .dropdownOpen.positionTopLeft,
 .dropdownOpen.positionTopRight {
-  animation: slideUp 0.15s ease-out;
+  animation: slide-up 0.15s ease-out;
 }
 
 /* Dark mode support */
@@ -316,8 +318,8 @@
     background-color: #1f2937;
     border-color: #374151;
     box-shadow:
-      0 10px 15px -3px rgba(0, 0, 0, 0.3),
-      0 4px 6px -2px rgba(0, 0, 0, 0.2);
+      0 10px 15px -3px rgb(0, 0, 0, 0.3),
+      0 4px 6px -2px rgb(0, 0, 0, 0.2);
   }
 
   .searchInput {
@@ -378,7 +380,7 @@
 }
 
 /* High contrast mode */
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .trigger:focus {
     outline: 2px solid currentColor;
     outline-offset: 2px;

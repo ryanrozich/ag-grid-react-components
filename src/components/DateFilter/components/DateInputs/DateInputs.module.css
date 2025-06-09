@@ -64,7 +64,7 @@
 .textInput:focus {
   outline: none;
   border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgb(37, 99, 235, 0.1);
 }
 
 .textInput:disabled {
@@ -79,7 +79,7 @@
 
 .textInput.error:focus {
   border-color: #dc2626;
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  box-shadow: 0 0 0 3px rgb(220, 38, 38, 0.1);
 }
 
 .textInput.valid {
@@ -116,5 +116,5 @@
 :global(.react-datepicker__input-container input:focus) {
   outline: none;
   border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgb(37, 99, 235, 0.1);
 }

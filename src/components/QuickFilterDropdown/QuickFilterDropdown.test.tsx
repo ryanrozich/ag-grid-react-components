@@ -155,7 +155,7 @@ describe("QuickFilterDropdown", () => {
   });
 
   it("closes dropdown when clicking outside", async () => {
-    const { container } = render(
+    render(
       <div>
         <QuickFilterDropdown {...defaultProps} />
         <button>Outside button</button>

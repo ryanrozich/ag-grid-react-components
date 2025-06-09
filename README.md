@@ -171,6 +171,15 @@ Components are thoroughly tested with:
 - Integration tests with AG Grid
 - E2E tests (Playwright)
 
+## 🚀 Demo
+
+Live demo available at: https://demo.rozich.net/ag-grid-react-components/
+
+The demo is deployed using a custom Cloudflare Workers architecture. See:
+
+- [Demo Router Repository](https://github.com/ryanrozich/demo-router-worker) - The centralized router that serves all demos
+- [Deployment Guide](./DEMO-DEPLOYMENT-WORKER.md) - How this demo is deployed
+
 ## 📄 License
 
 MIT

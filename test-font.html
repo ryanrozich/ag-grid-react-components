@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+      }
+
+      .test-1 {
+        font-family: "Fira Code", Monaco, Consolas, "Courier New", monospace;
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 20px;
+        margin: 10px 0;
+      }
+
+      .test-2 {
+        font-family:
+          Inter,
+          -apple-system,
+          system-ui,
+          sans-serif;
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 20px;
+        margin: 10px 0;
+      }
+
+      .test-3 code {
+        font-family:
+          "Fira Code", Monaco, Consolas, "Courier New", monospace !important;
+      }
+
+      .test-3 {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 20px;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Font Test</h1>
+
+    <h2>Test 1: Direct monospace font</h2>
+    <div class="test-1">
+      const code = "This should be monospace"; console.log(code);
+    </div>
+
+    <h2>Test 2: Sans-serif font (what we're seeing)</h2>
+    <div class="test-2">
+      const code = "This is sans-serif"; console.log(code);
+    </div>
+
+    <h2>Test 3: Code element with forced monospace</h2>
+    <div class="test-3">
+      <code> const code = "This should be monospace"; console.log(code); </code>
+    </div>
+
+    <h2>Test 4: Inline styles (highest specificity)</h2>
+    <div
+      style="
+        font-family:
+          &quot;Fira Code&quot;, Monaco, Consolas, &quot;Courier New&quot;,
+          monospace;
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 20px;
+      "
+    >
+      const code = "This should definitely be monospace"; console.log(code);
+    </div>
+  </body>
+</html>

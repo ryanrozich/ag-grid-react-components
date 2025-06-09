@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import DateFilterErrorBoundary from "./ErrorBoundary";
+import { logger } from "../../../utils/logger";
+
+// Reference logger to ensure mock is loaded
+void logger;
 
 // Mock logger
 vi.mock("../../../utils/logger", () => ({

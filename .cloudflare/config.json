@@ -1,0 +1,9 @@
+{
+  "build": {
+    "command": "npm run build:demo",
+    "directory": "dist-demo"
+  },
+  "env": {
+    "NODE_VERSION": "18"
+  }
+}

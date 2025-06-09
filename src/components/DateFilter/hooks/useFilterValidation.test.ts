@@ -1,7 +1,7 @@
 import { renderHook } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { useFilterValidation } from "./useFilterValidation";
-import { DateFilterType, DateFilterMode } from "../../../interfaces";
+import { DateFilterType } from "../../interfaces";
 
 describe("useFilterValidation hook", () => {
   // Mock date to ensure consistent testing
@@ -130,8 +130,12 @@ describe("useFilterValidation hook", () => {
       );
 
       expect(result.current.isFilterValid).toBe(true);
-      expect(result.current.resolvedDateFrom).toEqual(new Date("2023-01-01"));
-      expect(result.current.effectiveDateFrom).toEqual(new Date("2023-01-01"));
+      expect(result.current.resolvedDateFrom?.toISOString().split("T")[0]).toBe(
+        "2023-01-01",
+      );
+      expect(
+        result.current.effectiveDateFrom?.toISOString().split("T")[0],
+      ).toBe("2023-01-01");
     });
 
     it("should invalidate equals filter with invalid expression", () => {
@@ -213,9 +217,12 @@ describe("useFilterValidation hook", () => {
         const expectedDate = new Date(mockDate);
         expectedDate.setDate(expectedDate.getDate() + expectedDays);
 
-        expect(result.current.resolvedDateFrom?.getTime()).toBe(
-          expectedDate.getTime(),
-        );
+        // Compare dates without timezone issues by using date strings
+        const actualDateStr = result.current.resolvedDateFrom
+          ?.toISOString()
+          .split("T")[0];
+        const expectedDateStr = expectedDate.toISOString().split("T")[0];
+        expect(actualDateStr).toBe(expectedDateStr);
       });
     });
   });

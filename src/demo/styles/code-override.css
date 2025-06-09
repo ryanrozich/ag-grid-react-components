@@ -1,0 +1,75 @@
+/* Override any global font settings for code elements */
+html {
+  --font-mono:
+    "Fira Code", ui-monospace, sfmono-regular, "SF Mono", consolas,
+    "Liberation Mono", menlo, monospace;
+}
+
+/* Override Tailwind's base styles for code elements */
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--font-mono) !important;
+}
+
+/* Target all possible code block selectors */
+pre code,
+.code-block code,
+.code-block pre,
+div[class*="language-"] code,
+div[class*="language-"] pre,
+.prism-code,
+.prism-code code,
+pre[class*="language-"],
+code[class*="language-"] {
+  font-family: var(--font-mono) !important;
+}
+
+/* Force all child elements to inherit */
+pre *,
+code *,
+.code-block * {
+  font-family: inherit !important;
+}
+
+/* Override any inline styles with higher specificity */
+[style*="font-family"] code,
+[style*="font-family"] pre {
+  font-family: var(--font-mono) !important;
+}
+
+/* Fix line number styling */
+.linenumber {
+  color: #6b7280 !important;
+  opacity: 0.7 !important;
+  min-width: 2.5rem !important;
+  padding-right: 1rem !important;
+  text-align: right !important;
+  user-select: none !important;
+}
+
+/* Target line numbers in react-syntax-highlighter */
+/* Line numbers are usually the first span in each line */
+.react-syntax-highlighter-line-number,
+span.linenumber,
+/* Target spans that are line numbers by their position and content */
+pre > code > span:first-child > span:first-child:not([class]) {
+  color: #6b7280 !important;
+  opacity: 0.7 !important;
+  font-family: var(--font-mono) !important;
+  min-width: 2.5rem !important;
+  display: inline-block !important;
+  text-align: right !important;
+  padding-right: 1rem !important;
+  user-select: none !important;
+}
+
+/* More specific: target the exact cyan color we see in line numbers */
+span[style*="color: rgb(127, 219, 202)"],
+span[style*="color: rgb(209, 241, 245)"],
+span[style*="color: #7fdbca"],
+span[style*="color: #d1f1f5"] {
+  color: #6b7280 !important;
+  opacity: 0.7 !important;
+}

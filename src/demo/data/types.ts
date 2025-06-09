@@ -8,17 +8,28 @@ export interface RowData {
   category: string;
   priority: string;
   status: string;
+  assignee: string;
   isPast: boolean;
   isToday: boolean;
   isUpcoming: boolean;
   value: number;
 }
 
-export type Category = "Task" | "Meeting" | "Event" | "Reminder" | "Deadline";
-export type Priority = "Low" | "Medium" | "High" | "Urgent";
+export type Category =
+  | "Bug"
+  | "Feature"
+  | "Documentation"
+  | "Refactor"
+  | "Testing"
+  | "DevOps"
+  | "Security"
+  | "Performance";
+export type Priority = "Low" | "Medium" | "High" | "Critical";
 export type Status =
-  | "Pending"
+  | "Backlog"
+  | "Todo"
   | "In Progress"
-  | "Completed"
-  | "Cancelled"
-  | "Delayed";
+  | "In Review"
+  | "Testing"
+  | "Done"
+  | "Blocked";

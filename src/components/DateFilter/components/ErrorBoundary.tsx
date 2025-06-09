@@ -133,7 +133,6 @@ class DateFilterErrorBoundary extends Component<
           >
             Try Again
           </button>
-          {/* eslint-disable-next-line no-undef */}
           {typeof process !== "undefined" &&
             process.env?.NODE_ENV === "development" &&
             this.state.errorInfo && (

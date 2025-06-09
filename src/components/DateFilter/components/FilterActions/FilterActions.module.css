@@ -38,7 +38,7 @@
 
 .applyButton {
   background-color: #2563eb;
-  color: #ffffff;
+  color: #fff;
 }
 
 .applyButton:hover:not(:disabled) {

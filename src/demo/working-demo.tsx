@@ -76,7 +76,7 @@ const App: React.FC = () => {
   const sideBar = useMemo(() => createSideBar(), []);
 
   // Generate initial data
-  const initialData = useMemo(() => generateData(101), []);
+  const initialData = useMemo(() => generateData(1000), []);
 
   // Handle filter changes from dropdown
   const handleFilterChange = useCallback((option: QuickFilterOption | null) => {
@@ -174,6 +174,19 @@ const App: React.FC = () => {
               agDateColumnFilter: DateFilter,
               agDateColumnFloatingFilter: RelativeDateFloatingFilter,
             }}
+            // Style the group footer rows
+            groupRowRendererParams={{
+              footerValueGetter: (params: any) => {
+                const isRootLevel = params.node.level === -1;
+                if (isRootLevel) {
+                  return "Grand Total";
+                }
+                return `Total (${params.value})`;
+              },
+              suppressCount: true,
+            }}
+            // Show totals even when no grouping is active
+            alwaysShowVerticalScroll={true}
           />
         </div>
 

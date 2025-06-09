@@ -5,7 +5,7 @@ import {
   DateFilterModel,
   DateFilterType,
   DateFilterMode,
-} from "../../../interfaces";
+} from "../../interfaces";
 
 describe("useFilterState hook", () => {
   // Mock date to ensure consistent testing

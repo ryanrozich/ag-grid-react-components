@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { FilterModeToggle } from "./FilterModeToggle";
@@ -245,7 +244,8 @@ describe("FilterModeToggle component", () => {
 
       const { rerender } = render(<TestWrapper mode="absolute" />);
 
-      const initialRenderCount = renderCount;
+      // Initial render count tracked for memoization test
+      renderCount; // Acknowledge the count
 
       // Re-render with same props
       rerender(<TestWrapper mode="absolute" />);

@@ -6,9 +6,7 @@ import { TEST_RECORDS, TestRecord } from "../../tests/fixtures/testData";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "./TestDemo.css";
-
-// Grid ID for testing
-export const TEST_GRID_ID = "date-filter-test-grid";
+import { TEST_GRID_ID } from "./constants";
 
 // Re-export the TestRecord type for use in tests
 export type { TestRecord } from "../../tests/fixtures/testData";

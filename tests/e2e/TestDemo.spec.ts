@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { TEST_GRID_ID } from "../../src/demo/TestDemo";
+import { TEST_GRID_ID } from "../../src/demo/constants";
 import { TEST_RECORDS } from "../fixtures/testData";
 import {
   getRowData,

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Category Cell Renderer Demo</title>
+    <style>
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        margin: 20px;
+        background: #1a1a1a;
+        color: #fff;
+      }
+      .demo-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: #0a0a0a;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      }
+      h1 {
+        color: #fff;
+        margin-bottom: 20px;
+      }
+      .info {
+        background: rgba(59, 130, 246, 0.1);
+        padding: 12px 16px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        color: rgb(147, 197, 253);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+      }
+      .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+        margin-top: 20px;
+      }
+      .category-item {
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .category-label {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .pill {
+        display: inline-block;
+        padding: 2px 12px;
+        border-radius: 9999px;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.025em;
+        line-height: 1.5;
+        cursor: default;
+        transition: all 0.2s ease;
+      }
+      .pill:hover {
+        transform: scale(1.05);
+      }
+
+      /* Category colors - matching the React component */
+      .bug {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: rgb(252, 165, 165);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .bug:hover {
+        background-color: rgba(239, 68, 68, 0.3);
+      }
+
+      .feature {
+        background-color: rgba(34, 197, 94, 0.15);
+        color: rgb(134, 239, 172);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+      }
+      .feature:hover {
+        background-color: rgba(34, 197, 94, 0.3);
+      }
+
+      .documentation {
+        background-color: rgba(59, 130, 246, 0.15);
+        color: rgb(147, 197, 253);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+      }
+      .documentation:hover {
+        background-color: rgba(59, 130, 246, 0.3);
+      }
+
+      .refactor {
+        background-color: rgba(168, 85, 247, 0.15);
+        color: rgb(196, 181, 253);
+        border: 1px solid rgba(168, 85, 247, 0.3);
+      }
+      .refactor:hover {
+        background-color: rgba(168, 85, 247, 0.3);
+      }
+
+      .testing {
+        background-color: rgba(234, 179, 8, 0.15);
+        color: rgb(253, 224, 71);
+        border: 1px solid rgba(234, 179, 8, 0.3);
+      }
+      .testing:hover {
+        background-color: rgba(234, 179, 8, 0.3);
+      }
+
+      .devops {
+        background-color: rgba(107, 114, 128, 0.15);
+        color: rgb(209, 213, 219);
+        border: 1px solid rgba(107, 114, 128, 0.3);
+      }
+      .devops:hover {
+        background-color: rgba(107, 114, 128, 0.3);
+      }
+
+      .security {
+        background-color: rgba(249, 115, 22, 0.15);
+        color: rgb(253, 186, 116);
+        border: 1px solid rgba(249, 115, 22, 0.3);
+      }
+      .security:hover {
+        background-color: rgba(249, 115, 22, 0.3);
+      }
+
+      .performance {
+        background-color: rgba(99, 102, 241, 0.15);
+        color: rgb(165, 180, 252);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+      }
+      .performance:hover {
+        background-color: rgba(99, 102, 241, 0.3);
+      }
+
+      .usage-example {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 16px;
+        border-radius: 8px;
+        margin-top: 24px;
+        font-family: "Monaco", "Menlo", monospace;
+        font-size: 13px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-container">
+      <h1>Category Cell Renderer Demo</h1>
+
+      <div class="info">
+        ℹ️ The Category Cell Renderer displays categories as modern, styled
+        pills with hover effects. Each category has a unique color scheme
+        optimized for dark themes.
+      </div>
+
+      <h2>Category Pills:</h2>
+      <div class="categories-grid">
+        <div class="category-item">
+          <span class="category-label">Bug Reports</span>
+          <span class="pill bug">Bug</span>
+        </div>
+        <div class="category-item">
+          <span class="category-label">New Features</span>
+          <span class="pill feature">Feature</span>
+        </div>
+        <div class="category-item">
+          <span class="category-label">Documentation</span>
+          <span class="pill documentation">Documentation</span>
+        </div>
+        <div class="category-item">
+          <span class="category-label">Code Refactoring</span>
+          <span class="pill refactor">Refactor</span>
+        </div>
+        <div class="category-item">
+          <span class="category-label">Test Coverage</span>
+          <span class="pill testing">Testing</span>
+        </div>
+        <div class="category-item">
+          <span class="category-label">DevOps Tasks</span>
+          <span class="pill devops">DevOps</span>
+        </div>
+        <div class="category-item">
+          <span class="category-label">Security Issues</span>
+          <span class="pill security">Security</span>
+        </div>
+        <div class="category-item">
+          <span class="category-label">Performance</span>
+          <span class="pill performance">Performance</span>
+        </div>
+      </div>
+
+      <h2>Features:</h2>
+      <ul>
+        <li>Dark theme optimized colors with semi-transparent backgrounds</li>
+        <li>Smooth hover effects with scale transformation</li>
+        <li>Consistent pill shape with rounded borders</li>
+        <li>High contrast text for readability</li>
+        <li>Unique color for each category type</li>
+        <li>Lightweight and performant</li>
+      </ul>
+
+      <div class="usage-example">
+        <h3>Usage in AG Grid:</h3>
+        <pre>
+{
+  field: "category",
+  headerName: "Category",
+  width: 130,
+  cellRenderer: CategoryCellRenderer,
+  autoHeight: true,
+}</pre
+        >
+      </div>
+    </div>
+  </body>
+</html>

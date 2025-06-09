@@ -13,7 +13,9 @@
     "dev": "vite",
     "demo": "vite",
     "build": "tsc -p tsconfig.build.json && vite build",
+    "build:demo": "vite build --config vite.config.demo.ts",
     "preview": "vite preview",
+    "preview:demo": "vite preview --config vite.config.demo.ts",
     "dev:safe": "npm run quality && npm run dev",
     "// Testing": "Testing commands",
     "test": "vitest run && npm run test:e2e",
@@ -68,6 +70,7 @@
       "optional": true
     }
   },
+  "description": "A collection of reusable React components for AG Grid, including date filters, quick filters, and URL state serialization",
   "keywords": [
     "ag-grid",
     "react",
@@ -77,9 +80,16 @@
     "url-serializer",
     "typescript"
   ],
-  "author": "",
+  "author": "Ryan Rozich <ryan@rozich.net>",
   "license": "MIT",
-  "description": "A collection of reusable React components for AG Grid, including date filters, quick filters, and URL state serialization",
+  "homepage": "https://github.com/ryanrozich/ag-grid-react-components#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanrozich/ag-grid-react-components.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ryanrozich/ag-grid-react-components/issues"
+  },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
@@ -128,5 +138,11 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "dependencies": {
+    "@types/react-router-dom": "^5.3.3",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "react-router-dom": "^7.6.2",
+    "react-syntax-highlighter": "^15.6.1"
   }
 }

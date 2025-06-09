@@ -200,7 +200,7 @@ const App: React.FC = () => {
           return valueA.getTime() - valueB.getTime();
         },
         // Custom aggregation value formatter for MIN/MAX results
-        aggValueFormatter: (params) => {
+        aggValueFormatter: (params: any) => {
           if (params.value && params.value instanceof Date) {
             return format(params.value, "yyyy-MM-dd");
           }
@@ -227,7 +227,7 @@ const App: React.FC = () => {
           return valueA.getTime() - valueB.getTime();
         },
         // Custom aggregation value formatter for MIN/MAX results
-        aggValueFormatter: (params) => {
+        aggValueFormatter: (params: any) => {
           if (params.value && params.value instanceof Date) {
             return format(params.value, "yyyy-MM-dd");
           }
@@ -392,7 +392,7 @@ const App: React.FC = () => {
   // Create theme with DarkBlue color scheme
 
   // Generate data initially and use for filtering
-  const initialData = useMemo(() => generateData(100), []);
+  const initialData = useMemo(() => generateData(1000), []);
 
   // Apply filters to the fixed dataset using AG Grid's filter model
   const applyFilters = useCallback(

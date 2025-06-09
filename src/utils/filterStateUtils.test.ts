@@ -263,10 +263,10 @@ describe("filterStateUtils", () => {
     });
 
     it("should update URL when filters change", () => {
-      const cleanup = setupFilterStatePersistence(mockApi as GridApi);
+      setupFilterStatePersistence(mockApi as GridApi);
 
       // Get the filterChanged callback
-      const filterChangedCallback = (mockApi.addEventListener as any).mock
+      const filterChangedCallback = vi.mocked(mockApi.addEventListener!).mock
         .calls[0][1];
 
       // Simulate filter change
@@ -278,7 +278,7 @@ describe("filterStateUtils", () => {
       };
       (mockApi.getFilterModel as any).mockReturnValue(newFilterModel);
 
-      filterChangedCallback();
+      filterChangedCallback({} as any);
 
       // Should update URL with serialized filter
       expect(mockPushState).toHaveBeenCalled();
@@ -287,25 +287,30 @@ describe("filterStateUtils", () => {
     });
 
     it("should clear URL params when filters are cleared", () => {
-      // Mock location with existing params
-      const mockHref = "http://localhost:3000/?filter=test&other=param";
+      // Mock location with existing params - use valid JSON for filter
+      const validFilter = encodeURIComponent(
+        JSON.stringify({ date: { type: "equals" } }),
+      );
+      const mockHref = `http://localhost:3000/?filter=${validFilter}&other=param`;
       Object.defineProperty(window, "location", {
         value: {
           ...originalLocation,
           href: mockHref,
-          search: "?filter=test&other=param",
+          search: `?filter=${validFilter}&other=param`,
         },
         writable: true,
       });
 
-      const cleanup = setupFilterStatePersistence(mockApi as GridApi);
+      setupFilterStatePersistence(mockApi as GridApi);
 
-      const filterChangedCallback = (mockApi.addEventListener as any).mock
+      // Wait for addEventListener to be called
+      expect(mockApi.addEventListener).toHaveBeenCalled();
+      const filterChangedCallback = vi.mocked(mockApi.addEventListener!).mock
         .calls[0][1];
 
       // Simulate clearing filters
       (mockApi.getFilterModel as any).mockReturnValue({});
-      filterChangedCallback();
+      filterChangedCallback({} as any);
 
       // Should remove filter param but keep other params
       expect(mockPushState).toHaveBeenCalled();
@@ -321,16 +326,13 @@ describe("filterStateUtils", () => {
     });
 
     it("should handle popstate events", () => {
-      const cleanup = setupFilterStatePersistence(mockApi as GridApi);
-
-      // Simulate browser back button with filter in URL
+      // First set up the location with filter in URL
       const filterModel = {
-        date: { type: "equals", value: "test" },
+        date: { type: "equals", dateFrom: "2024-01-15T12:00:00.000Z" },
       };
       const encodedFilter = encodeURIComponent(JSON.stringify(filterModel));
-
-      // Mock location with filter parameter for popstate event
       const mockHref = `http://localhost:3000/?filter=${encodedFilter}`;
+
       Object.defineProperty(window, "location", {
         value: {
           ...originalLocation,
@@ -340,9 +342,18 @@ describe("filterStateUtils", () => {
         writable: true,
       });
 
+      setupFilterStatePersistence(mockApi as GridApi);
+
+      // Clear previous calls from initialization
+      vi.mocked(mockApi.setFilterModel!).mockClear();
+
+      // Now trigger popstate event
       window.dispatchEvent(new PopStateEvent("popstate"));
 
-      expect(mockApi.setFilterModel).toHaveBeenCalledWith(filterModel);
+      // Should deserialize and set the filter model
+      expect(mockApi.setFilterModel).toHaveBeenCalledWith({
+        date: { type: "equals", dateFrom: expect.any(Date) },
+      });
 
       // Restore location
       Object.defineProperty(window, "location", {
@@ -374,8 +385,8 @@ describe("filterStateUtils", () => {
     });
 
     it("should handle errors in filter serialization gracefully", () => {
-      const cleanup = setupFilterStatePersistence(mockApi as GridApi);
-      const filterChangedCallback = (mockApi.addEventListener as any).mock
+      setupFilterStatePersistence(mockApi as GridApi);
+      const filterChangedCallback = vi.mocked(mockApi.addEventListener!).mock
         .calls[0][1];
 
       // Create a circular reference that can't be serialized
@@ -385,7 +396,7 @@ describe("filterStateUtils", () => {
 
       // This will throw due to circular reference in JSON.stringify
       expect(() => {
-        filterChangedCallback();
+        filterChangedCallback({} as any);
       }).toThrow();
     });
 
@@ -393,7 +404,7 @@ describe("filterStateUtils", () => {
       const onFilterLoad = vi.fn();
       const onFilterSave = vi.fn();
 
-      const cleanup = setupFilterStatePersistence(mockApi as GridApi, {
+      setupFilterStatePersistence(mockApi as GridApi, {
         onFilterLoad,
         onFilterSave,
       });
@@ -402,27 +413,27 @@ describe("filterStateUtils", () => {
       expect(onFilterLoad).toHaveBeenCalledWith({});
 
       // Trigger filter change
-      const filterChangedCallback = (mockApi.addEventListener as any).mock
+      const filterChangedCallback = vi.mocked(mockApi.addEventListener!).mock
         .calls[0][1];
       const newFilterModel = { date: { type: "equals" } };
       (mockApi.getFilterModel as any).mockReturnValue(newFilterModel);
-      filterChangedCallback();
+      filterChangedCallback({} as any);
 
       // Should call onFilterSave
       expect(onFilterSave).toHaveBeenCalledWith(newFilterModel);
     });
 
     it("should use custom param name", () => {
-      const cleanup = setupFilterStatePersistence(mockApi as GridApi, {
+      setupFilterStatePersistence(mockApi as GridApi, {
         paramName: "customFilter",
       });
 
-      const filterChangedCallback = (mockApi.addEventListener as any).mock
+      const filterChangedCallback = vi.mocked(mockApi.addEventListener!).mock
         .calls[0][1];
       (mockApi.getFilterModel as any).mockReturnValue({
         date: { type: "equals" },
       });
-      filterChangedCallback();
+      filterChangedCallback({} as any);
 
       expect(mockPushState).toHaveBeenCalled();
       const [, , url] = mockPushState.mock.calls[0];
