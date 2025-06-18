@@ -2,6 +2,18 @@ import React from "react";
 import { ICellRendererParams } from "ag-grid-community";
 import { Category } from "../data/types";
 
+// Category icons mapping
+const CATEGORY_ICONS: Record<Category, string> = {
+  Bug: "🐛",
+  Feature: "✨",
+  Documentation: "📝",
+  Refactor: "♻️",
+  Testing: "🧪",
+  DevOps: "🔧",
+  Security: "🔒",
+  Performance: "⚡",
+};
+
 // Dark theme color mapping for categories
 const CATEGORY_COLORS: Record<
   Category,
@@ -83,6 +95,9 @@ const CategoryCellRenderer: React.FC<CategoryCellRendererProps> = ({
           whiteSpace: "nowrap",
           transition: "all 0.2s ease",
           cursor: "default",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "4px",
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.backgroundColor = colors.border;
@@ -93,6 +108,11 @@ const CategoryCellRenderer: React.FC<CategoryCellRendererProps> = ({
           e.currentTarget.style.transform = "scale(1)";
         }}
       >
+        {CATEGORY_ICONS[value] && (
+          <span style={{ fontSize: "14px", lineHeight: "1" }}>
+            {CATEGORY_ICONS[value]}
+          </span>
+        )}
         {value}
       </span>
     </div>

@@ -6,10 +6,32 @@ interface AvatarCellRendererProps extends ICellRendererParams {
   value: string;
 }
 
+// Define which assignees should show photos (70% of them)
+const ASSIGNEES_WITH_PHOTOS = new Set([
+  "Alex Chen",
+  "Sarah Johnson",
+  "Marcus Williams",
+  "Emma Davis",
+  "James Wilson",
+  "Maya Patel",
+  "Chris Martinez",
+  "Olivia Brown",
+  "David Lee",
+  "Sophia Taylor",
+  "Michael Anderson",
+  "Isabella Garcia",
+  "Ryan Thomas",
+  "Priya Sharma",
+]);
+
 const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
   const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   if (!value) return null;
+
+  // Check if this assignee should have a photo
+  const hasPhoto = ASSIGNEES_WITH_PHOTOS.has(value);
 
   // Get initials from the name
   const initials = useMemo(() => {
@@ -45,20 +67,70 @@ const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
     return colors[index];
   }, [value]);
 
-  // Use UI Avatars API for avatar generation
-  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(value)}&background=${backgroundColor}&color=fff&size=32&bold=true&format=svg`;
+  // Use different avatar services for variety
+  const avatarUrl = useMemo(() => {
+    if (!hasPhoto) {
+      // Use UI Avatars for initials-based avatars (30% of users)
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(value)}&background=${backgroundColor}&color=fff&size=32&bold=true&format=svg`;
+    }
+
+    // Use Pravatar for photo-like avatars (70% of users)
+    // Generate a consistent seed based on the name to get the same avatar each time
+    const seed = value.toLowerCase().replace(/\s+/g, "");
+
+    // Use the seed parameter for consistent avatars
+    return `https://i.pravatar.cc/64?u=${seed}`;
+  }, [value, hasPhoto, backgroundColor]);
+
+  // Debug logging
+  React.useEffect(() => {
+    if (hasPhoto) {
+      console.log(`Avatar for ${value}:`, {
+        url: avatarUrl,
+        seed: value.toLowerCase().replace(/\s+/g, ""),
+        imageError,
+        imageLoaded,
+      });
+    }
+  }, [value, avatarUrl, hasPhoto, imageError, imageLoaded]);
 
   return (
     <div className={styles.avatarContainer}>
       <div className={styles.avatarWrapper}>
         {!imageError ? (
-          <img
-            src={avatarUrl}
-            alt={value}
-            className={styles.avatar}
-            loading="lazy"
-            onError={() => setImageError(true)}
-          />
+          <>
+            {!imageLoaded && hasPhoto && (
+              <div
+                className={styles.avatarFallback}
+                style={{
+                  backgroundColor: `#${backgroundColor}`,
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                }}
+              >
+                {initials}
+              </div>
+            )}
+            <img
+              src={avatarUrl}
+              alt={value}
+              className={styles.avatar}
+              loading="lazy"
+              onLoad={() => {
+                console.log(`Successfully loaded avatar for ${value}`);
+                setImageLoaded(true);
+              }}
+              onError={(e) => {
+                console.error(`Failed to load avatar for ${value}:`, e);
+                setImageError(true);
+              }}
+              style={{
+                opacity: imageLoaded || !hasPhoto ? 1 : 0,
+                transition: "opacity 0.3s ease-in-out",
+              }}
+            />
+          </>
         ) : (
           <div
             className={styles.avatarFallback}
@@ -68,7 +140,9 @@ const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
           </div>
         )}
       </div>
-      <span className={styles.name}>{value}</span>
+      <span className={styles.name} title={value}>
+        {value}
+      </span>
     </div>
   );
 };

@@ -278,9 +278,60 @@ export const generateData = (count: number): RowData[] => {
     // Assign team member
     const assignee = getRandomItem(ASSIGNEES);
 
-    // Generate a story points value (1, 2, 3, 5, 8, 13)
-    const storyPoints = [1, 2, 3, 5, 8, 13];
-    const value = getRandomItem(storyPoints);
+    // Generate a monetary value between $75 and $20,000
+    // Use a weighted distribution for more realistic data
+    const minAmount = 75;
+    const maxAmount = 20000;
+
+    // Create a weighted distribution (more values in lower ranges)
+    const random = Math.random();
+    let value: number;
+
+    if (random < 0.4) {
+      // 40% between $75-$1,000
+      value = Math.floor(Math.random() * (1000 - minAmount) + minAmount);
+    } else if (random < 0.7) {
+      // 30% between $1,000-$5,000
+      value = Math.floor(Math.random() * (5000 - 1000) + 1000);
+    } else if (random < 0.9) {
+      // 20% between $5,000-$10,000
+      value = Math.floor(Math.random() * (10000 - 5000) + 5000);
+    } else {
+      // 10% between $10,000-$20,000
+      value = Math.floor(Math.random() * (maxAmount - 10000) + 10000);
+    }
+
+    // Round to nearest $25 for cleaner numbers
+    value = Math.round(value / 25) * 25;
+
+    // Generate percentDelivered based on status
+    let percentDelivered = 0;
+    switch (status) {
+      case "Done":
+        percentDelivered = 100;
+        break;
+      case "Testing":
+        percentDelivered = 80 + Math.floor(Math.random() * 15); // 80-94%
+        break;
+      case "In Review":
+        percentDelivered = 60 + Math.floor(Math.random() * 20); // 60-79%
+        break;
+      case "In Progress":
+        percentDelivered = 20 + Math.floor(Math.random() * 40); // 20-59%
+        break;
+      case "Todo":
+        percentDelivered = 5 + Math.floor(Math.random() * 15); // 5-19%
+        break;
+      case "Backlog":
+        percentDelivered = 0;
+        break;
+      case "Blocked":
+        percentDelivered = 10 + Math.floor(Math.random() * 30); // 10-39%
+        break;
+    }
+
+    // Calculate amountDelivered
+    const amountDelivered = Math.round((value * percentDelivered) / 100);
 
     // Add sprint information for some items
     const sprint = Math.random() < 0.7 ? getRandomItem(SPRINT_NAMES) : "";
@@ -300,6 +351,8 @@ export const generateData = (count: number): RowData[] => {
       isToday,
       isUpcoming,
       value,
+      percentDelivered,
+      amountDelivered,
     });
   }
 

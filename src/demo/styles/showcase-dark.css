@@ -194,6 +194,11 @@
   color: #6366f1;
 }
 
+/* Hide the row count display in pagination panel */
+.ag-theme-quartz-dark .ag-paging-row-summary-panel {
+  display: none !important;
+}
+
 /* Floating filter */
 .ag-theme-quartz-dark .ag-floating-filter {
   background-color: #1f2937;

@@ -20,6 +20,7 @@ import { CodeBlock } from "./components/CodeBlock";
 import { AnchorHeading } from "./components/AnchorHeading";
 import AvatarCellRenderer from "./components/AvatarCellRenderer";
 import CategoryCellRenderer from "./components/CategoryCellRenderer";
+import PercentBarRenderer from "./components/PercentBarRenderer";
 // import { SimpleCodeBlock as CodeBlock } from "./components/SimpleCodeBlock";
 import "./styles/showcase-dark.css";
 import "./styles/code-override.css";
@@ -34,17 +35,21 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 // Status chip renderer
 const StatusRenderer: React.FC<ICellRendererParams> = ({ value }) => {
   const getStatusColor = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "completed":
-        return "bg-emerald-500/20 text-emerald-400 border-emerald-500/50";
-      case "in progress":
-        return "bg-blue-500/20 text-blue-400 border-blue-500/50";
-      case "pending":
-        return "bg-amber-500/20 text-amber-400 border-amber-500/50";
-      case "delayed":
-        return "bg-red-500/20 text-red-400 border-red-500/50";
-      case "cancelled":
+    switch (status) {
+      case "Backlog":
         return "bg-gray-500/20 text-gray-400 border-gray-500/50";
+      case "Todo":
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
+      case "In Progress":
+        return "bg-blue-500/20 text-blue-400 border-blue-500/50";
+      case "In Review":
+        return "bg-purple-500/20 text-purple-400 border-purple-500/50";
+      case "Testing":
+        return "bg-orange-500/20 text-orange-400 border-orange-500/50";
+      case "Done":
+        return "bg-emerald-500/20 text-emerald-400 border-emerald-500/50";
+      case "Blocked":
+        return "bg-red-500/20 text-red-400 border-red-500/50";
       default:
         return "bg-gray-500/20 text-gray-400 border-gray-500/50";
     }
@@ -239,6 +244,14 @@ export const ComponentsShowcaseComplete: React.FC<
         width: 140,
         filter: "agSetColumnFilter",
         cellRenderer: CategoryCellRenderer,
+        enableRowGroup: true,
+      },
+      {
+        field: "priority",
+        headerName: "Priority",
+        width: 110,
+        filter: "agSetColumnFilter",
+        enableRowGroup: true,
       },
       {
         field: "assignee",
@@ -246,10 +259,11 @@ export const ComponentsShowcaseComplete: React.FC<
         width: 200,
         filter: "agTextColumnFilter",
         cellRenderer: AvatarCellRenderer,
+        enableRowGroup: true,
       },
       {
-        field: "date",
-        headerName: "Date",
+        field: "dueDate",
+        headerName: "Due Date",
         width: 150,
         filter: RelativeDateFilter,
         filterParams: {
@@ -266,11 +280,15 @@ export const ComponentsShowcaseComplete: React.FC<
         headerName: "Amount",
         width: 120,
         filter: "agNumberColumnFilter",
+        aggFunc: "sum",
+        enableValue: true,
         valueFormatter: (params) => {
           if (params.value == null) return "";
           return new Intl.NumberFormat("en-US", {
             style: "currency",
             currency: "USD",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
           }).format(params.value);
         },
       },
@@ -280,6 +298,30 @@ export const ComponentsShowcaseComplete: React.FC<
         width: 130,
         filter: "agSetColumnFilter",
         cellRenderer: StatusRenderer,
+        enableRowGroup: true,
+      },
+      {
+        field: "percentDelivered",
+        headerName: "% Delivered",
+        width: 140,
+        cellRenderer: PercentBarRenderer,
+        aggFunc: "avg", // Use simple average for aggregation
+        enableValue: true,
+      },
+      {
+        field: "amountDelivered",
+        headerName: "$ Delivered",
+        width: 120,
+        aggFunc: "sum",
+        valueFormatter: (params) => {
+          if (params.value == null) return "";
+          return new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          }).format(params.value);
+        },
       },
     ],
     [],
@@ -325,6 +367,16 @@ export const ComponentsShowcaseComplete: React.FC<
     paginationPageSizeSelector: [15, 30, 50, 100],
     suppressMenuHide: true,
     cellSelection: true,
+    grandTotalRow: "bottom",
+    getRowStyle: (params) => {
+      if (params.node.footer) {
+        return {
+          fontWeight: "bold",
+          backgroundColor: "rgba(59, 130, 246, 0.1)",
+        };
+      }
+      return undefined;
+    },
     sideBar: {
       toolPanels: [
         {
@@ -337,8 +389,8 @@ export const ComponentsShowcaseComplete: React.FC<
           width: 225,
           maxWidth: 350,
           toolPanelParams: {
-            suppressRowGroups: true,
-            suppressValues: true,
+            suppressRowGroups: false,
+            suppressValues: false,
             suppressPivots: true,
             suppressPivotMode: true,
           },
@@ -356,10 +408,7 @@ export const ComponentsShowcaseComplete: React.FC<
     },
     statusBar: {
       statusPanels: [
-        { statusPanel: "agTotalAndFilteredRowCountComponent", align: "left" },
-        { statusPanel: "agTotalRowCountComponent", align: "center" },
-        { statusPanel: "agFilteredRowCountComponent", align: "center" },
-        { statusPanel: "agSelectedRowCountComponent", align: "center" },
+        { statusPanel: "agSelectedRowCountComponent", align: "left" },
         { statusPanel: "agAggregationComponent", align: "right" },
       ],
     },

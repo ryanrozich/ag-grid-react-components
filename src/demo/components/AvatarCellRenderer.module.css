@@ -9,6 +9,8 @@
 .avatarWrapper {
   position: relative;
   flex-shrink: 0;
+  width: 32px;
+  height: 32px;
 }
 
 .avatar {
@@ -44,11 +46,33 @@
 }
 
 .name {
-  color: #374151;
+  color: var(
+    --ag-foreground-color,
+    #e5e7eb
+  ); /* Use AG Grid theme variable with light gray fallback */
+
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+/* Support for AG Grid dark themes */
+.ag-theme-quartz-dark .name,
+.ag-theme-balham-dark .name,
+.ag-theme-material-dark .name,
+.ag-theme-alpine-dark .name {
+  color: #e5e7eb;
+}
+
+/* Support for AG Grid light themes */
+.ag-theme-quartz .name,
+.ag-theme-balham .name,
+.ag-theme-material .name,
+.ag-theme-alpine .name {
+  color: #374151;
 }
 
 /* Status indicator (optional enhancement) */

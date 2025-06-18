@@ -38,7 +38,7 @@ const FilterModeToggleComponent: React.FC<FilterModeToggleProps> = ({
             }
           }}
         >
-          Specific Date
+          Specific
         </button>
         <button
           className={`${styles.dateModeOption} ${mode === "relative" ? styles.selected : ""}`}
@@ -53,7 +53,7 @@ const FilterModeToggleComponent: React.FC<FilterModeToggleProps> = ({
             }
           }}
         >
-          Relative Date
+          Relative
         </button>
       </div>
       <div id="date-mode-description" className="sr-only" aria-live="polite">

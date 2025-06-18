@@ -8,6 +8,12 @@ import {
   subWeeks,
   subYears,
   startOfDay,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  startOfYear,
+  endOfYear,
 } from "date-fns";
 
 export type DateUnit = "d" | "w" | "m" | "y";
@@ -64,7 +70,7 @@ export function parseDateExpression(expression: string): DateExpression {
     };
   }
 
-  // Standardize 'today' (case insensitive)
+  // Standardize expression (case insensitive)
   const standardizedExpression = sanitized.trim().toLowerCase();
 
   // Just 'today' by itself
@@ -73,6 +79,40 @@ export function parseDateExpression(expression: string): DateExpression {
       isValid: true,
       resolvedDate: startOfDay(new Date()),
     };
+  }
+
+  // Check for special date expressions
+  switch (standardizedExpression) {
+    case "startofweek":
+      return {
+        isValid: true,
+        resolvedDate: startOfWeek(new Date(), { weekStartsOn: 1 }), // Monday
+      };
+    case "endofweek":
+      return {
+        isValid: true,
+        resolvedDate: endOfWeek(new Date(), { weekStartsOn: 1 }), // Sunday
+      };
+    case "startofmonth":
+      return {
+        isValid: true,
+        resolvedDate: startOfMonth(new Date()),
+      };
+    case "endofmonth":
+      return {
+        isValid: true,
+        resolvedDate: endOfMonth(new Date()),
+      };
+    case "startofyear":
+      return {
+        isValid: true,
+        resolvedDate: startOfYear(new Date()),
+      };
+    case "endofyear":
+      return {
+        isValid: true,
+        resolvedDate: endOfYear(new Date()),
+      };
   }
 
   // Check for 'today+Nd' or 'today-Nd' pattern
@@ -84,7 +124,7 @@ export function parseDateExpression(expression: string): DateExpression {
       isValid: false,
       resolvedDate: null,
       error:
-        'Invalid format. Use "Today", "Today+Nd", "Today-Nd" (where N is a number and d=days, w=weeks, m=months, y=years)',
+        'Invalid format. Use "Today", "Today+Nd", "Today-Nd", "StartOfWeek", "EndOfWeek", "StartOfMonth", "EndOfMonth", "StartOfYear", "EndOfYear"',
     };
   }
 

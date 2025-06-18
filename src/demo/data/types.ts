@@ -13,6 +13,8 @@ export interface RowData {
   isToday: boolean;
   isUpcoming: boolean;
   value: number;
+  percentDelivered: number;
+  amountDelivered: number;
 }
 
 export type Category =
