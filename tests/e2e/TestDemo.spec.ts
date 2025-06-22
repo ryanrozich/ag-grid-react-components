@@ -18,10 +18,11 @@ const formatDate = (date: Date): string => {
 
 test.describe("TestDemo", () => {
   test.beforeEach(async ({ page }) => {
-    // Navigate to the test page
-    await page.goto("http://localhost:3000/test-demo");
+    // Navigate to the demo page
+    await page.goto("/demo");
     // Wait for the grid to be ready
     await page.waitForSelector(".ag-root-wrapper");
+    await page.waitForTimeout(1000); // Give time for data to load
   });
 
   test("should display the correct number of rows", async ({ page }) => {

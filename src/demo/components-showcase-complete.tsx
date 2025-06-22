@@ -332,13 +332,18 @@ export const ComponentsShowcaseComplete: React.FC<
       sortable: true,
       filter: true,
       resizable: true,
-      floatingFilter: false,
+      floatingFilter: true,
     }),
     [],
   );
 
   const onGridReady = useCallback((params: GridReadyEvent) => {
     setGridApi(params.api);
+
+    // Expose API globally for debugging
+    if (typeof window !== "undefined") {
+      (window as any).agGridApi = params.api;
+    }
 
     const cleanup = setupFilterStatePersistence(params.api, {
       onFilterLoad: (model) => {
@@ -470,13 +475,13 @@ export const ComponentsShowcaseComplete: React.FC<
       filterModel: null,
       buildFilterModel: (_api: GridApi) => {
         return {
-          date: {
+          dueDate: {
             mode: "relative",
             type: "inRange",
             expressionFrom: "Today-30d",
             expressionTo: "Today",
           },
-          value: {
+          amountDelivered: {
             type: "greaterThan",
             filter: 500,
           },
@@ -491,14 +496,14 @@ export const ComponentsShowcaseComplete: React.FC<
       filterModel: null,
       buildFilterModel: (_api: GridApi) => {
         return {
-          date: {
+          dueDate: {
             mode: "relative",
             type: "inRange",
             expressionFrom: "StartOfWeek",
             expressionTo: "EndOfWeek",
           },
           status: {
-            values: ["Pending"],
+            values: ["In Progress", "In Review", "Testing"],
           },
         };
       },
@@ -4062,7 +4067,7 @@ const customFilters = [
                     {gridApi && (
                       <QuickFilterDropdown
                         api={gridApi}
-                        columnId="date"
+                        columnId="dueDate"
                         options={dateQuickFilters}
                         placeholder="Select time period"
                         showDescriptions={true}
@@ -4082,7 +4087,7 @@ const customFilters = [
                     {gridApi && (
                       <QuickFilterDropdown
                         api={gridApi}
-                        columnId="date"
+                        columnId="dueDate"
                         options={combinedQuickFilters}
                         placeholder="Combined filters"
                         showDescriptions={true}

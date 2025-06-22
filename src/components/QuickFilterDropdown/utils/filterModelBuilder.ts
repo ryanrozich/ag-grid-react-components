@@ -4,11 +4,11 @@ import type { QuickFilterOption } from "../types";
 /**
  * Builds and applies a filter model to the grid
  */
-export function applyQuickFilter(
+export async function applyQuickFilter(
   api: GridApi,
   columnId: string,
   option: QuickFilterOption | null,
-): void {
+): Promise<void> {
   if (!api || !columnId) {
     console.warn("[QuickFilter] Missing api or columnId", {
       api: !!api,
@@ -35,7 +35,8 @@ export function applyQuickFilter(
     // Use custom filter builder if provided
     const filterModel = option.buildFilterModel(api, columnId);
     if (filterModel) {
-      currentModel[columnId] = filterModel;
+      // If the filter model contains multiple columns, apply all of them
+      Object.assign(currentModel, filterModel);
     } else {
       delete currentModel[columnId];
     }
@@ -61,30 +62,42 @@ export function applyQuickFilter(
   console.log(
     "[QuickFilter] Filter model applied. Checking what was actually set:",
   );
-  setTimeout(async () => {
-    const actualModel = api.getFilterModel();
-    console.log(
-      "[QuickFilter] Actual filter model after setting:",
-      actualModel,
-    );
 
-    // Also check the filter instance
+  // Verify the filter was applied
+  const actualModel = api.getFilterModel();
+  console.log("[QuickFilter] Actual filter model after setting:", actualModel);
+
+  // Force the grid to re-evaluate which rows pass the filter
+  api.onFilterChanged();
+
+  // Add a small delay to ensure the filter model propagates
+  setTimeout(async () => {
     try {
-      const checkInstance = await api.getColumnFilterInstance(columnId);
-      console.log("[QuickFilter] Filter instance:", checkInstance);
-      if (checkInstance && typeof checkInstance.getModel === "function") {
+      const filterInstance = await api.getColumnFilterInstance(columnId);
+      console.log(
+        "[QuickFilter] Got filter instance after delay:",
+        filterInstance,
+      );
+
+      // Check if it's our custom DateFilter
+      if (filterInstance) {
+        const model = api.getFilterModel();
         console.log(
-          "[QuickFilter] Filter instance model:",
-          checkInstance.getModel(),
+          "[QuickFilter] Re-checking filter model after delay:",
+          model,
+        );
+
+        // Get displayed row count to verify filtering
+        const displayedRowCount = api.getDisplayedRowCount();
+        console.log(
+          "[QuickFilter] Displayed row count after filtering:",
+          displayedRowCount,
         );
       }
     } catch (error) {
-      console.log("[QuickFilter] Error getting filter instance:", error);
+      console.error("[QuickFilter] Error checking filter instance:", error);
     }
   }, 100);
-
-  // Force grid to update
-  api.onFilterChanged();
 }
 
 /**

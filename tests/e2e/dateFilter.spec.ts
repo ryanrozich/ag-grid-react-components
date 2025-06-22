@@ -7,11 +7,12 @@ const COLUMN_ID = "date";
 
 test.describe("Date Filter", () => {
   test.beforeEach(async ({ page }) => {
-    // Navigate to the test page
-    await page.goto("/test-demo");
+    // Navigate to the demo page
+    await page.goto("/demo");
 
     // Wait for the grid to be ready
-    await page.waitForSelector(`#${GRID_ID} .ag-root-wrapper`);
+    await page.waitForSelector(".ag-root-wrapper");
+    await page.waitForTimeout(1000); // Give time for data to load
   });
 
   test("should filter by exact date", async ({ page }) => {

@@ -39,6 +39,8 @@ export default defineConfig({
     force: true,
   },
   server: {
+    port: parseInt(process.env.E2E_PORT || "5173", 10),
+    strictPort: false, // Allow Vite to find another port if the default is taken
     hmr: true,
     watch: {
       usePolling: true,

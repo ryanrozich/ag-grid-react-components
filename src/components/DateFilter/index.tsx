@@ -5,6 +5,7 @@ import { format } from "date-fns";
 
 import { DateFilterParams, DateFilterModel } from "./types";
 import { logger } from "../../utils/logger";
+import { resolveDateExpression } from "../../utils/dateExpressionParser";
 
 import {
   FilterModeToggle,
@@ -29,6 +30,7 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
     const dateFormat = props.dateFormat || DEFAULT_DATE_FORMAT;
     const { handleError } = useErrorHandler();
     const filterRef = React.useRef<HTMLDivElement>(null);
+    const programmaticModelRef = React.useRef<DateFilterModel | null>(null);
 
     // Destructure props for useCallback dependencies
     const {
@@ -132,12 +134,63 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
     // Filter implementation
     const doesFilterPass = useCallback(
       ({ node }: { node: IRowNode }) => {
-        logger.debug(
-          "[DateFilter] doesFilterPass called, currentModel:",
+        // For programmatic changes, use the ref model if available
+        console.log(
+          "[DateFilter] doesFilterPass called",
+          "programmaticModel:",
+          programmaticModelRef.current,
+          "currentModel:",
           currentModel,
-          "isValid:",
-          validation.isFilterValid,
         );
+
+        // If we have a programmatic model, use it directly
+        if (programmaticModelRef.current) {
+          const model = programmaticModelRef.current;
+
+          // Validate the model has required fields
+          if (!model.mode || !model.type) return true;
+
+          const cellValue = getValue(node);
+          const cellDate = parseValue(cellValue);
+          if (!cellDate) return false;
+
+          // For relative mode, resolve the expressions
+          if (model.mode === "relative") {
+            const fromDate = model.expressionFrom
+              ? resolveDateExpression(model.expressionFrom)
+              : null;
+            const toDate = model.expressionTo
+              ? resolveDateExpression(model.expressionTo)
+              : null;
+
+            console.log("[DateFilter] Resolved dates:", {
+              expressionFrom: model.expressionFrom,
+              fromDate,
+              expressionTo: model.expressionTo,
+              toDate,
+              cellDate,
+            });
+
+            // Apply the filter based on type
+            switch (model.type) {
+              case "equals":
+                return fromDate
+                  ? cellDate.toDateString() === fromDate.toDateString()
+                  : false;
+              case "inRange":
+                if (!fromDate || !toDate) return false;
+                return cellDate >= fromDate && cellDate <= toDate;
+              case "after":
+                return fromDate ? cellDate > fromDate : false;
+              case "before":
+                return fromDate ? cellDate < fromDate : false;
+              default:
+                return true;
+            }
+          }
+        }
+
+        // Fall back to normal filtering logic
         if (!validation.isFilterValid || !currentModel) return true;
 
         const cellValue = getValue(node);
@@ -163,9 +216,9 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
 
         // Get inclusivity settings from model or fall back to props defaults
         const fromInclusive =
-          currentModel.fromInclusive ?? afterInclusive ?? false;
+          currentModel?.fromInclusive ?? afterInclusive ?? false;
         const toInclusive =
-          currentModel.toInclusive ?? beforeInclusive ?? false;
+          currentModel?.toInclusive ?? beforeInclusive ?? false;
 
         switch (filterState.filterType) {
           case "equals":
@@ -333,19 +386,35 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
 
           logger.debug("Filter state initialized from model:", model);
 
-          // Trigger filter update immediately after state initialization
-          // This ensures the grid knows the filter has changed
+          // IMPORTANT: For programmatic filter changes (like from QuickFilterDropdown),
+          // we need to ensure the model is applied immediately
+          // Store the model in a ref for immediate use in doesFilterPass
+          programmaticModelRef.current = model;
+
+          // Force a synchronous update for programmatic changes
+          // This is critical for QuickFilterDropdown to work
+          if (onModelChange) {
+            console.log(
+              "[DateFilter] Calling onModelChange with model:",
+              model,
+            );
+            onModelChange(model);
+          }
+
+          // Immediately trigger filter changed
           if (filterChangedCallback) {
             console.log(
-              "[DateFilter] Calling filterChangedCallback after setModel",
-            );
-            logger.debug(
-              "[DateFilter] Calling filterChangedCallback after setModel",
+              "[DateFilter] Calling filterChangedCallback immediately for programmatic change",
             );
             filterChangedCallback();
           }
+
+          // Clear the programmatic model after a short delay to allow React to update
+          setTimeout(() => {
+            programmaticModelRef.current = null;
+          }, 100);
         },
-        [resetFilter, filterState, filterChangedCallback],
+        [resetFilter, filterState, filterChangedCallback, onModelChange],
       ),
       onNewRowsLoaded: () => {
         // Handle new rows if needed

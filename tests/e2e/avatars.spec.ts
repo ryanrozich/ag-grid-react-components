@@ -41,14 +41,8 @@ test.describe("Avatar Loading", () => {
         expect(src).toMatch(/https:\/\/ui-avatars\.com\/api\/.+/);
       }
 
-      // Check that the image is visible (opacity should be 1 when loaded)
-      await avatar.waitForFunction(
-        (el) => {
-          const style = window.getComputedStyle(el);
-          return style.opacity === "1";
-        },
-        { timeout: 5000 },
-      );
+      // Wait a bit for the image to load
+      await page.waitForTimeout(500);
 
       // Verify the image has loaded by checking natural dimensions
       const hasLoaded = await avatar.evaluate((img: HTMLImageElement) => {

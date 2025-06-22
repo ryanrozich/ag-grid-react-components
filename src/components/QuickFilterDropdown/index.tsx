@@ -65,8 +65,8 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
 
   // Handle option selection
   const handleSelectOption = useCallback(
-    (option: QuickFilterOption | null) => {
-      applyQuickFilter(api, columnId, option);
+    async (option: QuickFilterOption | null) => {
+      await applyQuickFilter(api, columnId, option);
       setState((prev) => ({
         ...prev,
         selectedOption: option,
@@ -209,6 +209,7 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
     <div
       ref={containerRef}
       className={`${styles.container} ${className || ""}`}
+      data-testid="quick-filter-dropdown"
     >
       <button
         ref={triggerRef}
@@ -271,6 +272,7 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
               }
               onKeyDown={handleKeyDown}
               aria-label="Search filters"
+              data-testid="quick-filter-search"
             />
           </div>
         )}
