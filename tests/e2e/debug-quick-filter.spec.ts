@@ -4,7 +4,7 @@ test.describe("Debug QuickFilterDropdown", () => {
   test("should debug filter application", async ({ page }) => {
     // Enable console logging
     page.on("console", (msg) => {
-      if (msg.type() === "log" && msg.text().includes("[QuickFilter]")) {
+      if (msg.type() === "log") {
         console.log("BROWSER LOG:", msg.text());
       }
     });

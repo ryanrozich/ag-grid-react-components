@@ -5,7 +5,6 @@ import { format } from "date-fns";
 
 import { DateFilterParams, DateFilterModel } from "./types";
 import { logger } from "../../utils/logger";
-import { resolveDateExpression } from "../../utils/dateExpressionParser";
 
 import {
   FilterModeToggle,
@@ -25,12 +24,18 @@ const DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
 const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
   (props, ref) => {
-    console.log("[DateFilter] Component instantiated with props:", props);
+    console.log("[DateFilter] Component instantiated with props:", {
+      hasColumn: !!props.column,
+      hasColDef: !!props.colDef,
+      hasGetValue: typeof props.getValue === 'function',
+      model: props.model ? JSON.stringify(props.model) : 'null',
+      filterParams: props
+    });
 
     const dateFormat = props.dateFormat || DEFAULT_DATE_FORMAT;
     const { handleError } = useErrorHandler();
     const filterRef = React.useRef<HTMLDivElement>(null);
-    const programmaticModelRef = React.useRef<DateFilterModel | null>(null);
+    const filterCallCountRef = React.useRef(0);
 
     // Destructure props for useCallback dependencies
     const {
@@ -134,64 +139,24 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
     // Filter implementation
     const doesFilterPass = useCallback(
       ({ node }: { node: IRowNode }) => {
-        // For programmatic changes, use the ref model if available
+        // Add detailed logging to debug the issue
+        filterCallCountRef.current++;
         console.log(
-          "[DateFilter] doesFilterPass called",
-          "programmaticModel:",
-          programmaticModelRef.current,
+          `[DateFilter] doesFilterPass called #${filterCallCountRef.current}`,
           "currentModel:",
           currentModel,
+          "isValid:",
+          validation.isFilterValid,
+          "effectiveDateFrom:",
+          validation.effectiveDateFrom,
+          "effectiveDateTo:",
+          validation.effectiveDateTo,
         );
-
-        // If we have a programmatic model, use it directly
-        if (programmaticModelRef.current) {
-          const model = programmaticModelRef.current;
-
-          // Validate the model has required fields
-          if (!model.mode || !model.type) return true;
-
-          const cellValue = getValue(node);
-          const cellDate = parseValue(cellValue);
-          if (!cellDate) return false;
-
-          // For relative mode, resolve the expressions
-          if (model.mode === "relative") {
-            const fromDate = model.expressionFrom
-              ? resolveDateExpression(model.expressionFrom)
-              : null;
-            const toDate = model.expressionTo
-              ? resolveDateExpression(model.expressionTo)
-              : null;
-
-            console.log("[DateFilter] Resolved dates:", {
-              expressionFrom: model.expressionFrom,
-              fromDate,
-              expressionTo: model.expressionTo,
-              toDate,
-              cellDate,
-            });
-
-            // Apply the filter based on type
-            switch (model.type) {
-              case "equals":
-                return fromDate
-                  ? cellDate.toDateString() === fromDate.toDateString()
-                  : false;
-              case "inRange":
-                if (!fromDate || !toDate) return false;
-                return cellDate >= fromDate && cellDate <= toDate;
-              case "after":
-                return fromDate ? cellDate > fromDate : false;
-              case "before":
-                return fromDate ? cellDate < fromDate : false;
-              default:
-                return true;
-            }
-          }
+        
+        if (!validation.isFilterValid || !currentModel) {
+          console.log("[DateFilter] Returning true - no valid filter");
+          return true;
         }
-
-        // Fall back to normal filtering logic
-        if (!validation.isFilterValid || !currentModel) return true;
 
         const cellValue = getValue(node);
         const cellDate = parseValue(cellValue);
@@ -220,6 +185,12 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
         const toInclusive =
           currentModel?.toInclusive ?? beforeInclusive ?? false;
 
+        console.log("[DateFilter] Applying filter type:", filterState.filterType, {
+          cellDate: normalizedCellDate,
+          fromDate: normalizedDateFrom,
+          toDate: normalizedDateTo,
+        });
+        
         switch (filterState.filterType) {
           case "equals":
             return normalizedDateFrom
@@ -352,12 +323,27 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
         }
       },
       getModel: useCallback(() => {
-        return currentModel;
+        console.log("[DateFilter] getModel called, returning:", currentModel);
+        if (!currentModel) return null;
+        
+        // Ensure dates are serializable for AG Grid
+        const serializableModel = {
+          ...currentModel,
+          dateFrom: currentModel.dateFrom instanceof Date ? currentModel.dateFrom.toISOString() : currentModel.dateFrom,
+          dateTo: currentModel.dateTo instanceof Date ? currentModel.dateTo.toISOString() : currentModel.dateTo,
+        };
+        
+        return serializableModel;
       }, [currentModel]),
       setModel: useCallback(
         (model: DateFilterModel | null) => {
           console.log("[DateFilter] setModel called with:", model);
           logger.debug("[DateFilter] setModel called with:", model);
+          
+          // Set a global flag for testing
+          if (typeof window !== 'undefined') {
+            (window as any).setModelWasCalled = true;
+          }
 
           if (!model) {
             console.log("[DateFilter] No model provided, resetting filter");
@@ -375,7 +361,18 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
             },
           );
 
-          filterState.initializeFromModel(model);
+          // Deserialize dates if they are ISO strings
+          const deserializedModel = {
+            ...model,
+            dateFrom: model.dateFrom && typeof model.dateFrom === 'string' 
+              ? new Date(model.dateFrom) 
+              : model.dateFrom,
+            dateTo: model.dateTo && typeof model.dateTo === 'string' 
+              ? new Date(model.dateTo) 
+              : model.dateTo,
+          };
+
+          filterState.initializeFromModel(deserializedModel);
 
           console.log("[DateFilter] Filter state after setting model:", {
             filterType: filterState.filterType,
@@ -383,45 +380,50 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
             expressionFrom: filterState.expressionFrom,
             expressionTo: filterState.expressionTo,
           });
+          
+          // Reset the filter call count
+          filterCallCountRef.current = 0;
 
           logger.debug("Filter state initialized from model:", model);
 
           // IMPORTANT: For programmatic filter changes (like from QuickFilterDropdown),
-          // we need to ensure the model is applied immediately
-          // Store the model in a ref for immediate use in doesFilterPass
-          programmaticModelRef.current = model;
-
-          // Force a synchronous update for programmatic changes
-          // This is critical for QuickFilterDropdown to work
+          // we need to ensure the grid is notified immediately
           if (onModelChange) {
-            console.log(
-              "[DateFilter] Calling onModelChange with model:",
-              model,
-            );
+            console.log("[DateFilter] Calling onModelChange with model:", model);
             onModelChange(model);
           }
 
-          // Immediately trigger filter changed
-          if (filterChangedCallback) {
-            console.log(
-              "[DateFilter] Calling filterChangedCallback immediately for programmatic change",
-            );
-            filterChangedCallback();
-          }
-
-          // Clear the programmatic model after a short delay to allow React to update
-          setTimeout(() => {
-            programmaticModelRef.current = null;
-          }, 100);
+          // Use requestAnimationFrame to ensure state updates have been processed
+          // before triggering the filter changed callback
+          requestAnimationFrame(() => {
+            if (filterChangedCallback) {
+              console.log(
+                "[DateFilter] Calling filterChangedCallback after state update",
+              );
+              filterChangedCallback();
+            }
+          });
         },
         [resetFilter, filterState, filterChangedCallback, onModelChange],
       ),
       onNewRowsLoaded: () => {
         // Handle new rows if needed
       },
+      // AG Grid v33 requires this to know when the filter is active
+      isFilterActive: useCallback(() => {
+        const active = validation.isFilterValid && currentModel !== null;
+        console.log("[DateFilter] isFilterActive called, returning:", active);
+        return active;
+      }, [validation.isFilterValid, currentModel]),
+      // Log when callbacks are destroyed
+      destroy: useCallback(() => {
+        console.log("[DateFilter] destroy called");
+      }, []),
     };
 
-    useGridFilter(callbacks);
+    console.log("[DateFilter] Registering callbacks with useGridFilter");
+    const gridFilterResult = useGridFilter(callbacks);
+    console.log("[DateFilter] useGridFilter returned:", gridFilterResult);
 
     // Model is handled during initial state creation in useFilterState
     // No ongoing synchronization to avoid state conflicts
@@ -515,5 +517,8 @@ const DateFilter = withErrorBoundary(DateFilterComponent, {
     });
   },
 });
+
+// For debugging - export the raw component
+export const DateFilterRaw = DateFilterComponent;
 
 export default DateFilter;

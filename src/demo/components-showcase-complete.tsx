@@ -10,6 +10,7 @@ import type {
 } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import {
+  DateFilter,
   RelativeDateFilter,
   QuickFilterDropdown,
   setupFilterStatePersistence,
@@ -570,7 +571,7 @@ export const ComponentsShowcaseComplete: React.FC<
 <AgGridReact
   columnDefs={[{
     field: "date",
-    filter: RelativeDateFilter,
+    filter: DateFilter,
     floatingFilter: true
   }]}
 />
@@ -698,7 +699,7 @@ export const ComponentsShowcaseComplete: React.FC<
 
       // Components Section
       { id: "components", label: "Components", isSection: true },
-      { id: "relativedatefilter", label: "RelativeDateFilter", indent: true },
+      { id: "relativedatefilter", label: "DateFilter", indent: true },
       { id: "quickfilterdropdown", label: "QuickFilterDropdown", indent: true },
 
       // Demo Guide Section
@@ -1078,7 +1079,7 @@ yarn add ag-grid-community ag-grid-react ag-grid-enterprise date-fns`}
                             code={`import React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { 
-  RelativeDateFilter,
+  DateFilter,
   QuickFilterDropdown,
   setupFilterStatePersistence
 } from 'ag-grid-react-components';
@@ -1091,7 +1092,7 @@ function App() {
     {
       field: 'date',
       headerName: 'Date',
-      filter: RelativeDateFilter,
+      filter: DateFilter,
       floatingFilter: true,
     },
     {
@@ -1166,7 +1167,7 @@ function App() {
                                 to="/docs/relativedatefilter"
                                 className="text-blue-400 hover:text-blue-300"
                               >
-                                RelativeDateFilter documentation
+                                DateFilter documentation
                               </Link>{" "}
                               for advanced date filtering
                             </li>
@@ -1195,12 +1196,12 @@ function App() {
                   </div>
                 )}
 
-                {/* RelativeDateFilter */}
+                {/* DateFilter */}
                 {activeDocSection === "relativedatefilter" && (
                   <div className="space-y-8">
                     <div>
                       <AnchorHeading level={1} id="relative-date-filter">
-                        RelativeDateFilter
+                        DateFilter
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6">
                         A powerful date filter that supports both absolute dates
@@ -1216,13 +1217,13 @@ function App() {
                             Basic Usage
                           </AnchorHeading>
                           <CodeBlock
-                            code={`import { RelativeDateFilter } from 'ag-grid-react-components';
+                            code={`import { DateFilter } from 'ag-grid-react-components';
 
 const columnDefs = [
   {
     field: 'dateField',
     headerName: 'Date',
-    filter: RelativeDateFilter,
+    filter: DateFilter,
     floatingFilter: true
   }
 ];`}
@@ -1336,7 +1337,7 @@ const columnDefs = [
   {
     field: 'dateField',
     headerName: 'Date',
-    filter: RelativeDateFilter,
+    filter: DateFilter,
     floatingFilter: true,
     filterParams: {
       buttons: ['reset', 'apply', 'clear'],
@@ -2400,7 +2401,7 @@ function MyGrid() {
                             Filter Model Types
                           </AnchorHeading>
                           <CodeBlock
-                            code={`// RelativeDateFilter model structure
+                            code={`// DateFilter model structure
 interface DateFilterModel {
   mode: 'absolute' | 'relative';
   type: 'equals' | 'before' | 'after' | 'inRange' | 'blank' | 'notBlank';
@@ -2532,7 +2533,7 @@ function resolveDateExpression(expression: string): Date | null;`}
                           </AnchorHeading>
                           <CodeBlock
                             code={`// Filter params interface
-interface RelativeDateFilterParams extends IDateFilterParams {
+interface DateFilterParams extends IDateFilterParams {
   buttons?: FilterButtonType[];
   closeOnApply?: boolean;
   includeBlanksInEquals?: boolean;
@@ -2542,7 +2543,7 @@ interface RelativeDateFilterParams extends IDateFilterParams {
 }
 
 // Component interfaces
-interface IRelativeDateFilter extends IFilter {
+interface IDateFilter extends IFilter {
   // AG Grid required methods
   doesFilterPass(params: IDoesFilterPassParams): boolean;
   getModel(): DateFilterModel | null;
@@ -2568,7 +2569,7 @@ interface IRelativeDateFilter extends IFilter {
                         Date vs Timestamp Filtering
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6">
-                        Understanding how the RelativeDateFilter handles
+                        Understanding how the DateFilter handles
                         different date formats and time components.
                       </p>
 
@@ -2579,7 +2580,7 @@ interface IRelativeDateFilter extends IFilter {
                           </AnchorHeading>
                           <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
                             <p className="text-gray-300 mb-4">
-                              The RelativeDateFilter intelligently handles both
+                              The DateFilter intelligently handles both
                               date-only and timestamp values:
                             </p>
                             <ul className="space-y-3 text-gray-300">
@@ -2806,7 +2807,7 @@ interface IRelativeDateFilter extends IFilter {
                             code={`// Configure column for date-only filtering
 const dateOnlyColumn = {
   field: 'orderDate',
-  filter: RelativeDateFilter,
+  filter: DateFilter,
   valueFormatter: (params) => {
     // Display date only
     return new Date(params.value).toLocaleDateString();
@@ -2816,7 +2817,7 @@ const dateOnlyColumn = {
 // Configure column for timestamp filtering
 const timestampColumn = {
   field: 'createdAt',
-  filter: RelativeDateFilter,
+  filter: DateFilter,
   valueFormatter: (params) => {
     // Display full timestamp
     return new Date(params.value).toLocaleString();
@@ -3575,15 +3576,15 @@ npm run test:e2e:ui   # Playwright UI mode`}
                           <CodeBlock
                             code={`import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { RelativeDateFilter } from '../RelativeDateFilter';
+import { DateFilter } from '../DateFilter';
 
-describe('RelativeDateFilter', () => {
+describe('DateFilter', () => {
   it('should toggle between absolute and relative modes', async () => {
     const user = userEvent.setup();
     const mockApi = createMockGridApi();
     
     render(
-      <RelativeDateFilter 
+      <DateFilter 
         filterParams={{}} 
         api={mockApi}
         column={mockColumn}
@@ -3755,7 +3756,7 @@ const mockColumn = createMockColumn({ field: 'date' });`}
                             code={`import React, { useState, useCallback } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { 
-  RelativeDateFilter,
+  DateFilter,
   QuickFilterDropdown,
   setupFilterStatePersistence,
   DATE_FILTER_PRESETS
@@ -3776,7 +3777,7 @@ function DateFilterGrid() {
     {
       field: 'date',
       headerName: 'Date',
-      filter: RelativeDateFilter,
+      filter: DateFilter,
       floatingFilter: true,
       filterParams: {
         buttons: ['reset', 'apply'],

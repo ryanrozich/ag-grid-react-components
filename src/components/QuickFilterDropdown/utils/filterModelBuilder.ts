@@ -1,5 +1,6 @@
 import type { GridApi } from "ag-grid-community";
 import type { QuickFilterOption } from "../types";
+import { applyFilterModelWithWorkaround } from "./agGridWorkaround";
 
 /**
  * Builds and applies a filter model to the grid
@@ -56,48 +57,25 @@ export async function applyQuickFilter(
 
   console.log("[QuickFilter] Final filter model to apply:", currentModel);
 
-  // Apply the updated filter model
-  api.setFilterModel(currentModel);
-
-  console.log(
-    "[QuickFilter] Filter model applied. Checking what was actually set:",
-  );
-
-  // Verify the filter was applied
-  const actualModel = api.getFilterModel();
-  console.log("[QuickFilter] Actual filter model after setting:", actualModel);
-
-  // Force the grid to re-evaluate which rows pass the filter
-  api.onFilterChanged();
-
-  // Add a small delay to ensure the filter model propagates
-  setTimeout(async () => {
-    try {
-      const filterInstance = await api.getColumnFilterInstance(columnId);
-      console.log(
-        "[QuickFilter] Got filter instance after delay:",
-        filterInstance,
-      );
-
-      // Check if it's our custom DateFilter
-      if (filterInstance) {
-        const model = api.getFilterModel();
-        console.log(
-          "[QuickFilter] Re-checking filter model after delay:",
-          model,
-        );
-
-        // Get displayed row count to verify filtering
-        const displayedRowCount = api.getDisplayedRowCount();
-        console.log(
-          "[QuickFilter] Displayed row count after filtering:",
-          displayedRowCount,
-        );
-      }
-    } catch (error) {
-      console.error("[QuickFilter] Error checking filter instance:", error);
-    }
-  }, 100);
+  // Use workaround for AG Grid bug where setModel is not called on custom filters
+  if (option && option.filterModel && columnId) {
+    console.log("[QuickFilter] Applying workaround for column:", columnId);
+    // The workaround will call setFilterModel internally and properly set up the filter
+    await applyFilterModelWithWorkaround(api, columnId, option.filterModel);
+  } else {
+    // For clearing filters or multi-column filters, use standard approach
+    api.setFilterModel(currentModel);
+    api.onFilterChanged();
+  }
+  
+  // Verify the result after a small delay
+  setTimeout(() => {
+    const actualModel = api.getFilterModel();
+    console.log("[QuickFilter] Filter model after applying:", actualModel);
+    
+    const displayedRowCount = api.getDisplayedRowCount();
+    console.log("[QuickFilter] Displayed row count:", displayedRowCount);
+  }, 500);
 }
 
 /**

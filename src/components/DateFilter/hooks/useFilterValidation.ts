@@ -41,15 +41,21 @@ export const useFilterValidation = ({
 }: UseFilterValidationProps): UseFilterValidationReturn => {
   // Resolved dates based on expressions
   const resolvedDateFrom = useMemo(() => {
-    return filterMode === "relative" && expressionFrom
-      ? resolveDateExpression(expressionFrom)
-      : null;
+    if (filterMode === "relative" && expressionFrom) {
+      const resolved = resolveDateExpression(expressionFrom);
+      console.log(`[useFilterValidation] Resolved expressionFrom "${expressionFrom}" to:`, resolved);
+      return resolved;
+    }
+    return null;
   }, [filterMode, expressionFrom]);
 
   const resolvedDateTo = useMemo(() => {
-    return filterMode === "relative" && expressionTo
-      ? resolveDateExpression(expressionTo)
-      : null;
+    if (filterMode === "relative" && expressionTo) {
+      const resolved = resolveDateExpression(expressionTo);
+      console.log(`[useFilterValidation] Resolved expressionTo "${expressionTo}" to:`, resolved);
+      return resolved;
+    }
+    return null;
   }, [filterMode, expressionTo]);
 
   // Effective dates (either absolute or resolved from expressions)
