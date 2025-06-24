@@ -1,9 +1,11 @@
 # DateFilter Component Architecture
 
 ## Overview
+
 The DateFilter is a refactored, modular version of the original 971-line RelativeDateFilter component, now organized into a clean architecture with ~291 lines in the main component.
 
 ## Component Structure
+
 ```
 src/components/DateFilter/
 ├── index.tsx                    # Main orchestrator (291 lines)
@@ -25,17 +27,20 @@ src/components/DateFilter/
 ## Key Implementation Details
 
 ### State Management
+
 - Uses `useFilterState` hook to manage 13+ state variables
 - Initializes from `initialModel` prop or defaults
 - Handles both absolute dates and relative expressions
 
 ### AG Grid Integration
+
 - Implements IFilter interface via `useGridFilter` hook
 - Required callbacks: `doesFilterPass`, `getModel`, `setModel`
 - Optional callbacks: `isFilterActive`, `getModelAsString`, `onNewRowsLoaded`
 - Proper date serialization/deserialization for models
 
 ### Filter Model Structure
+
 ```typescript
 {
   type: "equals" | "notEqual" | "after" | "before" | "inRange",
@@ -50,6 +55,7 @@ src/components/DateFilter/
 ```
 
 ### Validation Flow
+
 1. User input → Debounced validation (300ms)
 2. Expression parsing via `parseDateExpression`
 3. Date resolution via `resolveDateExpression`
@@ -58,18 +64,22 @@ src/components/DateFilter/
 ## Current Issues
 
 ### Programmatic Filter Setting
+
 When filters are set via `api.setFilterModel()`:
+
 1. AG Grid creates new component instance with `model: null`
 2. `setModel` is not called on the new instance
 3. Component has no state, filter doesn't work
 
 ### Workaround Attempts
+
 - Added extensive logging
 - Tried manual state initialization
 - Checked for timing issues with React state updates
 - Issue affects both DateFilter and RelativeDateFilter
 
 ## Integration Points
+
 - **dateExpressionParser.ts**: Handles relative date expressions
 - **filterStateUtils.ts**: Serialization for URL persistence
 - **QuickFilterDropdown**: Sets filters programmatically

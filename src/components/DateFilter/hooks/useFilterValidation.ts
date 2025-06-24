@@ -43,7 +43,10 @@ export const useFilterValidation = ({
   const resolvedDateFrom = useMemo(() => {
     if (filterMode === "relative" && expressionFrom) {
       const resolved = resolveDateExpression(expressionFrom);
-      console.log(`[useFilterValidation] Resolved expressionFrom "${expressionFrom}" to:`, resolved);
+      console.log(
+        `[useFilterValidation] Resolved expressionFrom "${expressionFrom}" to:`,
+        resolved,
+      );
       return resolved;
     }
     return null;
@@ -52,7 +55,10 @@ export const useFilterValidation = ({
   const resolvedDateTo = useMemo(() => {
     if (filterMode === "relative" && expressionTo) {
       const resolved = resolveDateExpression(expressionTo);
-      console.log(`[useFilterValidation] Resolved expressionTo "${expressionTo}" to:`, resolved);
+      console.log(
+        `[useFilterValidation] Resolved expressionTo "${expressionTo}" to:`,
+        resolved,
+      );
       return resolved;
     }
     return null;

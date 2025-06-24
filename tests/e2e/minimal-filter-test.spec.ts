@@ -24,21 +24,21 @@ test.describe("Minimal Filter Test", () => {
       if (!api) return;
 
       console.log("=== BEFORE SETTING FILTER MODEL ===");
-      
+
       const filterModel = {
         dueDate: {
           mode: "relative",
-          type: "equals", 
-          expressionFrom: "Today"
-        }
+          type: "equals",
+          expressionFrom: "Today",
+        },
       };
 
       console.log("=== CALLING setFilterModel ===");
       api.setFilterModel(filterModel);
-      
+
       console.log("=== CALLING onFilterChanged ===");
       api.onFilterChanged();
-      
+
       console.log("=== DONE ===");
     });
 
@@ -47,16 +47,19 @@ test.describe("Minimal Filter Test", () => {
 
     // Print all logs
     console.log("\n=== CAPTURED LOGS ===");
-    logs.forEach(log => console.log(log));
-    
+    logs.forEach((log) => console.log(log));
+
     // Check if setModel was called
-    const wasSetModelCalled = logs.some(log => log.includes("setModel called"));
+    const wasSetModelCalled = logs.some((log) =>
+      log.includes("setModel called"),
+    );
     console.log("\nWas setModel called?", wasSetModelCalled);
-    
+
     // Check if new component was instantiated
-    const newComponentCreated = logs.some(log => 
-      log.includes("Component instantiated") && 
-      logs.indexOf(log) > logs.findIndex(l => l.includes("BEFORE SETTING"))
+    const newComponentCreated = logs.some(
+      (log) =>
+        log.includes("Component instantiated") &&
+        logs.indexOf(log) > logs.findIndex((l) => l.includes("BEFORE SETTING")),
     );
     console.log("Was new component created?", newComponentCreated);
   });

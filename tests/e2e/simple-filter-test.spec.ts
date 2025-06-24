@@ -1,10 +1,15 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Simple Filter Test", () => {
-  test("should filter data when DateFilter is initialized with model", async ({ page }) => {
+  test("should filter data when DateFilter is initialized with model", async ({
+    page,
+  }) => {
     // Enable console logging
     page.on("console", (msg) => {
-      if (msg.text().includes("[DateFilter]") || msg.text().includes("Row count")) {
+      if (
+        msg.text().includes("[DateFilter]") ||
+        msg.text().includes("Row count")
+      ) {
         console.log("BROWSER:", msg.text());
       }
     });
@@ -37,18 +42,18 @@ test.describe("Simple Filter Test", () => {
         dueDate: {
           mode: "relative",
           type: "equals",
-          expressionFrom: "Today"
-        }
+          expressionFrom: "Today",
+        },
       };
 
       console.log("Setting filter model:", JSON.stringify(filterModel));
       api.setFilterModel(filterModel);
-      
+
       // Force grid to refresh
       api.onFilterChanged();
-      
+
       // Wait a bit for React to update
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const finalRowCount = api.getDisplayedRowCount();
       console.log("Row count after filter:", finalRowCount);
@@ -57,8 +62,10 @@ test.describe("Simple Filter Test", () => {
       const filterInstance = await api.getColumnFilterInstance("dueDate");
       const filterInstanceInfo = {
         hasInstance: !!filterInstance,
-        hasDoesFilterPass: typeof filterInstance?.doesFilterPass === 'function',
-        currentModel: filterInstance?.getModel ? filterInstance.getModel() : null
+        hasDoesFilterPass: typeof filterInstance?.doesFilterPass === "function",
+        currentModel: filterInstance?.getModel
+          ? filterInstance.getModel()
+          : null,
       };
 
       return {
@@ -67,7 +74,7 @@ test.describe("Simple Filter Test", () => {
         filterChanged: initialRowCount !== finalRowCount,
         sampleDates,
         filterInstanceInfo,
-        currentFilterModel: api.getFilterModel()
+        currentFilterModel: api.getFilterModel(),
       };
     });
 
@@ -75,13 +82,15 @@ test.describe("Simple Filter Test", () => {
 
     // The filter should have changed the row count
     expect(result.filterChanged).toBe(true);
-    
-    // Since we're filtering for "Today" and all data is in the future, 
+
+    // Since we're filtering for "Today" and all data is in the future,
     // we expect 0 rows
     expect(result.finalRowCount).toBe(0);
   });
 
-  test("should show some rows when filtering for future dates", async ({ page }) => {
+  test("should show some rows when filtering for future dates", async ({
+    page,
+  }) => {
     // Navigate to the demo page
     await page.goto("/demo");
 
@@ -102,14 +111,14 @@ test.describe("Simple Filter Test", () => {
           mode: "relative",
           type: "after",
           expressionFrom: "Today",
-          fromInclusive: false
-        }
+          fromInclusive: false,
+        },
       };
 
       api.setFilterModel(filterModel);
       api.onFilterChanged();
-      
-      await new Promise(resolve => setTimeout(resolve, 500));
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const finalRowCount = api.getDisplayedRowCount();
 
@@ -117,7 +126,7 @@ test.describe("Simple Filter Test", () => {
         initialRowCount,
         finalRowCount,
         filterChanged: initialRowCount !== finalRowCount,
-        currentFilterModel: api.getFilterModel()
+        currentFilterModel: api.getFilterModel(),
       };
     });
 

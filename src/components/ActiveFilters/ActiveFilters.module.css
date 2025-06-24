@@ -1,0 +1,101 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.filterPills {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.filterPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background-color: rgb(99, 102, 241, 0.1);
+  border: 1px solid rgb(99, 102, 241, 0.3);
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  color: rgb(165, 180, 252);
+  transition: all 0.2s ease;
+}
+
+.filterPill:hover {
+  background-color: rgb(99, 102, 241, 0.2);
+  border-color: rgb(99, 102, 241, 0.5);
+}
+
+.pillLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.columnName {
+  font-weight: 500;
+  color: rgb(129, 140, 248);
+}
+
+.filterValue {
+  color: rgb(199, 210, 254);
+}
+
+.removeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: rgb(165, 180, 252);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.removeButton:hover {
+  background-color: rgb(239, 68, 68, 0.1);
+  color: rgb(248, 113, 113);
+}
+
+.removeButton:focus {
+  outline: 2px solid rgb(99, 102, 241, 0.5);
+  outline-offset: 2px;
+}
+
+.clearAllButton {
+  padding: 0.25rem 0.75rem;
+  background: transparent;
+  border: 1px solid rgb(156, 163, 175, 0.3);
+  border-radius: 0.375rem;
+  color: rgb(156, 163, 175);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.clearAllButton:hover {
+  background-color: rgb(156, 163, 175, 0.1);
+  border-color: rgb(156, 163, 175, 0.5);
+  color: rgb(209, 213, 219);
+}
+
+.clearAllButton:focus {
+  outline: 2px solid rgb(99, 102, 241, 0.5);
+  outline-offset: 2px;
+}
+
+/* Light theme support */
+:global(.ag-theme-quartz) .container {
+  /* Adjust colors for light theme if needed */
+}

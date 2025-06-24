@@ -3,6 +3,7 @@
 ## Confirmed: This IS an AG Grid Bug
 
 After thorough investigation including:
+
 1. Reviewing AG Grid GitHub issues (#2256, #2709, #4870)
 2. Testing with detailed logging
 3. Analyzing the filter lifecycle
@@ -10,20 +11,23 @@ After thorough investigation including:
 ### The Bug Details
 
 When `api.setFilterModel()` is called programmatically:
+
 1. AG Grid destroys the existing filter instance
-2. Creates a new filter instance 
+2. Creates a new filter instance
 3. **IMPORTANT**: In newer versions (v33), AG Grid DOES pass the model in props during instantiation
 4. However, the filter still doesn't work because `doesFilterPass` is being called with `currentModel: null`
 
 ### Key Discovery
 
 The logs show:
+
 ```
 [DateFilter] Component instantiated with props: {model: {"mode":"relative","type":"inRange"...}}
 [DateFilter] doesFilterPass called #1000 currentModel: null isValid: false
 ```
 
 This means:
+
 - The component receives the model in props during instantiation
 - But internally, the filter state is still null when filtering occurs
 - The issue is timing-related - the filter hasn't fully initialized when AG Grid starts filtering

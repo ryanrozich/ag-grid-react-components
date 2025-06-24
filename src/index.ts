@@ -12,6 +12,10 @@ import {
 } from "./components/QuickFilterDropdown";
 export { QuickFilterDropdown, DATE_FILTER_PRESETS };
 
+// Active Filters Component
+import ActiveFilters from "./components/ActiveFilters";
+export { ActiveFilters };
+
 // Date Filter Types
 export type {
   DateFilterType,

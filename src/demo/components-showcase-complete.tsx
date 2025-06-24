@@ -12,6 +12,7 @@ import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import {
   RelativeDateFilter,
   QuickFilterDropdown,
+  ActiveFilters,
   setupFilterStatePersistence,
   serializeFilterModel,
 } from "../index";
@@ -229,19 +230,20 @@ export const ComponentsShowcaseComplete: React.FC<
       {
         field: "id",
         headerName: "ID",
-        width: 80,
+        width: 70,
         filter: "agNumberColumnFilter",
       },
       {
         field: "name",
-        headerName: "Name",
+        headerName: "Task Name",
         flex: 1,
+        minWidth: 250,
         filter: "agTextColumnFilter",
       },
       {
         field: "category",
         headerName: "Category",
-        width: 140,
+        width: 120,
         filter: "agSetColumnFilter",
         cellRenderer: CategoryCellRenderer,
         enableRowGroup: true,
@@ -249,14 +251,14 @@ export const ComponentsShowcaseComplete: React.FC<
       {
         field: "priority",
         headerName: "Priority",
-        width: 110,
+        width: 100,
         filter: "agSetColumnFilter",
         enableRowGroup: true,
       },
       {
         field: "assignee",
         headerName: "Assignee",
-        width: 200,
+        width: 180,
         filter: "agTextColumnFilter",
         cellRenderer: AvatarCellRenderer,
         enableRowGroup: true,
@@ -264,7 +266,7 @@ export const ComponentsShowcaseComplete: React.FC<
       {
         field: "dueDate",
         headerName: "Due Date",
-        width: 150,
+        width: 130,
         filter: RelativeDateFilter,
         filterParams: {
           buttons: ["reset", "apply"],
@@ -277,8 +279,8 @@ export const ComponentsShowcaseComplete: React.FC<
       },
       {
         field: "value",
-        headerName: "Amount",
-        width: 120,
+        headerName: "Budget",
+        width: 100,
         filter: "agNumberColumnFilter",
         aggFunc: "sum",
         enableValue: true,
@@ -295,23 +297,23 @@ export const ComponentsShowcaseComplete: React.FC<
       {
         field: "status",
         headerName: "Status",
-        width: 130,
+        width: 120,
         filter: "agSetColumnFilter",
         cellRenderer: StatusRenderer,
         enableRowGroup: true,
       },
       {
         field: "percentDelivered",
-        headerName: "% Delivered",
-        width: 140,
+        headerName: "Progress",
+        width: 120,
         cellRenderer: PercentBarRenderer,
         aggFunc: "avg", // Use simple average for aggregation
         enableValue: true,
       },
       {
         field: "amountDelivered",
-        headerName: "$ Delivered",
-        width: 120,
+        headerName: "Spent",
+        width: 100,
         aggFunc: "sum",
         valueFormatter: (params) => {
           if (params.value == null) return "";
@@ -4399,90 +4401,63 @@ const handleFilterSelect = async (option) => {
           </div>
 
           {/* Grid */}
-          <div className="bg-gray-900/50 rounded-xl p-8 border border-gray-800">
-            <AnchorHeading level={2} id="live-demo-grid">
-              Live Demo Grid
-            </AnchorHeading>
-            <p className="text-gray-400 mb-6">
-              {activeComponent === "date-filter" &&
-                "Click on the Date column filter to try relative expressions"}
-              {activeComponent === "quick-filter" &&
-                "Use the quick filter buttons to filter the data"}
-              {activeComponent === "url-state" &&
-                "Apply filters and watch the URL update"}
-            </p>
-
-            {/* Quick Filters - Integrated into grid area */}
-            {gridApi && (
-              <div className="mb-6 bg-gray-800/50 rounded-lg p-4 border border-gray-700">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-semibold text-indigo-400">
-                    Quick Filters
-                  </h3>
-                  <button
-                    onClick={() => {
-                      gridApi.setFilterModel({});
-                      gridApi.onFilterChanged();
-                    }}
-                    className="text-xs text-gray-400 hover:text-white transition-colors px-3 py-1 rounded-md border border-gray-600 hover:border-gray-500"
-                  >
-                    Clear All Filters
-                  </button>
+          <div className="bg-gray-900/50 rounded-xl border border-gray-800 overflow-hidden">
+            {/* Grid Toolbar */}
+            <div className="bg-gray-900/80 border-b border-gray-800 px-6 py-4">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-4">
+                  <h2 className="text-lg font-semibold text-white">
+                    Project Tasks
+                  </h2>
+                  <span className="text-sm text-gray-400">
+                    {rowData.length} items
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-gray-400 mb-2 block">
-                      Date Range Filters
-                    </label>
+                {/* Quick Filter Dropdowns */}
+                {gridApi && (
+                  <div className="flex items-center gap-3 flex-wrap">
                     <QuickFilterDropdown
                       api={gridApi}
                       columnId="dueDate"
                       options={dateQuickFilters}
-                      placeholder="Select time period"
-                      showDescriptions={true}
-                      className="w-full"
+                      placeholder="Time period"
+                      showDescriptions={false}
+                      className="min-w-[140px]"
                     />
-                  </div>
-
-                  <div>
-                    <label className="text-xs text-gray-400 mb-2 block">
-                      Combined Filters
-                    </label>
                     <QuickFilterDropdown
                       api={gridApi}
                       columnId="dueDate"
                       options={combinedQuickFilters}
-                      placeholder="Combined filters"
-                      showDescriptions={true}
-                      className="w-full"
+                      placeholder="Smart filters"
+                      showDescriptions={false}
+                      className="min-w-[140px]"
                     />
-                  </div>
-                </div>
-
-                {/* Active Filters Display */}
-                {Object.keys(filterModel).length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-gray-700">
-                    <div className="flex items-center gap-2 text-xs text-gray-400">
-                      <span>Active filters:</span>
-                      <div className="flex gap-2 flex-wrap">
-                        {Object.entries(filterModel).map(([col]) => (
-                          <span
-                            key={col}
-                            className="bg-indigo-900/30 border border-indigo-600/30 px-2 py-1 rounded text-indigo-300"
-                          >
-                            {col}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+                    <div className="h-8 w-px bg-gray-700" /> {/* Divider */}
+                    <button
+                      onClick={() => {
+                        gridApi.setFilterModel({});
+                        gridApi.onFilterChanged();
+                      }}
+                      className="text-sm text-gray-400 hover:text-white transition-colors"
+                    >
+                      Clear filters
+                    </button>
                   </div>
                 )}
               </div>
-            )}
 
+              {/* Active Filters */}
+              {gridApi && Object.keys(filterModel).length > 0 && (
+                <div className="mt-3 pt-3 border-t border-gray-800">
+                  <ActiveFilters api={gridApi} filterModel={filterModel} />
+                </div>
+              )}
+            </div>
+
+            {/* Grid Container */}
             <div
-              className="ag-theme-quartz-dark rounded-lg overflow-hidden"
+              className="ag-theme-quartz-dark"
               style={{ height: 600, width: "100%" }}
             >
               <AgGridReact

@@ -50,7 +50,7 @@ export const useFilterState = (
   defaultMode?: DateFilterMode,
 ): UseFilterStateReturn => {
   console.log("[useFilterState] Initializing with model:", initialModel);
-  
+
   // Filter state with validation
   const [filterType, setFilterType] = useState<DateFilterType>(
     isValidFilterType(initialModel?.type) ? initialModel.type : "equals",
@@ -64,12 +64,16 @@ export const useFilterState = (
   // Date values
   const [absoluteDateFrom, setAbsoluteDateFrom] = useState<Date | null>(
     filterMode === "absolute" && initialModel?.dateFrom
-      ? (initialModel.dateFrom instanceof Date ? initialModel.dateFrom : new Date(initialModel.dateFrom))
+      ? initialModel.dateFrom instanceof Date
+        ? initialModel.dateFrom
+        : new Date(initialModel.dateFrom)
       : null,
   );
   const [absoluteDateTo, setAbsoluteDateTo] = useState<Date | null>(
     filterMode === "absolute" && initialModel?.dateTo
-      ? (initialModel.dateTo instanceof Date ? initialModel.dateTo : new Date(initialModel.dateTo))
+      ? initialModel.dateTo instanceof Date
+        ? initialModel.dateTo
+        : new Date(initialModel.dateTo)
       : null,
   );
 

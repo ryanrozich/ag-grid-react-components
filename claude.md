@@ -477,6 +477,39 @@ The configuration follows standard Prettier defaults with minimal customization 
 
 **Remember:** The demo site documentation IS the primary documentation for many users. It must always be accurate and complete.
 
+## Component Library
+
+### ActiveFilters Component
+
+**Purpose**: Display active AG Grid filters as removable pills showing both column names and filter values.
+
+**Location**: `src/components/ActiveFilters/`
+
+**Key Features**:
+
+- Shows filter values alongside column names (e.g., "Due Date: Last 7 days")
+- Individual filter removal via × button
+- "Clear all" button to remove all filters
+- Handles various filter types: date ranges, set filters, text filters
+- TypeScript interfaces for type safety
+- CSS Modules for styling isolation
+
+**API**:
+
+```typescript
+export interface ActiveFiltersProps {
+  api: GridApi;
+  filterModel: FilterModel;
+  className?: string;
+}
+```
+
+**CSS Styling Notes**:
+
+- Uses `rgb()` notation with decimal alpha values (e.g., `rgb(99, 102, 241, 0.1)`)
+- This satisfies stylelint's `color-function-notation: "legacy"` rule
+- Do NOT use `rgba()` or modern `rgb(99 102 241 / 0.1)` syntax
+
 ## Known Issues and Workarounds
 
 ### AG Grid v33 setFilterModel Bug
