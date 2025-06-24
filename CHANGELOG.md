@@ -1,56 +1,13 @@
 # Changelog
 
-All notable changes to ag-grid-react-components will be documented in this file.
+All notable changes to ag-grid-date-filter will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.1.0](https://github.com/ryanrozich/ag-grid-react-components/compare/v1.1.0-ag-grid-bug-identified...v1.1.0) (2025-06-24)
 
-## [Unreleased]
 
-### 💥 BREAKING CHANGES
+### ✨ Features
 
-- **Removed RelativeDateFloatingFilter component**: AG Grid now provides an automatic read-only floating filter when `floatingFilter: true` is set. The RelativeDateFilter's `getModelAsString()` method provides the display text.
-
-  **Migration Guide:**
-
-  ```typescript
-  // Before:
-  import {
-    RelativeDateFilter,
-    RelativeDateFloatingFilter,
-  } from "ag-grid-react-components";
-
-  columnDefs = [
-    {
-      filter: RelativeDateFilter,
-      floatingFilter: true,
-      floatingFilterComponent: RelativeDateFloatingFilter,
-    },
-  ];
-
-  // After:
-  import { RelativeDateFilter } from "ag-grid-react-components";
-
-  columnDefs = [
-    {
-      filter: RelativeDateFilter,
-      floatingFilter: true,
-      // No floatingFilterComponent needed!
-    },
-  ];
-  ```
-
-### ✨ Added
-
-- React Router integration for deep linking to documentation sections
-- Anchor links for all documentation headings (Confluence-style, on the right)
-- Automatic floating filter support via `getModelAsString()` implementation
-
-### 🔧 Changed
-
-- Simplified codebase by removing redundant floating filter component
-- Updated all demos to use automatic floating filter
-- Enhanced documentation with proper navigation and deep linking
+* **utils:** add AG Grid v33 setFilterModel workaround and documentation ([73b3034](https://github.com/ryanrozich/ag-grid-react-components/commit/73b3034f7cfb277981680af82fab35bc168b591c)), closes [ag-grid/ag-grid#2256](https://github.com/ag-grid/ag-grid/issues/2256) [ag-grid/ag-grid#2709](https://github.com/ag-grid/ag-grid/issues/2709) [ag-grid/ag-grid#4870](https://github.com/ag-grid/ag-grid/issues/4870)
 
 ## [1.0.0] - 2025-06-08
 
