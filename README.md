@@ -169,6 +169,34 @@ Components are thoroughly tested with:
 - Integration tests with AG Grid
 - E2E tests (Playwright)
 
+## ⚠️ Known Issues
+
+### AG Grid v33 setFilterModel Bug
+
+When calling `api.setFilterModel()` programmatically on custom React filter components in AG Grid v33, the filter doesn't properly initialize. This is a known AG Grid bug affecting all v33.x versions.
+
+**Related Issues:**
+
+- [ag-grid/ag-grid#2256](https://github.com/ag-grid/ag-grid/issues/2256)
+- [ag-grid/ag-grid#2709](https://github.com/ag-grid/ag-grid/issues/2709)
+- [ag-grid/ag-grid#4870](https://github.com/ag-grid/ag-grid/issues/4870)
+
+**Workaround:**
+
+Use the provided `applyFilterModelWithWorkaround` function:
+
+```tsx
+import { applyFilterModelWithWorkaround } from "ag-grid-react-components";
+
+// Instead of:
+api.setFilterModel({ dateColumn: filterModel });
+
+// Use:
+await applyFilterModelWithWorkaround(api, "dateColumn", filterModel);
+```
+
+This workaround handles AG Grid v33's Promise-based filter instances and ensures the filter state is properly initialized. It should be removed once AG Grid fixes the underlying issue.
+
 ## 🚀 Demo
 
 Live demo available at: https://demo.rozich.net/ag-grid-react-components/

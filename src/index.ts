@@ -41,6 +41,9 @@ export {
   setupFilterStatePersistence,
 } from "./utils/filterStateUtils";
 
+// AG Grid Workarounds
+export { applyFilterModelWithWorkaround } from "./components/QuickFilterDropdown/utils/agGridWorkaround";
+
 // Import CSS
 import "./styles.css";
 

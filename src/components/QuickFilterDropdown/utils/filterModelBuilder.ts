@@ -67,12 +67,12 @@ export async function applyQuickFilter(
     api.setFilterModel(currentModel);
     api.onFilterChanged();
   }
-  
+
   // Verify the result after a small delay
   setTimeout(() => {
     const actualModel = api.getFilterModel();
     console.log("[QuickFilter] Filter model after applying:", actualModel);
-    
+
     const displayedRowCount = api.getDisplayedRowCount();
     console.log("[QuickFilter] Displayed row count:", displayedRowCount);
   }, 500);

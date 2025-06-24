@@ -27,9 +27,9 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
     console.log("[DateFilter] Component instantiated with props:", {
       hasColumn: !!props.column,
       hasColDef: !!props.colDef,
-      hasGetValue: typeof props.getValue === 'function',
-      model: props.model ? JSON.stringify(props.model) : 'null',
-      filterParams: props
+      hasGetValue: typeof props.getValue === "function",
+      model: props.model ? JSON.stringify(props.model) : "null",
+      filterParams: props,
     });
 
     const dateFormat = props.dateFormat || DEFAULT_DATE_FORMAT;
@@ -152,7 +152,7 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
           "effectiveDateTo:",
           validation.effectiveDateTo,
         );
-        
+
         if (!validation.isFilterValid || !currentModel) {
           console.log("[DateFilter] Returning true - no valid filter");
           return true;
@@ -185,12 +185,16 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
         const toInclusive =
           currentModel?.toInclusive ?? beforeInclusive ?? false;
 
-        console.log("[DateFilter] Applying filter type:", filterState.filterType, {
-          cellDate: normalizedCellDate,
-          fromDate: normalizedDateFrom,
-          toDate: normalizedDateTo,
-        });
-        
+        console.log(
+          "[DateFilter] Applying filter type:",
+          filterState.filterType,
+          {
+            cellDate: normalizedCellDate,
+            fromDate: normalizedDateFrom,
+            toDate: normalizedDateTo,
+          },
+        );
+
         switch (filterState.filterType) {
           case "equals":
             return normalizedDateFrom
@@ -325,23 +329,29 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
       getModel: useCallback(() => {
         console.log("[DateFilter] getModel called, returning:", currentModel);
         if (!currentModel) return null;
-        
+
         // Ensure dates are serializable for AG Grid
         const serializableModel = {
           ...currentModel,
-          dateFrom: currentModel.dateFrom instanceof Date ? currentModel.dateFrom.toISOString() : currentModel.dateFrom,
-          dateTo: currentModel.dateTo instanceof Date ? currentModel.dateTo.toISOString() : currentModel.dateTo,
+          dateFrom:
+            currentModel.dateFrom instanceof Date
+              ? currentModel.dateFrom.toISOString()
+              : currentModel.dateFrom,
+          dateTo:
+            currentModel.dateTo instanceof Date
+              ? currentModel.dateTo.toISOString()
+              : currentModel.dateTo,
         };
-        
+
         return serializableModel;
       }, [currentModel]),
       setModel: useCallback(
         (model: DateFilterModel | null) => {
           console.log("[DateFilter] setModel called with:", model);
           logger.debug("[DateFilter] setModel called with:", model);
-          
+
           // Set a global flag for testing
-          if (typeof window !== 'undefined') {
+          if (typeof window !== "undefined") {
             (window as any).setModelWasCalled = true;
           }
 
@@ -364,12 +374,14 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
           // Deserialize dates if they are ISO strings
           const deserializedModel = {
             ...model,
-            dateFrom: model.dateFrom && typeof model.dateFrom === 'string' 
-              ? new Date(model.dateFrom) 
-              : model.dateFrom,
-            dateTo: model.dateTo && typeof model.dateTo === 'string' 
-              ? new Date(model.dateTo) 
-              : model.dateTo,
+            dateFrom:
+              model.dateFrom && typeof model.dateFrom === "string"
+                ? new Date(model.dateFrom)
+                : model.dateFrom,
+            dateTo:
+              model.dateTo && typeof model.dateTo === "string"
+                ? new Date(model.dateTo)
+                : model.dateTo,
           };
 
           filterState.initializeFromModel(deserializedModel);
@@ -380,7 +392,7 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
             expressionFrom: filterState.expressionFrom,
             expressionTo: filterState.expressionTo,
           });
-          
+
           // Reset the filter call count
           filterCallCountRef.current = 0;
 
@@ -389,7 +401,10 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
           // IMPORTANT: For programmatic filter changes (like from QuickFilterDropdown),
           // we need to ensure the grid is notified immediately
           if (onModelChange) {
-            console.log("[DateFilter] Calling onModelChange with model:", model);
+            console.log(
+              "[DateFilter] Calling onModelChange with model:",
+              model,
+            );
             onModelChange(model);
           }
 
@@ -423,6 +438,17 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
 
     console.log("[DateFilter] Registering callbacks with useGridFilter");
     const gridFilterResult = useGridFilter(callbacks);
+
+    // Handle model changes from props (when AG Grid creates new instance)
+    React.useEffect(() => {
+      console.log("[DateFilter] useEffect: model prop changed:", initialModel);
+
+      // Only reinitialize if we have a model and it's different from current state
+      if (initialModel && filterState) {
+        console.log("[DateFilter] useEffect: Applying model from props");
+        filterState.initializeFromModel(initialModel);
+      }
+    }, [initialModel, filterState]);
     console.log("[DateFilter] useGridFilter returned:", gridFilterResult);
 
     // Model is handled during initial state creation in useFilterState

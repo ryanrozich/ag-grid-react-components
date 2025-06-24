@@ -477,6 +477,39 @@ The configuration follows standard Prettier defaults with minimal customization 
 
 **Remember:** The demo site documentation IS the primary documentation for many users. It must always be accurate and complete.
 
+## Known Issues and Workarounds
+
+### AG Grid v33 setFilterModel Bug
+
+**Issue**: When calling `api.setFilterModel()` programmatically on custom React filter components, the filter doesn't properly initialize. The component receives the model in props but doesn't apply it to internal state, causing filters to not work.
+
+**Related GitHub Issues**:
+
+- [ag-grid/ag-grid#2256](https://github.com/ag-grid/ag-grid/issues/2256)
+- [ag-grid/ag-grid#2709](https://github.com/ag-grid/ag-grid/issues/2709)
+- [ag-grid/ag-grid#4870](https://github.com/ag-grid/ag-grid/issues/4870)
+
+**Workaround**: Use the `applyFilterModelWithWorkaround` function from `src/components/QuickFilterDropdown/utils/agGridWorkaround.ts`:
+
+```typescript
+import { applyFilterModelWithWorkaround } from "./utils/agGridWorkaround";
+
+// Instead of:
+api.setFilterModel({ columnId: filterModel });
+
+// Use:
+await applyFilterModelWithWorkaround(api, columnId, filterModel);
+```
+
+This workaround:
+
+- Handles AG Grid v33's Promise-based filter instances
+- Manually calls setModel on the filter instance
+- Forces grid refresh to ensure DOM updates
+- Adds proper timing for React component lifecycle
+
+**Note**: This workaround should be removed once AG Grid fixes the underlying issue.
+
 # important-instruction-reminders
 
 Do what has been asked; nothing more, nothing less.

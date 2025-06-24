@@ -10,7 +10,6 @@ import type {
 } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import {
-  DateFilter,
   RelativeDateFilter,
   QuickFilterDropdown,
   setupFilterStatePersistence,
@@ -713,6 +712,10 @@ export const ComponentsShowcaseComplete: React.FC<
       { id: "types", label: "TypeScript Types", indent: true },
       { id: "urlstate", label: "URL State Persistence", indent: true },
       { id: "date-vs-timestamp", label: "Date vs Timestamp", indent: true },
+
+      // Known Issues Section
+      { id: "known-issues", label: "Known Issues", isSection: true },
+      { id: "ag-grid-bugs", label: "AG Grid Bugs", indent: true },
 
       // Contributing Section
       { id: "contributing", label: "Contributing", isSection: true },
@@ -2569,8 +2572,8 @@ interface IDateFilter extends IFilter {
                         Date vs Timestamp Filtering
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6">
-                        Understanding how the DateFilter handles
-                        different date formats and time components.
+                        Understanding how the DateFilter handles different date
+                        formats and time components.
                       </p>
 
                       <div className="space-y-6">
@@ -3916,6 +3919,227 @@ const customFilters = [
                     </div>
                   </div>
                 )}
+
+                {/* Known Issues - AG Grid Bugs */}
+                {activeDocSection === "ag-grid-bugs" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="known-issues">
+                        Known Issues
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        This section documents known issues with AG Grid and
+                        their workarounds.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="setfiltermodel-bug">
+                            AG Grid v33 setFilterModel Bug
+                          </AnchorHeading>
+
+                          <div className="bg-red-900/20 border border-red-600/30 rounded-lg p-6 mb-6">
+                            <div className="flex items-start gap-3">
+                              <span className="text-red-400 text-xl">⚠️</span>
+                              <div>
+                                <h4 className="text-red-400 font-semibold mb-2">
+                                  Critical Issue
+                                </h4>
+                                <p className="text-gray-300 text-sm">
+                                  When calling{" "}
+                                  <code className="bg-gray-800 px-2 py-1 rounded">
+                                    api.setFilterModel()
+                                  </code>{" "}
+                                  programmatically on custom React filter
+                                  components, the filter doesn't properly
+                                  initialize. The component receives the model
+                                  in props but doesn't apply it to internal
+                                  state, causing filters to not work.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-6">
+                            <div>
+                              <AnchorHeading level={4} id="affected-versions">
+                                Affected Versions
+                              </AnchorHeading>
+                              <ul className="space-y-1 text-gray-300">
+                                <li className="flex items-start">
+                                  <span className="text-red-400 mr-2">•</span>
+                                  AG Grid v33.x (all versions)
+                                </li>
+                                <li className="flex items-start">
+                                  <span className="text-red-400 mr-2">•</span>
+                                  Custom React filter components only
+                                </li>
+                                <li className="flex items-start">
+                                  <span className="text-red-400 mr-2">•</span>
+                                  Built-in filters work correctly
+                                </li>
+                              </ul>
+                            </div>
+
+                            <div>
+                              <AnchorHeading
+                                level={4}
+                                id="related-github-issues"
+                              >
+                                Related GitHub Issues
+                              </AnchorHeading>
+                              <div className="grid md:grid-cols-3 gap-4">
+                                <a
+                                  href="https://github.com/ag-grid/ag-grid/issues/2256"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="bg-gray-900 rounded-lg p-4 border border-gray-800 hover:border-indigo-600 transition-colors"
+                                >
+                                  <div className="text-indigo-400 font-mono text-sm mb-1">
+                                    #2256
+                                  </div>
+                                  <div className="text-gray-300 text-sm">
+                                    setFilterModel doesn't initialize custom
+                                    filters
+                                  </div>
+                                </a>
+                                <a
+                                  href="https://github.com/ag-grid/ag-grid/issues/2709"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="bg-gray-900 rounded-lg p-4 border border-gray-800 hover:border-indigo-600 transition-colors"
+                                >
+                                  <div className="text-indigo-400 font-mono text-sm mb-1">
+                                    #2709
+                                  </div>
+                                  <div className="text-gray-300 text-sm">
+                                    Custom filter state not synced
+                                  </div>
+                                </a>
+                                <a
+                                  href="https://github.com/ag-grid/ag-grid/issues/4870"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="bg-gray-900 rounded-lg p-4 border border-gray-800 hover:border-indigo-600 transition-colors"
+                                >
+                                  <div className="text-indigo-400 font-mono text-sm mb-1">
+                                    #4870
+                                  </div>
+                                  <div className="text-gray-300 text-sm">
+                                    React hooks lifecycle issues
+                                  </div>
+                                </a>
+                              </div>
+                            </div>
+
+                            <div>
+                              <AnchorHeading level={4} id="workaround">
+                                Workaround
+                              </AnchorHeading>
+                              <p className="text-gray-300 mb-4">
+                                Use the{" "}
+                                <code className="bg-gray-800 px-2 py-1 rounded">
+                                  applyFilterModelWithWorkaround
+                                </code>{" "}
+                                function instead of calling{" "}
+                                <code className="bg-gray-800 px-2 py-1 rounded">
+                                  setFilterModel
+                                </code>{" "}
+                                directly:
+                              </p>
+
+                              <CodeBlock
+                                code={`import { applyFilterModelWithWorkaround } from 'ag-grid-react-components';
+
+// Instead of:
+api.setFilterModel({ dateColumn: filterModel });
+
+// Use:
+await applyFilterModelWithWorkaround(api, 'dateColumn', filterModel);`}
+                                language="typescript"
+                              />
+
+                              <div className="bg-gray-900 rounded-lg p-4 mt-4 border border-gray-800">
+                                <h5 className="text-indigo-400 font-semibold mb-2">
+                                  How the workaround works:
+                                </h5>
+                                <ol className="space-y-2 text-sm text-gray-300">
+                                  <li className="flex items-start">
+                                    <span className="text-indigo-400 font-semibold mr-2">
+                                      1.
+                                    </span>
+                                    Handles AG Grid v33's Promise-based filter
+                                    instances
+                                  </li>
+                                  <li className="flex items-start">
+                                    <span className="text-indigo-400 font-semibold mr-2">
+                                      2.
+                                    </span>
+                                    Manually calls setModel on the filter
+                                    instance after creation
+                                  </li>
+                                  <li className="flex items-start">
+                                    <span className="text-indigo-400 font-semibold mr-2">
+                                      3.
+                                    </span>
+                                    Forces grid refresh to ensure DOM updates
+                                  </li>
+                                  <li className="flex items-start">
+                                    <span className="text-indigo-400 font-semibold mr-2">
+                                      4.
+                                    </span>
+                                    Adds proper timing for React component
+                                    lifecycle
+                                  </li>
+                                </ol>
+                              </div>
+                            </div>
+
+                            <div>
+                              <AnchorHeading
+                                level={4}
+                                id="full-workaround-example"
+                              >
+                                Full Example
+                              </AnchorHeading>
+                              <CodeBlock
+                                code={`// In your QuickFilterDropdown or similar component
+import { applyFilterModelWithWorkaround } from 'ag-grid-react-components';
+
+const handleFilterSelect = async (option) => {
+  if (option && option.filterModel && columnId) {
+    // Use the workaround for custom filters
+    await applyFilterModelWithWorkaround(api, columnId, option.filterModel);
+  } else {
+    // For clearing filters or using built-in filters
+    api.setFilterModel(currentModel);
+    api.onFilterChanged();
+  }
+};`}
+                                language="typescript"
+                                showLineNumbers
+                              />
+                            </div>
+
+                            <div>
+                              <AnchorHeading level={4} id="when-to-remove">
+                                When to Remove the Workaround
+                              </AnchorHeading>
+                              <div className="bg-indigo-900/20 border border-indigo-600/30 rounded-lg p-4">
+                                <p className="text-gray-300 text-sm">
+                                  This workaround should be removed once AG Grid
+                                  fixes the underlying issue. Monitor the GitHub
+                                  issues above for updates. The fix is expected
+                                  in a future v33.x patch or v34 release.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </main>
             </div>
           </div>
@@ -4053,77 +4277,66 @@ const customFilters = [
                 </AnchorHeading>
                 <p className="text-gray-300 mb-6">
                   Apply predefined filters with a single click. Works with any
-                  column type.
+                  column type. The quick filters are now integrated into the
+                  grid area below for a better user experience.
                 </p>
 
-                <div className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-8">
                   <div>
                     <AnchorHeading
                       level={3}
-                      id="date-filters-demo"
+                      id="quick-filter-features"
                       className="text-lg font-semibold text-indigo-400 mb-3"
                     >
-                      Date Filters
+                      Features
                     </AnchorHeading>
-                    {gridApi && (
-                      <QuickFilterDropdown
-                        api={gridApi}
-                        columnId="dueDate"
-                        options={dateQuickFilters}
-                        placeholder="Select time period"
-                        showDescriptions={true}
-                        className="min-w-60"
-                      />
-                    )}
+                    <ul className="space-y-2 text-sm text-gray-300">
+                      <li className="flex items-start">
+                        <span className="text-indigo-400 mr-2">✓</span>
+                        Works with any AG Grid column type
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-indigo-400 mr-2">✓</span>
+                        Combine multiple filters in one action
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-indigo-400 mr-2">✓</span>
+                        Keyboard navigation support
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-indigo-400 mr-2">✓</span>
+                        Customizable icons and descriptions
+                      </li>
+                    </ul>
                   </div>
 
                   <div>
                     <AnchorHeading
                       level={3}
-                      id="combined-filters-demo"
+                      id="quick-filter-options"
                       className="text-lg font-semibold text-indigo-400 mb-3"
                     >
-                      Combined Filters
+                      Available Filters
                     </AnchorHeading>
-                    {gridApi && (
-                      <QuickFilterDropdown
-                        api={gridApi}
-                        columnId="dueDate"
-                        options={combinedQuickFilters}
-                        placeholder="Combined filters"
-                        showDescriptions={true}
-                        className="min-w-60"
-                      />
-                    )}
+                    <div className="space-y-2">
+                      <div className="bg-gray-800 rounded-lg p-3">
+                        <h4 className="text-sm font-medium text-indigo-300 mb-1">
+                          Date Range Filters
+                        </h4>
+                        <p className="text-xs text-gray-400">
+                          Today, This Week, Last 30 Days, and more
+                        </p>
+                      </div>
+                      <div className="bg-gray-800 rounded-lg p-3">
+                        <h4 className="text-sm font-medium text-indigo-300 mb-1">
+                          Combined Filters
+                        </h4>
+                        <p className="text-xs text-gray-400">
+                          Filter by date and status together
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-
-                <div className="mt-6">
-                  <AnchorHeading
-                    level={3}
-                    id="quick-filter-features"
-                    className="text-lg font-semibold text-indigo-400 mb-3"
-                  >
-                    Features
-                  </AnchorHeading>
-                  <ul className="space-y-2 text-sm text-gray-300">
-                    <li className="flex items-start">
-                      <span className="text-indigo-400 mr-2">✓</span>
-                      Works with any AG Grid column type
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-indigo-400 mr-2">✓</span>
-                      Combine multiple filters in one action
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-indigo-400 mr-2">✓</span>
-                      Keyboard navigation support
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-indigo-400 mr-2">✓</span>
-                      Customizable icons and descriptions
-                    </li>
-                  </ul>
                 </div>
               </div>
             )}
@@ -4194,10 +4407,79 @@ const customFilters = [
               {activeComponent === "date-filter" &&
                 "Click on the Date column filter to try relative expressions"}
               {activeComponent === "quick-filter" &&
-                "Use the dropdowns above to quickly filter the data"}
+                "Use the quick filter buttons to filter the data"}
               {activeComponent === "url-state" &&
                 "Apply filters and watch the URL update"}
             </p>
+
+            {/* Quick Filters - Integrated into grid area */}
+            {gridApi && (
+              <div className="mb-6 bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold text-indigo-400">
+                    Quick Filters
+                  </h3>
+                  <button
+                    onClick={() => {
+                      gridApi.setFilterModel({});
+                      gridApi.onFilterChanged();
+                    }}
+                    className="text-xs text-gray-400 hover:text-white transition-colors px-3 py-1 rounded-md border border-gray-600 hover:border-gray-500"
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-gray-400 mb-2 block">
+                      Date Range Filters
+                    </label>
+                    <QuickFilterDropdown
+                      api={gridApi}
+                      columnId="dueDate"
+                      options={dateQuickFilters}
+                      placeholder="Select time period"
+                      showDescriptions={true}
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-400 mb-2 block">
+                      Combined Filters
+                    </label>
+                    <QuickFilterDropdown
+                      api={gridApi}
+                      columnId="dueDate"
+                      options={combinedQuickFilters}
+                      placeholder="Combined filters"
+                      showDescriptions={true}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+
+                {/* Active Filters Display */}
+                {Object.keys(filterModel).length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-gray-700">
+                    <div className="flex items-center gap-2 text-xs text-gray-400">
+                      <span>Active filters:</span>
+                      <div className="flex gap-2 flex-wrap">
+                        {Object.entries(filterModel).map(([col]) => (
+                          <span
+                            key={col}
+                            className="bg-indigo-900/30 border border-indigo-600/30 px-2 py-1 rounded text-indigo-300"
+                          >
+                            {col}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div
               className="ag-theme-quartz-dark rounded-lg overflow-hidden"
