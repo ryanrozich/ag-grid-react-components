@@ -23,6 +23,16 @@ A dropdown component for applying predefined filters quickly:
 - **Search Functionality**: Search through options for large lists
 - **Icons & Descriptions**: Rich UI with icons and descriptions
 
+### 🔍 Active Filters Display
+
+A component that displays active filters as removable pills:
+
+- **Visual Feedback**: Shows filter column names and values
+- **Individual Removal**: Click × to remove specific filters
+- **Clear All**: Remove all filters with one click
+- **Filter Types**: Handles date, text, and set filters
+- **Customizable**: Style with CSS classes
+
 ### 🔗 URL State Serializer
 
 Utilities for persisting AG Grid filter state in the URL:
@@ -86,6 +96,37 @@ function MyToolbar({ api }) {
       placeholder="Select time period"
       onFilterChange={(option) => console.log("Filter changed:", option)}
     />
+  );
+}
+```
+
+### Active Filters Display
+
+```tsx
+import { ActiveFilters } from "ag-grid-react-components";
+
+function MyGrid() {
+  const [gridApi, setGridApi] = useState(null);
+  const [filterModel, setFilterModel] = useState({});
+
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+  };
+
+  const onFilterChanged = () => {
+    setFilterModel(gridApi.getFilterModel());
+  };
+
+  return (
+    <>
+      {gridApi && Object.keys(filterModel).length > 0 && (
+        <ActiveFilters api={gridApi} filterModel={filterModel} />
+      )}
+      <AgGridReact
+        onGridReady={onGridReady}
+        onFilterChanged={onFilterChanged}
+      />
+    </>
   );
 }
 ```

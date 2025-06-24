@@ -46,6 +46,25 @@ A dropdown component for applying predefined filters with one click.
 />
 ```
 
+### ActiveFilters
+Display active filters as removable pills with filter values.
+
+**Features:**
+- Shows column names and filter values
+- Individual filter removal with × button
+- Clear all filters button
+- Supports date, text, and set filters
+- Customizable styling
+
+**Usage:**
+```typescript
+<ActiveFilters 
+  api={gridApi} 
+  filterModel={filterModel} 
+  className="custom-class"
+/>
+```
+
 ### URL State Persistence
 Automatically sync filter state with URL for shareable links.
 

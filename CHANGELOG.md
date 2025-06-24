@@ -4,10 +4,9 @@ All notable changes to ag-grid-date-filter will be documented in this file.
 
 ## [1.2.0](https://github.com/ryanrozich/ag-grid-react-components/compare/v1.1.0...v1.2.0) (2025-06-24)
 
-
 ### ✨ Features
 
-* **components:** add ActiveFilters component and redesign demo UI ([8884679](https://github.com/ryanrozich/ag-grid-react-components/commit/88846794e8a879c47d277068ffa3e371ace12127))
+- **components:** add ActiveFilters component and redesign demo UI ([8884679](https://github.com/ryanrozich/ag-grid-react-components/commit/88846794e8a879c47d277068ffa3e371ace12127))
 
 ## [1.1.0](https://github.com/ryanrozich/ag-grid-react-components/compare/v1.1.0-ag-grid-bug-identified...v1.1.0) (2025-06-24)
 

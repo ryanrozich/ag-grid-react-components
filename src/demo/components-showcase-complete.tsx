@@ -702,6 +702,7 @@ export const ComponentsShowcaseComplete: React.FC<
       { id: "components", label: "Components", isSection: true },
       { id: "relativedatefilter", label: "DateFilter", indent: true },
       { id: "quickfilterdropdown", label: "QuickFilterDropdown", indent: true },
+      { id: "activefilters", label: "ActiveFilters", indent: true },
 
       // Demo Guide Section
       { id: "demo-guide", label: "Demo Guide", isSection: true },
@@ -1081,11 +1082,12 @@ yarn add ag-grid-community ag-grid-react ag-grid-enterprise date-fns`}
                             Complete Example
                           </AnchorHeading>
                           <CodeBlock
-                            code={`import React from 'react';
+                            code={`import React, { useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { 
   DateFilter,
   QuickFilterDropdown,
+  ActiveFilters,
   setupFilterStatePersistence
 } from 'ag-grid-react-components';
 
@@ -1093,6 +1095,9 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 
 function App() {
+  const [gridApi, setGridApi] = useState(null);
+  const [filterModel, setFilterModel] = useState({});
+
   const columnDefs = [
     {
       field: 'date',
@@ -1103,29 +1108,37 @@ function App() {
     {
       field: 'status',
       headerName: 'Status',
+      filter: 'agSetColumnFilter',
     }
   ];
 
-  const gridOptions = {
-    defaultColDef: {
-      sortable: true,
-      resizable: true,
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+    // Enable URL state persistence
+    setupFilterStatePersistence(params.api);
+  };
+
+  const onFilterChanged = () => {
+    if (gridApi) {
+      setFilterModel(gridApi.getFilterModel());
     }
   };
 
-  React.useEffect(() => {
-    // Enable URL state persistence
-    const cleanup = setupFilterStatePersistence(gridApi);
-    return cleanup;
-  }, [gridApi]);
-
   return (
-    <div className="ag-theme-quartz" style={{ height: 600 }}>
-      <AgGridReact
-        columnDefs={columnDefs}
-        gridOptions={gridOptions}
-        rowData={rowData}
-      />
+    <div>
+      {/* Show active filters when there are any */}
+      {gridApi && Object.keys(filterModel).length > 0 && (
+        <ActiveFilters api={gridApi} filterModel={filterModel} />
+      )}
+      
+      <div className="ag-theme-quartz" style={{ height: 600 }}>
+        <AgGridReact
+          columnDefs={columnDefs}
+          onGridReady={onGridReady}
+          onFilterChanged={onFilterChanged}
+          rowData={rowData}
+        />
+      </div>
     </div>
   );
 }`}
@@ -1184,6 +1197,15 @@ function App() {
                                 QuickFilterDropdown documentation
                               </Link>{" "}
                               for predefined filters
+                            </li>
+                            <li>
+                              <Link
+                                to="/docs/activefilters"
+                                className="text-blue-400 hover:text-blue-300"
+                              >
+                                ActiveFilters documentation
+                              </Link>{" "}
+                              for displaying filter pills
                             </li>
                             <li>
                               <Link
@@ -1573,6 +1595,324 @@ const combinedFilters = [
   options={combinedFilters}
   placeholder="Quick filters"
 />`}
+                            language="tsx"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ActiveFilters */}
+                {activeDocSection === "activefilters" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="active-filters">
+                        ActiveFilters
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        A component that displays active filters as removable
+                        pills, showing both column names and filter values.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="active-filters-basic-usage"
+                          >
+                            Basic Usage
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`import { ActiveFilters } from 'ag-grid-react-components';
+
+function MyGrid() {
+  const [gridApi, setGridApi] = useState(null);
+  const [filterModel, setFilterModel] = useState({});
+
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+  };
+
+  const onFilterChanged = () => {
+    setFilterModel(gridApi.getFilterModel());
+  };
+
+  return (
+    <>
+      {gridApi && Object.keys(filterModel).length > 0 && (
+        <ActiveFilters 
+          api={gridApi} 
+          filterModel={filterModel} 
+        />
+      )}
+      <AgGridReact 
+        onGridReady={onGridReady}
+        onFilterChanged={onFilterChanged}
+      />
+    </>
+  );
+}`}
+                            language="tsx"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="active-filters-features">
+                            Key Features
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <ul className="space-y-3 text-gray-300">
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Visual Filter Display:</strong> Shows
+                                  active filters as pills with column name and
+                                  filter value
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Individual Removal:</strong> Click the
+                                  × button to remove specific filters
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Clear All:</strong> Remove all filters
+                                  with a single click
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Smart Value Display:</strong>{" "}
+                                  Automatically extracts meaningful values from
+                                  different filter types
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="active-filters-configuration-options"
+                          >
+                            Configuration Options
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b border-gray-700">
+                                  <th className="text-left py-2 text-gray-300">
+                                    Parameter
+                                  </th>
+                                  <th className="text-left py-2 text-gray-300">
+                                    Type
+                                  </th>
+                                  <th className="text-left py-2 text-gray-300">
+                                    Required
+                                  </th>
+                                  <th className="text-left py-2 text-gray-300">
+                                    Description
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="text-gray-400">
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">api</td>
+                                  <td className="py-3">GridApi</td>
+                                  <td className="py-3">Yes</td>
+                                  <td className="py-3">
+                                    AG Grid API instance for filter operations
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">filterModel</td>
+                                  <td className="py-3">FilterModel</td>
+                                  <td className="py-3">Yes</td>
+                                  <td className="py-3">
+                                    Current filter model from AG Grid
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="py-3">className</td>
+                                  <td className="py-3">string</td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">
+                                    Additional CSS classes for styling
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="active-filters-supported-filter-types"
+                          >
+                            Supported Filter Types
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <div className="space-y-4">
+                              <div>
+                                <h4 className="font-semibold text-white mb-2">
+                                  Date Filters
+                                </h4>
+                                <ul className="space-y-1 text-sm text-gray-400">
+                                  <li>
+                                    • Relative expressions: "Due Date: Today-7d
+                                    to Today"
+                                  </li>
+                                  <li>
+                                    • Absolute dates: "Due Date: 3/15/2024 to
+                                    3/31/2024"
+                                  </li>
+                                  <li>
+                                    • Single dates: "Due Date: after 3/15/2024"
+                                  </li>
+                                </ul>
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-white mb-2">
+                                  Set Filters
+                                </h4>
+                                <ul className="space-y-1 text-sm text-gray-400">
+                                  <li>
+                                    • Multiple values: "Status: In Progress,
+                                    Testing"
+                                  </li>
+                                  <li>
+                                    • Single values: "Category: Development"
+                                  </li>
+                                </ul>
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-white mb-2">
+                                  Text Filters
+                                </h4>
+                                <ul className="space-y-1 text-sm text-gray-400">
+                                  <li>• Simple text: "Name: john"</li>
+                                  <li>• With operators: "Amount: &gt; 500"</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="active-filters-styling">
+                            Styling
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            The component uses CSS Modules for styling
+                            isolation. You can customize the appearance using
+                            the className prop or by overriding the default
+                            styles.
+                          </p>
+                          <CodeBlock
+                            code={`// Custom styling example
+<ActiveFilters 
+  api={gridApi} 
+  filterModel={filterModel}
+  className="my-custom-filters"
+/>
+
+// CSS
+.my-custom-filters {
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+}`}
+                            language="tsx"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="active-filters-integration-example"
+                          >
+                            Full Integration Example
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`import React, { useState, useCallback } from 'react';
+import { AgGridReact } from 'ag-grid-react';
+import { 
+  DateFilter,
+  QuickFilterDropdown,
+  ActiveFilters,
+  DATE_FILTER_PRESETS
+} from 'ag-grid-react-components';
+
+function FilterableGrid() {
+  const [gridApi, setGridApi] = useState(null);
+  const [filterModel, setFilterModel] = useState({});
+
+  const onGridReady = useCallback((params) => {
+    setGridApi(params.api);
+  }, []);
+
+  const onFilterChanged = useCallback(() => {
+    if (gridApi) {
+      setFilterModel(gridApi.getFilterModel());
+    }
+  }, [gridApi]);
+
+  const columnDefs = [
+    {
+      field: 'date',
+      filter: DateFilter,
+      floatingFilter: true
+    },
+    {
+      field: 'status',
+      filter: 'agSetColumnFilter'
+    }
+  ];
+
+  return (
+    <div className="grid-container">
+      {/* Toolbar with quick filters and active filters */}
+      <div className="toolbar">
+        <div className="quick-filters">
+          <QuickFilterDropdown
+            api={gridApi}
+            columnId="date"
+            options={DATE_FILTER_PRESETS}
+            placeholder="Time period"
+          />
+        </div>
+        
+        {/* Active filters display */}
+        {gridApi && Object.keys(filterModel).length > 0 && (
+          <div className="active-filters-container">
+            <ActiveFilters 
+              api={gridApi} 
+              filterModel={filterModel} 
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Grid */}
+      <div className="ag-theme-quartz" style={{ height: 500 }}>
+        <AgGridReact
+          columnDefs={columnDefs}
+          onGridReady={onGridReady}
+          onFilterChanged={onFilterChanged}
+          rowData={rowData}
+        />
+      </div>
+    </div>
+  );
+}`}
                             language="tsx"
                           />
                         </div>
