@@ -9,6 +9,7 @@ import bash from "react-syntax-highlighter/dist/esm/languages/prism/bash";
 import json from "react-syntax-highlighter/dist/esm/languages/prism/json";
 import tsx from "react-syntax-highlighter/dist/esm/languages/prism/tsx";
 import jsx from "react-syntax-highlighter/dist/esm/languages/prism/jsx";
+import css from "react-syntax-highlighter/dist/esm/languages/prism/css";
 
 // Register languages
 SyntaxHighlighter.registerLanguage("typescript", typescript);
@@ -17,10 +18,18 @@ SyntaxHighlighter.registerLanguage("bash", bash);
 SyntaxHighlighter.registerLanguage("json", json);
 SyntaxHighlighter.registerLanguage("tsx", tsx);
 SyntaxHighlighter.registerLanguage("jsx", jsx);
+SyntaxHighlighter.registerLanguage("css", css);
 
 interface CodeBlockProps {
   code: string;
-  language?: "typescript" | "javascript" | "bash" | "json" | "tsx" | "jsx";
+  language?:
+    | "typescript"
+    | "javascript"
+    | "bash"
+    | "json"
+    | "tsx"
+    | "jsx"
+    | "css";
   showLineNumbers?: boolean;
   showCopyButton?: boolean;
   variant?: "default" | "hero";

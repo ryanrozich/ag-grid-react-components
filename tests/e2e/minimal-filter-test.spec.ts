@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 
 test.describe("Minimal Filter Test", () => {
   test("should check filter lifecycle", async ({ page }) => {
@@ -20,7 +20,7 @@ test.describe("Minimal Filter Test", () => {
 
     // Set a filter and observe what happens
     await page.evaluate(async () => {
-      const api = (window as any).agGridApi;
+      const api = window.agGridApi;
       if (!api) return;
 
       console.log("=== BEFORE SETTING FILTER MODEL ===");

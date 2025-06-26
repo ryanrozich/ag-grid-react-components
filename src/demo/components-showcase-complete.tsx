@@ -13,8 +13,7 @@ import {
   RelativeDateFilter,
   QuickFilterDropdown,
   ActiveFilters,
-  setupFilterStatePersistence,
-  serializeFilterModel,
+  setupGridStatePersistence,
 } from "../index";
 import { generateData } from "./data/generator";
 import { CodeBlock } from "./components/CodeBlock";
@@ -60,6 +59,34 @@ const StatusRenderer: React.FC<ICellRendererParams> = ({ value }) => {
     <div className="flex items-center h-full">
       <span
         className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(value)}`}
+      >
+        {value}
+      </span>
+    </div>
+  );
+};
+
+// Priority chip renderer with colors
+const PriorityRenderer: React.FC<ICellRendererParams> = ({ value }) => {
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "Critical":
+        return "bg-red-500/20 text-red-400 border-red-500/50";
+      case "High":
+        return "bg-orange-500/20 text-orange-400 border-orange-500/50";
+      case "Medium":
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
+      case "Low":
+        return "bg-green-500/20 text-green-400 border-green-500/50";
+      default:
+        return "bg-gray-500/20 text-gray-400 border-gray-500/50";
+    }
+  };
+
+  return (
+    <div className="flex items-center h-full">
+      <span
+        className={`px-3 py-1 rounded-full text-xs font-medium border ${getPriorityColor(value)}`}
       >
         {value}
       </span>
@@ -195,14 +222,139 @@ interface ComponentsShowcaseCompleteProps {
   initialPage?: "hero" | "demo" | "docs";
 }
 
+// Stats calculation helper
+const calculateStats = (api: GridApi | null) => {
+  if (!api) {
+    return {
+      taskCount: 0,
+      totalBudget: 0,
+      totalSpent: 0,
+      avgProgress: 0,
+      budgetRemaining: 0,
+    };
+  }
+
+  let taskCount = 0;
+  let totalBudget = 0;
+  let totalSpent = 0;
+  let totalProgress = 0;
+
+  api.forEachNodeAfterFilterAndSort((node) => {
+    if (!node.group && node.data) {
+      taskCount++;
+      totalBudget += node.data.value || 0;
+      totalSpent += node.data.amountDelivered || 0;
+      totalProgress += node.data.percentDelivered || 0;
+    }
+  });
+
+  const avgProgress = taskCount > 0 ? totalProgress / taskCount : 0;
+  const budgetRemaining = totalBudget - totalSpent;
+
+  return {
+    taskCount,
+    totalBudget,
+    totalSpent,
+    avgProgress,
+    budgetRemaining,
+  };
+};
+
+// Time-based quick filters - defined outside component to avoid recreating on each render
+const dateQuickFilters = [
+  {
+    id: "all",
+    label: "All Time",
+    filterModel: null,
+    icon: "🌍",
+    description: "Show all records",
+  },
+  {
+    id: "last7days",
+    label: "Last 7 Days",
+    filterModel: {
+      mode: "relative",
+      type: "inRange",
+      expressionFrom: "Today-7d",
+      expressionTo: "Today",
+    },
+    icon: "📅",
+    description: "Records from the past week",
+  },
+  {
+    id: "thisMonth",
+    label: "This Month",
+    filterModel: {
+      mode: "relative",
+      type: "inRange",
+      expressionFrom: "StartOfMonth",
+      expressionTo: "EndOfMonth",
+    },
+    icon: "📆",
+    description: "All records from current month",
+  },
+  {
+    id: "overdue",
+    label: "Overdue",
+    filterModel: null,
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        dueDate: {
+          mode: "relative",
+          type: "before",
+          expressionFrom: "Today",
+        },
+        status: {
+          values: [
+            "Backlog",
+            "Todo",
+            "In Progress",
+            "In Review",
+            "Testing",
+            "Blocked",
+          ],
+        },
+      };
+    },
+    icon: "🚨",
+    description: "Tasks past their due date (not done)",
+  },
+  {
+    id: "notStarted",
+    label: "Not Started",
+    filterModel: null,
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        dueDate: {
+          mode: "relative",
+          type: "before",
+          expressionFrom: "Today",
+        },
+        status: {
+          values: ["Backlog", "Todo"],
+        },
+      };
+    },
+    icon: "⚠️",
+    description: "Tasks that should have started",
+  },
+];
+
 export const ComponentsShowcaseComplete: React.FC<
   ComponentsShowcaseCompleteProps
 > = ({ initialPage = "hero" }) => {
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
   const [rowData] = useState(() => generateData(1000));
-  const [activeComponent, setActiveComponent] = useState("date-filter");
-  const [filterModel, setFilterModel] = useState<any>({});
+  const [filterModel, setFilterModel] = useState<FilterModel>({});
   const [activeDocSection, setActiveDocSection] = useState("getting-started");
+
+  const [stats, setStats] = useState({
+    taskCount: 0,
+    totalBudget: 0,
+    totalSpent: 0,
+    avgProgress: 0,
+    budgetRemaining: 0,
+  });
 
   // Router hooks
   const location = useLocation();
@@ -236,14 +388,14 @@ export const ComponentsShowcaseComplete: React.FC<
       {
         field: "name",
         headerName: "Task Name",
-        flex: 1,
-        minWidth: 250,
+        flex: 2,
+        minWidth: 350,
         filter: "agTextColumnFilter",
       },
       {
         field: "category",
         headerName: "Category",
-        width: 120,
+        width: 180,
         filter: "agSetColumnFilter",
         cellRenderer: CategoryCellRenderer,
         enableRowGroup: true,
@@ -251,14 +403,15 @@ export const ComponentsShowcaseComplete: React.FC<
       {
         field: "priority",
         headerName: "Priority",
-        width: 100,
+        width: 130,
         filter: "agSetColumnFilter",
+        cellRenderer: PriorityRenderer,
         enableRowGroup: true,
       },
       {
         field: "assignee",
         headerName: "Assignee",
-        width: 180,
+        width: 190,
         filter: "agTextColumnFilter",
         cellRenderer: AvatarCellRenderer,
         enableRowGroup: true,
@@ -266,7 +419,7 @@ export const ComponentsShowcaseComplete: React.FC<
       {
         field: "dueDate",
         headerName: "Due Date",
-        width: 130,
+        width: 140,
         filter: RelativeDateFilter,
         filterParams: {
           buttons: ["reset", "apply"],
@@ -280,7 +433,7 @@ export const ComponentsShowcaseComplete: React.FC<
       {
         field: "value",
         headerName: "Budget",
-        width: 100,
+        width: 120,
         filter: "agNumberColumnFilter",
         aggFunc: "sum",
         enableValue: true,
@@ -297,15 +450,22 @@ export const ComponentsShowcaseComplete: React.FC<
       {
         field: "status",
         headerName: "Status",
-        width: 120,
+        width: 130,
         filter: "agSetColumnFilter",
         cellRenderer: StatusRenderer,
         enableRowGroup: true,
+        valueGetter: (params) => {
+          // Don&apos;t show aggregate value for status in grand total row
+          if (params.node?.footer) {
+            return "";
+          }
+          return params.data?.status;
+        },
       },
       {
         field: "percentDelivered",
         headerName: "Progress",
-        width: 120,
+        width: 170,
         cellRenderer: PercentBarRenderer,
         aggFunc: "avg", // Use simple average for aggregation
         enableValue: true,
@@ -313,7 +473,33 @@ export const ComponentsShowcaseComplete: React.FC<
       {
         field: "amountDelivered",
         headerName: "Spent",
-        width: 100,
+        width: 130,
+        aggFunc: "sum",
+        valueFormatter: (params) => {
+          if (params.value == null) return "";
+          return new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          }).format(params.value);
+        },
+      },
+      {
+        field: "remaining",
+        headerName: "Remaining",
+        width: 150,
+        valueGetter: (params) => {
+          if (params.node?.footer) {
+            // For footer rows, AG Grid handles aggregation automatically
+            // This will show the sum of all "remaining" values
+            return null; // Let AG Grid handle the aggregation
+          }
+          // For regular rows, calculate budget - spent
+          return (
+            (params.data?.value || 0) - (params.data?.amountDelivered || 0)
+          );
+        },
         aggFunc: "sum",
         valueFormatter: (params) => {
           if (params.value == null) return "";
@@ -334,7 +520,7 @@ export const ComponentsShowcaseComplete: React.FC<
       sortable: true,
       filter: true,
       resizable: true,
-      floatingFilter: true,
+      floatingFilter: false, // Removed floating filters since we have active filters display
     }),
     [],
   );
@@ -344,24 +530,68 @@ export const ComponentsShowcaseComplete: React.FC<
 
     // Expose API globally for debugging
     if (typeof window !== "undefined") {
-      (window as any).agGridApi = params.api;
+      (window as Window & { agGridApi?: GridApi }).agGridApi = params.api;
     }
 
-    const cleanup = setupFilterStatePersistence(params.api, {
-      onFilterLoad: (model) => {
-        console.log("Filters loaded from URL:", model);
-        setFilterModel(model);
+    // Use full grid state persistence with compression
+    const cleanup = setupGridStatePersistence(params.api, {
+      useCompression: true,
+      maxUrlLength: 2000,
+      onStateLoad: (state) => {
+        console.log("Grid state loaded from URL:", state);
+        if (state.filters) {
+          setFilterModel(state.filters);
+        }
+        // Log compression stats
+        const url = new URL(window.location.href);
+        const stateParam = url.searchParams.get("gridState");
+        if (stateParam) {
+          console.log(
+            `Compressed URL state length: ${stateParam.length} chars`,
+          );
+        }
       },
-      onFilterSave: (model) => {
-        console.log("Filters saved to URL:", model);
-        setFilterModel(model);
+      onStateSave: (state) => {
+        console.log("Grid state saved to URL:", state);
+        if (state.filters) {
+          setFilterModel(state.filters);
+        }
       },
     });
 
     params.api.addEventListener("filterChanged", () => {
       const model = params.api.getFilterModel();
       setFilterModel(model || {});
+
+      // Update stats
+      setStats(calculateStats(params.api));
     });
+
+    // Also update when data first loads
+    params.api.addEventListener("modelUpdated", () => {
+      // Update stats
+      setStats(calculateStats(params.api));
+    });
+
+    // Initialize stats on first load
+    setStats(calculateStats(params.api));
+
+    // Set default filter to "Last 7 Days" ONLY if no state was loaded from URL
+    const url = new URL(window.location.href);
+    const hasUrlState = url.searchParams.has("gridState");
+    const currentFilterModel = params.api.getFilterModel();
+    const hasExistingFilters =
+      currentFilterModel && Object.keys(currentFilterModel).length > 0;
+
+    // Only apply default filter if there&apos;s no URL state AND no existing filters
+    if (!hasUrlState && !hasExistingFilters) {
+      const defaultFilter = dateQuickFilters.find((f) => f.id === "last7days");
+      if (defaultFilter && defaultFilter.filterModel) {
+        params.api.setFilterModel({
+          dueDate: defaultFilter.filterModel,
+        });
+      }
+    }
 
     return cleanup;
   }, []);
@@ -370,11 +600,16 @@ export const ComponentsShowcaseComplete: React.FC<
     theme: "legacy",
     animateRows: true,
     pagination: true,
-    paginationPageSize: 15,
-    paginationPageSizeSelector: [15, 30, 50, 100],
+    paginationPageSize: 25,
+    paginationPageSizeSelector: [25, 50, 100, 200],
     suppressMenuHide: true,
     cellSelection: true,
     grandTotalRow: "bottom",
+    rowSelection: "multiple",
+    suppressRowClickSelection: true,
+    suppressCellFocus: false,
+    enableCellTextSelection: true,
+    ensureDomOrder: true,
     getRowStyle: (params) => {
       if (params.node.footer) {
         return {
@@ -421,91 +656,72 @@ export const ComponentsShowcaseComplete: React.FC<
     },
   };
 
-  // Quick filter examples
-  const dateQuickFilters = [
-    {
-      id: "all",
-      label: "All Data",
-      filterModel: null,
-      icon: "🌍",
-      description: "Show all records",
-    },
-    {
-      id: "last7days",
-      label: "Last 7 Days",
-      filterModel: {
-        mode: "relative",
-        type: "inRange",
-        expressionFrom: "Today-7d",
-        expressionTo: "Today",
-      },
-      icon: "📅",
-      description: "Records from the past week",
-    },
-    {
-      id: "thisMonth",
-      label: "This Month",
-      filterModel: {
-        mode: "relative",
-        type: "inRange",
-        expressionFrom: "StartOfMonth",
-        expressionTo: "EndOfMonth",
-      },
-      icon: "📆",
-      description: "All records from current month",
-    },
-    {
-      id: "future",
-      label: "Future Dates",
-      filterModel: {
-        mode: "relative",
-        type: "after",
-        expressionFrom: "Today",
-      },
-      icon: "🔮",
-      description: "Upcoming records only",
-    },
-  ];
+  // dateQuickFilters is now defined outside the component
 
-  // Combined filters example
-  const combinedQuickFilters = [
+  // Task type filters
+  const taskTypeFilters = [
     {
-      id: "highValueRecent",
-      label: "High Value Recent",
-      icon: "💎",
-      description: "Amount > $500 in last 30 days",
+      id: "allTasks",
+      label: "All Tasks",
+      filterModel: null,
+      icon: "📋",
+      description: "Show all task types",
+    },
+    {
+      id: "criticalBugs",
+      label: "Critical Bugs",
+      icon: "🐛",
+      description: "High priority bug fixes",
       filterModel: null,
       buildFilterModel: (_api: GridApi) => {
         return {
-          dueDate: {
-            mode: "relative",
-            type: "inRange",
-            expressionFrom: "Today-30d",
-            expressionTo: "Today",
+          category: {
+            values: ["Bug"],
           },
-          amountDelivered: {
-            type: "greaterThan",
-            filter: 500,
+          priority: {
+            values: ["Critical", "High"],
           },
         };
       },
     },
     {
-      id: "pendingThisWeek",
-      label: "Pending This Week",
-      icon: "⏳",
-      description: "Pending items due this week",
+      id: "features",
+      label: "Features",
+      icon: "✨",
+      description: "New feature development",
       filterModel: null,
       buildFilterModel: (_api: GridApi) => {
         return {
-          dueDate: {
-            mode: "relative",
-            type: "inRange",
-            expressionFrom: "StartOfWeek",
-            expressionTo: "EndOfWeek",
+          category: {
+            values: ["Feature"],
           },
+        };
+      },
+    },
+    {
+      id: "inProgress",
+      label: "In Progress",
+      icon: "🚀",
+      description: "Active work items",
+      filterModel: null,
+      buildFilterModel: (_api: GridApi) => {
+        return {
           status: {
             values: ["In Progress", "In Review", "Testing"],
+          },
+        };
+      },
+    },
+    {
+      id: "blocked",
+      label: "Blocked",
+      icon: "🛑",
+      description: "Blocked tasks",
+      filterModel: null,
+      buildFilterModel: (_api: GridApi) => {
+        return {
+          status: {
+            values: ["Blocked"],
           },
         };
       },
@@ -623,8 +839,9 @@ export const ComponentsShowcaseComplete: React.FC<
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      Use intuitive expressions like "Today-7d" or
-                      "StartOfMonth" instead of picking specific dates.
+                      Use intuitive expressions like &quot;Today-7d&quot; or
+                      &quot;StartOfMonth&quot; instead of picking specific
+                      dates.
                     </p>
                   </dd>
                 </div>
@@ -775,11 +992,27 @@ export const ComponentsShowcaseComplete: React.FC<
                         Getting Started
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6">
-                        Welcome to AG Grid React Components! This library
-                        provides enterprise-ready date filtering components for
-                        AG Grid with support for relative date expressions,
-                        quick filters, and URL state persistence.
+                        Welcome to AG Grid React Components! This is a{" "}
+                        <strong className="text-green-400">
+                          free and open source
+                        </strong>{" "}
+                        library that provides enterprise-ready date filtering
+                        components for AG Grid with support for relative date
+                        expressions, quick filters, and URL state persistence.
                       </p>
+
+                      <div className="bg-green-900/20 border border-green-600/30 rounded-lg p-4 mb-6">
+                        <p className="text-green-400 text-sm font-medium mb-2">
+                          🎉 100% Free and Open Source
+                        </p>
+                        <p className="text-gray-300 text-sm">
+                          These components are completely free to use under the
+                          MIT license. There is no paid version of these
+                          components. The components work with both AG Grid
+                          Community (free) and AG Grid Enterprise (paid)
+                          editions.
+                        </p>
+                      </div>
 
                       <div className="bg-indigo-900/20 border border-indigo-600/30 rounded-lg p-6 mb-8">
                         <AnchorHeading
@@ -794,8 +1027,8 @@ export const ComponentsShowcaseComplete: React.FC<
                             <span className="text-indigo-400 mr-2">📅</span>
                             <div>
                               <strong>Relative Date Expressions:</strong> Use
-                              intuitive expressions like "Today-7d" or
-                              "StartOfMonth"
+                              intuitive expressions like &quot;Today-7d&quot; or
+                              &quot;StartOfMonth&quot;
                             </div>
                           </li>
                           <li className="flex items-start">
@@ -822,37 +1055,55 @@ export const ComponentsShowcaseComplete: React.FC<
                         </ul>
                       </div>
 
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
-                          <AnchorHeading
-                            level={3}
-                            id="community-features"
-                            className="text-lg font-semibold text-white mb-3"
-                          >
-                            Community Features
-                          </AnchorHeading>
-                          <ul className="space-y-2 text-sm text-gray-300">
-                            <li>✓ Basic date filtering</li>
-                            <li>✓ Floating filters</li>
-                            <li>✓ Relative expressions</li>
-                            <li>✓ URL state persistence</li>
-                            <li>✓ Quick filter dropdown</li>
-                          </ul>
-                        </div>
-                        <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
-                          <AnchorHeading
-                            level={3}
-                            id="enterprise-features"
-                            className="text-lg font-semibold text-white mb-3"
-                          >
-                            Enterprise Features
-                          </AnchorHeading>
-                          <ul className="space-y-2 text-sm text-gray-300">
-                            <li>✓ Filter tool panel</li>
-                            <li>✓ Advanced filter options</li>
-                            <li>✓ Set filters integration</li>
-                            <li>✓ Row grouping with filters</li>
-                          </ul>
+                      <div className="space-y-4">
+                        <AnchorHeading
+                          level={3}
+                          id="ag-grid-edition-features"
+                          className="text-lg font-semibold text-white"
+                        >
+                          What Features Are Available?
+                        </AnchorHeading>
+                        <p className="text-gray-300 text-sm mb-4">
+                          Our components work with both AG Grid editions.
+                          Here&apos;s what functionality is available with each:
+                        </p>
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <AnchorHeading
+                              level={4}
+                              id="with-ag-grid-community"
+                              className="text-base font-semibold text-white mb-3"
+                            >
+                              With AG Grid Community (Free)
+                            </AnchorHeading>
+                            <ul className="space-y-2 text-sm text-gray-300">
+                              <li>✓ All date filter functionality</li>
+                              <li>✓ Relative date expressions</li>
+                              <li>✓ Quick filter dropdowns</li>
+                              <li>✓ Active filters display</li>
+                              <li>✓ URL state persistence</li>
+                              <li>✓ Search functionality</li>
+                              <li>✓ All component features</li>
+                            </ul>
+                          </div>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <AnchorHeading
+                              level={4}
+                              id="additional-with-ag-grid-enterprise"
+                              className="text-base font-semibold text-white mb-3"
+                            >
+                              Additional with AG Grid Enterprise
+                            </AnchorHeading>
+                            <ul className="space-y-2 text-sm text-gray-300">
+                              <li>✓ Floating filters in column headers</li>
+                              <li>✓ Filter tool panel</li>
+                              <li>✓ Advanced filter options</li>
+                              <li>✓ Row grouping with filters</li>
+                              <li>✓ Excel export with filters</li>
+                              <li>✓ Server-side filtering</li>
+                              <li>✓ And more AG Grid features...</li>
+                            </ul>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -952,8 +1203,9 @@ export const ComponentsShowcaseComplete: React.FC<
                           </AnchorHeading>
                           <div className="bg-amber-900/20 border border-amber-600/30 rounded-lg p-4">
                             <p className="text-amber-400 text-sm mb-3">
-                              <strong>Important:</strong> AG Grid Enterprise is
-                              required for the full feature set.
+                              <strong>Note about AG Grid Enterprise:</strong>{" "}
+                              While our components are completely free, some AG
+                              Grid features require an Enterprise license.
                             </p>
                             <p className="text-gray-300 text-sm mb-3">
                               You can use AG Grid Enterprise in one of these
@@ -983,7 +1235,7 @@ export const ComponentsShowcaseComplete: React.FC<
                               >
                                 AG Grid Pricing
                               </a>{" "}
-                              for license information.
+                              for AG Grid license information.
                             </p>
                           </div>
                         </div>
@@ -1072,8 +1324,8 @@ yarn add ag-grid-community ag-grid-react ag-grid-enterprise date-fns`}
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6">
                         Getting started with AG Grid React Components is
-                        straightforward. Here's a complete example showing all
-                        the components working together.
+                        straightforward. Here&apos;s a complete example showing
+                        all the components working together.
                       </p>
 
                       <div className="space-y-8">
@@ -1084,7 +1336,7 @@ yarn add ag-grid-community ag-grid-react ag-grid-enterprise date-fns`}
                           <CodeBlock
                             code={`import React, { useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
-import { 
+import {
   DateFilter,
   QuickFilterDropdown,
   ActiveFilters,
@@ -1130,7 +1382,7 @@ function App() {
       {gridApi && Object.keys(filterModel).length > 0 && (
         <ActiveFilters api={gridApi} filterModel={filterModel} />
       )}
-      
+
       <div className="ag-theme-quartz" style={{ height: 600 }}>
         <AgGridReact
           columnDefs={columnDefs}
@@ -1154,7 +1406,7 @@ function App() {
                             <li className="flex items-start">
                               <span className="text-gray-500 mr-2">•</span>
                               Import the components you need from
-                              'ag-grid-react-components'
+                              &apos;ag-grid-react-components&apos;
                             </li>
                             <li className="flex items-start">
                               <span className="text-gray-500 mr-2">•</span>
@@ -1291,7 +1543,9 @@ const columnDefs = [
                                   <td className="py-3">buttons</td>
                                   <td className="py-3">string[]</td>
                                   <td className="py-3">No</td>
-                                  <td className="py-3">['reset', 'apply']</td>
+                                  <td className="py-3">
+                                    [&apos;reset&apos;, &apos;apply&apos;]
+                                  </td>
                                   <td className="py-3">
                                     Filter buttons to display
                                   </td>
@@ -1378,6 +1632,138 @@ const columnDefs = [
 ];`}
                             language="typescript"
                           />
+                        </div>
+
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="relative-date-filter-styling"
+                          >
+                            Styling & Customization
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            The DateFilter component can be styled using CSS
+                            classes, CSS variables, or the className prop.
+                          </p>
+
+                          <div className="mb-6">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Available CSS Classes
+                            </h4>
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <ul className="space-y-2 text-sm text-gray-400">
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-date-filter
+                                  </code>{" "}
+                                  - Root container
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-date-filter__mode-toggle
+                                  </code>{" "}
+                                  - Mode toggle buttons container
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-date-filter__mode-option
+                                  </code>{" "}
+                                  - Individual toggle option
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-date-filter__mode-option--active
+                                  </code>{" "}
+                                  - Active toggle state
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-date-filter__type-selector
+                                  </code>{" "}
+                                  - Filter type dropdown
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-date-filter__input
+                                  </code>{" "}
+                                  - Date/expression input fields
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-date-filter__input--error
+                                  </code>{" "}
+                                  - Input error state
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-date-filter__button
+                                  </code>{" "}
+                                  - Base button styles
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-date-filter__button--primary
+                                  </code>{" "}
+                                  - Apply button
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-date-filter__button--secondary
+                                  </code>{" "}
+                                  - Reset button
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+
+                          <div className="mb-6">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              CSS Variables
+                            </h4>
+                            <CodeBlock
+                              code={`:root {
+  /* Colors */
+  --agrc-primary: #2563eb;
+  --agrc-primary-hover: #1d4ed8;
+  --agrc-border: #e5e7eb;
+  --agrc-background: #ffffff;
+  --agrc-text: #111827;
+  --agrc-error: #ef4444;
+
+  /* Spacing */
+  --agrc-spacing-sm: 0.5rem;
+  --agrc-spacing-md: 1rem;
+
+  /* Border Radius */
+  --agrc-radius-md: 0.375rem;
+}`}
+                              language="css"
+                            />
+                          </div>
+
+                          <div>
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Customization Examples
+                            </h4>
+                            <CodeBlock
+                              code={`// Using className prop
+<DateFilter className="my-custom-filter" />
+
+// Custom CSS
+.my-custom-filter .agrc-date-filter__button--primary {
+  background: linear-gradient(to right, #7c3aed, #6d28d9);
+  border: none;
+}
+
+// Dark theme
+.dark-theme .agrc-date-filter {
+  --agrc-background: #1f2937;
+  --agrc-border: #374151;
+  --agrc-text: #f3f4f6;
+}`}
+                              language="css"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1490,7 +1876,9 @@ const columnDefs = [
                                   <td className="py-3">placeholder</td>
                                   <td className="py-3">string</td>
                                   <td className="py-3">No</td>
-                                  <td className="py-3">'Select filter'</td>
+                                  <td className="py-3">
+                                    &apos;Select filter&apos;
+                                  </td>
                                   <td className="py-3">Placeholder text</td>
                                 </tr>
                                 <tr className="border-b border-gray-800">
@@ -1506,7 +1894,7 @@ const columnDefs = [
                                   <td className="py-3">className</td>
                                   <td className="py-3">string</td>
                                   <td className="py-3">No</td>
-                                  <td className="py-3">''</td>
+                                  <td className="py-3">&apos;&apos;</td>
                                   <td className="py-3">
                                     Additional CSS classes
                                   </td>
@@ -1598,6 +1986,124 @@ const combinedFilters = [
                             language="tsx"
                           />
                         </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="quick-filter-styling">
+                            Styling & Customization
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            The QuickFilterDropdown can be styled using CSS
+                            classes, CSS variables, or props.
+                          </p>
+
+                          <div className="mb-6">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Available CSS Classes
+                            </h4>
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <ul className="space-y-2 text-sm text-gray-400">
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-quick-filter
+                                  </code>{" "}
+                                  - Root dropdown container
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-quick-filter__trigger
+                                  </code>{" "}
+                                  - Dropdown trigger button
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-quick-filter__panel
+                                  </code>{" "}
+                                  - Dropdown panel
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-quick-filter__option
+                                  </code>{" "}
+                                  - Individual option item
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-quick-filter__option--selected
+                                  </code>{" "}
+                                  - Selected option state
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-quick-filter__option--highlighted
+                                  </code>{" "}
+                                  - Keyboard navigation highlight
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-quick-filter__search
+                                  </code>{" "}
+                                  - Search input (when enabled)
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+
+                          <div className="mb-6">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Customization Examples
+                            </h4>
+                            <CodeBlock
+                              code={`// Using props
+<QuickFilterDropdown
+  className="w-64"
+  triggerClassName="bg-blue-500 text-white hover:bg-blue-600"
+/>
+
+// Custom CSS
+.agrc-quick-filter__trigger {
+  border: 2px solid #2563eb;
+  transition: all 0.2s;
+}
+
+.agrc-quick-filter__option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.agrc-quick-filter__option-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--agrc-text-secondary);
+}
+
+// Material Design style
+.material-quick-filter .agrc-quick-filter__trigger {
+  border: none;
+  border-bottom: 2px solid var(--agrc-border);
+  border-radius: 0;
+}`}
+                              language="css"
+                            />
+                          </div>
+
+                          <div className="mb-6">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Z-Index Layering
+                            </h4>
+                            <p className="text-gray-400 mb-2">
+                              The dropdown has a default z-index of 1050 to
+                              ensure it appears above AG Grid components. You
+                              can override this if needed:
+                            </p>
+                            <CodeBlock
+                              code={`.agrc-quick-filter__panel {
+  z-index: 2000; /* Custom z-index */
+}`}
+                              language="css"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1641,12 +2147,12 @@ function MyGrid() {
   return (
     <>
       {gridApi && Object.keys(filterModel).length > 0 && (
-        <ActiveFilters 
-          api={gridApi} 
-          filterModel={filterModel} 
+        <ActiveFilters
+          api={gridApi}
+          filterModel={filterModel}
         />
       )}
-      <AgGridReact 
+      <AgGridReact
         onGridReady={onGridReady}
         onFilterChanged={onFilterChanged}
       />
@@ -1767,15 +2273,16 @@ function MyGrid() {
                                 </h4>
                                 <ul className="space-y-1 text-sm text-gray-400">
                                   <li>
-                                    • Relative expressions: "Due Date: Today-7d
-                                    to Today"
+                                    • Relative expressions: &quot;Due Date:
+                                    Today-7d to Today&quot;
                                   </li>
                                   <li>
-                                    • Absolute dates: "Due Date: 3/15/2024 to
-                                    3/31/2024"
+                                    • Absolute dates: &quot;Due Date: 3/15/2024
+                                    to 3/31/2024&quot;
                                   </li>
                                   <li>
-                                    • Single dates: "Due Date: after 3/15/2024"
+                                    • Single dates: &quot;Due Date: after
+                                    3/15/2024&quot;
                                   </li>
                                 </ul>
                               </div>
@@ -1785,11 +2292,12 @@ function MyGrid() {
                                 </h4>
                                 <ul className="space-y-1 text-sm text-gray-400">
                                   <li>
-                                    • Multiple values: "Status: In Progress,
-                                    Testing"
+                                    • Multiple values: &quot;Status: In
+                                    Progress, Testing&quot;
                                   </li>
                                   <li>
-                                    • Single values: "Category: Development"
+                                    • Single values: &quot;Category:
+                                    Development&quot;
                                   </li>
                                 </ul>
                               </div>
@@ -1798,8 +2306,11 @@ function MyGrid() {
                                   Text Filters
                                 </h4>
                                 <ul className="space-y-1 text-sm text-gray-400">
-                                  <li>• Simple text: "Name: john"</li>
-                                  <li>• With operators: "Amount: &gt; 500"</li>
+                                  <li>• Simple text: &quot;Name: john&quot;</li>
+                                  <li>
+                                    • With operators: &quot;Amount: &gt;
+                                    500&quot;
+                                  </li>
                                 </ul>
                               </div>
                             </div>
@@ -1808,30 +2319,122 @@ function MyGrid() {
 
                         <div>
                           <AnchorHeading level={3} id="active-filters-styling">
-                            Styling
+                            Styling & Customization
                           </AnchorHeading>
-                          <p className="text-gray-300 mb-4">
-                            The component uses CSS Modules for styling
-                            isolation. You can customize the appearance using
-                            the className prop or by overriding the default
-                            styles.
+                          <p className="text-gray-400 mb-4">
+                            The ActiveFilters component can be styled using CSS
+                            classes, CSS variables, or the className prop.
                           </p>
-                          <CodeBlock
-                            code={`// Custom styling example
-<ActiveFilters 
-  api={gridApi} 
+
+                          <div className="mb-6">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Available CSS Classes
+                            </h4>
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <ul className="space-y-2 text-sm text-gray-400">
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-active-filters
+                                  </code>{" "}
+                                  - Container wrapper
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-active-filters__pill
+                                  </code>{" "}
+                                  - Individual filter pill
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-active-filters__label
+                                  </code>{" "}
+                                  - Column name in pill
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-active-filters__value
+                                  </code>{" "}
+                                  - Filter value in pill
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-active-filters__remove
+                                  </code>{" "}
+                                  - X button for removal
+                                </li>
+                                <li>
+                                  <code className="text-blue-400">
+                                    .agrc-active-filters__clear-all
+                                  </code>{" "}
+                                  - Clear all button
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+
+                          <div className="mb-6">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Customization Examples
+                            </h4>
+                            <CodeBlock
+                              code={`// Using className prop
+<ActiveFilters
+  api={gridApi}
   filterModel={filterModel}
   className="my-custom-filters"
 />
 
-// CSS
-.my-custom-filters {
-  padding: 1rem;
+// Custom pill styles
+.agrc-active-filters__pill {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+}
+
+// Colorful pills based on column
+.agrc-active-filters__pill[data-column="status"] {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.agrc-active-filters__pill[data-column="priority"] {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+// Dark theme
+.dark .agrc-active-filters {
   background: rgba(0, 0, 0, 0.5);
   border-radius: 8px;
+  padding: 1rem;
+}
+
+// Important: Use rgb() notation for alpha values
+.agrc-active-filters__pill {
+  background-color: rgb(99, 102, 241, 0.1);
+  /* NOT rgba() or rgb(99 102 241 / 0.1) */
 }`}
-                            language="tsx"
-                          />
+                              language="css"
+                            />
+                          </div>
+
+                          <div>
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Styling Notes
+                            </h4>
+                            <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-4">
+                              <p className="text-yellow-400 text-sm">
+                                <strong>Important:</strong> This component uses
+                                CSS Modules. When using alpha transparency, use
+                                the legacy <code>rgb()</code> notation with
+                                decimal values (e.g.,{" "}
+                                <code>rgb(99, 102, 241, 0.1)</code>) to satisfy
+                                stylelint rules. Avoid <code>rgba()</code> or
+                                modern space-separated syntax.
+                              </p>
+                            </div>
+                          </div>
                         </div>
 
                         <div>
@@ -1844,7 +2447,7 @@ function MyGrid() {
                           <CodeBlock
                             code={`import React, { useState, useCallback } from 'react';
 import { AgGridReact } from 'ag-grid-react';
-import { 
+import {
   DateFilter,
   QuickFilterDropdown,
   ActiveFilters,
@@ -1889,13 +2492,13 @@ function FilterableGrid() {
             placeholder="Time period"
           />
         </div>
-        
+
         {/* Active filters display */}
         {gridApi && Object.keys(filterModel).length > 0 && (
           <div className="active-filters-container">
-            <ActiveFilters 
-              api={gridApi} 
-              filterModel={filterModel} 
+            <ActiveFilters
+              api={gridApi}
+              filterModel={filterModel}
             />
           </div>
         )}
@@ -2360,17 +2963,17 @@ npm run dev:safe`}
                                 Avatar Cell Renderer Example:
                               </AnchorHeading>
                               <CodeBlock
-                                code={`cellRenderer: (params: any) => {
+                                code={`cellRenderer: (params) => {
   if (!params.value) return '';
   const initials = params.value.split(' ')
     .map((n: string) => n[0])
     .join('')
     .toUpperCase();
   const bgColor = \`hsl(\${params.value.charCodeAt(0) * 3 % 360}, 70%, 50%)\`;
-  
+
   return \`<div class="flex items-center gap-2">
-    <img src="https://ui-avatars.com/api/?name=\${initials}&background=\${bgColor.slice(4, -1)}&color=fff&size=32&rounded=true" 
-         alt="\${params.value}" 
+    <img src="https://ui-avatars.com/api/?name=\${initials}&background=\${bgColor.slice(4, -1)}&color=fff&size=32&rounded=true"
+         alt="\${params.value}"
          class="w-8 h-8 rounded-full" />
     <span>\${params.value}</span>
   </div>\`;
@@ -2390,7 +2993,7 @@ npm run dev:safe`}
                                 code={`const gridOptions = {
   // Enable grand total row (Enterprise feature)
   grandTotalRow: 'bottom',
-  
+
   // Configure aggregations per column
   columnDefs: [
     {
@@ -2403,7 +3006,7 @@ npm run dev:safe`}
       aggFunc: 'min',
       valueFormatter: (params) => {
         if (params.node?.rowPinned) {
-          return params.value ? 
+          return params.value ?
             \`MIN: \${format(new Date(params.value), 'MMM d, yyyy')}\` : '';
         }
         return formatDate(params.value);
@@ -2428,7 +3031,7 @@ npm run dev:safe`}
                               </span>
                               <div>
                                 <strong>Date Filtering:</strong> Click the Date
-                                column filter and try "Today-7d"
+                                column filter and try &quot;Today-7d&quot;
                               </div>
                             </li>
                             <li className="flex items-start">
@@ -2437,7 +3040,7 @@ npm run dev:safe`}
                               </span>
                               <div>
                                 <strong>Quick Filters:</strong> Use the dropdown
-                                to apply "Last 7 Days"
+                                to apply &quot;Last 7 Days&quot;
                               </div>
                             </li>
                             <li className="flex items-start">
@@ -2445,8 +3048,9 @@ npm run dev:safe`}
                                 3.
                               </span>
                               <div>
-                                <strong>Combined Filters:</strong> Try "High
-                                Value Recent" to see multi-column filtering
+                                <strong>Combined Filters:</strong> Try
+                                &quot;High Value Recent&quot; to see
+                                multi-column filtering
                               </div>
                             </li>
                             <li className="flex items-start">
@@ -2599,21 +3203,25 @@ npm run dev:safe`}
                             Basic Usage
                           </AnchorHeading>
                           <CodeBlock
-                            code={`import { setupFilterStatePersistence } from 'ag-grid-react-components';
+                            code={`import { setupGridStatePersistence } from 'ag-grid-react-components';
 
 const onGridReady = (params) => {
-  const cleanup = setupFilterStatePersistence(params.api, {
-    onFilterLoad: (model) => {
-      console.log('Filters loaded from URL:', model);
+  // Full grid state persistence with compression
+  const cleanup = setupGridStatePersistence(params.api, {
+    useCompression: true,
+    onStateLoad: (state) => {
+      console.log('Grid state loaded:', state);
     },
-    onFilterSave: (model) => {
-      console.log('Filters saved to URL:', model);
+    onStateSave: (state) => {
+      console.log('Grid state saved:', state);
     }
   });
 
-  // Clean up on component unmount
   return cleanup;
-};`}
+};
+
+// Or use the legacy filter-only version
+import { setupFilterStatePersistence } from 'ag-grid-react-components';`}
                             language="typescript"
                           />
                         </div>
@@ -2648,29 +3256,82 @@ const onGridReady = (params) => {
                               </thead>
                               <tbody className="text-gray-400">
                                 <tr className="border-b border-gray-800">
-                                  <td className="py-3">onFilterLoad</td>
-                                  <td className="py-3">function</td>
+                                  <td className="py-3">includeFilters</td>
+                                  <td className="py-3">boolean</td>
                                   <td className="py-3">No</td>
-                                  <td className="py-3">-</td>
+                                  <td className="py-3">true</td>
+                                  <td className="py-3">Include filter state</td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">includeColumns</td>
+                                  <td className="py-3">boolean</td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">true</td>
                                   <td className="py-3">
-                                    Called when filters are loaded from URL
+                                    Include column state (visibility, order,
+                                    width, pinning)
                                   </td>
                                 </tr>
                                 <tr className="border-b border-gray-800">
-                                  <td className="py-3">onFilterSave</td>
+                                  <td className="py-3">includeSort</td>
+                                  <td className="py-3">boolean</td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">true</td>
+                                  <td className="py-3">Include sort state</td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">includeRowGrouping</td>
+                                  <td className="py-3">boolean</td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">true</td>
+                                  <td className="py-3">
+                                    Include row grouping state (Enterprise)
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">useCompression</td>
+                                  <td className="py-3">boolean</td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">true</td>
+                                  <td className="py-3">
+                                    Use LZ-String compression for shorter URLs
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">maxUrlLength</td>
+                                  <td className="py-3">number</td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">2000</td>
+                                  <td className="py-3">
+                                    Warn when URL exceeds this length
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">paramName</td>
+                                  <td className="py-3">string</td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">
+                                    &apos;gridState&apos;
+                                  </td>
+                                  <td className="py-3">URL parameter name</td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">onStateLoad</td>
                                   <td className="py-3">function</td>
                                   <td className="py-3">No</td>
                                   <td className="py-3">-</td>
                                   <td className="py-3">
-                                    Called when filters are saved to URL
+                                    Called when state is loaded from URL
                                   </td>
                                 </tr>
                                 <tr>
-                                  <td className="py-3">parameterName</td>
-                                  <td className="py-3">string</td>
+                                  <td className="py-3">onStateSave</td>
+                                  <td className="py-3">function</td>
                                   <td className="py-3">No</td>
-                                  <td className="py-3">'filters'</td>
-                                  <td className="py-3">URL parameter name</td>
+                                  <td className="py-3">-</td>
+                                  <td className="py-3">
+                                    Called when state is saved to URL
+                                  </td>
                                 </tr>
                               </tbody>
                             </table>
@@ -2684,29 +3345,36 @@ const onGridReady = (params) => {
                           <CodeBlock
                             code={`import React, { useState, useCallback } from 'react';
 import { AgGridReact } from 'ag-grid-react';
-import { setupFilterStatePersistence } from 'ag-grid-react-components';
+import { setupGridStatePersistence } from 'ag-grid-react-components';
 
 function MyGrid() {
-  const [filterModel, setFilterModel] = useState({});
+  const [gridState, setGridState] = useState({});
 
   const onGridReady = useCallback((params) => {
-    // Set up URL persistence
-    const cleanup = setupFilterStatePersistence(params.api, {
-      onFilterLoad: (model) => {
-        console.log('Loaded filters:', model);
-        setFilterModel(model);
-      },
-      onFilterSave: (model) => {
-        console.log('Saved filters:', model);
-        setFilterModel(model);
-      },
-      parameterName: 'myFilters' // Custom URL parameter
-    });
+    // Set up full grid state persistence with compression
+    const cleanup = setupGridStatePersistence(params.api, {
+      useCompression: true,
+      includeFilters: true,
+      includeColumns: true,
+      includeSort: true,
+      includeRowGrouping: true,
+      maxUrlLength: 2000,
+      onStateLoad: (state) => {
+        console.log('Grid state loaded:', state);
+        setGridState(state);
 
-    // Listen for filter changes
-    params.api.addEventListener('filterChanged', () => {
-      const model = params.api.getFilterModel();
-      setFilterModel(model || {});
+        // Log compression statistics
+        const url = new URL(window.location.href);
+        const compressed = url.searchParams.get('gridState');
+        if (compressed) {
+          console.log(\`URL length: \${url.toString().length} chars\`);
+          console.log(\`Compressed state: \${compressed.length} chars\`);
+        }
+      },
+      onStateSave: (state) => {
+        console.log('Grid state saved:', state);
+        setGridState(state);
+      }
     });
 
     // Return cleanup function
@@ -2715,13 +3383,330 @@ function MyGrid() {
 
   return (
     <div>
-      <div>Current filters: {JSON.stringify(filterModel)}</div>
-      <AgGridReact onGridReady={onGridReady} ... />
+      <div className="state-info">
+        <h4>Current State:</h4>
+        <pre>{JSON.stringify(gridState, null, 2)}</pre>
+      </div>
+      <AgGridReact
+        onGridReady={onGridReady}
+        columnDefs={columnDefs}
+        rowData={rowData}
+      />
     </div>
   );
 }`}
                             language="tsx"
                           />
+                        </div>
+
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="url-state-current-support"
+                          >
+                            What&apos;s Currently Supported
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              The new{" "}
+                              <code className="text-blue-400">
+                                setupGridStatePersistence
+                              </code>{" "}
+                              now supports <strong>complete grid state</strong>:
+                            </p>
+                            <ul className="space-y-2 text-gray-400">
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Filters:</strong> All column filters
+                                  (date, text, number, set filters)
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Column State:</strong> Visibility,
+                                  order, width, pinning
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Sort State:</strong> Single and
+                                  multi-column sorting
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Row Grouping:</strong> Group columns
+                                  and pivot (Enterprise)
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>URL Compression:</strong> LZ-String
+                                  compression for 50-90% smaller URLs
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Browser Navigation:</strong> Full
+                                  back/forward support
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Shareable URLs:</strong> Copy and
+                                  share complete grid configurations
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="url-state-not-supported">
+                            What&apos;s Not Persisted
+                          </AnchorHeading>
+                          <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-6">
+                            <p className="text-yellow-400 mb-4">
+                              Some state is intentionally not persisted to keep
+                              URLs manageable:
+                            </p>
+                            <ul className="space-y-2 text-gray-300">
+                              <li className="flex items-start">
+                                <span className="text-yellow-400 mr-2">○</span>
+                                <span>
+                                  <strong>Row Selection:</strong> Selected rows
+                                  are session-specific
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-yellow-400 mr-2">○</span>
+                                <span>
+                                  <strong>Scroll Position:</strong> Would be
+                                  disorienting when sharing
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-yellow-400 mr-2">○</span>
+                                <span>
+                                  <strong>Expanded Groups:</strong> Group
+                                  expansion state is not saved
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-yellow-400 mr-2">○</span>
+                                <span>
+                                  <strong>Cell Focus:</strong> Focused cell
+                                  position
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="url-state-compression">
+                            Compression Effectiveness
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              LZ-String compression dramatically reduces URL
+                              length:
+                            </p>
+                            <div className="space-y-4">
+                              <div className="bg-gray-800 p-4 rounded">
+                                <h4 className="font-semibold text-blue-400 mb-2">
+                                  Example: Simple Filter State
+                                </h4>
+                                <ul className="space-y-1 text-sm text-gray-400">
+                                  <li>• Original JSON: 156 characters</li>
+                                  <li>• URL encoded: 312 characters</li>
+                                  <li>
+                                    • Compressed: 88 characters{" "}
+                                    <span className="text-green-400">
+                                      (72% reduction)
+                                    </span>
+                                  </li>
+                                </ul>
+                              </div>
+
+                              <div className="bg-gray-800 p-4 rounded">
+                                <h4 className="font-semibold text-blue-400 mb-2">
+                                  Example: Complex Grid State
+                                </h4>
+                                <ul className="space-y-1 text-sm text-gray-400">
+                                  <li>• Original JSON: 1,245 characters</li>
+                                  <li>• URL encoded: 2,890 characters</li>
+                                  <li>
+                                    • Compressed: 342 characters{" "}
+                                    <span className="text-green-400">
+                                      (88% reduction)
+                                    </span>
+                                  </li>
+                                </ul>
+                              </div>
+
+                              <p className="text-sm text-gray-400 mt-4">
+                                <strong>Note:</strong> Compression is most
+                                effective with repetitive data like column
+                                definitions. The more complex your grid state,
+                                the better the compression ratio.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="url-state-implementation"
+                          >
+                            Advanced Usage
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            You can selectively choose which state to persist:
+                          </p>
+                          <CodeBlock
+                            code={`// Persist only specific state
+const cleanup = setupGridStatePersistence(gridApi, {
+  includeFilters: true,     // Include filters
+  includeColumns: true,     // Include column state
+  includeSort: true,        // Include sorting
+  includeRowGrouping: false // Exclude grouping
+});
+
+// Or capture/apply state manually
+import { captureGridState, applyGridState } from 'ag-grid-react-components';
+
+// Capture current state
+const state = captureGridState(gridApi, {
+  includeFilters: true,
+  includeColumns: true
+});
+
+// Apply state later
+applyGridState(gridApi, state);
+
+// Custom state handling
+const customSave = () => {
+  const state = captureGridState(gridApi);
+  localStorage.setItem('gridState', JSON.stringify(state));
+};
+
+const customLoad = () => {
+  const saved = localStorage.getItem('gridState');
+  if (saved) {
+    const state = JSON.parse(saved);
+    applyGridState(gridApi, state);
+  }
+};`}
+                            language="typescript"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="url-state-length">
+                            URL Length Considerations
+                          </AnchorHeading>
+                          <div className="space-y-4">
+                            <p className="text-gray-400">
+                              URLs have practical length limits that vary by
+                              browser and server:
+                            </p>
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <ul className="space-y-2 text-sm text-gray-400">
+                                <li>
+                                  <strong className="text-gray-300">
+                                    Chrome/Firefox:
+                                  </strong>{" "}
+                                  ~2,000 characters (safe limit)
+                                </li>
+                                <li>
+                                  <strong className="text-gray-300">
+                                    Safari:
+                                  </strong>{" "}
+                                  ~80,000 characters
+                                </li>
+                                <li>
+                                  <strong className="text-gray-300">
+                                    IE11:
+                                  </strong>{" "}
+                                  ~2,083 characters
+                                </li>
+                                <li>
+                                  <strong className="text-gray-300">
+                                    Most web servers:
+                                  </strong>{" "}
+                                  8,192 characters default
+                                </li>
+                              </ul>
+                            </div>
+
+                            <div>
+                              <h4 className="font-semibold text-gray-200 mb-2">
+                                Strategies for Long State
+                              </h4>
+                              <div className="space-y-3">
+                                <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                                  <h5 className="font-semibold text-blue-400 mb-1">
+                                    1. Compression
+                                  </h5>
+                                  <p className="text-sm text-gray-400">
+                                    Use libraries like lz-string to compress
+                                    state by 50-90%
+                                  </p>
+                                  <CodeBlock
+                                    code={`import LZString from 'lz-string';
+
+const compressed = LZString.compressToEncodedURIComponent(stateJSON);
+const decompressed = LZString.decompressFromEncodedURIComponent(compressed);`}
+                                    language="javascript"
+                                  />
+                                </div>
+
+                                <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                                  <h5 className="font-semibold text-blue-400 mb-1">
+                                    2. State Storage Service
+                                  </h5>
+                                  <p className="text-sm text-gray-400">
+                                    Store state server-side and use a short ID
+                                    in the URL
+                                  </p>
+                                  <CodeBlock
+                                    code={`// Store state and get ID
+const stateId = await storeGridState(fullState);
+window.history.pushState({}, '', \`?state=\${stateId}\`);`}
+                                    language="javascript"
+                                  />
+                                </div>
+
+                                <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                                  <h5 className="font-semibold text-blue-400 mb-1">
+                                    3. Selective Persistence
+                                  </h5>
+                                  <p className="text-sm text-gray-400">
+                                    Only persist the most important state
+                                  </p>
+                                  <CodeBlock
+                                    code={`// Only save filters and critical column state
+const minimalState = {
+  filters: gridApi.getFilterModel(),
+  hiddenColumns: gridApi.getColumnState()
+    .filter(col => col.hide)
+    .map(col => col.colId)
+};`}
+                                    language="javascript"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2750,11 +3735,11 @@ function MyGrid() {
 interface DateFilterModel {
   mode: 'absolute' | 'relative';
   type: 'equals' | 'before' | 'after' | 'inRange' | 'blank' | 'notBlank';
-  
+
   // For absolute mode
   dateFrom?: Date | null;
   dateTo?: Date | null;
-  
+
   // For relative mode
   expressionFrom?: string;
   expressionTo?: string;
@@ -2802,7 +3787,7 @@ const relativeFilter: DateFilterModel = {
   label: string;
   icon?: string;
   description?: string;
-  filterModel?: any;  // Column-specific filter model
+  filterModel?: Record<string, unknown>;  // Column-specific filter model
   onSelect?: (api: GridApi) => void;  // Custom handler
 }
 
@@ -2828,8 +3813,8 @@ interface QuickFilterDropdownProps {
                           </AnchorHeading>
                           <CodeBlock
                             code={`interface FilterStatePersistenceOptions {
-  onFilterLoad?: (filterModel: any) => void;
-  onFilterSave?: (filterModel: any) => void;
+  onFilterLoad?: (filterModel: Record<string, unknown> | null) => void;
+  onFilterSave?: (filterModel: Record<string, unknown> | null) => void;
   parameterName?: string;  // Default: 'filters'
 }
 
@@ -2848,14 +3833,14 @@ function setupFilterStatePersistence(
                           </AnchorHeading>
                           <CodeBlock
                             code={`// Valid date anchors
-type DateAnchor = 
-  | 'Today' 
-  | 'Now' 
-  | 'StartOfWeek' 
+type DateAnchor =
+  | 'Today'
+  | 'Now'
+  | 'StartOfWeek'
   | 'EndOfWeek'
-  | 'StartOfMonth' 
+  | 'StartOfMonth'
   | 'EndOfMonth'
-  | 'StartOfYear' 
+  | 'StartOfYear'
   | 'EndOfYear';
 
 // Valid time units
@@ -2893,7 +3878,7 @@ interface IDateFilter extends IFilter {
   doesFilterPass(params: IDoesFilterPassParams): boolean;
   getModel(): DateFilterModel | null;
   setModel(model: DateFilterModel | null): void;
-  
+
   // Optional AG Grid methods
   afterGuiAttached?(): void;
   onNewRowsLoaded?(): void;
@@ -2935,8 +3920,8 @@ interface IDateFilter extends IFilter {
                                   <strong>Date-only values:</strong> Compared at
                                   midnight (00:00:00)
                                   <div className="text-sm text-gray-400 mt-1">
-                                    Example: "2024-03-15" is treated as
-                                    "2024-03-15T00:00:00"
+                                    Example: &quot;2024-03-15&quot; is treated
+                                    as &quot;2024-03-15T00:00:00&quot;
                                   </div>
                                 </div>
                               </li>
@@ -2946,8 +3931,8 @@ interface IDateFilter extends IFilter {
                                   <strong>Timestamp values:</strong> Compared
                                   with full precision
                                   <div className="text-sm text-gray-400 mt-1">
-                                    Example: "2024-03-15T14:30:00Z" preserves
-                                    the exact time
+                                    Example: &quot;2024-03-15T14:30:00Z&quot;
+                                    preserves the exact time
                                   </div>
                                 </div>
                               </li>
@@ -2981,7 +3966,8 @@ interface IDateFilter extends IFilter {
                                     Matches entire day if date-only
                                   </td>
                                   <td className="py-3">
-                                    "2024-03-15" matches any time on that day
+                                    &quot;2024-03-15&quot; matches any time on
+                                    that day
                                   </td>
                                 </tr>
                                 <tr className="border-b border-gray-800">
@@ -2990,7 +3976,8 @@ interface IDateFilter extends IFilter {
                                     Exclusive of the date
                                   </td>
                                   <td className="py-3">
-                                    &lt; "2024-03-15" means before midnight
+                                    &lt; &quot;2024-03-15&quot; means before
+                                    midnight
                                   </td>
                                 </tr>
                                 <tr className="border-b border-gray-800">
@@ -2999,7 +3986,8 @@ interface IDateFilter extends IFilter {
                                     Exclusive of the date
                                   </td>
                                   <td className="py-3">
-                                    &gt; "2024-03-15" means after 23:59:59
+                                    &gt; &quot;2024-03-15&quot; means after
+                                    23:59:59
                                   </td>
                                 </tr>
                                 <tr>
@@ -3008,8 +3996,8 @@ interface IDateFilter extends IFilter {
                                     Inclusive of both dates
                                   </td>
                                   <td className="py-3">
-                                    "2024-03-01" to "2024-03-31" includes entire
-                                    March
+                                    &quot;2024-03-01&quot; to
+                                    &quot;2024-03-31&quot; includes entire March
                                   </td>
                                 </tr>
                               </tbody>
@@ -3115,15 +4103,15 @@ interface IDateFilter extends IFilter {
                               <li className="flex items-start">
                                 <span className="text-indigo-400 mr-2">💡</span>
                                 <div>
-                                  <strong>Date-only data:</strong> Use "Today"
-                                  for current date comparisons
+                                  <strong>Date-only data:</strong> Use
+                                  &quot;Today&quot; for current date comparisons
                                 </div>
                               </li>
                               <li className="flex items-start">
                                 <span className="text-indigo-400 mr-2">💡</span>
                                 <div>
-                                  <strong>Timestamp data:</strong> Use "Now" for
-                                  precise time comparisons
+                                  <strong>Timestamp data:</strong> Use
+                                  &quot;Now&quot; for precise time comparisons
                                 </div>
                               </li>
                               <li className="flex items-start">
@@ -3927,25 +4915,25 @@ describe('DateFilter', () => {
   it('should toggle between absolute and relative modes', async () => {
     const user = userEvent.setup();
     const mockApi = createMockGridApi();
-    
+
     render(
-      <DateFilter 
-        filterParams={{}} 
+      <DateFilter
+        filterParams={{}}
         api={mockApi}
         column={mockColumn}
       />
     );
-    
+
     // Start in absolute mode
     expect(screen.getByText('Absolute')).toBeInTheDocument();
-    
+
     // Click to switch to relative mode
     await user.click(screen.getByText('Relative'));
-    
+
     // Should show expression input
     expect(screen.getByPlaceholderText(/Today/)).toBeInTheDocument();
   });
-  
+
   it('should validate date expressions', async () => {
     // Test implementation
   });
@@ -3964,19 +4952,19 @@ describe('DateFilter', () => {
 test.describe('Date Filter E2E', () => {
   test('should filter grid with relative expression', async ({ page }) => {
     await page.goto('/demo');
-    
+
     // Open date filter
     await page.click('[aria-label="Date filter"]');
-    
+
     // Switch to relative mode
     await page.click('text=Relative');
-    
+
     // Enter expression
     await page.fill('input[placeholder*="Today"]', 'Today-7d');
-    
+
     // Apply filter
     await page.click('button:has-text("Apply")');
-    
+
     // Verify grid is filtered
     const rowCount = await page.locator('.ag-row').count();
     expect(rowCount).toBeLessThan(1000); // Original count
@@ -3999,17 +4987,17 @@ test.describe('Date Filter E2E', () => {
 import { AGGridTestHarness } from '@/test-utils/AGGridTestHarness';
 
 const { result } = render(
-  <AGGridTestHarness 
+  <AGGridTestHarness
     columnDefs={columnDefs}
     rowData={testData}
   />
 );
 
 // agGridTestUtils - Helper functions
-import { 
-  createMockGridApi, 
+import {
+  createMockGridApi,
   createMockColumn,
-  waitForGridReady 
+  waitForGridReady
 } from '@/test-utils/agGridTestUtils';
 
 const mockApi = createMockGridApi();
@@ -4100,7 +5088,7 @@ const mockColumn = createMockColumn({ field: 'date' });`}
                           <CodeBlock
                             code={`import React, { useState, useCallback } from 'react';
 import { AgGridReact } from 'ag-grid-react';
-import { 
+import {
   DateFilter,
   QuickFilterDropdown,
   setupFilterStatePersistence,
@@ -4143,10 +5131,10 @@ function DateFilterGrid() {
 
   const onGridReady = useCallback((params) => {
     setGridApi(params.api);
-    
+
     // Set up URL persistence
     const cleanup = setupFilterStatePersistence(params.api);
-    
+
     return cleanup;
   }, []);
 
@@ -4159,10 +5147,11 @@ function DateFilterGrid() {
             columnId="date"
             options={DATE_FILTER_PRESETS}
             placeholder="Quick date filters"
+            dropdownClassName="!overflow-visible"
           />
         </div>
       )}
-      
+
       <div className="ag-theme-quartz" style={{ height: 400, width: '100%' }}>
         <AgGridReact
           rowData={rowData}
@@ -4210,7 +5199,7 @@ const customFilters = [
       expressionTo: 'EndOfMonth-1M'
     }
   },
-  
+
   // Combined filters
   {
     id: 'recentHighValue',
@@ -4232,13 +5221,13 @@ const customFilters = [
       });
     }
   },
-  
+
   // Status-based filters
   {
     id: 'activeToday',
     label: 'Active Today',
     icon: '✅',
-    description: 'Active items with today\'s date',
+    description: "Active items with today's date",
     onSelect: (api) => {
       api.setFilterModel({
         date: {
@@ -4293,9 +5282,9 @@ const customFilters = [
                                     api.setFilterModel()
                                   </code>{" "}
                                   programmatically on custom React filter
-                                  components, the filter doesn't properly
+                                  components, the filter doesn&apos;t properly
                                   initialize. The component receives the model
-                                  in props but doesn't apply it to internal
+                                  in props but doesn&apos;t apply it to internal
                                   state, causing filters to not work.
                                 </p>
                               </div>
@@ -4341,8 +5330,8 @@ const customFilters = [
                                     #2256
                                   </div>
                                   <div className="text-gray-300 text-sm">
-                                    setFilterModel doesn't initialize custom
-                                    filters
+                                    setFilterModel doesn&apos;t initialize
+                                    custom filters
                                   </div>
                                 </a>
                                 <a
@@ -4378,6 +5367,126 @@ const customFilters = [
                               <AnchorHeading level={4} id="workaround">
                                 Workaround
                               </AnchorHeading>
+
+                              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
+                                <div className="flex gap-3">
+                                  <svg
+                                    className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                    />
+                                  </svg>
+                                  <div className="flex-1">
+                                    <h4 className="font-semibold text-red-400 mb-2">
+                                      ⚠️ Critical Workaround Required
+                                    </h4>
+                                    <p className="text-sm text-gray-300 mb-3">
+                                      This is a <strong>critical bug</strong>{" "}
+                                      that affects all custom React filter
+                                      components in AG Grid v33.x. Without this
+                                      workaround:
+                                    </p>
+                                    <ul className="list-disc list-inside text-sm text-gray-300 space-y-1 mb-3">
+                                      <li>Quick filters will not work</li>
+                                      <li>URL filter persistence will fail</li>
+                                      <li>
+                                        Any programmatic filter changes will be
+                                        ignored
+                                      </li>
+                                      <li>
+                                        The filter will appear to update but
+                                        won&apos;t actually filter data
+                                      </li>
+                                    </ul>
+                                    <p className="text-sm text-gray-300 mb-3">
+                                      <strong>Affected versions:</strong> All AG
+                                      Grid v33.x releases (33.0.0 - 33.3.0+)
+                                    </p>
+                                    <p className="text-sm text-gray-300 mb-3">
+                                      <strong>Risk level:</strong>{" "}
+                                      <span className="text-red-400 font-semibold">
+                                        HIGH
+                                      </span>{" "}
+                                      - This bug causes silent failures that are
+                                      difficult to debug.
+                                    </p>
+                                    <div className="bg-gray-800/50 rounded p-3 mt-3">
+                                      <p className="text-xs text-gray-400 mb-2">
+                                        Tracking Issues:
+                                      </p>
+                                      <div className="flex gap-2 flex-wrap">
+                                        <a
+                                          href="https://github.com/ag-grid/ag-grid/issues/2256"
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-xs bg-gray-700 px-2 py-1 rounded hover:bg-gray-600 transition-colors inline-flex items-center gap-1"
+                                        >
+                                          <svg
+                                            className="w-3 h-3"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                          >
+                                            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                                            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                                          </svg>
+                                          #2256
+                                        </a>
+                                        <a
+                                          href="https://github.com/ag-grid/ag-grid/issues/2709"
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-xs bg-gray-700 px-2 py-1 rounded hover:bg-gray-600 transition-colors inline-flex items-center gap-1"
+                                        >
+                                          <svg
+                                            className="w-3 h-3"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                          >
+                                            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                                            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                                          </svg>
+                                          #2709
+                                        </a>
+                                        <a
+                                          href="https://github.com/ag-grid/ag-grid/issues/4870"
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-xs bg-gray-700 px-2 py-1 rounded hover:bg-gray-600 transition-colors inline-flex items-center gap-1"
+                                        >
+                                          <svg
+                                            className="w-3 h-3"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                          >
+                                            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                                            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                                          </svg>
+                                          #4870
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <p className="text-sm text-gray-400 mb-4">
+                                Use the provided{" "}
+                                <code className="bg-gray-800 px-2 py-1 rounded">
+                                  applyFilterModelWithWorkaround
+                                </code>{" "}
+                                function instead of calling{" "}
+                                <code className="bg-gray-800 px-2 py-1 rounded">
+                                  api.setFilterModel()
+                                </code>{" "}
+                                directly:
+                              </p>
                               <p className="text-gray-300 mb-4">
                                 Use the{" "}
                                 <code className="bg-gray-800 px-2 py-1 rounded">
@@ -4410,8 +5519,8 @@ await applyFilterModelWithWorkaround(api, 'dateColumn', filterModel);`}
                                     <span className="text-indigo-400 font-semibold mr-2">
                                       1.
                                     </span>
-                                    Handles AG Grid v33's Promise-based filter
-                                    instances
+                                    Handles AG Grid v33&apos;s Promise-based
+                                    filter instances
                                   </li>
                                   <li className="flex items-start">
                                     <span className="text-indigo-400 font-semibold mr-2">
@@ -4492,313 +5601,220 @@ const handleFilterSelect = async (option) => {
     );
   }
 
-  // Demo page
+  // Demo page - real application layout
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col">
+    <div className="h-screen bg-gray-950 text-white flex flex-col overflow-hidden">
       <Navigation currentPage={currentPage} />
 
-      {/* Component Tabs */}
-      <div className="bg-gray-900/30 border-b border-gray-800">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-8 py-4">
-            <button
-              className={`px-1 py-2 text-sm font-medium transition-all border-b-2 ${
-                activeComponent === "date-filter"
-                  ? "text-indigo-400 border-indigo-400"
-                  : "text-gray-400 border-transparent hover:text-gray-300"
-              }`}
-              onClick={() => setActiveComponent("date-filter")}
-            >
-              Date Filter
-            </button>
-            <button
-              className={`px-1 py-2 text-sm font-medium transition-all border-b-2 ${
-                activeComponent === "quick-filter"
-                  ? "text-indigo-400 border-indigo-400"
-                  : "text-gray-400 border-transparent hover:text-gray-300"
-              }`}
-              onClick={() => setActiveComponent("quick-filter")}
-            >
-              Quick Filter
-            </button>
-            <button
-              className={`px-1 py-2 text-sm font-medium transition-all border-b-2 ${
-                activeComponent === "url-state"
-                  ? "text-indigo-400 border-indigo-400"
-                  : "text-gray-400 border-transparent hover:text-gray-300"
-              }`}
-              onClick={() => setActiveComponent("url-state")}
-            >
-              URL State
-            </button>
-          </div>
-        </div>
-      </div>
+      {/* Main Content - fills remaining height */}
+      <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6">
+          {/* Compact Header Section */}
+          <div className="mb-4">
+            {/* Title Row */}
+            <div className="mb-4">
+              <h1 className="text-2xl font-semibold text-white">
+                Project Tasks
+              </h1>
+              <p className="text-sm text-gray-400 mt-1">
+                Manage and track your team&apos;s progress
+              </p>
+            </div>
 
-      {/* Main Content */}
-      <div className="flex-1">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          {/* Component Info */}
-          <div className="mb-8">
-            {activeComponent === "date-filter" && (
-              <div className="bg-gray-900/50 rounded-xl p-8 border border-gray-800">
-                <AnchorHeading level={2} id="relative-date-filter-info">
-                  Relative Date Filter
-                </AnchorHeading>
-                <p className="text-gray-300 mb-6">
-                  Filter dates using absolute values or relative expressions
-                  like "Today-7d"
-                </p>
-
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div>
-                    <AnchorHeading
-                      level={3}
-                      id="date-filter-features"
-                      className="text-lg font-semibold text-indigo-400 mb-3"
-                    >
-                      Features
-                    </AnchorHeading>
-                    <ul className="space-y-2 text-sm text-gray-300">
-                      <li className="flex items-start">
-                        <span className="text-indigo-400 mr-2">✓</span>
-                        Toggle between absolute dates and relative expressions
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-indigo-400 mr-2">✓</span>
-                        Real-time validation with date preview
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-indigo-400 mr-2">✓</span>
-                        All standard filter operations (equals, before, after,
-                        in range)
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-indigo-400 mr-2">✓</span>
-                        Inclusive/exclusive boundary controls
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div>
-                    <AnchorHeading
-                      level={3}
-                      id="try-these-expressions"
-                      className="text-lg font-semibold text-indigo-400 mb-3"
-                    >
-                      Try These Expressions
-                    </AnchorHeading>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        "Today",
-                        "Today-7d",
-                        "Today+1w",
-                        "StartOfMonth",
-                        "EndOfMonth",
-                        "StartOfYear",
-                      ].map((expr) => (
-                        <code
-                          key={expr}
-                          className="bg-gray-800 px-3 py-2 rounded text-sm text-indigo-300 text-center hover:bg-gray-700 transition-colors cursor-pointer"
-                          onClick={() => navigator.clipboard.writeText(expr)}
-                        >
-                          {expr}
-                        </code>
-                      ))}
-                    </div>
-                    <p className="text-xs text-gray-500 mt-3">Click to copy</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeComponent === "quick-filter" && (
-              <div className="bg-gray-900/50 rounded-xl p-8 border border-gray-800">
-                <AnchorHeading level={2} id="quick-filter-dropdown-info">
-                  Quick Filter Dropdown
-                </AnchorHeading>
-                <p className="text-gray-300 mb-6">
-                  Apply predefined filters with a single click. Works with any
-                  column type. The quick filters are now integrated into the
-                  grid area below for a better user experience.
-                </p>
-
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div>
-                    <AnchorHeading
-                      level={3}
-                      id="quick-filter-features"
-                      className="text-lg font-semibold text-indigo-400 mb-3"
-                    >
-                      Features
-                    </AnchorHeading>
-                    <ul className="space-y-2 text-sm text-gray-300">
-                      <li className="flex items-start">
-                        <span className="text-indigo-400 mr-2">✓</span>
-                        Works with any AG Grid column type
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-indigo-400 mr-2">✓</span>
-                        Combine multiple filters in one action
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-indigo-400 mr-2">✓</span>
-                        Keyboard navigation support
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-indigo-400 mr-2">✓</span>
-                        Customizable icons and descriptions
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div>
-                    <AnchorHeading
-                      level={3}
-                      id="quick-filter-options"
-                      className="text-lg font-semibold text-indigo-400 mb-3"
-                    >
-                      Available Filters
-                    </AnchorHeading>
-                    <div className="space-y-2">
-                      <div className="bg-gray-800 rounded-lg p-3">
-                        <h4 className="text-sm font-medium text-indigo-300 mb-1">
-                          Date Range Filters
-                        </h4>
-                        <p className="text-xs text-gray-400">
-                          Today, This Week, Last 30 Days, and more
-                        </p>
-                      </div>
-                      <div className="bg-gray-800 rounded-lg p-3">
-                        <h4 className="text-sm font-medium text-indigo-300 mb-1">
-                          Combined Filters
-                        </h4>
-                        <p className="text-xs text-gray-400">
-                          Filter by date and status together
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeComponent === "url-state" && (
-              <div className="bg-gray-900/50 rounded-xl p-8 border border-gray-800">
-                <AnchorHeading level={2} id="url-state-persistence-info">
-                  URL State Persistence
-                </AnchorHeading>
-                <p className="text-gray-300 mb-6">
-                  Share filtered views with automatic URL synchronization
-                </p>
-
-                <div className="bg-gray-800 rounded-lg p-4 mb-6">
-                  <AnchorHeading
-                    level={3}
-                    id="current-filter-state"
-                    className="text-sm font-medium text-gray-400 mb-2"
-                  >
-                    Current Filter State
-                  </AnchorHeading>
-                  <pre className="text-sm text-indigo-300">
-                    <code>
-                      {JSON.stringify(
-                        serializeFilterModel(filterModel),
-                        null,
-                        2,
-                      )}
-                    </code>
-                  </pre>
-                </div>
-
-                <AnchorHeading
-                  level={3}
-                  id="url-state-features"
-                  className="text-lg font-semibold text-indigo-400 mb-3"
-                >
-                  Features
-                </AnchorHeading>
-                <ul className="space-y-2 text-sm text-gray-300">
-                  <li className="flex items-start">
-                    <span className="text-indigo-400 mr-2">✓</span>
-                    Automatic URL synchronization as you filter
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-indigo-400 mr-2">✓</span>
-                    Browser back/forward button support
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-indigo-400 mr-2">✓</span>
-                    Shareable filter links
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-indigo-400 mr-2">✓</span>
-                    Proper Date object serialization
-                  </li>
-                </ul>
-              </div>
-            )}
-          </div>
-
-          {/* Grid */}
-          <div className="bg-gray-900/50 rounded-xl border border-gray-800 overflow-hidden">
-            {/* Grid Toolbar */}
-            <div className="bg-gray-900/80 border-b border-gray-800 px-6 py-4">
-              <div className="flex items-center justify-between flex-wrap gap-4">
-                <div className="flex items-center gap-4">
-                  <h2 className="text-lg font-semibold text-white">
-                    Project Tasks
-                  </h2>
-                  <span className="text-sm text-gray-400">
-                    {rowData.length} items
-                  </span>
-                </div>
-
-                {/* Quick Filter Dropdowns */}
-                {gridApi && (
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <QuickFilterDropdown
-                      api={gridApi}
-                      columnId="dueDate"
-                      options={dateQuickFilters}
-                      placeholder="Time period"
-                      showDescriptions={false}
-                      className="min-w-[140px]"
-                    />
-                    <QuickFilterDropdown
-                      api={gridApi}
-                      columnId="dueDate"
-                      options={combinedQuickFilters}
-                      placeholder="Smart filters"
-                      showDescriptions={false}
-                      className="min-w-[140px]"
-                    />
-                    <div className="h-8 w-px bg-gray-700" /> {/* Divider */}
-                    <button
-                      onClick={() => {
-                        gridApi.setFilterModel({});
-                        gridApi.onFilterChanged();
+            {/* Integrated Toolbar */}
+            <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg">
+              {/* Search and Quick Filters Row */}
+              <div className="p-3">
+                <div className="flex items-center gap-3 flex-wrap">
+                  {/* Search Bar */}
+                  <div className="relative flex-1 min-w-[240px]">
+                    <input
+                      type="text"
+                      placeholder="Search tasks..."
+                      className="w-full px-3 py-2 pl-10 bg-gray-800/50 border border-gray-700 rounded-md text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                      onChange={(e) => {
+                        if (gridApi) {
+                          gridApi.setGridOption(
+                            "quickFilterText",
+                            e.target.value,
+                          );
+                        }
                       }}
-                      className="text-sm text-gray-400 hover:text-white transition-colors"
+                    />
+                    <svg
+                      className="absolute left-3 top-2.5 w-4 h-4 text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      Clear filters
-                    </button>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
                   </div>
-                )}
+
+                  {/* Divider */}
+                  <div className="h-8 w-px bg-gray-700"></div>
+
+                  {/* Quick Filters */}
+                  {gridApi && (
+                    <>
+                      <QuickFilterDropdown
+                        api={gridApi}
+                        columnId="dueDate"
+                        options={dateQuickFilters}
+                        placeholder="Time period"
+                        showDescriptions={false}
+                        className="min-w-[140px]"
+                      />
+                      <QuickFilterDropdown
+                        api={gridApi}
+                        columnId="_multi"
+                        options={taskTypeFilters}
+                        placeholder="Task type"
+                        showDescriptions={false}
+                        className="min-w-[140px]"
+                      />
+                    </>
+                  )}
+                </div>
               </div>
 
-              {/* Active Filters */}
+              {/* Active Filters Row (when present) */}
               {gridApi && Object.keys(filterModel).length > 0 && (
-                <div className="mt-3 pt-3 border-t border-gray-800">
+                <div className="border-t border-gray-700/50 bg-gray-800/20 p-3">
                   <ActiveFilters api={gridApi} filterModel={filterModel} />
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Grid Container */}
+          {/* Grid Container - fills remaining height */}
+          <div className="flex-1 bg-gray-900/50 rounded-xl border border-gray-800 flex flex-col">
+            {/* Hero Stats Bar */}
+            <div className="border-b border-gray-700/50 bg-gray-900/30">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x divide-gray-700/50">
+                <div className="px-6 py-5">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2.5 bg-indigo-500/10 rounded-lg">
+                      <svg
+                        className="w-5 h-5 text-indigo-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase tracking-wider">
+                        Number of Tasks
+                      </p>
+                      <p className="text-2xl font-semibold text-white mt-0.5">
+                        {stats.taskCount.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="px-6 py-5">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2.5 bg-green-500/10 rounded-lg">
+                      <svg
+                        className="w-5 h-5 text-green-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase tracking-wider">
+                        Total Budget
+                      </p>
+                      <p className="text-2xl font-semibold text-white mt-0.5">
+                        ${stats.totalBudget.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="px-6 py-5">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2.5 bg-blue-500/10 rounded-lg">
+                      <svg
+                        className="w-5 h-5 text-blue-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase tracking-wider">
+                        Progress
+                      </p>
+                      <p className="text-2xl font-semibold text-white mt-0.5">
+                        {stats.avgProgress.toFixed(1)}%
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="px-6 py-5">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2.5 bg-amber-500/10 rounded-lg">
+                      <svg
+                        className="w-5 h-5 text-amber-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase tracking-wider">
+                        Budget Remaining
+                      </p>
+                      <p className="text-2xl font-semibold text-white mt-0.5">
+                        ${stats.budgetRemaining.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* AG Grid - fills remaining height */}
             <div
-              className="ag-theme-quartz-dark"
-              style={{ height: 600, width: "100%" }}
+              className="flex-1 ag-theme-quartz-dark relative"
+              style={{ minHeight: 0 }}
             >
               <AgGridReact
                 columnDefs={columnDefs}
@@ -4806,13 +5822,12 @@ const handleFilterSelect = async (option) => {
                 rowData={rowData}
                 gridOptions={gridOptions}
                 onGridReady={onGridReady}
+                domLayout="normal"
               />
             </div>
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 };

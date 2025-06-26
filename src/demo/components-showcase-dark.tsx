@@ -4,6 +4,7 @@ import type {
   ColDef,
   GridApi,
   GridOptions,
+  GridReadyEvent,
   ICellRendererParams,
 } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
@@ -67,7 +68,7 @@ export const ComponentsShowcaseDark: React.FC = () => {
     "hero",
   );
   const [activeComponent, setActiveComponent] = useState("date-filter");
-  const [filterModel, setFilterModel] = useState<any>({});
+  const [filterModel, setFilterModel] = useState<Record<string, unknown>>({});
 
   // Column definitions with our custom filter
   const columnDefs: ColDef[] = useMemo(
@@ -139,7 +140,7 @@ export const ComponentsShowcaseDark: React.FC = () => {
     [],
   );
 
-  const onGridReady = useCallback((params: any) => {
+  const onGridReady = useCallback((params: GridReadyEvent) => {
     setGridApi(params.api);
 
     // Set up URL persistence

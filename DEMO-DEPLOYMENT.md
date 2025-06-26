@@ -20,7 +20,7 @@ That's it! The demo will hot-reload as you make changes.
 
 ## Online Demo Deployment
 
-The live demo is available at: https://demo.rozich.net/ag-grid-react-components/
+The live demo is available at: <https://demo.rozich.net/ag-grid-react-components/>
 
 This deployment uses a custom Cloudflare Workers architecture that allows hosting multiple project demos under a single domain. The deployment is automated via GitHub Actions when changes are pushed to the main branch.
 
@@ -29,7 +29,7 @@ This deployment uses a custom Cloudflare Workers architecture that allows hostin
 For those interested in the deployment details:
 
 - **Demo Router Worker**: A centralized Cloudflare Worker that routes requests to different demo projects
-- **Router Repository**: https://github.com/ryanrozich/demo-router-worker
+- **Router Repository**: <https://github.com/ryanrozich/demo-router-worker>
 - **Storage**: Uses Cloudflare R2 for static assets and KV for metadata
 - **Cost**: Everything fits within Cloudflare's free tier
 
@@ -38,7 +38,7 @@ For those interested in the deployment details:
 1. Push changes to main branch
 2. GitHub Action builds the demo with correct base path
 3. Assets are uploaded to Cloudflare R2
-4. Demo is accessible at demo.rozich.net/ag-grid-react-components/
+4. Demo is accessible at `demo.rozich.net/ag-grid-react-components/`
 
 ## Deployment Configuration
 
@@ -95,6 +95,6 @@ wrangler kv:key put \
 
 ## Additional Resources
 
-- **Live Demo**: https://demo.rozich.net/ag-grid-react-components/
-- **Demo Router Repository**: https://github.com/ryanrozich/demo-router-worker
-- **Main Project Repository**: https://github.com/ryanrozich/ag-grid-react-components
+- **Live Demo**: <https://demo.rozich.net/ag-grid-react-components/>
+- **Demo Router Repository**: <https://github.com/ryanrozich/demo-router-worker>
+- **Main Project Repository**: <https://github.com/ryanrozich/ag-grid-react-components>

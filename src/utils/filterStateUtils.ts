@@ -279,7 +279,7 @@ export function updateUrlWithFilterState(
  */
 export function loadFilterStateFromUrl(
   paramName: string = "filter",
-): any | null {
+): Record<string, unknown> | null {
   // Get current URL
   const url = new URL(window.location.href);
   const filterParam = url.searchParams.get(paramName);

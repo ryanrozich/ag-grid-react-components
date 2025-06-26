@@ -28,23 +28,29 @@
 
 /* AG Grid Dark Theme Customization */
 .ag-theme-quartz-dark {
-  /* Background colors */
-  --ag-background-color: #0f172a; /* slate-900 */
-  --ag-foreground-color: #e2e8f0; /* slate-200 */
-  --ag-secondary-foreground-color: #94a3b8; /* slate-400 */
-  --ag-header-background-color: #1e293b; /* slate-800 */
-  --ag-header-foreground-color: #f1f5f9; /* slate-100 */
-  --ag-disabled-foreground-color: #64748b; /* slate-500 */
-  --ag-subheader-background-color: #1e293b;
-  --ag-subheader-toolbar-background-color: #0f172a;
-  --ag-control-panel-background-color: #0f172a;
-  --ag-side-bar-panel-background: #0f172a;
-  --ag-odd-row-background-color: rgb(
-    30,
+  /* Background colors - matching our app theme */
+  --ag-background-color: rgb(17, 24, 39, 0.5); /* gray-900 with opacity */
+  --ag-foreground-color: #f3f4f6; /* gray-100 */
+  --ag-secondary-foreground-color: #9ca3af; /* gray-400 */
+  --ag-header-background-color: rgb(
+    31,
     41,
-    59,
+    55,
+    0.8
+  ); /* gray-800 with opacity */
+
+  --ag-header-foreground-color: #f9fafb; /* gray-50 */
+  --ag-disabled-foreground-color: #6b7280; /* gray-500 */
+  --ag-subheader-background-color: rgb(31, 41, 55, 0.8);
+  --ag-subheader-toolbar-background-color: rgb(17, 24, 39, 0.5);
+  --ag-control-panel-background-color: rgb(17, 24, 39, 0.5);
+  --ag-side-bar-panel-background: rgb(17, 24, 39, 0.5);
+  --ag-odd-row-background-color: rgb(
+    31,
+    41,
+    55,
     0.3
-  ); /* slate-800 with opacity */
+  ); /* gray-800 with opacity */
 
   --ag-modal-overlay-background-color: rgb(0, 0, 0, 0.7);
 
@@ -117,17 +123,22 @@
 
 /* Additional customizations */
 .ag-theme-quartz-dark {
-  border: 1px solid #374151;
-  border-radius: 0.5rem;
+  border: none;
+  border-radius: 0;
+  background: transparent;
 }
 
 .ag-theme-quartz-dark .ag-root-wrapper {
-  border-radius: 0.5rem;
+  border-radius: 0;
+  border: none;
+  height: 100%;
 }
 
 .ag-theme-quartz-dark .ag-header {
-  border-bottom: 1px solid #374151;
+  border-bottom: 1px solid rgb(55, 65, 81, 0.5);
   font-weight: 600;
+  background-color: rgb(31, 41, 55, 0.8);
+  backdrop-filter: blur(8px);
 }
 
 .ag-theme-quartz-dark .ag-header-cell {
@@ -139,11 +150,12 @@
 }
 
 .ag-theme-quartz-dark .ag-row {
-  border-bottom: 1px solid rgb(55, 65, 81, 0.5);
+  border-bottom: 1px solid rgb(55, 65, 81, 0.3);
+  transition: background-color 0.15s ease;
 }
 
 .ag-theme-quartz-dark .ag-row:hover {
-  background-color: rgb(99, 102, 241, 0.08) !important;
+  background-color: rgb(99, 102, 241, 0.06) !important;
 }
 
 .ag-theme-quartz-dark .ag-cell {
@@ -151,7 +163,9 @@
 }
 
 /* Numeric cells styling */
-.ag-theme-quartz-dark .ag-cell[col-id="value"] {
+.ag-theme-quartz-dark .ag-cell[col-id="value"],
+.ag-theme-quartz-dark .ag-cell[col-id="amountDelivered"],
+.ag-theme-quartz-dark .ag-cell[col-id="remaining"] {
   font-family: "SF Mono", "Monaco", "Inconsolata", monospace;
   color: #10b981; /* emerald-500 */
   font-weight: 500;
@@ -159,12 +173,14 @@
 
 .ag-theme-quartz-dark .ag-cell[col-id="id"] {
   font-family: "SF Mono", "Monaco", "Inconsolata", monospace;
-  color: #8b5cf6; /* violet-500 */
+  color: #9ca3af; /* gray-400 */
+  font-size: 0.875rem;
 }
 
 /* Date column */
-.ag-theme-quartz-dark .ag-cell[col-id="date"] {
-  color: #60a5fa; /* blue-400 */
+.ag-theme-quartz-dark .ag-cell[col-id="dueDate"] {
+  color: #93c5fd; /* blue-300 */
+  font-size: 0.875rem;
 }
 
 /* Filter panel styling */
@@ -254,6 +270,28 @@
   background-color: #111827;
   border-top: 1px solid #374151;
   color: #9ca3af;
+  position: relative;
+  z-index: 10;
+}
+
+/* Page size dropdown - ensure it appears above other elements */
+.ag-theme-quartz-dark .ag-paging-page-size {
+  position: relative;
+  z-index: 20;
+}
+
+.ag-theme-quartz-dark .ag-select {
+  position: relative;
+  z-index: 20;
+}
+
+.ag-theme-quartz-dark .ag-select-list {
+  z-index: 1100 !important;
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  box-shadow:
+    0 10px 15px -3px rgb(0, 0, 0, 0.3),
+    0 4px 6px -2px rgb(0, 0, 0, 0.2);
 }
 
 .ag-theme-quartz-dark .ag-paging-button {
@@ -374,4 +412,89 @@
   border: 1px solid #374151;
   border-radius: 0.5rem;
   color: #f3f4f6;
+}
+
+/* Grand total row styling */
+.ag-theme-quartz-dark .ag-row-footer {
+  background-color: rgb(59, 130, 246, 0.1) !important;
+  border-top: 2px solid rgb(59, 130, 246, 0.3);
+  font-weight: bold;
+  position: relative;
+  z-index: 1;
+}
+
+.ag-theme-quartz-dark .ag-row-footer .ag-cell {
+  color: #dbeafe; /* blue-100 */
+}
+
+/* Filter input styling */
+.ag-theme-quartz-dark .ag-filter-input,
+.ag-theme-quartz-dark .ag-filter-select {
+  background-color: rgb(31, 41, 55, 0.8);
+  border: 1px solid #374151;
+  color: #f3f4f6;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+}
+
+.ag-theme-quartz-dark .ag-filter-input:focus,
+.ag-theme-quartz-dark .ag-filter-select:focus {
+  border-color: #6366f1;
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(99, 102, 241, 0.1);
+}
+
+/* Custom scrollbar for the entire app */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+  border-radius: 5px;
+  border: 2px solid #1f2937;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280;
+}
+
+/* Ensure the grid fills its container */
+.ag-theme-quartz-dark .ag-root {
+  height: 100%;
+}
+
+.ag-theme-quartz-dark .ag-body-viewport {
+  background-color: transparent;
+}
+
+/* Column resize handle */
+.ag-theme-quartz-dark .ag-header-cell-resize {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ag-theme-quartz-dark .ag-header-cell:hover .ag-header-cell-resize {
+  opacity: 1;
+}
+
+/* Cell focus styling */
+.ag-theme-quartz-dark .ag-cell-focus,
+.ag-theme-quartz-dark .ag-cell-no-focus {
+  border: none !important;
+}
+
+.ag-theme-quartz-dark .ag-cell-focus {
+  outline: 2px solid rgb(99, 102, 241, 0.4) !important;
+  outline-offset: -2px;
 }

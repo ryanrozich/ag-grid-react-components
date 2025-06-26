@@ -1,0 +1,12 @@
+[general]
+ignore=body-is-missing,T3
+
+[title-max-length]
+line-length=72
+
+[body-max-line-length]
+line-length=80
+
+[trailing-whitespace]
+# Enable trailing whitespace checking
+enabled=true

@@ -3,6 +3,11 @@
 version: 0.1
 cli:
   version: 1.24.0
+repo:
+  repo:
+    host: github.com
+    owner: ryanrozich
+    name: ag-grid-react-components
 # Trunk provides extensibility via plugins. (https://docs.trunk.io/plugins)
 plugins:
   sources:
@@ -15,20 +20,49 @@ runtimes:
     - node@22.16.0
     - python@3.10.8
 # This is the section where you manage your linters. (https://docs.trunk.io/check/configuration)
+merge:
+  required_statuses:
+    - Trunk Check
 lint:
   enabled:
-    - stylelint@16.20.0
-    - checkov@3.2.436
-    - git-diff-check
-    - markdownlint@0.45.0
-    - osv-scanner@2.0.2
-    - oxipng@9.1.5
+    # Formatting
+    # - markdown-table-prettify@3.6.0  # Temporarily disabled due to formatting loop
+    - pre-commit-hooks@5.0.0
+    - actionlint@1.7.7
     - prettier@3.5.3
+    # TypeScript/JavaScript
+    - eslint@9.27.0
+    # CSS
+    - stylelint@16.20.0
+    # Security
+    - checkov@3.2.436
+    - osv-scanner@2.0.2
     - trufflehog@3.88.35
+    # Git
+    - git-diff-check
+    # Documentation
+    - markdownlint@0.45.0
+    # Image optimization
+    - oxipng@9.1.5
+  ignore:
+    - linters: [ALL]
+      paths:
+        - node_modules/**
+        - dist/**
+        - coverage/**
+        - playwright-report/**
+        - test-results/**
+        - .trunk/**
+        - "*.config.js"
+        - scripts/**
+        - .serena/**
+        - docs/archive/**
+  # Use default git-diff-check configuration
 actions:
   disabled:
     - trunk-announce
     - trunk-check-pre-push
-    - trunk-fmt-pre-commit
   enabled:
     - trunk-upgrade-available
+    - trunk-fmt-pre-commit
+    - trunk-check-pre-commit

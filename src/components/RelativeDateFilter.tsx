@@ -345,7 +345,7 @@ const RelativeDateFilter = (props: DateFilterParams) => {
               : normalizedCellDate.getTime() < normalizedDateFrom.getTime()
             : false;
 
-        case "inRange":
+        case "inRange": {
           const fromPass =
             !normalizedDateFrom ||
             (fromInclusive
@@ -359,6 +359,7 @@ const RelativeDateFilter = (props: DateFilterParams) => {
               : normalizedCellDate.getTime() < normalizedDateTo.getTime());
 
           return fromPass && toPass;
+        }
 
         default:
           return false;

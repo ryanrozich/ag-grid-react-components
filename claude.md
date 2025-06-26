@@ -2,6 +2,25 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Prerequisites
+
+### Installing Trunk
+
+This project uses Trunk.io for code quality. Install it globally:
+
+```bash
+# macOS/Linux
+curl https://get.trunk.io -fsSL | bash
+
+# Or via Homebrew
+brew install trunk-io
+
+# Windows (WSL required)
+curl https://get.trunk.io -fsSL | bash
+```
+
+After installation, run `trunk` in the project directory to ensure it's set up correctly.
+
 ## Commands
 
 This project uses npm scripts for all commands. To see available commands, run `npm run` or check the scripts section in `package.json`.
@@ -54,35 +73,116 @@ npm run test:filter-click  # Test filter clicking
 npm run coverage:report
 ```
 
-### Code Quality
+### Code Quality (Powered by Trunk)
+
+This project uses **Trunk.io** as the primary code quality runner. Trunk manages multiple linters and formatters in a single, fast, and consistent interface.
+
+#### Trunk Commands
 
 ```bash
-# Run linter
-npm run lint
+# Check all files (shows issues without fixing)
+npm run lint              # or: trunk check
 
-# Lint CSS files
-npm run lint:styles
+# Check and auto-fix issues
+npm run lint:fix          # or: trunk check --fix
 
-# Format code
-npm run format
+# Format all files
+npm run format            # or: trunk fmt
 
-# Check formatting without changing files
-npm run format:check
+# Check specific linter
+npm run lint:styles       # CSS only (stylelint)
+npm run format:check      # Formatting only (prettier)
 
-# Type checking
-npm run typecheck
+# Type checking (not managed by Trunk)
+npm run typecheck         # TypeScript compiler
 
-# Run format check + typecheck
-npm run check
+# Combined checks
+npm run check             # Trunk check + TypeScript
+npm run quality           # All Trunk checks (no fix)
 
-# Run all quality checks
-npm run quality
+# Whitespace checks
+npm run check:whitespace  # Check for trailing whitespace
+npm run fix:whitespace    # Fix trailing whitespace
 
-# Pre-commit check (format + quality)
-npm run pre-commit
+# Pre-commit (auto-fixes issues)
+npm run pre-commit        # Format + fix whitespace + check + typecheck
 ```
 
-**CRITICAL**: Always run `npm run pre-commit` before committing code. This runs formatting and all quality checks.
+#### What Trunk Checks
+
+- **prettier**: Code formatting
+- **eslint**: JavaScript/TypeScript linting
+- **stylelint**: CSS/PostCSS linting
+- **markdownlint**: Markdown formatting
+- **git-diff-check**: Git whitespace issues (trailing spaces, tabs)
+- **checkov**: Infrastructure as Code security
+- **osv-scanner**: Dependency vulnerabilities
+- **trufflehog**: Secrets detection
+- **oxipng**: PNG optimization
+
+#### CRITICAL for Claude Code
+
+**You MUST run these commands frequently when making changes:**
+
+1. **Before making changes**: `npm run lint` to see current state
+2. **After making changes**: `npm run lint:fix` to auto-fix issues
+3. **Before committing**: `npm run pre-commit` (this also runs automatically)
+
+**Trunk will automatically:**
+
+- Format code consistently
+- Fix linting issues where possible
+- Catch security issues
+- Optimize images
+- Check for secrets
+
+**Example workflow:**
+
+```bash
+# 1. Make your changes
+# 2. Check what Trunk finds
+npm run lint
+
+# 3. Auto-fix what's possible
+npm run lint:fix
+
+# 4. Run pre-commit to ensure everything passes
+npm run pre-commit
+
+# 5. If all passes, commit your changes
+git add -A && git commit -m "feat: add new feature"
+```
+
+**Note**: The pre-commit hook will run automatically, but it's good practice to run it manually first to catch issues early.
+
+#### Whitespace Enforcement
+
+This project enforces strict whitespace rules to ensure clean code:
+
+- **No trailing whitespace** at the end of lines
+- **No whitespace on blank lines**
+- **Consistent line endings** (LF, not CRLF)
+- **No tabs in indentation** (spaces only)
+
+Whitespace is enforced by:
+
+1. **Trunk's git-diff-check**: Catches whitespace issues during `trunk check`
+2. **Custom scripts**: Additional validation in `npm run check:whitespace`
+3. **Git attributes**: `.gitattributes` configures git's whitespace detection
+4. **Pre-commit hooks**: Automatically fixes whitespace issues
+
+If you see whitespace errors:
+
+```bash
+# Check for whitespace issues
+npm run check:whitespace
+
+# Fix them automatically
+npm run fix:whitespace
+
+# Or run pre-commit which includes the fix
+npm run pre-commit
+```
 
 ### Utility Commands
 
@@ -147,7 +247,7 @@ The release process will:
 
 ## Architecture
 
-This repository contains a custom date filter component for AG Grid that supports both absolute dates and relative date expressions. Following a recent major refactoring, the codebase now uses a modular component architecture.
+This repository contains custom components for AG Grid including a date filter, quick filters, active filters display, and various cell renderers that supports both absolute dates and relative date expressions. Following a recent major refactoring, the codebase now uses a modular component architecture.
 
 ### Component Structure (Modular Architecture)
 
@@ -191,9 +291,36 @@ src/components/DateFilter/
    - `deserializeFilterModel`: Deserializes string dates back to Date objects
    - `setupFilterStatePersistence`: Sets up browser history integration
 
+### Custom Cell Renderers
+
+The demo includes several custom cell renderers for enhanced visual presentation:
+
+1. **PriorityRenderer**: Color-coded pills for priority levels
+
+   - Critical: Red background/border
+   - High: Orange background/border
+   - Medium: Yellow background/border
+   - Low: Green background/border
+
+2. **StatusRenderer**: Status badges with appropriate colors
+3. **AvatarCellRenderer**: User avatars with fallback initials
+4. **CategoryCellRenderer**: Category pills with predefined colors
+5. **PercentBarRenderer**: Progress bars for percentage values
+
+### Stats Dashboard
+
+The demo features a stats dashboard that displays:
+
+- Number of Tasks (with dynamic filtering)
+- Total Budget (sum of all visible rows)
+- Average Progress (percentage)
+- Budget Remaining (budget - spent)
+
+Stats are calculated using `api.forEachNodeAfterFilterAndSort()` and update automatically when filters change.
+
 ### Demo
 
-The package includes a comprehensive demo in `src/demo/working-demo.tsx` that showcases:
+The package includes a comprehensive demo in `src/demo/components-showcase-complete.tsx` that showcases:
 
 - Both absolute and relative date filtering
 - Integration with AG Grid Enterprise features
@@ -403,7 +530,7 @@ The codebase uses Vitest with React Testing Library for unit testing:
 
 ## Demo Deployment
 
-The demo is deployed to https://demo.rozich.net/ag-grid-react-components/ using a custom Cloudflare Workers architecture. This deployment system allows hosting multiple demos under a single domain with edge caching and global distribution.
+The demo is deployed to <https://demo.rozich.net/ag-grid-react-components/> using a custom Cloudflare Workers architecture. This deployment system allows hosting multiple demos under a single domain with edge caching and global distribution.
 
 For detailed information about the deployment architecture and how to deploy updates, see [DEMO-DEPLOYMENT.md](./DEMO-DEPLOYMENT.md).
 
@@ -411,7 +538,7 @@ Key points:
 
 - Uses Cloudflare Workers for routing and R2 for asset storage
 - Automatic deployment via GitHub Actions on push to main
-- Demo router repository: https://github.com/ryanrozich/demo-router-worker
+- Demo router repository: <https://github.com/ryanrozich/demo-router-worker>
 - All infrastructure fits within Cloudflare's free tier
 
 ## Prettier Configuration
@@ -510,6 +637,170 @@ export interface ActiveFiltersProps {
 - This satisfies stylelint's `color-function-notation: "legacy"` rule
 - Do NOT use `rgba()` or modern `rgb(99 102 241 / 0.1)` syntax
 
+### QuickFilterDropdown Component
+
+**Portal Rendering Architecture**:
+
+The component supports optional portal rendering via the `usePortal` prop:
+
+- **`"never"` (default)**: Uses simple CSS positioning for best performance
+- **`"always"`**: Forces React Portal rendering for constrained containers
+- **`"auto"`**: Experimental auto-detection (currently defaults to "never")
+
+**Design Philosophy**:
+
+- Performance first: Don't make users pay for complexity they don't need
+- Progressive enhancement: Simple cases should use simple solutions
+- Escape hatches: Always provide ways to handle edge cases
+
+**When to use portal**:
+
+- Only when dropdown is inside containers with `overflow: hidden/auto/scroll`
+- When dropdown appears clipped or cut off
+- When z-index battles can't be resolved with CSS alone
+
+**Implementation Details**:
+
+- Portal renders at `document.body` level
+- Position calculated dynamically based on trigger button
+- Includes viewport boundary detection
+- Resize/scroll handlers only active when portal is used
+- Clean separation between portal and non-portal rendering paths
+
+## Component Library Notes
+
+### Free and Open Source
+
+**IMPORTANT**: AG Grid React Components is 100% free and open source under the MIT license. There is no paid version of these components. The components work with both:
+
+- **AG Grid Community (Free)**: All component features work fully
+- **AG Grid Enterprise (Paid)**: Enables additional AG Grid features like floating filters, filter tool panel, etc.
+
+The components themselves are always free regardless of which AG Grid edition you use.
+
+## Demo UI/UX Improvements (December 2024)
+
+### Key Improvements Made
+
+1. **Stats Panel Bug Fix**: Fixed initial load showing no data by adding `setStats(calculateStats(params.api))` in onGridReady
+
+2. **Z-Index Layering Fixes**:
+
+   - QuickFilterDropdown z-index: 50 → 1050 (in CSS module)
+   - Added z-index: 10 to pagination panel
+   - Added z-index: 1 to grand total row
+   - Added relative z-20 to grid toolbar
+
+3. **Layout Enhancements**:
+
+   - Moved "Project Tasks" heading above stats cards
+   - Added search bar with AG Grid quick filter integration
+   - Full viewport height layout with proper flexbox
+   - Removed documentation tabs for cleaner application look
+
+4. **Search Implementation**:
+   ```tsx
+   onChange={(e) => {
+     if (gridApi) {
+       gridApi.setGridOption('quickFilterText', e.target.value);
+     }
+   }}
+   ```
+
+## Grid State Persistence
+
+### Overview
+
+The library now includes comprehensive grid state persistence with URL compression, allowing you to save and restore complete grid configurations including filters, columns, sorting, and grouping.
+
+### Implementation Details
+
+**Core Utilities** (`src/utils/gridStateUtils.ts`):
+
+- `setupGridStatePersistence`: Automatic URL synchronization with compression
+- `captureGridState`: Manual state capture for custom persistence
+- `applyGridState`: Manual state restoration
+
+**Features**:
+
+- **Complete State Capture**: Filters, columns (visibility, order, width, pinning), sorting, row grouping
+- **URL Compression**: Uses LZ-String for 50-90% URL size reduction
+- **Browser Navigation**: Full back/forward button support
+- **Selective Persistence**: Choose which state elements to include
+- **TypeScript Support**: Full type safety with GridState and GridStateOptions interfaces
+
+### Usage Examples
+
+```typescript
+// Basic setup with compression
+const cleanup = setupGridStatePersistence(params.api, {
+  useCompression: true,
+  maxUrlLength: 2000,
+  onStateLoad: (state) => {
+    console.log("Grid state loaded:", state);
+  },
+});
+
+// Selective state persistence
+const cleanup = setupGridStatePersistence(params.api, {
+  includeFilters: true,
+  includeColumns: true,
+  includeSort: true,
+  includeRowGrouping: false, // Exclude grouping
+});
+
+// Manual state management
+import { captureGridState, applyGridState } from "ag-grid-react-components";
+
+const state = captureGridState(gridApi);
+localStorage.setItem("gridState", JSON.stringify(state));
+
+// Later...
+const savedState = JSON.parse(localStorage.getItem("gridState"));
+applyGridState(gridApi, savedState);
+```
+
+### Compression Statistics
+
+LZ-String compression provides significant URL length reduction:
+
+- Simple filter state: ~54% reduction (312 → 88 chars)
+- Complex grid state: ~88% reduction (2,890 → 342 chars)
+
+The compression is most effective with repetitive data like column definitions and complex filter models.
+
+### Migration from setupFilterStatePersistence
+
+The original `setupFilterStatePersistence` is still available for backward compatibility, but we recommend migrating to `setupGridStatePersistence` for full state management:
+
+```typescript
+// Old (filters only)
+setupFilterStatePersistence(params.api);
+
+// New (full state with options)
+setupGridStatePersistence(params.api, {
+  useCompression: true,
+  includeFilters: true,
+  includeColumns: true,
+  includeSort: true,
+});
+```
+
+### URL Length Considerations
+
+When using URL state persistence, be aware of browser limits:
+
+- **Safe limit**: 2,000 characters (Chrome, Firefox, IE)
+- **Safari**: ~80,000 characters
+- **Servers**: Usually 8,192 characters default
+
+For very large states, consider:
+
+1. Using compression (enabled by default)
+2. Selective state persistence (exclude less important state)
+3. Server-side storage with short IDs in URLs
+4. Local storage as a fallback
+
 ## Known Issues and Workarounds
 
 ### AG Grid v33 setFilterModel Bug
@@ -543,7 +834,19 @@ This workaround:
 
 **Note**: This workaround should be removed once AG Grid fixes the underlying issue.
 
-# important-instruction-reminders
+## ActiveFilters Component Notes
+
+When displaying filter values in the ActiveFilters component, be aware that AG Grid date filters use these type values:
+
+- `"after"` (not "greaterThan")
+- `"before"` (not "lessThan")
+- `"equals"`
+- `"notEqual"`
+- `"inRange"`
+
+The component's `getFilterDisplayValue` function must handle these specific type values to correctly display filter conditions like "after Today" or "before 2024-01-01".
+
+## important-instruction-reminders
 
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.

@@ -1,16 +1,22 @@
 import React, { useEffect, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
+import { GridApi, ColumnApi, GridReadyEvent } from "ag-grid-community";
+
+interface GridTestData {
+  api: GridApi;
+  columnApi: ColumnApi;
+}
 
 declare global {
   interface Window {
-    __AG_GRID_TEST__: Record<string, any>;
+    __AG_GRID_TEST__: Record<string, GridTestData>;
   }
 }
 
 interface AGGridTestHarnessProps {
   gridId: string;
   children: React.ReactElement<typeof AgGridReact>;
-  onGridReady?: (params: any) => void;
+  onGridReady?: (params: GridReadyEvent) => void;
 }
 
 export const AGGridTestHarness: React.FC<AGGridTestHarnessProps> = ({
@@ -18,7 +24,7 @@ export const AGGridTestHarness: React.FC<AGGridTestHarnessProps> = ({
   children,
   onGridReady,
 }) => {
-  const gridRef = useRef<any>(null);
+  const gridRef = useRef<AgGridReact>(null);
 
   useEffect(() => {
     if (gridRef.current) {
@@ -52,14 +58,14 @@ export const AGGridTestHarness: React.FC<AGGridTestHarnessProps> = ({
 
   // Clone the child and add our ref
   return React.cloneElement(children, {
-    // ref: (r: any) => {
+    // ref: (r: AgGridReact | null) => {
     //   gridRef.current = r;
     //   // Call the original ref if it exists
     //   if (children.ref) {
     //     if (typeof children.ref === 'function') {
     //       children.ref(r);
     //     } else if (children.ref.hasOwnProperty('current')) {
-    //       (children.ref as React.MutableRefObject<any>).current = r;
+    //       (children.ref as React.MutableRefObject<AgGridReact | null>).current = r;
     //     }
     //   }
     // },

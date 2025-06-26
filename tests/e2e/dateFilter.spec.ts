@@ -1,8 +1,8 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 import { TEST_DATES, formatTestDate } from "../fixtures/testData";
 
 // Test data
-const GRID_ID = "date-filter-test-grid";
+// const GRID_ID = "date-filter-test-grid";
 const COLUMN_ID = "date";
 
 test.describe("Date Filter", () => {
@@ -106,7 +106,7 @@ test.describe("Date Filter", () => {
 
 // Helper functions
 async function applyDateFilter(
-  page: any,
+  page: Page,
   columnId: string,
   filterType: string,
   dateFrom: string,
@@ -142,7 +142,7 @@ async function applyDateFilter(
   await page.waitForTimeout(500);
 }
 
-async function getFilteredRowCount(page: any): Promise<number> {
+async function getFilteredRowCount(page: Page): Promise<number> {
   const rowCount = await page.evaluate(() => {
     const grid = document.querySelector(".ag-center-cols-container");
     return grid ? grid.children.length : 0;
@@ -151,7 +151,7 @@ async function getFilteredRowCount(page: any): Promise<number> {
 }
 
 async function verifyDateFilterApplied(
-  page: any,
+  page: Page,
   filterType: string,
   filterValue: string,
 ) {
@@ -188,7 +188,7 @@ async function verifyDateFilterApplied(
 }
 
 async function verifyDateRangeFilterApplied(
-  page: any,
+  page: Page,
   fromDate: string,
   toDate: string,
 ) {

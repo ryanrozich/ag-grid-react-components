@@ -22,7 +22,7 @@ import styles from "./DateFilter.module.css";
 
 const DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
-const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
+const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
   (props, ref) => {
     console.log("[DateFilter] Component instantiated with props:", {
       hasColumn: !!props.column,
@@ -352,7 +352,9 @@ const DateFilterComponent = React.forwardRef<any, DateFilterParams>(
 
           // Set a global flag for testing
           if (typeof window !== "undefined") {
-            (window as any).setModelWasCalled = true;
+            (
+              window as Window & { setModelWasCalled?: boolean }
+            ).setModelWasCalled = true;
           }
 
           if (!model) {

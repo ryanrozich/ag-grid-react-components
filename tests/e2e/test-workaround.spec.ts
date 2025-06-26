@@ -41,7 +41,7 @@ test.describe("Test Filter Workaround", () => {
     // Wait for the row count to change from initial value
     await page.waitForFunction(
       (initialCount) => {
-        const api = (window as any).agGridApi;
+        const api = window.agGridApi;
         return api && api.getDisplayedRowCount() !== initialCount;
       },
       initialRows,
@@ -53,7 +53,7 @@ test.describe("Test Filter Workaround", () => {
 
     // Force a grid refresh
     await page.evaluate(() => {
-      const api = (window as any).agGridApi;
+      const api = window.agGridApi;
       if (api) {
         api.refreshCells({ force: true });
       }
@@ -63,7 +63,7 @@ test.describe("Test Filter Workaround", () => {
 
     // Get filtered row count from the API first
     const apiRowCount = await page.evaluate(() => {
-      const api = (window as any).agGridApi;
+      const api = window.agGridApi;
       return api ? api.getDisplayedRowCount() : -1;
     });
     console.log("=== API row count:", apiRowCount);
@@ -76,7 +76,7 @@ test.describe("Test Filter Workaround", () => {
 
     // Get detailed info from the grid
     const gridInfo = await page.evaluate(() => {
-      const api = (window as any).agGridApi;
+      const api = window.agGridApi;
       if (!api) return { error: "No API found" };
 
       const filterModel = api.getFilterModel();

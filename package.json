@@ -31,15 +31,21 @@
     "test:filter-click": "node ./scripts/test-filter-click.js",
     "test:file": "vitest run",
     "coverage:report": "npm run test:coverage && open coverage/index.html",
-    "// Code Quality": "Linting and formatting",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "lint:styles": "stylelint \"**/*.css\"",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "// Code Quality": "Linting and formatting via Trunk",
+    "lint": "trunk check --show-existing",
+    "lint:fix": "trunk check --show-existing --fix",
+    "lint:styles": "trunk check --filter=stylelint",
+    "format": "trunk fmt",
+    "format:check": "trunk check --filter=prettier",
     "typecheck": "tsc --noEmit",
-    "check": "npm run format:check && npm run typecheck",
-    "quality": "npm run check && npm run lint:styles",
-    "pre-commit": "npm run format && npm run quality",
+    "check": "trunk check --no-fix && npm run typecheck",
+    "quality": "trunk check --no-fix && npm run check:whitespace",
+    "pre-commit": "trunk fmt && npm run fix:whitespace && trunk check --fix && npm run typecheck",
+    "check:whitespace": "./scripts/check-whitespace.sh",
+    "fix:whitespace": "./scripts/fix-whitespace.sh",
+    "// Legacy commands": "Direct tool commands (prefer Trunk)",
+    "lint:direct": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "format:direct": "prettier --write .",
     "// Utilities": "Helper commands",
     "clean": "rm -rf dist coverage .parcel-cache playwright-report test-results",
     "fresh": "npm run clean && npm install && npm run build",
@@ -138,9 +144,16 @@
     }
   },
   "dependencies": {
+    "@types/lz-string": "^1.3.34",
+    "@types/react-datepicker": "^6.2.0",
     "@types/react-router-dom": "^5.3.3",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "lz-string": "^1.5.0",
+    "react-datepicker": "^8.4.0",
     "react-router-dom": "^7.6.2",
     "react-syntax-highlighter": "^15.6.1"
+  },
+  "overrides": {
+    "prismjs": "^1.30.0"
   }
 }

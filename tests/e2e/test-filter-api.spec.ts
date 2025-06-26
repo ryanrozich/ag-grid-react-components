@@ -17,7 +17,7 @@ test.describe("AG Grid Filter API Investigation", () => {
 
     // Execute investigation code in the browser
     const investigation = await page.evaluate(async () => {
-      const api = (window as any).agGridApi;
+      const api = window.agGridApi;
       if (!api) return { error: "No API found" };
 
       const results: any = {
@@ -118,7 +118,7 @@ test.describe("AG Grid Filter API Investigation", () => {
 
     // Try a different approach - set filter and immediately check
     const result = await page.evaluate(async () => {
-      const api = (window as any).agGridApi;
+      const api = window.agGridApi;
       if (!api) return { error: "No API" };
 
       const initialCount = api.getDisplayedRowCount();

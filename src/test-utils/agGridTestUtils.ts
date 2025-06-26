@@ -5,6 +5,25 @@
  * easy access to the grid's API and common test operations.
  */
 
+import type {
+  GridApi,
+  ColumnApi,
+  RowNode,
+  FilterModel,
+} from "ag-grid-community";
+import type { Page } from "@playwright/test";
+
+interface GridTestData {
+  api: GridApi;
+  columnApi: ColumnApi;
+}
+
+declare global {
+  interface Window {
+    __AG_GRID_TEST__: Record<string, GridTestData>;
+  }
+}
+
 /**
  * Gets the grid API for a specific grid ID
  */
@@ -34,17 +53,21 @@ export const getColumnApi = (gridId: string) => {
 /**
  * Gets all row data from the grid
  */
-export const getRowData = (gridId: string) => {
+export const getRowData = <TData = unknown>(gridId: string): TData[] => {
   const api = getGridApi(gridId);
-  const rowData: any[] = [];
-  api.forEachNode((node: any) => rowData.push(node.data));
+  const rowData: TData[] = [];
+  api.forEachNode((node: RowNode<TData>) => {
+    if (node.data) {
+      rowData.push(node.data);
+    }
+  });
   return rowData;
 };
 
 /**
  * Gets the current filter model from the grid
  */
-export const getFilterModel = (gridId: string) => {
+export const getFilterModel = (gridId: string): FilterModel | null => {
   const api = getGridApi(gridId);
   return api.getFilterModel();
 };
@@ -53,13 +76,13 @@ export const getFilterModel = (gridId: string) => {
  * Applies a date filter to a specific column
  */
 export const applyDateFilter = async (
-  page: any,
+  page: Page,
   _gridId: string, // Kept for backward compatibility, not used
   columnId: string,
   filterType: string,
   dateFrom: string,
   dateTo?: string,
-) => {
+): Promise<void> => {
   // Open the filter menu
   const columnHeader = page.locator(`[col-id="${columnId}"] .ag-header-cell`);
   await columnHeader.hover();
@@ -90,7 +113,7 @@ export const applyDateFilter = async (
 /**
  * Clears all filters from the grid
  */
-export const clearAllFilters = () => {
+export const clearAllFilters = (): void => {
   // Get all grids and clear filters from each
   Object.values(window.__AG_GRID_TEST__ || {}).forEach(({ api }) => {
     api.setFilterModel(null);
@@ -100,7 +123,7 @@ export const clearAllFilters = () => {
 /**
  * Gets the displayed row count from the grid
  */
-export const getDisplayedRowCount = (gridId: string) => {
+export const getDisplayedRowCount = (gridId: string): number => {
   const api = getGridApi(gridId);
   return api.getDisplayedRowCount();
 };
@@ -108,7 +131,7 @@ export const getDisplayedRowCount = (gridId: string) => {
 /**
  * Gets the selected rows from the grid
  */
-export const getSelectedRows = (gridId: string) => {
+export const getSelectedRows = <TData = unknown>(gridId: string): TData[] => {
   const api = getGridApi(gridId);
   return api.getSelectedRows();
 };
@@ -117,7 +140,7 @@ export const getSelectedRows = (gridId: string) => {
  * Initializes the test environment
  * This should be called in the test setup file
  */
-export const initTestEnvironment = () => {
+export const initTestEnvironment = (): void => {
   // Initialize the global test object if it doesn't exist
   if (typeof window !== "undefined" && !window.__AG_GRID_TEST__) {
     window.__AG_GRID_TEST__ = {};

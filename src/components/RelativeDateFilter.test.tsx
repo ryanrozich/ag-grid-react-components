@@ -8,7 +8,7 @@ import DateFilter from "./DateFilter";
 // Mock AG Grid components
 vi.mock("ag-grid-community", () => ({
   ...vi.importActual("ag-grid-community"),
-  // Add any specific mocks needed for AG Grid components
+  // Add specific mocks needed for AG Grid components
 }));
 
 // Mock the AGGridTestHarness component
@@ -23,7 +23,7 @@ interface TestDateFilterParams
   extends Omit<Partial<DateFilterParams>, "model" | "filterChangedCallback"> {
   testId?: string;
   model?: DateFilterModel | null;
-  filterChangedCallback?: (additionalEventAttributes?: any) => void;
+  filterChangedCallback?: (additionalEventAttributes?: unknown) => void;
   getModelAsString?: (model: DateFilterModel) => string;
 }
 
@@ -32,9 +32,9 @@ const mockFilterChangedCallback = vi.fn();
 // const mockFilterModifiedCallback = vi.fn();
 
 // Helper function to safely get value from row node
-const mockGetValue = vi.fn() as <TValue = any>(
-  node: IRowNode<any>,
-  column?: string | ColDef<any, TValue> | Column<TValue>,
+const mockGetValue = vi.fn() as <TValue = unknown>(
+  node: IRowNode<unknown>,
+  column?: string | ColDef<unknown, TValue> | Column<TValue>,
 ) => TValue | null | undefined;
 
 // Create a test props factory function
@@ -94,7 +94,10 @@ describe("DateFilter", () => {
   });
 
   it("handles invalid/unsupported model gracefully", () => {
-    const invalidModel = { type: "unknown", mode: "absolute" } as any;
+    const invalidModel = {
+      type: "unknown",
+      mode: "absolute",
+    } as DateFilterModel;
     const props = createTestProps({
       model: invalidModel,
     });
@@ -194,7 +197,7 @@ describe("DateFilter", () => {
 
   it("should trigger filterChangedCallback when filter changes", async () => {
     const filterChangedCallback = vi.fn();
-    const testProps: any = {
+    const testProps = {
       ...createTestProps({
         filterChangedCallback,
         context: {},

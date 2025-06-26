@@ -43,6 +43,14 @@ export interface QuickFilterDropdownProps {
   triggerContent?: (selectedOption: QuickFilterOption | null) => ReactNode;
   /** Accessibility label for the dropdown */
   ariaLabel?: string;
+  /**
+   * Controls dropdown rendering strategy
+   * - 'auto': Detects if portal is needed based on parent overflow
+   * - 'always': Always use portal (for constrained containers)
+   * - 'never': Use CSS positioning only (best performance)
+   * @default 'never'
+   */
+  usePortal?: "auto" | "always" | "never";
 }
 
 /**

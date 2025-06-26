@@ -23,7 +23,7 @@ test.describe("Simple Filter Test", () => {
 
     // Get initial row count and set a simple filter
     const result = await page.evaluate(async () => {
-      const api = (window as any).agGridApi;
+      const api = window.agGridApi;
       if (!api) return { error: "No API found" };
 
       const initialRowCount = api.getDisplayedRowCount();
@@ -31,7 +31,7 @@ test.describe("Simple Filter Test", () => {
 
       // Get some sample dates from the grid
       const sampleDates: string[] = [];
-      api.forEachNode((node: any, index: number) => {
+      api.forEachNode((node, index) => {
         if (index < 5 && node.data && node.data.dueDate) {
           sampleDates.push(new Date(node.data.dueDate).toISOString());
         }
@@ -100,7 +100,7 @@ test.describe("Simple Filter Test", () => {
 
     // Set a filter for future dates
     const result = await page.evaluate(async () => {
-      const api = (window as any).agGridApi;
+      const api = window.agGridApi;
       if (!api) return { error: "No API found" };
 
       const initialRowCount = api.getDisplayedRowCount();

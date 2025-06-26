@@ -2,6 +2,7 @@ import { expect, vi, beforeEach, describe, it } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import DateFilter from "./index";
 import { DateFilterModel, DateFilterParams } from "./types";
+import type { Column, GridApi, RowModel, ColDef } from "ag-grid-community";
 
 // Mock the AG Grid React hook
 vi.mock("ag-grid-react", () => ({
@@ -33,15 +34,15 @@ describe("DateFilter Integration Tests", () => {
 
   // Mock props that would normally be provided by AG Grid
   const createMockProps = (overrides = {}): DateFilterParams => ({
-    column: { getColId: () => "date" } as unknown as any,
-    api: { addEventListener: vi.fn() } as unknown as any,
+    column: { getColId: () => "date" } as unknown as Column,
+    api: { addEventListener: vi.fn() } as unknown as GridApi,
     context: {},
     testId: "date-filter-integration",
     filterChangedCallback: vi.fn(),
     filterModifiedCallback: vi.fn(),
-    colDef: {} as unknown as any,
-    rowModel: {} as unknown as any,
-    getValue: vi.fn(() => new Date("2023-01-15")) as any,
+    colDef: {} as unknown as ColDef,
+    rowModel: {} as unknown as RowModel,
+    getValue: vi.fn(() => new Date("2023-01-15")),
     doesRowPassOtherFilter: vi.fn(() => true),
     ...overrides,
   });
@@ -66,7 +67,7 @@ describe("DateFilter Integration Tests", () => {
       expect(screen.getByTestId("date-input")).toBeInTheDocument();
 
       // Switch to relative mode
-      const relativeToggle = screen.getByText("Relative Date");
+      const relativeToggle = screen.getByText("Relative");
       fireEvent.click(relativeToggle);
 
       // Should now show relative input
@@ -136,7 +137,7 @@ describe("DateFilter Integration Tests", () => {
       expect(screen.getByTestId("date-input")).toBeInTheDocument();
 
       // Switch to relative mode
-      const relativeToggle = screen.getByText("Relative Date");
+      const relativeToggle = screen.getByText("Relative");
       fireEvent.click(relativeToggle);
 
       await waitFor(() => {
@@ -144,7 +145,7 @@ describe("DateFilter Integration Tests", () => {
       });
 
       // Switch back to absolute mode
-      const absoluteToggle = screen.getByText("Specific Date");
+      const absoluteToggle = screen.getByText("Specific");
       fireEvent.click(absoluteToggle);
 
       await waitFor(() => {
@@ -192,7 +193,7 @@ describe("DateFilter Integration Tests", () => {
       expect(applyButton).toBeDisabled();
 
       // Switch to relative mode and enter valid expression
-      const relativeToggle = screen.getByText("Relative Date");
+      const relativeToggle = screen.getByText("Relative");
       fireEvent.click(relativeToggle);
 
       await waitFor(() => {
@@ -216,7 +217,7 @@ describe("DateFilter Integration Tests", () => {
       render(<DateFilter {...props} />);
 
       // Switch to relative mode
-      const relativeToggle = screen.getByText("Relative Date");
+      const relativeToggle = screen.getByText("Relative");
       fireEvent.click(relativeToggle);
 
       await waitFor(() => {
@@ -245,10 +246,10 @@ describe("DateFilter Integration Tests", () => {
     it("should handle invalid initial model gracefully", () => {
       const props = createMockProps({
         model: {
-          type: "invalidType" as unknown as any,
-          mode: "invalidMode" as unknown as any,
+          type: "invalidType" as never,
+          mode: "invalidMode" as never,
           dateFrom: null, // Use null instead of invalid date string
-        },
+        } as DateFilterModel,
       });
 
       // Should not crash with invalid model
@@ -365,13 +366,19 @@ describe("DateFilter Integration Tests", () => {
       // Test the getModel callback if it exists
       if ("getModel" in callbacks && typeof callbacks.getModel === "function") {
         const model = callbacks.getModel();
-        expect(model).toEqual(
-          expect.objectContaining({
-            type: "equals",
-            mode: "absolute",
-            dateFrom: expect.any(Date),
-          }),
-        );
+        // The model might have dateFrom as a string or Date
+        expect(model).toMatchObject({
+          type: "equals",
+          mode: "absolute",
+        });
+        expect(model.dateFrom).toBeDefined();
+        // Check if it's a valid date (either Date object or ISO string)
+        const dateFrom =
+          typeof model.dateFrom === "string"
+            ? new Date(model.dateFrom)
+            : model.dateFrom;
+        expect(dateFrom).toBeInstanceOf(Date);
+        expect(dateFrom.toISOString()).toBe("2023-01-15T00:00:00.000Z");
       }
     });
   });

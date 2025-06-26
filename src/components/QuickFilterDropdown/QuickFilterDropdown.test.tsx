@@ -16,6 +16,8 @@ const mockApi: Partial<GridApi> = {
   setFilterModel: vi.fn(),
   onFilterChanged: vi.fn(),
   getColumnFilterInstance: vi.fn(),
+  refreshCells: vi.fn(),
+  redrawRows: vi.fn(),
 };
 
 const mockOptions: QuickFilterOption[] = [
@@ -117,7 +119,9 @@ describe("QuickFilterDropdown", () => {
       },
     });
 
-    expect(onFilterChange).toHaveBeenCalledWith(mockOptions[1]);
+    await waitFor(() => {
+      expect(onFilterChange).toHaveBeenCalledWith(mockOptions[1]);
+    });
   });
 
   it("clears filter when selecting 'All Items'", async () => {

@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 
 test.describe("Debug QuickFilterDropdown", () => {
   test("should debug filter application", async ({ page }) => {
@@ -62,7 +62,7 @@ test.describe("Debug QuickFilterDropdown", () => {
 
     // Get detailed info from the grid
     const gridInfo = await page.evaluate(() => {
-      // @ts-ignore
+      // @ts-expect-error - agGridApi is added by the demo
       const api = window.agGridApi;
       if (!api) return { error: "No API found" };
 
@@ -91,11 +91,11 @@ test.describe("Debug QuickFilterDropdown", () => {
     // Check if the test data has dates in the last 7 days
     const dateInfo = await page.evaluate(() => {
       const dates = [];
-      const api = (window as any).agGridApi;
+      const api = window.agGridApi;
       if (!api) return { error: "No API" };
 
       // Get the raw data from the grid
-      api.forEachNode((node: any) => {
+      api.forEachNode((node) => {
         if (node.data && node.data.dueDate) {
           dates.push({
             raw: node.data.dueDate,

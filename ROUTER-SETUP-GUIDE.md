@@ -9,7 +9,7 @@
 
 ## Repository Structure
 
-```
+```txt
 demo-router-worker/
 ├── src/
 │   ├── index.ts          # Main router logic

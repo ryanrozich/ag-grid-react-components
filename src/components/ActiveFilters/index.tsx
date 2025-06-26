@@ -1,6 +1,7 @@
 import React from "react";
 import type { GridApi, FilterModel } from "ag-grid-community";
 import styles from "./ActiveFilters.module.css";
+import type { DateFilterModel } from "../interfaces";
 
 export interface ActiveFiltersProps {
   api: GridApi;
@@ -15,15 +16,51 @@ interface FilterPill {
   displayValue: string;
 }
 
-function getFilterDisplayValue(model: any): string {
+// Union type for different filter model types
+type SingleFilterModel =
+  | DateFilterModel
+  | TextFilterModel
+  | SetFilterModel
+  | NumberFilterModel;
+
+interface TextFilterModel {
+  type?: string;
+  filter?: string | number;
+  filterType?: string;
+}
+
+interface SetFilterModel {
+  type?: string;
+  values?: (string | number)[];
+}
+
+interface NumberFilterModel {
+  type?: string;
+  filter?: number;
+  filterTo?: number;
+}
+
+function getFilterDisplayValue(model: SingleFilterModel): string {
   if (!model) return "";
 
   // Handle date filters
   if (model.mode === "relative") {
+    const expression = model.expressionFrom || model.expression || "";
     if (model.type === "inRange") {
-      return `${model.expressionFrom || ""} to ${model.expressionTo || ""}`;
+      return `${expression} to ${model.expressionTo || ""}`;
     }
-    return model.expressionFrom || model.expression || "";
+    switch (model.type) {
+      case "equals":
+        return expression;
+      case "notEqual":
+        return `not ${expression}`;
+      case "before":
+        return `before ${expression}`;
+      case "after":
+        return `after ${expression}`;
+      default:
+        return expression;
+    }
   }
 
   if (model.type === "inRange") {
@@ -41,9 +78,9 @@ function getFilterDisplayValue(model: any): string {
         return date;
       case "notEqual":
         return `not ${date}`;
-      case "lessThan":
+      case "before":
         return `before ${date}`;
-      case "greaterThan":
+      case "after":
         return `after ${date}`;
       default:
         return date;
@@ -74,12 +111,12 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
     Object.entries(filterModel).forEach(([columnId, model]) => {
       const column = api.getColumn(columnId);
       const columnName = column?.getColDef().headerName || columnId;
-      const displayValue = getFilterDisplayValue(model);
+      const displayValue = getFilterDisplayValue(model as SingleFilterModel);
 
       pills.push({
         columnId,
         columnName,
-        filterType: (model as any).type || "custom",
+        filterType: (model as SingleFilterModel).type || "custom",
         displayValue,
       });
     });
@@ -102,7 +139,10 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   }
 
   return (
-    <div className={`${styles.container} ${className}`}>
+    <div
+      className={`${styles.container} ${className}`}
+      data-testid="active-filters"
+    >
       <div className={styles.filterPills}>
         {filterPills.map((pill) => (
           <div key={pill.columnId} className={styles.filterPill}>

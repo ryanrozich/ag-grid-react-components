@@ -4,6 +4,17 @@
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
+/**
+ * Create a logger with a specific prefix
+ */
+export const createLogger = (prefix: string) => ({
+  log: (...args: unknown[]) => logger.log(`[${prefix}]`, ...args),
+  warn: (...args: unknown[]) => logger.warn(`[${prefix}]`, ...args),
+  error: (...args: unknown[]) => logger.error(`[${prefix}]`, ...args),
+  debug: (...args: unknown[]) => logger.debug(`[${prefix}]`, ...args),
+  info: (...args: unknown[]) => logger.log(`[${prefix}]`, ...args),
+});
+
 export const logger = {
   log: (...args: unknown[]) => {
     if (isDevelopment) {

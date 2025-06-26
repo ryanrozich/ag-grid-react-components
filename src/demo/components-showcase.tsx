@@ -1,6 +1,11 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import type { ColDef, GridApi, GridOptions } from "ag-grid-community";
+import type {
+  ColDef,
+  GridApi,
+  GridOptions,
+  GridReadyEvent,
+} from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import {
   RelativeDateFilter,
@@ -30,7 +35,7 @@ export const ComponentsShowcase: React.FC = () => {
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
   const [rowData] = useState(() => generateData(1000));
   const [activeComponent, setActiveComponent] = useState("date-filter");
-  const [filterModel, setFilterModel] = useState<any>({});
+  const [filterModel, setFilterModel] = useState<Record<string, unknown>>({});
 
   // Column definitions with our custom filter
   const columnDefs: ColDef[] = useMemo(
@@ -108,7 +113,7 @@ export const ComponentsShowcase: React.FC = () => {
     [],
   );
 
-  const onGridReady = useCallback((params: any) => {
+  const onGridReady = useCallback((params: GridReadyEvent) => {
     setGridApi(params.api);
 
     // Set up URL persistence

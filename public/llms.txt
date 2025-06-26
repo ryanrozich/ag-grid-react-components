@@ -58,27 +58,73 @@ Display active filters as removable pills with filter values.
 
 **Usage:**
 ```typescript
-<ActiveFilters 
-  api={gridApi} 
-  filterModel={filterModel} 
+<ActiveFilters
+  api={gridApi}
+  filterModel={filterModel}
   className="custom-class"
 />
 ```
 
 ### URL State Persistence
-Automatically sync filter state with URL for shareable links.
+Comprehensive grid state persistence with URL synchronization and compression.
 
 **Features:**
-- Automatic URL synchronization
-- Browser history support
-- Proper Date serialization
-- Configurable parameter name
+- **Full Grid State**: Persists filters, columns, sorting, and grouping
+- **URL Compression**: Uses LZ-String for 50-90% smaller URLs
+- **Browser History**: Full back/forward navigation support
+- **Shareable Links**: Share complete grid configurations
+- **Selective Persistence**: Choose which state to include
+- **TypeScript Support**: Full type safety with GridState and GridStateOptions
 
-**Usage:**
+**Basic Usage:**
 ```typescript
-setupFilterStatePersistence(gridApi, {
-  onFilterLoad: (model) => console.log('Loaded:', model),
-  onFilterSave: (model) => console.log('Saved:', model)
+import { setupGridStatePersistence } from 'ag-grid-react-components';
+
+// Full grid state with compression
+const cleanup = setupGridStatePersistence(gridApi, {
+  useCompression: true,
+  maxUrlLength: 2000,
+  onStateLoad: (state) => console.log('Loaded:', state),
+  onStateSave: (state) => console.log('Saved:', state)
+});
+```
+
+**Advanced Usage:**
+```typescript
+import { captureGridState, applyGridState } from 'ag-grid-react-components';
+
+// Manual state capture
+const state = captureGridState(gridApi, {
+  includeFilters: true,
+  includeColumns: true,
+  includeSort: true,
+  includeRowGrouping: false
+});
+
+// Save to localStorage
+localStorage.setItem('gridState', JSON.stringify(state));
+
+// Restore state
+const savedState = JSON.parse(localStorage.getItem('gridState'));
+applyGridState(gridApi, savedState);
+```
+
+**Compression Effectiveness:**
+- Simple filters: ~72% reduction
+- Complex grid state: ~88% reduction
+- Repetitive data compresses best
+
+**Migration from Legacy:**
+```typescript
+// Old (filters only)
+setupFilterStatePersistence(params.api);
+
+// New (full state)
+setupGridStatePersistence(params.api, {
+  useCompression: true,
+  includeFilters: true,
+  includeColumns: true,
+  includeSort: true
 });
 ```
 

@@ -1,4 +1,4 @@
-import type { GridApi } from "ag-grid-community";
+import type { GridApi, FilterModel } from "ag-grid-community";
 import type { QuickFilterOption } from "../types";
 import { applyFilterModelWithWorkaround } from "./agGridWorkaround";
 
@@ -31,11 +31,27 @@ export async function applyQuickFilter(
   if (!option) {
     // Clear the filter for this column
     console.log("[QuickFilter] Clearing filter for column:", columnId);
-    delete currentModel[columnId];
+    if (columnId === "_multi") {
+      // For multi-column filters, we need to clear all affected columns
+      // This is a simplified approach - in production you might track which columns
+      api.setFilterModel({});
+      return;
+    } else {
+      delete currentModel[columnId];
+    }
   } else if (option.buildFilterModel) {
     // Use custom filter builder if provided
     const filterModel = option.buildFilterModel(api, columnId);
     if (filterModel) {
+      // If clearing multi-column filter first
+      if (columnId === "_multi") {
+        // Clear columns that might be affected by multi-column filters
+        Object.keys(currentModel).forEach((key) => {
+          if (key === "category" || key === "priority" || key === "status") {
+            delete currentModel[key];
+          }
+        });
+      }
       // If the filter model contains multiple columns, apply all of them
       Object.assign(currentModel, filterModel);
     } else {
@@ -58,13 +74,35 @@ export async function applyQuickFilter(
   console.log("[QuickFilter] Final filter model to apply:", currentModel);
 
   // Use workaround for AG Grid bug where setModel is not called on custom filters
-  if (option && option.filterModel && columnId) {
+  if (option && option.filterModel && columnId && columnId !== "_multi") {
     console.log("[QuickFilter] Applying workaround for column:", columnId);
     // The workaround will call setFilterModel internally and properly set up the filter
     await applyFilterModelWithWorkaround(api, columnId, option.filterModel);
   } else {
     // For clearing filters or multi-column filters, use standard approach
     api.setFilterModel(currentModel);
+
+    // For multi-column filters with buildFilterModel, apply workaround to each column
+    if (option && option.buildFilterModel && columnId === "_multi") {
+      const filterModel = option.buildFilterModel(api, columnId);
+      if (filterModel) {
+        // Apply workaround for each column in the filter model
+        for (const [colId, colFilter] of Object.entries(filterModel)) {
+          if (colId === "dueDate" && colFilter) {
+            console.log(
+              "[QuickFilter] Applying workaround for multi-column filter:",
+              colId,
+            );
+            await applyFilterModelWithWorkaround(
+              api,
+              colId,
+              colFilter as FilterModel,
+            );
+          }
+        }
+      }
+    }
+
     api.onFilterChanged();
   }
 

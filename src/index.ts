@@ -16,7 +16,10 @@ export { QuickFilterDropdown, DATE_FILTER_PRESETS };
 import ActiveFilters from "./components/ActiveFilters";
 export { ActiveFilters };
 
-// Date Filter Types
+// Export all types from central location
+export * from "./types";
+
+// Legacy type exports for backward compatibility
 export type {
   DateFilterType,
   DateFilterMode,
@@ -45,6 +48,15 @@ export {
   setupFilterStatePersistence,
 } from "./utils/filterStateUtils";
 
+// Grid State Utilities (Full State Persistence with Compression)
+export {
+  setupGridStatePersistence,
+  captureGridState,
+  applyGridState,
+  type GridState,
+  type GridStateOptions,
+} from "./utils/gridStateUtils";
+
 // AG Grid Workarounds
 export { applyFilterModelWithWorkaround } from "./components/QuickFilterDropdown/utils/agGridWorkaround";
 
@@ -52,7 +64,7 @@ export { applyFilterModelWithWorkaround } from "./components/QuickFilterDropdown
 import "./styles.css";
 
 // For AG Grid v33 compatibility
-// @ts-ignore - Add metadata for AG Grid to properly recognize components
+// @ts-expect-error - Add metadata for AG Grid to properly recognize components
 DateFilter.__AG_GRID_COMPONENT = true;
 
 // Default export remains the DateFilter for backward compatibility

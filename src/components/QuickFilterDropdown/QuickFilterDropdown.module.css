@@ -66,7 +66,7 @@
   transform: translateY(-0.5rem);
   visibility: hidden;
   transition: all 0.15s ease-in-out;
-  z-index: 50;
+  z-index: 1050;
   max-height: 20rem;
   overflow: hidden;
   display: flex;
@@ -245,6 +245,19 @@
   width: 1rem;
   height: 1rem;
   color: #6b7280;
+}
+
+/* Checkmark for selected option */
+.optionCheckmark {
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+  color: #3b82f6;
+}
+
+/* Check icon */
+.checkIcon {
+  width: 1rem;
+  height: 1rem;
 }
 
 /* Focus trap helper */

@@ -2,23 +2,31 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import CategoryCellRenderer from "./CategoryCellRenderer";
 import { Category } from "../data/types";
+import type {
+  ICellRendererParams,
+  RowNode,
+  ColDef,
+  Column,
+  GridApi,
+  ColumnApi,
+} from "ag-grid-community";
 
 describe("CategoryCellRenderer", () => {
-  const mockParams = {
+  const mockParams: ICellRendererParams = {
     value: "Bug" as Category,
     valueFormatted: null,
     getValue: () => "Bug",
     setValue: () => {},
     data: {},
-    node: {} as any,
-    colDef: {} as any,
-    column: {} as any,
-    api: {} as any,
-    columnApi: {} as any,
+    node: {} as RowNode,
+    colDef: {} as ColDef,
+    column: {} as Column,
+    api: {} as GridApi,
+    columnApi: {} as ColumnApi,
     context: null,
     refreshCell: () => {},
-    eGridCell: {} as any,
-    eParentOfValue: {} as any,
+    eGridCell: {} as HTMLElement,
+    eParentOfValue: {} as HTMLElement,
     registerRowDragger: () => {},
     addRenderedRowListener: () => {},
     setTooltip: () => {},
@@ -71,14 +79,16 @@ describe("CategoryCellRenderer", () => {
 
   it("returns null when value is not provided", () => {
     const { container } = render(
-      <CategoryCellRenderer {...mockParams} value={undefined as any} />,
+      <CategoryCellRenderer {...mockParams} value={undefined} />,
     );
 
     expect(container.firstChild).toBeNull();
   });
 
   it("returns plain text for unknown category", () => {
-    render(<CategoryCellRenderer {...mockParams} value={"Unknown" as any} />);
+    render(
+      <CategoryCellRenderer {...mockParams} value={"Unknown" as Category} />,
+    );
 
     const text = screen.getByText("Unknown");
     expect(text).toBeInTheDocument();

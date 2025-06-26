@@ -106,9 +106,7 @@ describe("DateFilterErrorBoundary", () => {
     });
 
     it("should include component name in error logs", async () => {
-      const { logger } = (await vi.importActual(
-        "../../../utils/logger",
-      )) as any;
+      // Use the mocked logger instead of the actual one
 
       render(
         <DateFilterErrorBoundary componentName="TestComponent">
@@ -128,9 +126,7 @@ describe("DateFilterErrorBoundary", () => {
     });
 
     it("should handle errors in custom error handler gracefully", async () => {
-      const { logger } = (await vi.importActual(
-        "../../../utils/logger",
-      )) as any;
+      // Use the mocked logger instead of the actual one
       const faultyErrorHandler = vi.fn(() => {
         throw new Error("Error handler failed");
       });

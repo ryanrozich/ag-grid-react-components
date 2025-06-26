@@ -4,7 +4,8 @@ import {
   deserializeFilterModel,
   setupFilterStatePersistence,
 } from "./filterStateUtils";
-import type { GridApi } from "ag-grid-community";
+import type { GridApi, FilterChangedEvent } from "ag-grid-community";
+import type { SerializedFilterModel } from "../types";
 
 describe("filterStateUtils", () => {
   describe("serializeFilterModel", () => {
@@ -18,7 +19,7 @@ describe("filterStateUtils", () => {
         },
       };
 
-      const serialized = serializeFilterModel(model) as any;
+      const serialized = serializeFilterModel(model) as SerializedFilterModel;
 
       expect(serialized.column1.dateFrom).toBe("2024-01-15T12:00:00.000Z");
       expect(serialized.column1.dateTo).toBeNull();
@@ -37,7 +38,7 @@ describe("filterStateUtils", () => {
         },
       };
 
-      const serialized = serializeFilterModel(model) as any;
+      const serialized = serializeFilterModel(model) as SerializedFilterModel;
 
       expect(serialized.column1.dateFrom).toBe("2024-01-15T12:00:00.000Z");
       expect(serialized.column1.dateTo).toBe("2024-01-20T12:00:00.000Z");
@@ -64,8 +65,8 @@ describe("filterStateUtils", () => {
 
     it("should handle empty and null models", () => {
       expect(serializeFilterModel({})).toEqual({});
-      expect(serializeFilterModel(null as any)).toEqual(null);
-      expect(serializeFilterModel(undefined as any)).toEqual(undefined);
+      expect(serializeFilterModel(null as never)).toEqual(null);
+      expect(serializeFilterModel(undefined as never)).toEqual(undefined);
     });
 
     it("should handle filters without date fields", () => {
@@ -96,7 +97,7 @@ describe("filterStateUtils", () => {
         },
       };
 
-      const serialized = serializeFilterModel(model) as any;
+      const serialized = serializeFilterModel(model) as SerializedFilterModel;
 
       expect(serialized.column1.fromInclusive).toBe(true);
       expect(serialized.column1.toInclusive).toBe(true);
@@ -113,7 +114,7 @@ describe("filterStateUtils", () => {
         },
       };
 
-      const deserialized = deserializeFilterModel(model) as any;
+      const deserialized = deserializeFilterModel(model);
 
       expect(deserialized.column1.dateFrom).toBeInstanceOf(Date);
       expect(deserialized.column1.dateFrom.toISOString()).toBe(
@@ -131,7 +132,7 @@ describe("filterStateUtils", () => {
         },
       };
 
-      const deserialized = deserializeFilterModel(model) as any;
+      const deserialized = deserializeFilterModel(model);
 
       expect(deserialized.column1.dateFrom).toBeInstanceOf(Date);
       expect(deserialized.column1.dateTo).toBeInstanceOf(Date);
@@ -171,7 +172,7 @@ describe("filterStateUtils", () => {
         },
       };
 
-      const deserialized = deserializeFilterModel(model) as any;
+      const deserialized = deserializeFilterModel(model);
 
       // Only dateFrom and dateTo should be converted
       expect(deserialized.column1.dateFrom).toBeInstanceOf(Date);
@@ -182,8 +183,8 @@ describe("filterStateUtils", () => {
 
     it("should handle empty and null models", () => {
       expect(deserializeFilterModel({})).toEqual({});
-      expect(deserializeFilterModel(null as any)).toEqual(null);
-      expect(deserializeFilterModel(undefined as any)).toEqual(undefined);
+      expect(deserializeFilterModel(null as never)).toEqual(null);
+      expect(deserializeFilterModel(undefined as never)).toEqual(undefined);
     });
   });
 
@@ -276,9 +277,9 @@ describe("filterStateUtils", () => {
           dateFrom: new Date("2024-01-15T12:00:00Z"),
         },
       };
-      (mockApi.getFilterModel as any).mockReturnValue(newFilterModel);
+      vi.mocked(mockApi.getFilterModel).mockReturnValue(newFilterModel);
 
-      filterChangedCallback({} as any);
+      filterChangedCallback({} as FilterChangedEvent);
 
       // Should update URL with serialized filter
       expect(mockPushState).toHaveBeenCalled();
@@ -309,8 +310,8 @@ describe("filterStateUtils", () => {
         .calls[0][1];
 
       // Simulate clearing filters
-      (mockApi.getFilterModel as any).mockReturnValue({});
-      filterChangedCallback({} as any);
+      vi.mocked(mockApi.getFilterModel).mockReturnValue({});
+      filterChangedCallback({} as FilterChangedEvent);
 
       // Should remove filter param but keep other params
       expect(mockPushState).toHaveBeenCalled();
@@ -390,13 +391,13 @@ describe("filterStateUtils", () => {
         .calls[0][1];
 
       // Create a circular reference that can't be serialized
-      const circularModel: any = { date: {} };
+      const circularModel = { date: {} as Record<string, unknown> };
       circularModel.date.circular = circularModel;
-      (mockApi.getFilterModel as any).mockReturnValue(circularModel);
+      vi.mocked(mockApi.getFilterModel).mockReturnValue(circularModel);
 
       // This will throw due to circular reference in JSON.stringify
       expect(() => {
-        filterChangedCallback({} as any);
+        filterChangedCallback({} as FilterChangedEvent);
       }).toThrow();
     });
 
@@ -416,8 +417,8 @@ describe("filterStateUtils", () => {
       const filterChangedCallback = vi.mocked(mockApi.addEventListener!).mock
         .calls[0][1];
       const newFilterModel = { date: { type: "equals" } };
-      (mockApi.getFilterModel as any).mockReturnValue(newFilterModel);
-      filterChangedCallback({} as any);
+      vi.mocked(mockApi.getFilterModel).mockReturnValue(newFilterModel);
+      filterChangedCallback({} as FilterChangedEvent);
 
       // Should call onFilterSave
       expect(onFilterSave).toHaveBeenCalledWith(newFilterModel);
@@ -430,10 +431,10 @@ describe("filterStateUtils", () => {
 
       const filterChangedCallback = vi.mocked(mockApi.addEventListener!).mock
         .calls[0][1];
-      (mockApi.getFilterModel as any).mockReturnValue({
+      vi.mocked(mockApi.getFilterModel).mockReturnValue({
         date: { type: "equals" },
       });
-      filterChangedCallback({} as any);
+      filterChangedCallback({} as FilterChangedEvent);
 
       expect(mockPushState).toHaveBeenCalled();
       const [, , url] = mockPushState.mock.calls[0];
@@ -441,3 +442,6 @@ describe("filterStateUtils", () => {
     });
   });
 });
+
+// Create new test file for gridStateUtils
+// File: src/utils/gridStateUtils.test.ts

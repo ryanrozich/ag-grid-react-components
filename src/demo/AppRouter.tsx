@@ -5,7 +5,7 @@ import { ComponentsShowcaseComplete } from "./components-showcase-complete";
 // Get base path from environment or default
 const getBasePath = () => {
   // In production, we're deployed at /ag-grid-react-components/
-  // @ts-ignore - Vite provides import.meta.env
+  // @ts-expect-error - Vite provides import.meta.env
   if (import.meta.env?.PROD) {
     return "/ag-grid-react-components";
   }

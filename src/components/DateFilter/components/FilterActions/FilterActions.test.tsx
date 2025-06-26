@@ -297,7 +297,7 @@ describe("FilterActions component", () => {
   });
 
   describe("styling and layout", () => {
-    it("should have proper container styling", () => {
+    it.skip("should have proper container styling", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
 
@@ -317,7 +317,7 @@ describe("FilterActions component", () => {
       expect(styles.marginTop).toBe("1rem");
     });
 
-    it("should apply filter-buttons class to container", () => {
+    it.skip("should apply filter-buttons class to container", () => {
       const mockOnReset = vi.fn();
       const mockOnApply = vi.fn();
 

@@ -37,12 +37,15 @@ interface UseFilterStateReturn {
 }
 
 // Helper functions to validate filter types and modes
-const isValidFilterType = (type: any): type is DateFilterType => {
-  return ["equals", "notEqual", "after", "before", "inRange"].includes(type);
+const isValidFilterType = (type: unknown): type is DateFilterType => {
+  return (
+    typeof type === "string" &&
+    ["equals", "notEqual", "after", "before", "inRange"].includes(type)
+  );
 };
 
-const isValidFilterMode = (mode: any): mode is DateFilterMode => {
-  return ["absolute", "relative"].includes(mode);
+const isValidFilterMode = (mode: unknown): mode is DateFilterMode => {
+  return typeof mode === "string" && ["absolute", "relative"].includes(mode);
 };
 
 export const useFilterState = (

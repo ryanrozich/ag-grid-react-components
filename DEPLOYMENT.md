@@ -34,7 +34,7 @@ When setting up the Pages project:
 2. Click on **Custom domains**
 3. Add custom domain: `demo.rozich.net`
 4. Create a CNAME record:
-   ```
+   ```txt
    Type: CNAME
    Name: demo
    Target: ag-grid-react-components-demo.pages.dev
@@ -137,7 +137,7 @@ If CSS or JS files return 404:
 For single-page apps with client-side routing:
 
 1. Create `_redirects` file in project root:
-   ```
+   ```txt
    /* /index.html 200
    ```
 2. Ensure it's copied to `dist-demo` during build

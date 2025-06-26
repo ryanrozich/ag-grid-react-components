@@ -130,12 +130,20 @@ describe("useFilterValidation hook", () => {
       );
 
       expect(result.current.isFilterValid).toBe(true);
-      expect(result.current.resolvedDateFrom?.toISOString().split("T")[0]).toBe(
-        "2023-01-01",
-      );
-      expect(
-        result.current.effectiveDateFrom?.toISOString().split("T")[0],
-      ).toBe("2023-01-01");
+      // Compare local date strings to avoid timezone issues
+      const resolvedDate = result.current.resolvedDateFrom;
+      expect(resolvedDate).toBeDefined();
+      const localDateStr = resolvedDate
+        ? `${resolvedDate.getFullYear()}-${String(resolvedDate.getMonth() + 1).padStart(2, "0")}-${String(resolvedDate.getDate()).padStart(2, "0")}`
+        : "";
+      expect(localDateStr).toBe("2023-01-01");
+      // Compare local date strings to avoid timezone issues
+      const effectiveDate = result.current.effectiveDateFrom;
+      expect(effectiveDate).toBeDefined();
+      const effectiveDateStr = effectiveDate
+        ? `${effectiveDate.getFullYear()}-${String(effectiveDate.getMonth() + 1).padStart(2, "0")}-${String(effectiveDate.getDate()).padStart(2, "0")}`
+        : "";
+      expect(effectiveDateStr).toBe("2023-01-01");
     });
 
     it("should invalidate equals filter with invalid expression", () => {
@@ -217,12 +225,15 @@ describe("useFilterValidation hook", () => {
         const expectedDate = new Date(mockDate);
         expectedDate.setDate(expectedDate.getDate() + expectedDays);
 
-        // Compare dates without timezone issues by using date strings
-        const actualDateStr = result.current.resolvedDateFrom
-          ?.toISOString()
-          .split("T")[0];
-        const expectedDateStr = expectedDate.toISOString().split("T")[0];
-        expect(actualDateStr).toBe(expectedDateStr);
+        // Compare dates without timezone issues by using local date strings
+        const actualDate = result.current.resolvedDateFrom;
+        if (actualDate && expectedDate) {
+          const actualDateStr = `${actualDate.getFullYear()}-${String(actualDate.getMonth() + 1).padStart(2, "0")}-${String(actualDate.getDate()).padStart(2, "0")}`;
+          const expectedDateStr = `${expectedDate.getFullYear()}-${String(expectedDate.getMonth() + 1).padStart(2, "0")}-${String(expectedDate.getDate()).padStart(2, "0")}`;
+          expect(actualDateStr).toBe(expectedDateStr);
+        } else {
+          expect(actualDate).toBeDefined();
+        }
       });
     });
   });

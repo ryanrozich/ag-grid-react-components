@@ -16,7 +16,7 @@ test.describe("Filter Instantiation Check", () => {
 
     // Check if DateFilter is being properly instantiated
     const filterInfo = await page.evaluate(() => {
-      const api = (window as any).agGridApi;
+      const api = window.agGridApi;
       if (!api) return { error: "No API found" };
 
       // Get the filter instance
@@ -60,7 +60,7 @@ test.describe("Filter Instantiation Check", () => {
 
     // Now try to manually set a filter model
     const filterResult = await page.evaluate(async () => {
-      const api = (window as any).agGridApi;
+      const api = window.agGridApi;
       if (!api) return { error: "No API found" };
 
       const initialRowCount = api.getDisplayedRowCount();

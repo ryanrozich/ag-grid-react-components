@@ -5,10 +5,10 @@
 
 import { GridApi } from "ag-grid-community";
 
-export async function applyFilterModelWithWorkaround(
-  api: GridApi<any>,
+export async function applyFilterModelWithWorkaround<TData = unknown>(
+  api: GridApi<TData>,
   columnId: string,
-  filterModel: any,
+  filterModel: unknown,
 ) {
   // Method 1: Use getFilterInstance and manually call setModel
   try {
@@ -24,7 +24,13 @@ export async function applyFilterModelWithWorkaround(
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Get the filter instance - in AG Grid v33 this returns a Promise
-    let filterInstance = (api as any).getColumnFilterInstance(columnId);
+    let filterInstance = (
+      api as GridApi & {
+        getColumnFilterInstance: (
+          columnId: string,
+        ) => unknown | Promise<unknown>;
+      }
+    ).getColumnFilterInstance(columnId);
     console.log(
       "[Workaround] Filter instance type:",
       typeof filterInstance,
@@ -80,10 +86,10 @@ export async function applyFilterModelWithWorkaround(
   }
 }
 
-export async function applyFilterModelAlternative(
-  api: GridApi<any>,
+export async function applyFilterModelAlternative<TData = unknown>(
+  api: GridApi<TData>,
   columnId: string,
-  filterModel: any,
+  filterModel: unknown,
 ) {
   // Method 2: Clear and re-apply filter
   try {
@@ -98,7 +104,13 @@ export async function applyFilterModelAlternative(
 
     // Get filter instance and manually trigger setModel
     await new Promise((resolve) => setTimeout(resolve, 10));
-    const filterInstance = (api as any).getColumnFilterInstance(columnId);
+    const filterInstance = (
+      api as GridApi & {
+        getColumnFilterInstance: (
+          columnId: string,
+        ) => unknown | Promise<unknown>;
+      }
+    ).getColumnFilterInstance(columnId);
 
     if (filterInstance) {
       await filterInstance.setModel(filterModel);

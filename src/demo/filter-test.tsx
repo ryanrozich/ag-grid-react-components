@@ -30,7 +30,7 @@ export const FilterTest: React.FC = () => {
   const [api, setApi] = useState<GridApi | null>(null);
   const [filterLog, setFilterLog] = useState<string[]>([]);
 
-  const log = (message: string, data?: any) => {
+  const log = (message: string, data?: unknown) => {
     const timestamp = new Date().toLocaleTimeString();
     const logEntry = `[${timestamp}] ${message}${data ? "\n" + JSON.stringify(data, null, 2) : ""}`;
     console.log(logEntry);
@@ -65,7 +65,7 @@ export const FilterTest: React.FC = () => {
     {
       field: "date",
       filter: "agDateColumnFilter",
-      valueFormatter: (params: any) => {
+      valueFormatter: (params) => {
         if (!params.value) return "";
         return params.value.toLocaleDateString();
       },

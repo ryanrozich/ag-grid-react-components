@@ -21,6 +21,7 @@ export default [
         ecmaFeatures: {
           jsx: true,
         },
+        // project: "./tsconfig.json", // Removed to avoid issues with test files
       },
       globals: {
         // Browser globals
@@ -71,6 +72,8 @@ export default [
           varsIgnorePattern: "^_",
         },
       ],
+      // Disable no-undef for TypeScript files as TypeScript handles this
+      "no-undef": "off",
     },
     settings: {
       react: {

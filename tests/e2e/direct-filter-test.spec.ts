@@ -14,7 +14,7 @@ test.describe("Direct Filter Test", () => {
 
     // Get initial state
     const initial = await page.evaluate(() => {
-      const api = (window as any).agGridApi;
+      const api = window.agGridApi;
       return {
         rowCount: api.getDisplayedRowCount(),
         filterModel: api.getFilterModel(),
@@ -24,7 +24,7 @@ test.describe("Direct Filter Test", () => {
 
     // Apply filter directly via API
     const result = await page.evaluate(async () => {
-      const api = (window as any).agGridApi;
+      const api = window.agGridApi;
 
       // Set filter model
       api.setFilterModel({

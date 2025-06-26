@@ -55,7 +55,7 @@ export const AnchorHeading: React.FC<AnchorHeadingProps> = ({
 
   return (
     <Tag
-      ref={headingRef as any}
+      ref={headingRef}
       id={id}
       className={`group relative flex items-center ${baseClasses[level]} ${className}`}
     >

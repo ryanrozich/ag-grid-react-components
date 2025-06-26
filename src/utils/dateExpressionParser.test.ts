@@ -126,21 +126,21 @@ describe("dateExpressionParser", () => {
         isValid: false,
         resolvedDate: null,
         error:
-          'Invalid format. Use "Today", "Today+Nd", "Today-Nd" (where N is a number and d=days, w=weeks, m=months, y=years)',
+          'Invalid format. Use "Today", "Today+Nd", "Today-Nd", "StartOfWeek", "EndOfWeek", "StartOfMonth", "EndOfMonth", "StartOfYear", "EndOfYear"',
       });
 
       expect(parseDateExpression("Today+")).toEqual({
         isValid: false,
         resolvedDate: null,
         error:
-          'Invalid format. Use "Today", "Today+Nd", "Today-Nd" (where N is a number and d=days, w=weeks, m=months, y=years)',
+          'Invalid format. Use "Today", "Today+Nd", "Today-Nd", "StartOfWeek", "EndOfWeek", "StartOfMonth", "EndOfMonth", "StartOfYear", "EndOfYear"',
       });
 
       expect(parseDateExpression("Today+7")).toEqual({
         isValid: false,
         resolvedDate: null,
         error:
-          'Invalid format. Use "Today", "Today+Nd", "Today-Nd" (where N is a number and d=days, w=weeks, m=months, y=years)',
+          'Invalid format. Use "Today", "Today+Nd", "Today-Nd", "StartOfWeek", "EndOfWeek", "StartOfMonth", "EndOfMonth", "StartOfYear", "EndOfYear"',
       });
     });
 
@@ -149,7 +149,7 @@ describe("dateExpressionParser", () => {
         isValid: false,
         resolvedDate: null,
         error:
-          'Invalid format. Use "Today", "Today+Nd", "Today-Nd" (where N is a number and d=days, w=weeks, m=months, y=years)',
+          'Invalid format. Use "Today", "Today+Nd", "Today-Nd", "StartOfWeek", "EndOfWeek", "StartOfMonth", "EndOfMonth", "StartOfYear", "EndOfYear"',
       });
     });
   });
