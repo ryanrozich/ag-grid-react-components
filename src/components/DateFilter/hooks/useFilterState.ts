@@ -19,6 +19,10 @@ interface UseFilterStateReturn {
   toExpressionValid: boolean;
   toExpressionError: string;
 
+  // Inclusivity flags
+  fromInclusive: boolean;
+  toInclusive: boolean;
+
   // State setters
   setFilterType: (type: DateFilterType) => void;
   setFilterMode: (mode: DateFilterMode) => void;
@@ -29,6 +33,8 @@ interface UseFilterStateReturn {
   setFromExpressionValid: (valid: boolean) => void;
   setToExpressionValid: (valid: boolean) => void;
   setToExpressionError: (error: string) => void;
+  setFromInclusive: (inclusive: boolean) => void;
+  setToInclusive: (inclusive: boolean) => void;
 
   // Actions
   toggleFilterMode: () => void;
@@ -97,6 +103,14 @@ export const useFilterState = (
   const [toExpressionValid, setToExpressionValid] = useState<boolean>(true);
   const [toExpressionError, setToExpressionError] = useState<string>("");
 
+  // Inclusivity flags
+  const [fromInclusive, setFromInclusive] = useState<boolean>(
+    initialModel?.fromInclusive ?? false,
+  );
+  const [toInclusive, setToInclusive] = useState<boolean>(
+    initialModel?.toInclusive ?? false,
+  );
+
   // Toggle filter mode
   const toggleFilterMode = useCallback(() => {
     setFilterMode((prevMode) =>
@@ -115,6 +129,8 @@ export const useFilterState = (
     setFromExpressionValid(true);
     setToExpressionValid(true);
     setToExpressionError("");
+    setFromInclusive(false);
+    setToInclusive(false);
   }, [defaultMode]);
 
   // Initialize state from a model
@@ -158,6 +174,10 @@ export const useFilterState = (
       setFromExpressionValid(true);
       setToExpressionValid(true);
       setToExpressionError("");
+
+      // Set inclusivity flags from model
+      setFromInclusive(model.fromInclusive ?? false);
+      setToInclusive(model.toInclusive ?? false);
     },
     [resetState],
   );
@@ -180,6 +200,10 @@ export const useFilterState = (
     toExpressionValid,
     toExpressionError,
 
+    // Inclusivity flags
+    fromInclusive,
+    toInclusive,
+
     // State setters
     setFilterType,
     setFilterMode,
@@ -190,6 +214,8 @@ export const useFilterState = (
     setFromExpressionValid,
     setToExpressionValid,
     setToExpressionError,
+    setFromInclusive,
+    setToInclusive,
 
     // Actions
     toggleFilterMode,

@@ -28,6 +28,6 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src", "tests", "vitest.setup.ts", "*.config.ts", "scripts/*.js"],
+  "include": ["src", "tests", "vitest.setup.ts", "scripts/*.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

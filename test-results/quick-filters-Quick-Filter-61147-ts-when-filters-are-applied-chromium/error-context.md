@@ -1,264 +1,275 @@
 # Test info
 
 - Name: Quick Filters >> should update stats when filters are applied
-- Location: /Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/tests/e2e/quick-filters.spec.ts:178:3
+- Location: /Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/tests/e2e/quick-filters.spec.ts:246:3
 
 # Error details
 
 ```
 Error: expect(received).toBeLessThan(expected)
 
-Expected: < 55
-Received:   559
-    at /Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/tests/e2e/quick-filters.spec.ts:196:22
+Expected: < 50
+Received:   568
+    at /Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/tests/e2e/quick-filters.spec.ts:273:22
 ```
 
 # Page snapshot
 
 ```yaml
 - banner:
-    - heading "AG Grid React Components" [level=1]
-    - navigation:
-        - link "Home":
-            - /url: /
-        - link "Demo":
-            - /url: /demo
-        - link "Docs":
-            - /url: /docs
+  - heading "AG Grid React Components" [level=1]
+  - navigation:
+    - link "Home":
+      - /url: /
+    - link "Demo":
+      - /url: /demo
+    - link "Docs":
+      - /url: /docs
+  - img
+  - text: MIT License
+  - link "GitHub":
+    - /url: https://github.com/ryanrozich/ag-grid-react-components
     - img
-    - text: MIT License
-    - link "GitHub":
-        - /url: https://github.com/ryanrozich/ag-grid-react-components
-        - img
-        - text: GitHub
+    - text: GitHub
 - heading "Project Tasks" [level=1]
 - paragraph: Manage and track your team's progress
 - textbox "Search tasks..."
 - img
-- text: "Quick filters:"
 - button "Quick filter options":
-    - text: Time period
-    - img
+  - text: Overdue
+  - img
 - button "Quick filter options":
-    - text: All Tasks
-    - img
-- paragraph: Number of Tasks
-- paragraph: "559"
-- img
-- paragraph: Total Budget
-- paragraph: $2,359,575
-- img
-- paragraph: Progress
-- paragraph: 32.2%
-- img
-- paragraph: Budget Remaining
-- paragraph: $1,632,431
-- img
+  - text: All Tasks
+  - img
 - text: "Due Date: before Today"
 - button "Remove Due Date filter": ×
 - text: "Status: Backlog, Todo, In Progress, In Review, Testing, Blocked"
 - button "Remove Status filter": ×
 - button "Clear all filters": Clear all
-- text: 1 to 25 of 560. Page 1 of 23
+- img
+- paragraph: Number of Tasks
+- paragraph: "568"
+- img
+- paragraph: Total Budget
+- paragraph: $2,348,425
+- img
+- paragraph: Progress
+- paragraph: 32.6%
+- img
+- paragraph: Budget Remaining
+- paragraph: $1,600,321
+- text: 1 to 25 of 569. Page 1 of 23
 - grid:
-    - rowgroup:
-        - row "ID Task Name Category Priority Assignee Due Date Budget Status Progress":
-            - columnheader "ID"
-            - columnheader "Task Name"
-            - columnheader "Category"
-            - columnheader "Priority"
-            - columnheader "Assignee"
-            - columnheader "Due Date"
-            - columnheader "Budget"
-            - columnheader "Status"
-            - columnheader "Progress"
-    - rowgroup:
-        - row "174 [MOBILE-1174] Set up staging environment (Sprint 26) 🔧 DevOps Critical Marcus Williams Marcus Williams 6/24/2025 $1,275 Blocked 20%":
-            - gridcell "174"
-            - gridcell "[MOBILE-1174] Set up staging environment (Sprint 26)"
-            - gridcell "🔧 DevOps"
-            - gridcell "Critical"
-            - gridcell "Marcus Williams Marcus Williams":
-                - img "Marcus Williams"
-                - text: Marcus Williams
-            - gridcell "6/24/2025"
-            - gridcell "$1,275"
-            - gridcell "Blocked"
-            - gridcell "20%"
-        - row "162 [USER-1162] Set up infrastructure as code (Sprint 23) 🔧 DevOps Critical Emily Jackson Emily Jackson 6/23/2025 $1,600 Blocked 31%":
-            - gridcell "162"
-            - gridcell "[USER-1162] Set up infrastructure as code (Sprint 23)"
-            - gridcell "🔧 DevOps"
-            - gridcell "Critical"
-            - gridcell "Emily Jackson Emily Jackson":
-                - img "Emily Jackson"
-                - text: Emily Jackson
-            - gridcell "6/23/2025"
-            - gridcell "$1,600"
-            - gridcell "Blocked"
-            - gridcell "31%"
-        - row "652 [USER-1652] Implement secure file upload (Sprint 27) 🔒 Security Critical Priya Sharma Priya Sharma 6/21/2025 $4,150 Blocked 32%":
-            - gridcell "652"
-            - gridcell "[USER-1652] Implement secure file upload (Sprint 27)"
-            - gridcell "🔒 Security"
-            - gridcell "Critical"
-            - gridcell "Priya Sharma Priya Sharma":
-                - img "Priya Sharma"
-                - text: Priya Sharma
-            - gridcell "6/21/2025"
-            - gridcell "$4,150"
-            - gridcell "Blocked"
-            - gridcell "32%"
-        - row "636 [PROJ-1636] Optimize memory usage (Sprint 24) ⚡ Performance Critical Priya Sharma Priya Sharma 6/20/2025 $1,125 In Progress 50%":
-            - gridcell "636"
-            - gridcell "[PROJ-1636] Optimize memory usage (Sprint 24)"
-            - gridcell "⚡ Performance"
-            - gridcell "Critical"
-            - gridcell "Priya Sharma Priya Sharma":
-                - img "Priya Sharma"
-                - text: Priya Sharma
-            - gridcell "6/20/2025"
-            - gridcell "$1,125"
-            - gridcell "In Progress"
-            - gridcell "50%"
-        - row "671 [USER-1671] Clean up deprecated APIs ♻️ Refactor High Chris Martinez Chris Martinez 6/22/2025 $200 In Review 76%":
-            - gridcell "671"
-            - gridcell "[USER-1671] Clean up deprecated APIs"
-            - gridcell "♻️ Refactor"
-            - gridcell "High"
-            - gridcell "Chris Martinez Chris Martinez":
-                - img "Chris Martinez"
-                - text: Chris Martinez
-            - gridcell "6/22/2025"
-            - gridcell "$200"
-            - gridcell "In Review"
-            - gridcell "76%"
-        - row "891 [WEB-1891] Configure security headers (Q2 Planning) 🔒 Security High Emma Davis Emma Davis 6/21/2025 $15,225 Blocked 24%":
-            - gridcell "891"
-            - gridcell "[WEB-1891] Configure security headers (Q2 Planning)"
-            - gridcell "🔒 Security"
-            - gridcell "High"
-            - gridcell "Emma Davis Emma Davis":
-                - img "Emma Davis"
-                - text: Emma Davis
-            - gridcell "6/21/2025"
-            - gridcell "$15,225"
-            - gridcell "Blocked"
-            - gridcell "24%"
-        - row "129 [MOBILE-1129] Set up staging environment (Q1 Goals) 🔧 DevOps High Marcus Williams Marcus Williams 6/23/2025 $6,375 Blocked 16%":
-            - gridcell "129"
-            - gridcell "[MOBILE-1129] Set up staging environment (Q1 Goals)"
-            - gridcell "🔧 DevOps"
-            - gridcell "High"
-            - gridcell "Marcus Williams Marcus Williams":
-                - img "Marcus Williams"
-                - text: Marcus Williams
-            - gridcell "6/23/2025"
-            - gridcell "$6,375"
-            - gridcell "Blocked"
-            - gridcell "16%"
-        - row "27 [DASH-1027] Add export to PDF functionality ✨ Feature Medium Chris Martinez Chris Martinez 6/24/2025 $350 In Progress 27%":
-            - gridcell "27"
-            - gridcell "[DASH-1027] Add export to PDF functionality"
-            - gridcell "✨ Feature"
-            - gridcell "Medium"
-            - gridcell "Chris Martinez Chris Martinez":
-                - img "Chris Martinez"
-                - text: Chris Martinez
-            - gridcell "6/24/2025"
-            - gridcell "$350"
-            - gridcell "In Progress"
-            - gridcell "27%"
-        - row "150 [INFRA-1150] Add CDN for static assets ⚡ Performance High Sophia Taylor Sophia Taylor 6/20/2025 $2,125 Blocked 27%":
-            - gridcell "150"
-            - gridcell "[INFRA-1150] Add CDN for static assets"
-            - gridcell "⚡ Performance"
-            - gridcell "High"
-            - gridcell "Sophia Taylor Sophia Taylor":
-                - img "Sophia Taylor"
-                - text: Sophia Taylor
-            - gridcell "6/20/2025"
-            - gridcell "$2,125"
-            - gridcell "Blocked"
-            - gridcell "27%"
-        - row "231 [DATA-1231] Set up SSL certificates 🔒 Security High Michael Anderson Michael Anderson 6/20/2025 $2,550 Backlog 0%":
-            - gridcell "231"
-            - gridcell "[DATA-1231] Set up SSL certificates"
-            - gridcell "🔒 Security"
-            - gridcell "High"
-            - gridcell "Michael Anderson Michael Anderson":
-                - img "Michael Anderson"
-                - text: Michael Anderson
-            - gridcell "6/20/2025"
-            - gridcell "$2,550"
-            - gridcell "Backlog"
-            - gridcell "0%"
-        - row "320 [MOBILE-1320] Implement rate limiting 🔒 Security Medium Priya Sharma Priya Sharma 6/22/2025 $950 Blocked 28%":
-            - gridcell "320"
-            - gridcell "[MOBILE-1320] Implement rate limiting"
-            - gridcell "🔒 Security"
-            - gridcell "Medium"
-            - gridcell "Priya Sharma Priya Sharma":
-                - img "Priya Sharma"
-                - text: Priya Sharma
-            - gridcell "6/22/2025"
-            - gridcell "$950"
-            - gridcell "Blocked"
-            - gridcell "28%"
-        - row "385 [API-1385] Correct data corruption in cache layer (Sprint 27) 🐛 Bug Medium Marcus Williams Marcus Williams 6/20/2025 $850 Testing 85%":
-            - gridcell "385"
-            - gridcell "[API-1385] Correct data corruption in cache layer (Sprint 27)"
-            - gridcell "🐛 Bug"
-            - gridcell "Medium"
-            - gridcell "Marcus Williams Marcus Williams":
-                - img "Marcus Williams"
-                - text: Marcus Williams
-            - gridcell "6/20/2025"
-            - gridcell "$850"
-            - gridcell "Testing"
-            - gridcell "85%"
-        - row "783 [DATA-1783] Implement auto-scaling (Performance Sprint) 🔧 DevOps Critical Sarah Johnson Sarah Johnson 6/20/2025 $150 In Progress 26%":
-            - gridcell "783"
-            - gridcell "[DATA-1783] Implement auto-scaling (Performance Sprint)"
-            - gridcell "🔧 DevOps"
-            - gridcell "Critical"
-            - gridcell "Sarah Johnson Sarah Johnson":
-                - img "Sarah Johnson"
-                - text: Sarah Johnson
-            - gridcell "6/20/2025"
-            - gridcell "$150"
-            - gridcell "In Progress"
-            - gridcell "26%"
-        - row "941 [FRONTEND-1941] Fix broken unit tests in CI pipeline (Sprint 26) 🐛 Bug Critical Chris Martinez Chris Martinez 6/18/2025 $625 Blocked 31%":
-            - gridcell "941"
-            - gridcell "[FRONTEND-1941] Fix broken unit tests in CI pipeline (Sprint 26)"
-            - gridcell "🐛 Bug"
-            - gridcell "Critical"
-            - gridcell "Chris Martinez Chris Martinez":
-                - img "Chris Martinez"
-                - text: Chris Martinez
-            - gridcell "6/18/2025"
-            - gridcell "$625"
-            - gridcell "Blocked"
-            - gridcell "31%"
-    - rowgroup
-    - rowgroup
-    - rowgroup
-    - rowgroup:
-        - row "$2,359,575 32%":
-            - gridcell
-            - gridcell
-            - gridcell
-            - gridcell
-            - gridcell
-            - gridcell
-            - gridcell "$2,359,575"
-            - gridcell
-            - gridcell "32%"
-    - rowgroup
+  - rowgroup:
+    - row "ID Task Name Category Priority Assignee Due Date Budget Status Progress":
+      - columnheader "ID"
+      - columnheader "Task Name"
+      - columnheader "Category"
+      - columnheader "Priority"
+      - columnheader "Assignee"
+      - columnheader "Due Date"
+      - columnheader "Budget"
+      - columnheader "Status"
+      - columnheader "Progress"
+  - rowgroup:
+    - row "553 [DASH-1553] Resolve race condition in state update (Sprint 26) 🐛 Bug Critical Maya Patel Maya Patel 6/27/2025 $3,275 In Progress 22%":
+      - gridcell "553"
+      - gridcell "[DASH-1553] Resolve race condition in state update (Sprint 26)"
+      - gridcell "🐛 Bug"
+      - gridcell "Critical"
+      - gridcell "Maya Patel Maya Patel":
+        - img "Maya Patel"
+        - text: Maya Patel
+      - gridcell "6/27/2025"
+      - gridcell "$3,275"
+      - gridcell "In Progress"
+      - gridcell "22%"
+    - row "47 [PROJ-1047] Debug performance regression in search 🐛 Bug Critical Isabella Garcia Isabella Garcia 6/26/2025 $750 In Progress 38%":
+      - gridcell "47"
+      - gridcell "[PROJ-1047] Debug performance regression in search"
+      - gridcell "🐛 Bug"
+      - gridcell "Critical"
+      - gridcell "Isabella Garcia Isabella Garcia":
+        - img "Isabella Garcia"
+        - text: Isabella Garcia
+      - gridcell "6/26/2025"
+      - gridcell "$750"
+      - gridcell "In Progress"
+      - gridcell "38%"
+    - row "54 [FRONTEND-1054] Configure health checks (Sprint 27) 🔧 DevOps High James Wilson James Wilson 6/26/2025 $575 Blocked 20%":
+      - gridcell "54"
+      - gridcell "[FRONTEND-1054] Configure health checks (Sprint 27)"
+      - gridcell "🔧 DevOps"
+      - gridcell "High"
+      - gridcell "James Wilson James Wilson":
+        - img "James Wilson"
+        - text: James Wilson
+      - gridcell "6/26/2025"
+      - gridcell "$575"
+      - gridcell "Blocked"
+      - gridcell "20%"
+    - row "57 [CORE-1057] Test error boundary behavior (Q1 Goals) 🧪 Testing Critical Emma Davis Emma Davis 6/26/2025 $2,825 Blocked 17%":
+      - gridcell "57"
+      - gridcell "[CORE-1057] Test error boundary behavior (Q1 Goals)"
+      - gridcell "🧪 Testing"
+      - gridcell "Critical"
+      - gridcell "Emma Davis Emma Davis":
+        - img "Emma Davis"
+        - text: Emma Davis
+      - gridcell "6/26/2025"
+      - gridcell "$2,825"
+      - gridcell "Blocked"
+      - gridcell "17%"
+    - row "267 [APP-1267] Document component props (Sprint 25) 📝 Documentation Critical Michael Anderson Michael Anderson 6/26/2025 $1,650 Blocked 27%":
+      - gridcell "267"
+      - gridcell "[APP-1267] Document component props (Sprint 25)"
+      - gridcell "📝 Documentation"
+      - gridcell "Critical"
+      - gridcell "Michael Anderson Michael Anderson":
+        - img "Michael Anderson"
+        - text: Michael Anderson
+      - gridcell "6/26/2025"
+      - gridcell "$1,650"
+      - gridcell "Blocked"
+      - gridcell "27%"
+    - row "268 [BACKEND-1268] Implement API key rotation (Security Audit) 🔒 Security High Daniel Kim Daniel Kim 6/26/2025 $325 Blocked 30%":
+      - gridcell "268"
+      - gridcell "[BACKEND-1268] Implement API key rotation (Security Audit)"
+      - gridcell "🔒 Security"
+      - gridcell "High"
+      - gridcell "Daniel Kim Daniel Kim":
+        - img "Daniel Kim"
+        - text: Daniel Kim
+      - gridcell "6/26/2025"
+      - gridcell "$325"
+      - gridcell "Blocked"
+      - gridcell "30%"
+    - row "322 [BACKEND-1322] Add drag-and-drop file upload ✨ Feature Critical Emma Davis Emma Davis 6/25/2025 $8,675 Blocked 31%":
+      - gridcell "322"
+      - gridcell "[BACKEND-1322] Add drag-and-drop file upload"
+      - gridcell "✨ Feature"
+      - gridcell "Critical"
+      - gridcell "Emma Davis Emma Davis":
+        - img "Emma Davis"
+        - text: Emma Davis
+      - gridcell "6/25/2025"
+      - gridcell "$8,675"
+      - gridcell "Blocked"
+      - gridcell "31%"
+    - row "777 [CORE-1777] Add SQL injection prevention 🔒 Security High Sophia Taylor Sophia Taylor 6/27/2025 $4,625 Blocked 17%":
+      - gridcell "777"
+      - gridcell "[CORE-1777] Add SQL injection prevention"
+      - gridcell "🔒 Security"
+      - gridcell "High"
+      - gridcell "Sophia Taylor Sophia Taylor":
+        - img "Sophia Taylor"
+        - text: Sophia Taylor
+      - gridcell "6/27/2025"
+      - gridcell "$4,625"
+      - gridcell "Blocked"
+      - gridcell "17%"
+    - row "997 [ADMIN-1997] Update README with examples (Sprint 25) 📝 Documentation Critical Sarah Johnson Sarah Johnson 6/25/2025 $100 In Progress 50%":
+      - gridcell "997"
+      - gridcell "[ADMIN-1997] Update README with examples (Sprint 25)"
+      - gridcell "📝 Documentation"
+      - gridcell "Critical"
+      - gridcell "Sarah Johnson Sarah Johnson":
+        - img "Sarah Johnson"
+        - text: Sarah Johnson
+      - gridcell "6/25/2025"
+      - gridcell "$100"
+      - gridcell "In Progress"
+      - gridcell "50%"
+    - row "769 [DASH-1769] Refactor error handling ♻️ Refactor Critical Chris Martinez Chris Martinez 6/25/2025 $625 Blocked 18%":
+      - gridcell "769"
+      - gridcell "[DASH-1769] Refactor error handling"
+      - gridcell "♻️ Refactor"
+      - gridcell "Critical"
+      - gridcell "Chris Martinez Chris Martinez":
+        - img "Chris Martinez"
+        - text: Chris Martinez
+      - gridcell "6/25/2025"
+      - gridcell "$625"
+      - gridcell "Blocked"
+      - gridcell "18%"
+    - row "952 [INFRA-1952] Add keyboard shortcuts (Performance Sprint) ✨ Feature Critical Emily Jackson Emily Jackson 6/25/2025 $8,075 Todo 10%":
+      - gridcell "952"
+      - gridcell "[INFRA-1952] Add keyboard shortcuts (Performance Sprint)"
+      - gridcell "✨ Feature"
+      - gridcell "Critical"
+      - gridcell "Emily Jackson Emily Jackson":
+        - img "Emily Jackson"
+        - text: Emily Jackson
+      - gridcell "6/25/2025"
+      - gridcell "$8,075"
+      - gridcell "Todo"
+      - gridcell "10%"
+    - row "78 [MOBILE-1078] Fix date picker timezone issue 🐛 Bug Medium Alex Chen Alex Chen 6/26/2025 $6,150 In Progress 20%":
+      - gridcell "78"
+      - gridcell "[MOBILE-1078] Fix date picker timezone issue"
+      - gridcell "🐛 Bug"
+      - gridcell "Medium"
+      - gridcell "Alex Chen Alex Chen":
+        - img "Alex Chen"
+        - text: Alex Chen
+      - gridcell "6/26/2025"
+      - gridcell "$6,150"
+      - gridcell "In Progress"
+      - gridcell "20%"
+    - row "149 [ADMIN-1149] Add SQL injection prevention (Q1 Goals) 🔒 Security High James Wilson James Wilson 6/23/2025 $825 Blocked 22%":
+      - gridcell "149"
+      - gridcell "[ADMIN-1149] Add SQL injection prevention (Q1 Goals)"
+      - gridcell "🔒 Security"
+      - gridcell "High"
+      - gridcell "James Wilson James Wilson":
+        - img "James Wilson"
+        - text: James Wilson
+      - gridcell "6/23/2025"
+      - gridcell "$825"
+      - gridcell "Blocked"
+      - gridcell "22%"
+    - row "619 [UI-1619] Add brute force protection (Performance Sprint) 🔒 Security Critical Priya Sharma Priya Sharma 6/22/2025 $1,375 In Progress 59%":
+      - gridcell "619"
+      - gridcell "[UI-1619] Add brute force protection (Performance Sprint)"
+      - gridcell "🔒 Security"
+      - gridcell "Critical"
+      - gridcell "Priya Sharma Priya Sharma":
+        - img "Priya Sharma"
+        - text: Priya Sharma
+      - gridcell "6/22/2025"
+      - gridcell "$1,375"
+      - gridcell "In Progress"
+      - gridcell "59%"
+    - row "241 [DATA-1241] Add SQL injection prevention (Tech Debt) 🔒 Security Medium James Wilson James Wilson 6/27/2025 $100 In Progress 31%":
+      - gridcell "241"
+      - gridcell "[DATA-1241] Add SQL injection prevention (Tech Debt)"
+      - gridcell "🔒 Security"
+      - gridcell "Medium"
+      - gridcell "James Wilson James Wilson":
+        - img "James Wilson"
+        - text: James Wilson
+      - gridcell "6/27/2025"
+      - gridcell "$100"
+      - gridcell "In Progress"
+      - gridcell "31%"
+  - rowgroup
+  - rowgroup
+  - rowgroup
+  - rowgroup:
+    - row "$2,348,425 33%":
+      - gridcell
+      - gridcell
+      - gridcell
+      - gridcell
+      - gridcell
+      - gridcell
+      - gridcell "$2,348,425"
+      - gridcell
+      - gridcell "33%"
+  - rowgroup
 - tablist:
-    - tab "Columns"
-    - tab "Filters"
+  - tab "Columns"
+  - tab "Filters"
 - status
 - status
 - status
@@ -274,109 +285,110 @@ Received:   559
 # Test source
 
 ```ts
-   96 |
-   97 |     // Wait for dropdown menu to be visible
-   98 |     await page.waitForSelector('[role="listbox"]', { state: "visible" });
-   99 |
-  100 |     // Select "Critical Bugs"
-  101 |     await page.locator('[role="option"]').filter({ hasText: "Critical Bugs" }).click();
-  102 |
-  103 |     // Verify the dropdown shows the new selection
-  104 |     await expect(secondDropdown.locator("button").first()).toContainText("Critical Bugs");
-  105 |
-  106 |     // Verify that only Bug category with Critical/High priority are shown
-  107 |     const categoryCells = await page.locator('.ag-cell[col-id="category"]').allTextContents();
-  108 |     const priorityCells = await page.locator('.ag-cell[col-id="priority"]').allTextContents();
-  109 |
-  110 |     // Check categories are all "Bug"
-  111 |     for (const category of categoryCells) {
-  112 |       expect(category).toBe("Bug");
-  113 |     }
-  114 |
-  115 |     // Check priorities are either "Critical" or "High"
-  116 |     for (const priority of priorityCells) {
-  117 |       expect(["Critical", "High"]).toContain(priority);
-  118 |     }
-  119 |   });
-  120 |
-  121 |   test("should clear all filters", async ({ page }) => {
-  122 |     // Wait for default filter first
-  123 |     await page.waitForTimeout(1500);
-  124 |
-  125 |     // Apply another filter
-  126 |     const firstDropdown = page.locator('[data-testid="quick-filter-dropdown"]').first();
-  127 |     await firstDropdown.locator("button").first().click();
-  128 |     await page.locator('[role="option"]').filter({ hasText: "Overdue" }).click();
-  129 |
-  130 |     // Wait for filter to apply
-  131 |     await page.waitForTimeout(1000);
-  132 |
-  133 |     // Verify filter is applied
-  134 |     await expect(firstDropdown.locator("button").first()).toContainText("Overdue");
-  135 |
-  136 |     // Clear the filter by selecting "All Time"
-  137 |     await firstDropdown.locator("button").first().click();
-  138 |     await page.locator('[role="option"]').filter({ hasText: "All Time" }).click();
-  139 |
-  140 |     // Wait for filter to clear
-  141 |     await page.waitForTimeout(1000);
-  142 |
-  143 |     // Verify the dropdown shows "All Time"
-  144 |     await expect(firstDropdown.locator("button").first()).toContainText("All Time");
-  145 |
-  146 |     // Active filters should not be visible
-  147 |     const activeFilters = page.locator('[data-testid="active-filters"]');
-  148 |     await expect(activeFilters).not.toBeVisible();
-  149 |   });
-  150 |
-  151 |   test("should combine time and task type filters", async ({ page }) => {
-  152 |     // Apply time filter
-  153 |     const firstDropdown = page.locator('[data-testid="quick-filter-dropdown"]').first();
-  154 |     await firstDropdown.locator("button").first().click();
-  155 |     await page.locator('[role="option"]').filter({ hasText: "This Month" }).click();
-  156 |
-  157 |     // Apply task type filter
-  158 |     const secondDropdown = page.locator('[data-testid="quick-filter-dropdown"]').nth(1);
-  159 |     await secondDropdown.locator("button").first().click();
-  160 |     await page.locator('[role="option"]').filter({ hasText: "Features" }).click();
-  161 |
-  162 |     // Verify both filters are applied
-  163 |     await expect(firstDropdown.locator("button").first()).toContainText("This Month");
-  164 |     await expect(secondDropdown.locator("button").first()).toContainText("Features");
-  165 |
-  166 |     // Verify that only Feature category tasks are shown
-  167 |     const categoryCells = await page.locator('.ag-cell[col-id="category"]').allTextContents();
-  168 |     for (const category of categoryCells) {
-  169 |       expect(category).toBe("Feature");
-  170 |     }
-  171 |
-  172 |     // There should be fewer rows due to combined filters
-  173 |     const rowCount = await page.locator(".ag-row").count();
-  174 |     expect(rowCount).toBeGreaterThan(0);
-  175 |     expect(rowCount).toBeLessThan(10); // Combined filters should show very few rows
-  176 |   });
+  173 |       .click();
+  174 |
+  175 |     // Wait for filter to apply
+  176 |     await page.waitForTimeout(1000);
   177 |
-  178 |   test("should update stats when filters are applied", async ({ page }) => {
-  179 |     // Get initial task count
-  180 |     const initialTaskCount = await page.locator('p:has-text("Number of Tasks") + p').textContent();
-  181 |     const initialCount = parseInt(initialTaskCount?.replace(/,/g, "") || "0");
+  178 |     // Verify filter is applied
+  179 |     await expect(firstDropdown.locator("button").first()).toContainText(
+  180 |       "Overdue",
+  181 |     );
   182 |
-  183 |     // Apply a filter
-  184 |     const firstDropdown = page.locator('[data-testid="quick-filter-dropdown"]').first();
-  185 |     await firstDropdown.locator("button").first().click();
-  186 |     await page.locator('[role="option"]').filter({ hasText: "Overdue" }).click();
-  187 |
-  188 |     // Wait for grid to update
-  189 |     await page.waitForTimeout(500);
-  190 |
-  191 |     // Get new task count
-  192 |     const newTaskCount = await page.locator('p:has-text("Number of Tasks") + p').textContent();
-  193 |     const newCount = parseInt(newTaskCount?.replace(/,/g, "") || "0");
-  194 |
-  195 |     // Task count should decrease when filter is applied
-> 196 |     expect(newCount).toBeLessThan(initialCount);
+  183 |     // Clear the filter by selecting "All Time"
+  184 |     await firstDropdown.locator("button").first().click();
+  185 |     await page
+  186 |       .locator('[role="option"]')
+  187 |       .filter({ hasText: "All Time" })
+  188 |       .click();
+  189 |
+  190 |     // Wait for filter to clear
+  191 |     await page.waitForTimeout(1000);
+  192 |
+  193 |     // Verify the dropdown shows "All Time"
+  194 |     await expect(firstDropdown.locator("button").first()).toContainText(
+  195 |       "All Time",
+  196 |     );
+  197 |
+  198 |     // Active filters should not be visible
+  199 |     const activeFilters = page.locator('[data-testid="active-filters"]');
+  200 |     await expect(activeFilters).not.toBeVisible();
+  201 |   });
+  202 |
+  203 |   test("should combine time and task type filters", async ({ page }) => {
+  204 |     // Apply time filter
+  205 |     const firstDropdown = page
+  206 |       .locator('[data-testid="quick-filter-dropdown"]')
+  207 |       .first();
+  208 |     await firstDropdown.locator("button").first().click();
+  209 |     await page
+  210 |       .locator('[role="option"]')
+  211 |       .filter({ hasText: "This Month" })
+  212 |       .click();
+  213 |
+  214 |     // Apply task type filter
+  215 |     const secondDropdown = page
+  216 |       .locator('[data-testid="quick-filter-dropdown"]')
+  217 |       .nth(1);
+  218 |     await secondDropdown.locator("button").first().click();
+  219 |     await page
+  220 |       .locator('[role="option"]')
+  221 |       .filter({ hasText: "Features" })
+  222 |       .click();
+  223 |
+  224 |     // Verify both filters are applied
+  225 |     await expect(firstDropdown.locator("button").first()).toContainText(
+  226 |       "This Month",
+  227 |     );
+  228 |     await expect(secondDropdown.locator("button").first()).toContainText(
+  229 |       "Features",
+  230 |     );
+  231 |
+  232 |     // Verify that only Feature category tasks are shown
+  233 |     const categoryCells = await page
+  234 |       .locator('.ag-cell[col-id="category"]')
+  235 |       .allTextContents();
+  236 |     for (const category of categoryCells) {
+  237 |       expect(category).toBe("Feature");
+  238 |     }
+  239 |
+  240 |     // There should be fewer rows due to combined filters
+  241 |     const rowCount = await page.locator(".ag-row").count();
+  242 |     expect(rowCount).toBeGreaterThan(0);
+  243 |     expect(rowCount).toBeLessThan(10); // Combined filters should show very few rows
+  244 |   });
+  245 |
+  246 |   test("should update stats when filters are applied", async ({ page }) => {
+  247 |     // Get initial task count
+  248 |     const initialTaskCount = await page
+  249 |       .locator('p:has-text("Number of Tasks") + p')
+  250 |       .textContent();
+  251 |     const initialCount = parseInt(initialTaskCount?.replace(/,/g, "") || "0");
+  252 |
+  253 |     // Apply a filter
+  254 |     const firstDropdown = page
+  255 |       .locator('[data-testid="quick-filter-dropdown"]')
+  256 |       .first();
+  257 |     await firstDropdown.locator("button").first().click();
+  258 |     await page
+  259 |       .locator('[role="option"]')
+  260 |       .filter({ hasText: "Overdue" })
+  261 |       .click();
+  262 |
+  263 |     // Wait for grid to update
+  264 |     await page.waitForTimeout(500);
+  265 |
+  266 |     // Get new task count
+  267 |     const newTaskCount = await page
+  268 |       .locator('p:has-text("Number of Tasks") + p')
+  269 |       .textContent();
+  270 |     const newCount = parseInt(newTaskCount?.replace(/,/g, "") || "0");
+  271 |
+  272 |     // Task count should decrease when filter is applied
+> 273 |     expect(newCount).toBeLessThan(initialCount);
       |                      ^ Error: expect(received).toBeLessThan(expected)
-  197 |     expect(newCount).toBeGreaterThan(0);
-  198 |   });
-  199 | });
+  274 |     expect(newCount).toBeGreaterThan(0);
+  275 |   });
+  276 | });
+  277 |
 ```

@@ -15,42 +15,29 @@ test.describe("Filter Instantiation Check", () => {
     await page.waitForTimeout(1000);
 
     // Check if DateFilter is being properly instantiated
-    const filterInfo = await page.evaluate(() => {
+    const filterInfo = await page.evaluate(async () => {
       const api = window.agGridApi;
       if (!api) return { error: "No API found" };
 
       // Get the filter instance
-      const filterInstance = api.getColumnFilterInstance("dueDate");
+      const filterPromise = api.getColumnFilterInstance("dueDate");
 
-      // Check if it's a promise
-      const isPromise =
-        filterInstance && typeof filterInstance.then === "function";
-
-      // If it's a promise, try to resolve it
-      if (isPromise) {
-        return filterInstance
-          .then((resolved: any) => {
-            return {
-              isPromise: true,
-              resolvedType: resolved ? resolved.constructor.name : null,
-              hasDoesFilterPass: typeof resolved?.doesFilterPass === "function",
-              hasSetModel: typeof resolved?.setModel === "function",
-              hasGetModel: typeof resolved?.getModel === "function",
-            };
-          })
-          .catch((error: any) => ({
-            isPromise: true,
-            error: error.message,
-          }));
+      try {
+        const filterInstance = await filterPromise;
+        return {
+          isPromise: true,
+          resolvedType: filterInstance ? filterInstance.constructor.name : null,
+          hasDoesFilterPass:
+            typeof filterInstance?.doesFilterPass === "function",
+          hasSetModel: typeof filterInstance?.setModel === "function",
+          hasGetModel: typeof filterInstance?.getModel === "function",
+        };
+      } catch (error: any) {
+        return {
+          isPromise: true,
+          error: error.message,
+        };
       }
-
-      return {
-        isPromise: false,
-        instanceType: filterInstance ? filterInstance.constructor.name : null,
-        hasDoesFilterPass: typeof filterInstance?.doesFilterPass === "function",
-        hasSetModel: typeof filterInstance?.setModel === "function",
-        hasGetModel: typeof filterInstance?.getModel === "function",
-      };
     });
 
     console.log(
@@ -117,11 +104,11 @@ test.describe("Filter Instantiation Check", () => {
     );
 
     // Check if the filter was actually applied
-    expect(filterResult.filterModelSet).toBe(true);
+    expect((filterResult as any).filterModelSet).toBe(true);
 
     // The row count should have changed (unless by coincidence all rows match)
     console.log(
-      `Row count changed from ${filterResult.initialRowCount} to ${filterResult.finalRowCount}`,
+      `Row count changed from ${(filterResult as any).initialRowCount} to ${(filterResult as any).finalRowCount}`,
     );
   });
 });

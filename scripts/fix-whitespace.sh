@@ -14,7 +14,7 @@ for file in $files; do
   if [[ -f "$file" ]]; then
     # Create a temporary backup
     cp "$file" "$file.bak"
-    
+
     # Skip binary files
     if file -b "$file" | grep -q "text"; then
       # Remove trailing whitespace
@@ -34,7 +34,7 @@ for file in $files; do
         fi
       fi
     fi
-    
+
     # Remove backup
     rm -f "$file.bak"
   fi

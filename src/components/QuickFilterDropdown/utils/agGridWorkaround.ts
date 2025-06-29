@@ -3,7 +3,7 @@
  * See: https://github.com/ag-grid/ag-grid/issues/2256
  */
 
-import { GridApi } from "ag-grid-community";
+import { GridApi, IFilter } from "ag-grid-community";
 
 export async function applyFilterModelWithWorkaround<TData = unknown>(
   api: GridApi<TData>,
@@ -24,23 +24,35 @@ export async function applyFilterModelWithWorkaround<TData = unknown>(
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Get the filter instance - in AG Grid v33 this returns a Promise
-    let filterInstance = (
+    let filterInstance: IFilter | null | undefined;
+    const filterInstanceOrPromise = (
       api as GridApi & {
         getColumnFilterInstance: (
           columnId: string,
-        ) => unknown | Promise<unknown>;
+        ) => Promise<IFilter | null | undefined> | IFilter | null | undefined;
       }
     ).getColumnFilterInstance(columnId);
+
     console.log(
       "[Workaround] Filter instance type:",
-      typeof filterInstance,
-      filterInstance?.constructor?.name,
+      typeof filterInstanceOrPromise,
+      (filterInstanceOrPromise as any)?.constructor?.name,
     );
 
     // If it's a promise, wait for it
-    if (filterInstance && typeof filterInstance.then === "function") {
+    if (
+      filterInstanceOrPromise &&
+      typeof (filterInstanceOrPromise as any).then === "function"
+    ) {
       console.log("[Workaround] Filter instance is a promise, waiting...");
-      filterInstance = await filterInstance;
+      filterInstance = await (filterInstanceOrPromise as Promise<
+        IFilter | null | undefined
+      >);
+    } else {
+      filterInstance = filterInstanceOrPromise as unknown as
+        | IFilter
+        | null
+        | undefined;
     }
 
     console.log("[Workaround] Filter instance after await:", filterInstance);
@@ -56,9 +68,9 @@ export async function applyFilterModelWithWorkaround<TData = unknown>(
       console.log("[Workaround] setModel completed");
 
       // For set filters, call applyModel if available
-      if (typeof filterInstance.applyModel === "function") {
+      if (typeof (filterInstance as any).applyModel === "function") {
         console.log("[Workaround] Calling applyModel");
-        filterInstance.applyModel();
+        (filterInstance as any).applyModel();
       }
 
       // Give the component time to process the state update
@@ -104,15 +116,30 @@ export async function applyFilterModelAlternative<TData = unknown>(
 
     // Get filter instance and manually trigger setModel
     await new Promise((resolve) => setTimeout(resolve, 10));
-    const filterInstance = (
+    const filterInstanceOrPromise = (
       api as GridApi & {
         getColumnFilterInstance: (
           columnId: string,
-        ) => unknown | Promise<unknown>;
+        ) => Promise<IFilter | null | undefined> | IFilter | null | undefined;
       }
     ).getColumnFilterInstance(columnId);
 
-    if (filterInstance) {
+    let filterInstance: IFilter | null | undefined;
+    if (
+      filterInstanceOrPromise &&
+      typeof (filterInstanceOrPromise as any).then === "function"
+    ) {
+      filterInstance = await (filterInstanceOrPromise as Promise<
+        IFilter | null | undefined
+      >);
+    } else {
+      filterInstance = filterInstanceOrPromise as unknown as
+        | IFilter
+        | null
+        | undefined;
+    }
+
+    if (filterInstance && filterInstance.setModel) {
       await filterInstance.setModel(filterModel);
       api.onFilterChanged();
     }
@@ -126,6 +153,18 @@ export async function applyFilterModelAlternative<TData = unknown>(
 
 export function waitForFirstDataRendered(api: GridApi): Promise<void> {
   return new Promise((resolve) => {
+    // Check if data is already rendered
+    if (!api?.getDisplayedRowCount || api.getDisplayedRowCount() > 0) {
+      resolve();
+      return;
+    }
+
+    // Check if event listener methods exist
+    if (!api?.addEventListener || !api?.removeEventListener) {
+      resolve();
+      return;
+    }
+
     // Method 3: Use firstDataRendered event for initial filter setup
     const listener = () => {
       api.removeEventListener("firstDataRendered", listener);

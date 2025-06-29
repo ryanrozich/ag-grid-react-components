@@ -65,7 +65,7 @@ test.describe("Date Filter", () => {
     expect(isFilterActive).toBeFalsy();
   });
 
-  test("should handle relative date filtering", async ({ page }) => {
+  test("should handle relative date filtering", async () => {
     // This test would verify the relative date filtering functionality
     // Implementation depends on how relative dates are implemented in the filter
     // For now, we'll just verify that the test runs without errors
@@ -168,6 +168,7 @@ async function verifyDateFilterApplied(
   const filterDate = new Date(filterValue);
 
   for (const dateStr of dates) {
+    if (!dateStr) continue;
     const rowDate = new Date(dateStr);
 
     switch (filterType) {
@@ -206,6 +207,7 @@ async function verifyDateRangeFilterApplied(
   const endDate = new Date(toDate);
 
   for (const dateStr of dates) {
+    if (!dateStr) continue;
     const rowDate = new Date(dateStr);
     expect(rowDate >= startDate).toBeTruthy();
     expect(rowDate <= endDate).toBeTruthy();

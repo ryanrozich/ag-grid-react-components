@@ -21,7 +21,7 @@ for file in $files; do
         grep -n '[[:space:]]$' "$file" | head -5
         found_issues=true
       fi
-      
+
       # Check for blank lines with whitespace
       if grep -l '^[[:space:]]\+$' "$file" > /dev/null 2>&1; then
         echo "❌ Blank lines with whitespace found in: $file"

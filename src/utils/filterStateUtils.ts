@@ -292,7 +292,10 @@ export function loadFilterStateFromUrl(
         logger.error("Invalid filter model from URL");
         return null;
       }
-      return deserializeFilterModel(filterModel);
+      return deserializeFilterModel(filterModel) as Record<
+        string,
+        unknown
+      > | null;
     } catch (error) {
       logger.error("Error parsing filter state from URL:", error);
       return null;

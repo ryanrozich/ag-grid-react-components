@@ -5,17 +5,11 @@
  * easy access to the grid's API and common test operations.
  */
 
-import type {
-  GridApi,
-  ColumnApi,
-  RowNode,
-  FilterModel,
-} from "ag-grid-community";
+import type { GridApi, IRowNode, FilterModel } from "ag-grid-community";
 import type { Page } from "@playwright/test";
 
 interface GridTestData {
   api: GridApi;
-  columnApi: ColumnApi;
 }
 
 declare global {
@@ -38,25 +32,12 @@ export const getGridApi = (gridId: string) => {
 };
 
 /**
- * Gets the column API for a specific grid ID
- */
-export const getColumnApi = (gridId: string) => {
-  const grid = window.__AG_GRID_TEST__?.[gridId];
-  if (!grid) {
-    throw new Error(
-      `Grid with ID "${gridId}" not found. Make sure AGGridTestHarness is properly set up.`,
-    );
-  }
-  return grid.columnApi;
-};
-
-/**
  * Gets all row data from the grid
  */
 export const getRowData = <TData = unknown>(gridId: string): TData[] => {
   const api = getGridApi(gridId);
   const rowData: TData[] = [];
-  api.forEachNode((node: RowNode<TData>) => {
+  api.forEachNode((node: IRowNode<TData>) => {
     if (node.data) {
       rowData.push(node.data);
     }

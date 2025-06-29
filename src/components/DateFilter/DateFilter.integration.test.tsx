@@ -2,7 +2,7 @@ import { expect, vi, beforeEach, describe, it } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import DateFilter from "./index";
 import { DateFilterModel, DateFilterParams } from "./types";
-import type { Column, GridApi, RowModel, ColDef } from "ag-grid-community";
+import type { Column, GridApi, IRowModel, ColDef } from "ag-grid-community";
 
 // Mock the AG Grid React hook
 vi.mock("ag-grid-react", () => ({
@@ -41,8 +41,8 @@ describe("DateFilter Integration Tests", () => {
     filterChangedCallback: vi.fn(),
     filterModifiedCallback: vi.fn(),
     colDef: {} as unknown as ColDef,
-    rowModel: {} as unknown as RowModel,
-    getValue: vi.fn(() => new Date("2023-01-15")),
+    rowModel: {} as unknown as IRowModel,
+    getValue: vi.fn(() => new Date("2023-01-15")) as any,
     doesRowPassOtherFilter: vi.fn(() => true),
     ...overrides,
   });
@@ -380,6 +380,246 @@ describe("DateFilter Integration Tests", () => {
         expect(dateFrom).toBeInstanceOf(Date);
         expect(dateFrom.toISOString()).toBe("2023-01-15T00:00:00.000Z");
       }
+    });
+
+    describe("doesFilterPass implementation", () => {
+      let doesFilterPassCallback: any;
+      let setModelCallback: any;
+
+      beforeEach(async () => {
+        const { useGridFilter } = vi.mocked(await import("ag-grid-react"));
+        useGridFilter.mockImplementation((callbacks) => {
+          doesFilterPassCallback = callbacks.doesFilterPass;
+          setModelCallback = (callbacks as any).setModel;
+        });
+      });
+
+      it("should return true when no filter is active", () => {
+        const props = createMockProps();
+        render(<DateFilter {...props} />);
+
+        const mockNode = { data: { date: new Date("2023-01-15") } };
+        const result = doesFilterPassCallback({ node: mockNode });
+        expect(result).toBe(true);
+      });
+
+      it("should filter dates with equals operator", async () => {
+        const props = createMockProps();
+        props.getValue = vi.fn((node: any) => node.data?.date);
+        render(<DateFilter {...props} />);
+
+        // Set up an equals filter
+        await waitFor(() => {
+          setModelCallback({
+            type: "equals",
+            mode: "absolute",
+            dateFrom: "2023-01-15T00:00:00.000Z",
+          });
+        });
+
+        // Test matching date
+        const matchingNode = { data: { date: new Date("2023-01-15") } };
+        expect(doesFilterPassCallback({ node: matchingNode })).toBe(true);
+
+        // Test non-matching date
+        const nonMatchingNode = { data: { date: new Date("2023-01-16") } };
+        expect(doesFilterPassCallback({ node: nonMatchingNode })).toBe(false);
+      });
+
+      it("should filter dates with notEqual operator", async () => {
+        const props = createMockProps();
+        props.getValue = vi.fn((node: any) => node.data?.date);
+        render(<DateFilter {...props} />);
+
+        await waitFor(() => {
+          setModelCallback({
+            type: "notEqual",
+            mode: "absolute",
+            dateFrom: "2023-01-15T00:00:00.000Z",
+          });
+        });
+
+        const differentNode = { data: { date: new Date("2023-01-16") } };
+        expect(doesFilterPassCallback({ node: differentNode })).toBe(true);
+
+        const sameNode = { data: { date: new Date("2023-01-15") } };
+        expect(doesFilterPassCallback({ node: sameNode })).toBe(false);
+      });
+
+      it("should filter dates with after operator (inclusive)", async () => {
+        const props = createMockProps({ afterInclusive: true });
+        props.getValue = vi.fn((node: any) => node.data?.date);
+        render(<DateFilter {...props} />);
+
+        await waitFor(() => {
+          setModelCallback({
+            type: "after",
+            mode: "absolute",
+            dateFrom: "2023-01-15T00:00:00.000Z",
+            fromInclusive: true,
+          });
+        });
+
+        const afterNode = { data: { date: new Date("2023-01-16") } };
+        expect(doesFilterPassCallback({ node: afterNode })).toBe(true);
+
+        const sameNode = { data: { date: new Date("2023-01-15") } };
+        expect(doesFilterPassCallback({ node: sameNode })).toBe(true); // inclusive
+
+        const beforeNode = { data: { date: new Date("2023-01-14") } };
+        expect(doesFilterPassCallback({ node: beforeNode })).toBe(false);
+      });
+
+      it("should filter dates with before operator (exclusive)", async () => {
+        const props = createMockProps({ beforeInclusive: false });
+        props.getValue = vi.fn((node: any) => node.data?.date);
+        render(<DateFilter {...props} />);
+
+        await waitFor(() => {
+          setModelCallback({
+            type: "before",
+            mode: "absolute",
+            dateFrom: "2023-01-15T00:00:00.000Z",
+            toInclusive: false,
+          });
+        });
+
+        const beforeNode = { data: { date: new Date("2023-01-14") } };
+        expect(doesFilterPassCallback({ node: beforeNode })).toBe(true);
+
+        const sameNode = { data: { date: new Date("2023-01-15") } };
+        expect(doesFilterPassCallback({ node: sameNode })).toBe(false); // exclusive
+
+        const afterNode = { data: { date: new Date("2023-01-16") } };
+        expect(doesFilterPassCallback({ node: afterNode })).toBe(false);
+      });
+
+      it("should filter dates with inRange operator", async () => {
+        const props = createMockProps();
+        props.getValue = vi.fn((node: any) => node.data?.date);
+        render(<DateFilter {...props} />);
+
+        await waitFor(() => {
+          setModelCallback({
+            type: "inRange",
+            mode: "absolute",
+            dateFrom: "2023-01-10T00:00:00.000Z",
+            dateTo: "2023-01-20T00:00:00.000Z",
+            fromInclusive: true,
+            toInclusive: true,
+          });
+        });
+
+        const inRangeNode = { data: { date: new Date("2023-01-15") } };
+        expect(doesFilterPassCallback({ node: inRangeNode })).toBe(true);
+
+        const startNode = { data: { date: new Date("2023-01-10") } };
+        expect(doesFilterPassCallback({ node: startNode })).toBe(true); // inclusive
+
+        const endNode = { data: { date: new Date("2023-01-20") } };
+        expect(doesFilterPassCallback({ node: endNode })).toBe(true); // inclusive
+
+        const beforeRangeNode = { data: { date: new Date("2023-01-09") } };
+        expect(doesFilterPassCallback({ node: beforeRangeNode })).toBe(false);
+
+        const afterRangeNode = { data: { date: new Date("2023-01-21") } };
+        expect(doesFilterPassCallback({ node: afterRangeNode })).toBe(false);
+      });
+
+      it("should handle null and invalid dates", async () => {
+        const props = createMockProps();
+        props.getValue = vi.fn((node: any) => node.data?.date);
+        render(<DateFilter {...props} />);
+
+        await waitFor(() => {
+          setModelCallback({
+            type: "equals",
+            mode: "absolute",
+            dateFrom: "2023-01-15T00:00:00.000Z",
+          });
+        });
+
+        const nullNode = { data: { date: null } };
+        expect(doesFilterPassCallback({ node: nullNode })).toBe(false);
+
+        const undefinedNode = { data: { date: undefined } };
+        expect(doesFilterPassCallback({ node: undefinedNode })).toBe(false);
+
+        const invalidNode = { data: { date: "invalid-date" } };
+        expect(doesFilterPassCallback({ node: invalidNode })).toBe(false);
+
+        const invalidDateNode = { data: { date: new Date("invalid") } };
+        expect(doesFilterPassCallback({ node: invalidDateNode })).toBe(false);
+      });
+
+      it("should handle relative date expressions", async () => {
+        const props = createMockProps();
+        props.getValue = vi.fn((node: any) => node.data?.date);
+        render(<DateFilter {...props} />);
+
+        await waitFor(() => {
+          setModelCallback({
+            type: "equals",
+            mode: "relative",
+            expressionFrom: "Today",
+          });
+        });
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const todayNode = { data: { date: today } };
+        expect(doesFilterPassCallback({ node: todayNode })).toBe(true);
+
+        const tomorrowNode = { data: { date: tomorrow } };
+        expect(doesFilterPassCallback({ node: tomorrowNode })).toBe(false);
+      });
+
+      it("should handle open-ended ranges", async () => {
+        const props = createMockProps();
+        props.getValue = vi.fn((node: any) => node.data?.date);
+        render(<DateFilter {...props} />);
+
+        // Range with no end date
+        await waitFor(() => {
+          setModelCallback({
+            type: "inRange",
+            mode: "absolute",
+            dateFrom: "2023-01-15T00:00:00.000Z",
+            dateTo: null,
+          });
+        });
+
+        const afterStartNode = { data: { date: new Date("2023-01-20") } };
+        expect(doesFilterPassCallback({ node: afterStartNode })).toBe(true);
+
+        const beforeStartNode = { data: { date: new Date("2023-01-10") } };
+        expect(doesFilterPassCallback({ node: beforeStartNode })).toBe(false);
+      });
+
+      it("should handle time normalization correctly", async () => {
+        const props = createMockProps();
+        props.getValue = vi.fn((node: any) => node.data?.date);
+        render(<DateFilter {...props} />);
+
+        await waitFor(() => {
+          setModelCallback({
+            type: "equals",
+            mode: "absolute",
+            dateFrom: "2023-01-15T00:00:00.000Z",
+          });
+        });
+
+        // Date with different times should still match
+        const morningNode = { data: { date: new Date("2023-01-15T08:30:00") } };
+        expect(doesFilterPassCallback({ node: morningNode })).toBe(true);
+
+        const eveningNode = { data: { date: new Date("2023-01-15T23:59:59") } };
+        expect(doesFilterPassCallback({ node: eveningNode })).toBe(true);
+      });
     });
   });
 });

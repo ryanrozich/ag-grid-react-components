@@ -62,7 +62,7 @@ test.describe("TestDemo", () => {
 
     expect(filteredData.length).toBe(filteredCount);
     filteredData.forEach((row) => {
-      expect(formatDate(new Date(row.date))).toBe(dateString);
+      expect(formatDate(new Date((row as any).date))).toBe(dateString);
     });
   });
 
@@ -95,7 +95,7 @@ test.describe("TestDemo", () => {
 
     // Verify all displayed rows are within the date range
     filteredData.forEach((row) => {
-      const rowDate = new Date(row.date).getTime();
+      const rowDate = new Date((row as any).date).getTime();
       expect(rowDate).toBeGreaterThanOrEqual(startDate.getTime());
       expect(rowDate).toBeLessThanOrEqual(endDate.getTime());
     });

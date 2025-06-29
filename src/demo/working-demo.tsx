@@ -174,7 +174,7 @@ const App: React.FC = () => {
             }}
             // Style the group footer rows
             groupRowRendererParams={{
-              footerValueGetter: (params) => {
+              footerValueGetter: (params: any) => {
                 const isRootLevel = params.node.level === -1;
                 if (isRootLevel) {
                   return "Grand Total";

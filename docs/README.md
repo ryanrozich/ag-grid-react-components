@@ -6,6 +6,14 @@ Welcome to the comprehensive documentation for AG Grid React Components. This di
 
 ### Core Documentation
 
+- **[DateFilter API Reference](./DATEFILTER_API.md)** - Complete API documentation for DateFilter
+
+  - Filter parameters and configuration
+  - Open-ended date ranges
+  - Inclusive/exclusive filtering
+  - TypeScript interfaces
+  - Code examples
+
 - **[Date Expressions Reference](./DATE_EXPRESSIONS.md)** - Complete guide to relative date expressions
 
   - Supported expressions and syntax

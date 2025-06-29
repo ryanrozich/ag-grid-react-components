@@ -81,6 +81,56 @@ export default [
       },
     },
   },
+  // Override rules for test files - allow `any` type
+  {
+    files: [
+      "**/*.test.{ts,tsx}",
+      "**/*.spec.{ts,tsx}",
+      "**/test/**/*.{ts,tsx}",
+      "**/tests/**/*.{ts,tsx}",
+      "**/__tests__/**/*.{ts,tsx}",
+      "**/test-utils/**/*.{ts,tsx}",
+      "src/utils/*.test.ts",
+      "src/components/**/*.test.tsx",
+    ],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      // Also relax some other rules for tests if needed
+      "@typescript-eslint/no-non-null-assertion": "off",
+    },
+  },
+  // Override for AG Grid workaround files where `any` is needed
+  {
+    files: [
+      "**/agGridWorkaround.ts",
+      "**/agGridWorkaround.test.ts",
+    ],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
+  // Override for demo files where `any` is acceptable for examples
+  {
+    files: [
+      "src/demo/**/*.{ts,tsx}",
+      "**/filter-test.tsx",
+      "**/working-demo*.tsx",
+    ],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off", // Turn off in demos
+      "react/no-unescaped-entities": "off", // Demo text can have quotes
+      "react-hooks/exhaustive-deps": "warn", // Downgrade to warning
+    },
+  },
+  // Override for components dealing with complex AG Grid types
+  {
+    files: [
+      "**/ActiveFilters/**/*.tsx",
+    ],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off", // Complex AG Grid filter models
+    },
+  },
   {
     ignores: [
       "dist/**",

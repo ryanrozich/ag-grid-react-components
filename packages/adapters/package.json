@@ -1,0 +1,75 @@
+{
+  "name": "@agrc/adapters",
+  "version": "2.0.0-beta.1",
+  "description": "Adapter packages for AG Grid React Components - date pickers, compression, and more",
+  "keywords": [
+    "ag-grid",
+    "react",
+    "adapters",
+    "react-datepicker",
+    "compression",
+    "lz-string"
+  ],
+  "author": "Ryan Rozich <ryan@rozich.net>",
+  "homepage": "https://github.com/ryanrozich/ag-grid-react-components#readme",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./react-datepicker": {
+      "types": "./dist/react-datepicker/index.d.ts",
+      "import": "./dist/react-datepicker/index.js",
+      "require": "./dist/react-datepicker/index.cjs"
+    },
+    "./native-date": {
+      "types": "./dist/native-date/index.d.ts",
+      "import": "./dist/native-date/index.js",
+      "require": "./dist/native-date/index.cjs"
+    },
+    "./compression/lz-string": {
+      "types": "./dist/compression/lz-string/index.d.ts",
+      "import": "./dist/compression/lz-string/index.js",
+      "require": "./dist/compression/lz-string/index.cjs"
+    },
+    "./compression/base64": {
+      "types": "./dist/compression/base64/index.d.ts",
+      "import": "./dist/compression/base64/index.js",
+      "require": "./dist/compression/base64/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanrozich/ag-grid-react-components.git",
+    "directory": "packages/adapters"
+  },
+  "bugs": {
+    "url": "https://github.com/ryanrozich/ag-grid-react-components/issues"
+  },
+  "peerDependencies": {
+    "@agrc/core": "^2.0.0",
+    "react": ">=16.8.0 || >=17.0.0 || >=18.0.0 || >=19.0.0"
+  },
+  "optionalDependencies": {
+    "react-datepicker": ">=4.0.0 || >=5.0.0 || >=6.0.0 || >=7.0.0 || >=8.0.0",
+    "lz-string": "^1.5.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.4",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  }
+}

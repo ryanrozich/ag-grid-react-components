@@ -2,6 +2,82 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## IMPORTANT: Version 2.0 Modular Architecture (December 2024)
+
+This project has been completely refactored into a modular, tree-shakeable architecture with multiple npm packages:
+
+### Package Structure
+
+```
+@agrc/core         - Headless components (5KB gzipped)
+@agrc/adapters     - Date pickers & compression (2KB gzipped)
+@agrc/styles       - Optional CSS (3KB gzipped)
+@agrc/compat       - v1 compatibility layer (5KB gzipped)
+
+Total: 95% smaller than v1 (25KB vs 329KB for minimal usage)
+```
+
+### Key Architecture Decisions
+
+1. **Headless by default** - Components come with zero styles
+2. **Adapter pattern** - Date pickers and compression are pluggable
+3. **Dynamic imports** - Heavy dependencies load only when used
+4. **Tree-shakeable** - Each component has its own entry point
+5. **Zero dependencies** in core package
+
+### Publishing to NPM
+
+```bash
+# Login first
+npm login
+
+# Publish all packages with beta tag (requires OTP)
+npm run publish:beta --otp=123456
+
+# Publish as latest
+npm run publish:latest --otp=123456
+```
+
+Packages publish under `@agrc/` scope which is available on npm.
+
+### Example Usage Patterns
+
+```typescript
+// MINIMAL (25KB total) - Uses native HTML5 date input
+import { createDateFilter } from "@agrc/core";
+const DateFilter = createDateFilter();
+
+// WITH REACT DATEPICKER (65KB total) - Lazy loaded
+import { createDateFilter } from "@agrc/core";
+import { reactDatePickerAdapter } from "@agrc/adapters/react-datepicker";
+const DateFilter = createDateFilter({ datePickerAdapter: reactDatePickerAdapter });
+
+// WITH COMPRESSION (adds 15KB when used)
+import { setupGridStatePersistence } from "@agrc/core";
+import { createLZStringAdapter } from "@agrc/adapters/compression";
+setupGridStatePersistence(api, { compressionAdapter: createLZStringAdapter() });
+
+// BACKWARD COMPATIBLE (for v1 users)
+import { DateFilter, QuickFilterDropdown } from "@agrc/compat";
+// Works exactly like v1 but uses v2 under the hood
+```
+
+### Monorepo Structure
+
+- Uses npm workspaces for package management
+- Turbo for build orchestration
+- Each package has its own package.json and build config
+- Shared TypeScript config at root
+
+### Bundle Size Achievements
+
+| Use Case                             | v1 Size | v2 Size | Reduction |
+| ------------------------------------ | ------- | ------- | --------- |
+| Just DateFilter (native)             | 329KB   | 25KB    | 92%       |
+| Just QuickFilter                     | 329KB   | 15KB    | 95%       |
+| All components (native)              | 329KB   | 45KB    | 86%       |
+| All components (w/ React DatePicker) | 329KB   | 85KB    | 74%       |
+
 ## Prerequisites
 
 ### Installing Trunk
@@ -833,6 +909,39 @@ This workaround:
 - Adds proper timing for React component lifecycle
 
 **Note**: This workaround should be removed once AG Grid fixes the underlying issue.
+
+## DateFilter Component Enhancements
+
+### Recent Enhancements (December 2024)
+
+The DateFilter component has been enhanced with two major features:
+
+1. **Open-Ended Date Ranges**: The component now supports date ranges with only a start or end date:
+
+   - `dateFrom` with `dateTo: null` - filters all dates from the start date onwards
+   - `dateFrom: null` with `dateTo` - filters all dates up to the end date
+   - Works with both absolute and relative date modes
+
+2. **Configurable Inclusivity**: Full control over whether date boundaries are inclusive or exclusive:
+   - `afterInclusive` - controls whether 'after' filter uses >= (inclusive) or > (exclusive)
+   - `beforeInclusive` - controls whether 'before' filter uses <= (inclusive) or < (exclusive)
+   - `rangeInclusive: {from, to}` - controls inclusivity for date ranges
+   - Can be set via filterParams or per filter instance in the model
+
+### Implementation Details
+
+- The inclusivity flags are managed in the `useFilterState` hook
+- Open-ended ranges are validated to ensure at least one date is present
+- The `doesFilterPass` method properly handles all combinations of open-ended ranges and inclusivity
+- Test coverage increased from 54.58% to 82.27% with comprehensive integration tests
+
+### Documentation
+
+Full documentation is available in:
+
+- [DateFilter API Reference](./docs/DATEFILTER_API.md) - Complete API documentation
+- [README.md](./README.md#advanced-datefilter-features) - User-facing documentation with examples
+- [llms.txt](./public/llms.txt) - Summarized documentation for LLMs
 
 ## ActiveFilters Component Notes
 

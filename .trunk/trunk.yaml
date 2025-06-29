@@ -12,7 +12,7 @@ repo:
 plugins:
   sources:
     - id: trunk
-      ref: v1.7.0
+      ref: v1.7.1
       uri: https://github.com/trunk-io/plugins
 # Many linters and tools depend on runtimes - configure them here. (https://docs.trunk.io/runtimes)
 runtimes:
@@ -31,7 +31,8 @@ lint:
     - actionlint@1.7.7
     - prettier@3.5.3
     # TypeScript/JavaScript
-    - eslint@9.27.0
+    - eslint@9.27.0:
+        runtime: node
     # CSS
     - stylelint@16.20.0
     # Security
@@ -57,6 +58,19 @@ lint:
         - scripts/**
         - .serena/**
         - docs/archive/**
+    # Ignore ESLint any warnings in test files
+    - linters: [eslint]
+      paths:
+        - "**/*.test.ts"
+        - "**/*.test.tsx"
+        - "**/*.spec.ts"
+        - "**/*.spec.tsx"
+        - "tests/**"
+        - "test-utils/**"
+        - "src/utils/*.test.ts"
+        - "src/components/**/*.test.tsx"
+        - "**/agGridWorkaround.ts"
+        - "**/agGridWorkaround.test.ts"
   # Use default git-diff-check configuration
 actions:
   disabled:

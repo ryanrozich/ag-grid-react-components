@@ -16,8 +16,8 @@ test.describe("Direct Filter Test", () => {
     const initial = await page.evaluate(() => {
       const api = window.agGridApi;
       return {
-        rowCount: api.getDisplayedRowCount(),
-        filterModel: api.getFilterModel(),
+        rowCount: api?.getDisplayedRowCount(),
+        filterModel: api?.getFilterModel(),
       };
     });
     console.log("Initial state:", initial);
@@ -27,7 +27,7 @@ test.describe("Direct Filter Test", () => {
       const api = window.agGridApi;
 
       // Set filter model
-      api.setFilterModel({
+      api?.setFilterModel({
         dueDate: {
           mode: "relative",
           type: "equals",
@@ -39,7 +39,7 @@ test.describe("Direct Filter Test", () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Get filter instance and manually call setModel
-      const filterInstance = await api.getColumnFilterInstance("dueDate");
+      const filterInstance = await api?.getColumnFilterInstance("dueDate");
       if (filterInstance && filterInstance.setModel) {
         await filterInstance.setModel({
           mode: "relative",
@@ -49,22 +49,22 @@ test.describe("Direct Filter Test", () => {
       }
 
       // Trigger filter
-      api.onFilterChanged();
+      api?.onFilterChanged();
 
       // Wait for filtering
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       return {
-        rowCount: api.getDisplayedRowCount(),
-        filterModel: api.getFilterModel(),
-        hasActiveFilter: api.isAnyFilterPresent(),
+        rowCount: api?.getDisplayedRowCount(),
+        filterModel: api?.getFilterModel(),
+        hasActiveFilter: api?.isAnyFilterPresent(),
       };
     });
 
     console.log("After filter:", result);
 
     // The filter should have worked
-    expect(result.rowCount).toBeLessThan(initial.rowCount);
+    expect(result.rowCount || 0).toBeLessThan(initial.rowCount || 0);
     expect(result.hasActiveFilter).toBe(true);
 
     // Check DOM after more waiting

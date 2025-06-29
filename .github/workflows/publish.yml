@@ -1,0 +1,119 @@
+name: Publish to NPM
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to publish (beta, rc, latest)"
+        required: true
+        default: "beta"
+        type: choice
+        options:
+          - beta
+          - rc
+          - latest
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # For npm provenance
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run tests
+        run: npm run test:unit
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run typecheck
+        run: npm run typecheck
+
+      - name: Build all packages
+        run: npx turbo run build
+
+      - name: Configure npm
+        run: |
+          echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ~/.npmrc
+          npm whoami
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish packages
+        run: |
+          # Determine tag based on trigger
+          if [ "${{ github.event_name }}" == "release" ]; then
+            if [[ "${{ github.event.release.tag_name }}" == *"beta"* ]]; then
+              TAG="beta"
+            elif [[ "${{ github.event.release.tag_name }}" == *"rc"* ]]; then
+              TAG="rc"
+            else
+              TAG="latest"
+            fi
+          else
+            TAG="${{ github.event.inputs.tag }}"
+          fi
+
+          echo "Publishing with tag: $TAG"
+
+          # Publish core package
+          cd packages/core
+          npm publish --access public --tag $TAG
+          cd ../..
+
+          # Publish adapters
+          cd packages/adapters
+          npm publish --access public --tag $TAG
+          cd ../..
+
+          # Publish styles
+          cd packages/styles
+          npm publish --access public --tag $TAG
+          cd ../..
+
+          # Publish compat
+          cd packages/compat
+          npm publish --access public --tag $TAG
+          cd ../..
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release Notes
+        if: github.event_name == 'release'
+        run: |
+          echo "## Published Packages" >> release-notes.md
+          echo "" >> release-notes.md
+          echo "- [@agrc/core@${{ github.event.release.tag_name }}](https://www.npmjs.com/package/@agrc/core)" >> release-notes.md
+          echo "- [@agrc/adapters@${{ github.event.release.tag_name }}](https://www.npmjs.com/package/@agrc/adapters)" >> release-notes.md
+          echo "- [@agrc/styles@${{ github.event.release.tag_name }}](https://www.npmjs.com/package/@agrc/styles)" >> release-notes.md
+          echo "- [@agrc/compat@${{ github.event.release.tag_name }}](https://www.npmjs.com/package/@agrc/compat)" >> release-notes.md
+          echo "" >> release-notes.md
+          echo "## Installation" >> release-notes.md
+          echo "" >> release-notes.md
+          echo '```bash' >> release-notes.md
+          echo "npm install @agrc/core@$TAG" >> release-notes.md
+          echo '```' >> release-notes.md
+
+      - name: Update Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          append_body: true
+          body_path: release-notes.md

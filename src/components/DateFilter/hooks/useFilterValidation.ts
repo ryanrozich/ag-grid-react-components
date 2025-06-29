@@ -110,20 +110,21 @@ export const useFilterValidation = ({
     if (filterMode === "absolute") {
       // For absolute mode, we need at least one date
       if (filterType === "inRange") {
-        return effectiveDateFrom !== null && effectiveDateTo !== null;
+        // Allow open-ended ranges - at least one date must be present
+        return effectiveDateFrom !== null || effectiveDateTo !== null;
       }
       return effectiveDateFrom !== null;
     } else {
       // For relative mode, check expression validity
       if (filterType === "inRange") {
-        return Boolean(
-          expressionFrom &&
-            expressionTo &&
-            fromExpressionValid &&
-            toExpressionValid &&
-            resolvedDateFrom !== null &&
-            resolvedDateTo !== null,
+        // Allow open-ended ranges - at least one expression must be valid
+        const hasValidFrom = Boolean(
+          expressionFrom && fromExpressionValid && resolvedDateFrom !== null,
         );
+        const hasValidTo = Boolean(
+          expressionTo && toExpressionValid && resolvedDateTo !== null,
+        );
+        return hasValidFrom || hasValidTo;
       }
       return Boolean(
         expressionFrom && fromExpressionValid && resolvedDateFrom !== null,

@@ -199,7 +199,7 @@ const App: React.FC = () => {
           return valueA.getTime() - valueB.getTime();
         },
         // Custom aggregation value formatter for MIN/MAX results
-        aggValueFormatter: (params) => {
+        aggValueFormatter: (params: any) => {
           if (params.value && params.value instanceof Date) {
             return format(params.value, "yyyy-MM-dd");
           }
@@ -226,7 +226,7 @@ const App: React.FC = () => {
           return valueA.getTime() - valueB.getTime();
         },
         // Custom aggregation value formatter for MIN/MAX results
-        aggValueFormatter: (params) => {
+        aggValueFormatter: (params: any) => {
           if (params.value && params.value instanceof Date) {
             return format(params.value, "yyyy-MM-dd");
           }
@@ -548,8 +548,8 @@ const App: React.FC = () => {
 
             setFilterStatus(`Filters: ${filterDescriptions}`);
           }
-        } catch (err) {
-          // Error updating filter status
+        } catch {
+          // Error updating filter status - silently ignore
         }
       });
 

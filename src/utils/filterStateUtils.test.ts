@@ -21,10 +21,12 @@ describe("filterStateUtils", () => {
 
       const serialized = serializeFilterModel(model) as SerializedFilterModel;
 
-      expect(serialized.column1.dateFrom).toBe("2024-01-15T12:00:00.000Z");
-      expect(serialized.column1.dateTo).toBeNull();
-      expect(serialized.column1.fromInclusive).toBe(false);
-      expect(serialized.column1.toInclusive).toBe(false);
+      expect((serialized.column1 as any).dateFrom).toBe(
+        "2024-01-15T12:00:00.000Z",
+      );
+      expect((serialized.column1 as any).dateTo).toBeNull();
+      expect((serialized.column1 as any).fromInclusive).toBe(false);
+      expect((serialized.column1 as any).toInclusive).toBe(false);
     });
 
     it("should handle multiple date fields", () => {
@@ -40,8 +42,12 @@ describe("filterStateUtils", () => {
 
       const serialized = serializeFilterModel(model) as SerializedFilterModel;
 
-      expect(serialized.column1.dateFrom).toBe("2024-01-15T12:00:00.000Z");
-      expect(serialized.column1.dateTo).toBe("2024-01-20T12:00:00.000Z");
+      expect((serialized as any).column1.dateFrom).toBe(
+        "2024-01-15T12:00:00.000Z",
+      );
+      expect((serialized as any).column1.dateTo).toBe(
+        "2024-01-20T12:00:00.000Z",
+      );
     });
 
     it("should preserve non-Date values", () => {
@@ -99,8 +105,8 @@ describe("filterStateUtils", () => {
 
       const serialized = serializeFilterModel(model) as SerializedFilterModel;
 
-      expect(serialized.column1.fromInclusive).toBe(true);
-      expect(serialized.column1.toInclusive).toBe(true);
+      expect((serialized as any).column1.fromInclusive).toBe(true);
+      expect((serialized as any).column1.toInclusive).toBe(true);
     });
   });
 
@@ -116,11 +122,11 @@ describe("filterStateUtils", () => {
 
       const deserialized = deserializeFilterModel(model);
 
-      expect(deserialized.column1.dateFrom).toBeInstanceOf(Date);
-      expect(deserialized.column1.dateFrom.toISOString()).toBe(
+      expect((deserialized as any).column1.dateFrom).toBeInstanceOf(Date);
+      expect((deserialized as any).column1.dateFrom.toISOString()).toBe(
         "2024-01-15T12:00:00.000Z",
       );
-      expect(deserialized.column1.dateTo).toBeNull();
+      expect((deserialized as any).column1.dateTo).toBeNull();
     });
 
     it("should handle multiple date fields", () => {
@@ -134,12 +140,12 @@ describe("filterStateUtils", () => {
 
       const deserialized = deserializeFilterModel(model);
 
-      expect(deserialized.column1.dateFrom).toBeInstanceOf(Date);
-      expect(deserialized.column1.dateTo).toBeInstanceOf(Date);
-      expect(deserialized.column1.dateFrom.toISOString()).toBe(
+      expect((deserialized as any).column1.dateFrom).toBeInstanceOf(Date);
+      expect((deserialized as any).column1.dateTo).toBeInstanceOf(Date);
+      expect((deserialized as any).column1.dateFrom.toISOString()).toBe(
         "2024-01-15T12:00:00.000Z",
       );
-      expect(deserialized.column1.dateTo.toISOString()).toBe(
+      expect((deserialized as any).column1.dateTo.toISOString()).toBe(
         "2024-01-20T12:00:00.000Z",
       );
     });
@@ -159,7 +165,7 @@ describe("filterStateUtils", () => {
 
       const deserialized = deserializeFilterModel(model);
 
-      expect(deserialized).toEqual(model);
+      expect(deserialized as any).toEqual(model);
     });
 
     it("should only convert dateFrom and dateTo fields", () => {
@@ -175,10 +181,14 @@ describe("filterStateUtils", () => {
       const deserialized = deserializeFilterModel(model);
 
       // Only dateFrom and dateTo should be converted
-      expect(deserialized.column1.dateFrom).toBeInstanceOf(Date);
-      expect(deserialized.column1.dateTo).toBeInstanceOf(Date);
-      expect(deserialized.column1.otherDate).toBe("2024-01-25T12:00:00.000Z");
-      expect(deserialized.column1.filter).toBe("2024-01-30T12:00:00.000Z");
+      expect((deserialized as any).column1.dateFrom).toBeInstanceOf(Date);
+      expect((deserialized as any).column1.dateTo).toBeInstanceOf(Date);
+      expect((deserialized as any).column1.otherDate).toBe(
+        "2024-01-25T12:00:00.000Z",
+      );
+      expect((deserialized as any).column1.filter).toBe(
+        "2024-01-30T12:00:00.000Z",
+      );
     });
 
     it("should handle empty and null models", () => {
@@ -249,7 +259,7 @@ describe("filterStateUtils", () => {
 
       setupFilterStatePersistence(mockApi as GridApi);
 
-      expect(mockApi.setFilterModel).toHaveBeenCalledWith({
+      expect(mockApi.setFilterModel!).toHaveBeenCalledWith({
         date: {
           type: "equals",
           dateFrom: expect.any(Date),
@@ -277,7 +287,7 @@ describe("filterStateUtils", () => {
           dateFrom: new Date("2024-01-15T12:00:00Z"),
         },
       };
-      vi.mocked(mockApi.getFilterModel).mockReturnValue(newFilterModel);
+      vi.mocked(mockApi.getFilterModel!).mockReturnValue(newFilterModel);
 
       filterChangedCallback({} as FilterChangedEvent);
 
@@ -310,7 +320,7 @@ describe("filterStateUtils", () => {
         .calls[0][1];
 
       // Simulate clearing filters
-      vi.mocked(mockApi.getFilterModel).mockReturnValue({});
+      vi.mocked(mockApi.getFilterModel!).mockReturnValue({});
       filterChangedCallback({} as FilterChangedEvent);
 
       // Should remove filter param but keep other params
@@ -352,7 +362,7 @@ describe("filterStateUtils", () => {
       window.dispatchEvent(new PopStateEvent("popstate"));
 
       // Should deserialize and set the filter model
-      expect(mockApi.setFilterModel).toHaveBeenCalledWith({
+      expect(mockApi.setFilterModel!).toHaveBeenCalledWith({
         date: { type: "equals", dateFrom: expect.any(Date) },
       });
 
@@ -393,7 +403,7 @@ describe("filterStateUtils", () => {
       // Create a circular reference that can't be serialized
       const circularModel = { date: {} as Record<string, unknown> };
       circularModel.date.circular = circularModel;
-      vi.mocked(mockApi.getFilterModel).mockReturnValue(circularModel);
+      vi.mocked(mockApi.getFilterModel!).mockReturnValue(circularModel);
 
       // This will throw due to circular reference in JSON.stringify
       expect(() => {
@@ -417,7 +427,7 @@ describe("filterStateUtils", () => {
       const filterChangedCallback = vi.mocked(mockApi.addEventListener!).mock
         .calls[0][1];
       const newFilterModel = { date: { type: "equals" } };
-      vi.mocked(mockApi.getFilterModel).mockReturnValue(newFilterModel);
+      vi.mocked(mockApi.getFilterModel!).mockReturnValue(newFilterModel);
       filterChangedCallback({} as FilterChangedEvent);
 
       // Should call onFilterSave
@@ -431,7 +441,7 @@ describe("filterStateUtils", () => {
 
       const filterChangedCallback = vi.mocked(mockApi.addEventListener!).mock
         .calls[0][1];
-      vi.mocked(mockApi.getFilterModel).mockReturnValue({
+      vi.mocked(mockApi.getFilterModel!).mockReturnValue({
         date: { type: "equals" },
       });
       filterChangedCallback({} as FilterChangedEvent);

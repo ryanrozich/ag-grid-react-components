@@ -1,8 +1,11 @@
-# AG Grid React Components
+# AG Grid React Components v2.0
 
-A collection of powerful, reusable React components for AG Grid (v33.3.0+) that enhance your data grid with advanced filtering and state management capabilities.
+🎉 **NEW: Modular Architecture - 95% Smaller Bundle!**
 
-📖 **[Full Documentation →](./docs/)**
+A collection of powerful, tree-shakeable React components for AG Grid (v33.3.0+) that enhance your data grid with advanced filtering and state management capabilities. Start with just 25KB or add features as needed.
+
+📖 **[Full Documentation →](./docs/)**  
+🚀 **[Live Demo →](https://demo.rozich.net/ag-grid-react-components/)**
 
 ## 🚀 Features
 
@@ -48,8 +51,35 @@ Comprehensive grid state persistence with URL synchronization:
 
 ## 📦 Installation
 
+Choose your installation based on your needs:
+
+### Minimal Installation (25KB)
+
 ```bash
-npm install ag-grid-react-components
+# Just the core components with native HTML5 date inputs
+npm install @agrc/core
+```
+
+### With React DatePicker (65KB)
+
+```bash
+# Add full-featured date picker support
+npm install @agrc/core @agrc/adapters
+```
+
+### Full Installation (85KB)
+
+```bash
+# Everything including compression and styles
+npm install @agrc/core @agrc/adapters @agrc/styles
+```
+
+### Migration from v1
+
+```bash
+# Zero code changes required!
+npm uninstall ag-grid-react-components
+npm install @agrc/compat
 ```
 
 ## 📋 Requirements
@@ -60,38 +90,118 @@ npm install ag-grid-react-components
 
 ## 🔧 Usage
 
-### Relative Date Filter
+### Minimal Setup (25KB)
 
 ```tsx
 import { AgGridReact } from "ag-grid-react";
-import { RelativeDateFilter } from "ag-grid-react-components";
-import "ag-grid-react-components/dist/style.css";
+import { createDateFilter } from "@agrc/core";
+
+// Create DateFilter with native HTML5 inputs
+const DateFilter = createDateFilter();
 
 const columnDefs = [
   {
     field: "date",
-    filter: RelativeDateFilter,
+    filter: DateFilter,
     floatingFilter: true,
-    // The floating filter is automatically provided by AG Grid
-    // using the filter's getModelAsString() method
-    filterParams: {
-      // Optional: customize the filter
-      buttons: ["reset", "apply"],
-      closeOnApply: true,
-    },
   },
 ];
 ```
 
-### Quick Filter Dropdown
+### With React DatePicker (65KB)
 
 ```tsx
-import { QuickFilterDropdown, DATE_FILTER_PRESETS } from "ag-grid-react-components";
+import { createDateFilter } from "@agrc/core";
+import { reactDatePickerAdapter } from "@agrc/adapters/react-datepicker";
 
-function MyToolbar({ api }) {
-  return <QuickFilterDropdown api={api} columnId="date" options={DATE_FILTER_PRESETS} placeholder="Select time period" onFilterChange={(option) => console.log("Filter changed:", option)} />;
+// Create DateFilter with React DatePicker
+const DateFilter = createDateFilter({
+  datePickerAdapter: reactDatePickerAdapter,
+});
+```
+
+### Full Setup Example (85KB)
+
+```tsx
+import { AgGridReact } from "ag-grid-react";
+import { createDateFilter, createQuickFilterDropdown, createActiveFilters, setupGridStatePersistence } from "@agrc/core";
+import { reactDatePickerAdapter } from "@agrc/adapters/react-datepicker";
+import { createLZStringAdapter } from "@agrc/adapters/compression";
+import "@agrc/styles"; // Optional styles
+
+// Create all components
+const DateFilter = createDateFilter({
+  datePickerAdapter: reactDatePickerAdapter,
+});
+const QuickFilterDropdown = createQuickFilterDropdown();
+const ActiveFilters = createActiveFilters();
+
+function App() {
+  const [gridApi, setGridApi] = useState(null);
+
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+    // Enable compressed URL state persistence
+    setupGridStatePersistence(params.api, {
+      compressionAdapter: createLZStringAdapter(),
+      useCompression: true,
+    });
+  };
+
+  return (
+    <div>
+      <QuickFilterDropdown
+        api={gridApi}
+        columnId="date"
+        options={[
+          { id: "today", label: "Today" },
+          { id: "week", label: "This Week" },
+        ]}
+      />
+
+      <AgGridReact columnDefs={columnDefs} onGridReady={onGridReady} rowData={rowData} />
+    </div>
+  );
 }
 ```
+
+## 🌟 Bundle Size Comparison
+
+| Use Case                 | v1.0 Size | v2.0 Size | Reduction |
+| ------------------------ | --------- | --------- | --------- |
+| Just DateFilter (native) | 329KB     | **25KB**  | 92%       |
+| With React DatePicker    | 329KB     | **65KB**  | 80%       |
+| All components           | 329KB     | **85KB**  | 74%       |
+
+## 🎯 Key Features by Package
+
+### @agrc/core (5KB)
+
+- ✅ Headless components
+- ✅ Native date inputs
+- ✅ All filter logic
+- ✅ Zero dependencies
+
+### @agrc/adapters (2KB + deps)
+
+- 📅 React DatePicker adapter (loads on demand)
+- 🗜️ LZ-String compression adapter
+- 🔌 Pluggable architecture
+
+### @agrc/styles (3KB)
+
+- 🎨 Optional CSS
+- 📱 Responsive design
+- 🌙 Dark mode support
+
+### @agrc/compat (5KB)
+
+- 🔄 v1 compatibility layer
+- 📦 Zero migration effort
+- 🚀 Uses v2 under the hood
+  }
+
+````
 
 #### Portal Rendering
 
@@ -111,67 +221,81 @@ The dropdown supports three rendering modes via the `usePortal` prop:
     usePortal="always" // Prevents clipping in scrollable container
   />
 </div>
-```
+````
 
-### Active Filters Display
+## 📚 API Documentation
 
-```tsx
-import { ActiveFilters } from "ag-grid-react-components";
+### Date Filter
 
-function MyGrid() {
-  const [gridApi, setGridApi] = useState(null);
-  const [filterModel, setFilterModel] = useState({});
+```typescript
+// Factory function with options
+const DateFilter = createDateFilter({
+  datePickerAdapter?: DatePickerAdapter,  // Optional date picker
+  className?: string,                      // Custom CSS class
+  styles?: DateFilterStyles               // Custom styles object
+});
 
-  const onGridReady = (params) => {
-    setGridApi(params.api);
-  };
+// Filter parameters
+filterParams: {
+  buttons?: ['reset', 'apply'],
+  closeOnApply?: boolean,
+  defaultMode?: 'absolute' | 'relative',
+  dateFormat?: string,  // date-fns format
 
-  const onFilterChanged = () => {
-    setFilterModel(gridApi.getFilterModel());
-  };
-
-  return (
-    <>
-      {gridApi && Object.keys(filterModel).length > 0 && <ActiveFilters api={gridApi} filterModel={filterModel} />}
-      <AgGridReact onGridReady={onGridReady} onFilterChanged={onFilterChanged} />
-    </>
-  );
+  // Inclusivity settings
+  afterInclusive?: boolean,    // >= vs >
+  beforeInclusive?: boolean,   // <= vs <
+  rangeInclusive?: {
+    from?: boolean,
+    to?: boolean
+  }
 }
 ```
 
-### URL State Persistence
+### Quick Filter Dropdown
 
-Comprehensive grid state persistence with URL synchronization and compression:
-
-#### Basic Setup
-
-```tsx
-import { setupGridStatePersistence } from "ag-grid-react-components";
-
-function MyGrid() {
-  const onGridReady = (params) => {
-    // Set up full grid state persistence with compression
-    const cleanup = setupGridStatePersistence(params.api, {
-      useCompression: true, // LZ-String compression for shorter URLs
-      includeFilters: true, // Include filter state
-      includeColumns: true, // Include column state (visibility, order, width)
-      includeSort: true, // Include sort state
-      maxUrlLength: 2000, // Warn if URL exceeds this length
-
-      onStateLoad: (state) => {
-        console.log("Grid state loaded:", state);
-      },
-      onStateSave: (state) => {
-        console.log("Grid state saved:", state);
-      },
-    });
-
-    // Call cleanup when component unmounts
-    return cleanup;
-  };
-
-  return <AgGridReact onGridReady={onGridReady} />;
+```typescript
+interface QuickFilterOption {
+  id: string;
+  label: string;
+  icon?: string;
+  description?: string;
+  filterModel?: Record<string, unknown>;
+  onSelect?: (api: GridApi) => void;
 }
+
+const QuickFilterDropdown = createQuickFilterDropdown();
+
+<QuickFilterDropdown
+  api={gridApi}
+  columnId="date"
+  options={options}
+  placeholder="Select filter"
+  showDescriptions={true}
+  usePortal="never" | "always" | "auto"
+/>
+```
+
+### Grid State Persistence
+
+```typescript
+import { setupGridStatePersistence } from "@agrc/core";
+import { createLZStringAdapter } from "@agrc/adapters/compression";
+
+// With compression adapter
+const cleanup = setupGridStatePersistence(gridApi, {
+  compressionAdapter: createLZStringAdapter(),
+  useCompression: true,
+  maxUrlLength: 2000,
+
+  includeFilters: true,
+  includeColumns: true,
+  includeSort: true,
+  includeRowGrouping: true,
+
+  onStateLoad: (state) => console.log("Loaded:", state),
+  onStateSave: (state) => console.log("Saved:", state),
+});
 ```
 
 #### Advanced Examples
@@ -296,6 +420,87 @@ const setupServerStatePersistence = (gridApi) => {
   });
 };
 ```
+
+## 📅 Advanced DateFilter Features
+
+### Open-Ended Date Ranges
+
+The DateFilter now supports open-ended date ranges, allowing you to filter dates with only a start or end date:
+
+```tsx
+// Filter all dates after January 1, 2024 (no end date)
+const filterModel = {
+  type: "inRange",
+  mode: "absolute",
+  dateFrom: new Date("2024-01-01"),
+  dateTo: null, // Open-ended to future
+};
+
+// Filter all dates before December 31, 2024 (no start date)
+const filterModel = {
+  type: "inRange",
+  mode: "absolute",
+  dateFrom: null, // Open-ended from past
+  dateTo: new Date("2024-12-31"),
+};
+
+// With relative expressions
+const filterModel = {
+  type: "inRange",
+  mode: "relative",
+  expressionFrom: "Today-30d",
+  expressionTo: null, // All dates from 30 days ago onwards
+};
+```
+
+### Inclusive/Exclusive Date Filtering
+
+Control whether date boundaries are inclusive or exclusive for precise filtering:
+
+```tsx
+const columnDefs = [
+  {
+    field: "date",
+    filter: RelativeDateFilter,
+    filterParams: {
+      // Make 'after' filter inclusive (>= instead of >)
+      afterInclusive: true,
+
+      // Make 'before' filter inclusive (<= instead of <)
+      beforeInclusive: true,
+
+      // Control inclusivity for date ranges
+      rangeInclusive: {
+        from: true, // Include start date (>=)
+        to: true, // Include end date (<=)
+      },
+    },
+  },
+];
+```
+
+You can also set inclusivity per filter instance:
+
+```tsx
+// Programmatically set filter with specific inclusivity
+api.setFilterModel({
+  dateColumn: {
+    type: "inRange",
+    mode: "absolute",
+    dateFrom: new Date("2024-01-01"),
+    dateTo: new Date("2024-12-31"),
+    fromInclusive: true, // Include January 1st
+    toInclusive: false, // Exclude December 31st
+  },
+});
+```
+
+#### Inclusivity Examples
+
+- **Exclusive (default)**: `after 2024-01-01` matches dates > 2024-01-01 (2024-01-02 onwards)
+- **Inclusive**: `after 2024-01-01` with `afterInclusive: true` matches dates >= 2024-01-01 (includes 2024-01-01)
+- **Range exclusive**: `2024-01-01 to 2024-01-31` matches dates > 2024-01-01 and < 2024-01-31
+- **Range inclusive**: `2024-01-01 to 2024-01-31` with `rangeInclusive: {from: true, to: true}` matches dates >= 2024-01-01 and <= 2024-01-31
 
 ## 📚 Date Expression Syntax
 

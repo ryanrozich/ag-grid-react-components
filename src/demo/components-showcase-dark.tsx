@@ -147,11 +147,11 @@ export const ComponentsShowcaseDark: React.FC = () => {
     const cleanup = setupFilterStatePersistence(params.api, {
       onFilterLoad: (model) => {
         console.log("Filters loaded from URL:", model);
-        setFilterModel(model);
+        setFilterModel(model || {});
       },
       onFilterSave: (model) => {
         console.log("Filters saved to URL:", model);
-        setFilterModel(model);
+        setFilterModel(model || {});
       },
     });
 

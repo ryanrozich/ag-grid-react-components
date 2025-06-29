@@ -183,10 +183,10 @@ const Footer: React.FC = () => (
             </li>
             <li>
               <a
-                href="https://www.npmjs.com/package/ag-grid-react-components"
+                href="https://www.npmjs.com/org/agrc"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                NPM Package
+                NPM Packages (@agrc/*)
               </a>
             </li>
             <li>
@@ -345,7 +345,9 @@ export const ComponentsShowcaseComplete: React.FC<
 > = ({ initialPage = "hero" }) => {
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
   const [rowData] = useState(() => generateData(1000));
-  const [filterModel, setFilterModel] = useState<FilterModel>({});
+  const [filterModel, setFilterModel] = useState<
+    import("ag-grid-community").FilterModel
+  >({});
   const [activeDocSection, setActiveDocSection] = useState("getting-started");
 
   const [stats, setStats] = useState({
@@ -743,7 +745,7 @@ export const ComponentsShowcaseComplete: React.FC<
             <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-40">
               <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
                 <div className="mt-6 flex items-center gap-x-4">
-                  <span className="inline-flex items-center gap-x-1.5 rounded-full bg-indigo-600/10 px-3 py-1.5 text-sm font-medium text-indigo-400 ring-1 ring-inset ring-indigo-600/20">
+                  <span className="inline-flex items-center gap-x-1.5 rounded-full bg-green-600/10 px-3 py-1.5 text-sm font-medium text-green-400 ring-1 ring-inset ring-green-600/20">
                     <svg
                       className="h-3 w-3"
                       viewBox="0 0 6 6"
@@ -751,7 +753,10 @@ export const ComponentsShowcaseComplete: React.FC<
                     >
                       <circle cx={3} cy={3} r={3} fill="currentColor" />
                     </svg>
-                    Open Source
+                    v2.0 Now Available
+                  </span>
+                  <span className="inline-flex items-center gap-x-1.5 rounded-full bg-indigo-600/10 px-3 py-1.5 text-sm font-medium text-indigo-400 ring-1 ring-inset ring-indigo-600/20">
+                    95% Smaller Bundle
                   </span>
                   <span className="inline-flex items-center gap-x-1.5 rounded-full bg-emerald-600/10 px-3 py-1.5 text-sm font-medium text-emerald-400 ring-1 ring-inset ring-emerald-600/20">
                     MIT License
@@ -761,9 +766,13 @@ export const ComponentsShowcaseComplete: React.FC<
                   AG Grid React Components
                 </h1>
                 <p className="mt-6 text-lg leading-8 text-gray-300">
-                  Enterprise-ready date filtering components for AG Grid.
-                  Support for relative date expressions, quick filters, and URL
-                  state persistence.
+                  <strong className="text-white">
+                    Modular, tree-shakeable
+                  </strong>{" "}
+                  date filtering components for AG Grid. Start with just{" "}
+                  <strong className="text-green-400">25KB</strong> for basic
+                  features or add advanced capabilities as needed. 100% free and
+                  open source.
                 </p>
                 <div className="mt-10 flex items-center gap-x-6">
                   <button
@@ -784,19 +793,20 @@ export const ComponentsShowcaseComplete: React.FC<
                 <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
                   <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
                     <CodeBlock
-                      code={`// Simple relative date filtering
-<AgGridReact
-  columnDefs={[{
-    field: "date",
-    filter: DateFilter,
-    floatingFilter: true
-  }]}
-/>
+                      code={`// MINIMAL (25KB total) - Uses native HTML5 date input
+import { createDateFilter } from "@agrc/core";
+const DateFilter = createDateFilter();
 
-// Example expressions:
-"Today-7d"     // 7 days ago
-"StartOfMonth" // First day of month
-"Today+1w"     // 1 week from today`}
+// WITH REACT DATEPICKER (65KB total) - Lazy loaded
+import { createDateFilter } from "@agrc/core";
+import { reactDatePickerAdapter } from "@agrc/adapters/react-datepicker";
+const DateFilter = createDateFilter({ 
+  datePickerAdapter: reactDatePickerAdapter 
+});
+
+// BACKWARD COMPATIBLE (for v1 users)
+import { DateFilter } from "@agrc/compat";
+// Works exactly like v1 but uses v2 under the hood`}
                       language="tsx"
                       variant="hero"
                       showCopyButton={false}
@@ -810,12 +820,79 @@ export const ComponentsShowcaseComplete: React.FC<
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
             <div className="mx-auto max-w-2xl lg:text-center">
               <h2 className="text-base font-semibold leading-7 text-indigo-400">
-                Advanced Filtering
+                Choose Your Bundle Size
               </h2>
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Everything you need for date filtering
+                Pay only for what you use
               </p>
             </div>
+            {/* Bundle Size Comparison */}
+            <div className="mx-auto mt-12 max-w-5xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
+                  <h4 className="text-sm font-medium text-gray-400 mb-2">
+                    Minimal Setup
+                  </h4>
+                  <div className="text-3xl font-bold text-green-400 mb-2">
+                    25KB
+                  </div>
+                  <div className="text-sm text-gray-500 mb-4">gzipped</div>
+                  <ul className="space-y-1 text-sm text-gray-400">
+                    <li>✓ DateFilter (native)</li>
+                    <li>✓ Core utilities</li>
+                    <li className="text-gray-600">✗ Date picker</li>
+                    <li className="text-gray-600">✗ Compression</li>
+                  </ul>
+                </div>
+                <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
+                  <h4 className="text-sm font-medium text-gray-400 mb-2">
+                    With Date Picker
+                  </h4>
+                  <div className="text-3xl font-bold text-blue-400 mb-2">
+                    65KB
+                  </div>
+                  <div className="text-sm text-gray-500 mb-4">gzipped</div>
+                  <ul className="space-y-1 text-sm text-gray-400">
+                    <li>✓ DateFilter</li>
+                    <li>✓ React DatePicker</li>
+                    <li>✓ Core utilities</li>
+                    <li className="text-gray-600">✗ Compression</li>
+                  </ul>
+                </div>
+                <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
+                  <h4 className="text-sm font-medium text-gray-400 mb-2">
+                    Full Featured
+                  </h4>
+                  <div className="text-3xl font-bold text-purple-400 mb-2">
+                    85KB
+                  </div>
+                  <div className="text-sm text-gray-500 mb-4">gzipped</div>
+                  <ul className="space-y-1 text-sm text-gray-400">
+                    <li>✓ All components</li>
+                    <li>✓ React DatePicker</li>
+                    <li>✓ URL compression</li>
+                    <li>✓ All utilities</li>
+                  </ul>
+                </div>
+                <div className="bg-gray-900/50 rounded-lg p-6 border border-orange-700">
+                  <h4 className="text-sm font-medium text-gray-400 mb-2">
+                    v1.0 (Old)
+                  </h4>
+                  <div className="text-3xl font-bold text-orange-400 mb-2">
+                    329KB
+                  </div>
+                  <div className="text-sm text-gray-500 mb-4">gzipped</div>
+                  <ul className="space-y-1 text-sm text-gray-400">
+                    <li>• Everything bundled</li>
+                    <li>• No tree-shaking</li>
+                    <li>• All dependencies</li>
+                    <li>• Not modular</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Feature Cards */}
             <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
               <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
                 <div className="flex flex-col">
@@ -835,13 +912,13 @@ export const ComponentsShowcaseComplete: React.FC<
                         />
                       </svg>
                     </div>
-                    Relative Date Expressions
+                    Modular Architecture
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      Use intuitive expressions like &quot;Today-7d&quot; or
-                      &quot;StartOfMonth&quot; instead of picking specific
-                      dates.
+                      Pick only what you need. Start with native date inputs at
+                      25KB or add React DatePicker when you need it. Every byte
+                      counts.
                     </p>
                   </dd>
                 </div>
@@ -862,12 +939,13 @@ export const ComponentsShowcaseComplete: React.FC<
                         />
                       </svg>
                     </div>
-                    Quick Filter Presets
+                    Relative Date Expressions
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      Apply common date ranges with one click using customizable
-                      dropdown menus.
+                      Use intuitive expressions like &quot;Today-7d&quot; or
+                      &quot;StartOfMonth&quot; for dynamic filters that update
+                      automatically.
                     </p>
                   </dd>
                 </div>
@@ -888,12 +966,13 @@ export const ComponentsShowcaseComplete: React.FC<
                         />
                       </svg>
                     </div>
-                    URL State Persistence
+                    Tree-Shakeable
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      Share filtered views with automatic URL synchronization
-                      and browser history support.
+                      Each component has its own entry point. Your bundler
+                      automatically removes unused code for optimal production
+                      builds.
                     </p>
                   </dd>
                 </div>
@@ -992,26 +1071,39 @@ export const ComponentsShowcaseComplete: React.FC<
                         Getting Started
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6">
-                        Welcome to AG Grid React Components! This is a{" "}
+                        Welcome to AG Grid React Components v2.0! This is a{" "}
                         <strong className="text-green-400">
                           free and open source
                         </strong>{" "}
-                        library that provides enterprise-ready date filtering
-                        components for AG Grid with support for relative date
-                        expressions, quick filters, and URL state persistence.
+                        library that provides modular, tree-shakeable date
+                        filtering components for AG Grid. Start with just 25KB
+                        or add features as needed.
                       </p>
 
                       <div className="bg-green-900/20 border border-green-600/30 rounded-lg p-4 mb-6">
                         <p className="text-green-400 text-sm font-medium mb-2">
-                          🎉 100% Free and Open Source
+                          🎆 New in v2.0: Modular Architecture
                         </p>
                         <p className="text-gray-300 text-sm">
-                          These components are completely free to use under the
-                          MIT license. There is no paid version of these
-                          components. The components work with both AG Grid
-                          Community (free) and AG Grid Enterprise (paid)
-                          editions.
+                          95% smaller bundle size! Choose only what you need:
                         </p>
+                        <ul className="mt-2 space-y-1 text-sm text-gray-300">
+                          <li>
+                            • <strong>@agrc/core</strong> - Headless components
+                            (5KB)
+                          </li>
+                          <li>
+                            • <strong>@agrc/adapters</strong> - Date pickers &
+                            compression (2KB)
+                          </li>
+                          <li>
+                            • <strong>@agrc/styles</strong> - Optional CSS (3KB)
+                          </li>
+                          <li>
+                            • <strong>@agrc/compat</strong> - v1 compatibility
+                            (5KB)
+                          </li>
+                        </ul>
                       </div>
 
                       <div className="bg-indigo-900/20 border border-indigo-600/30 rounded-lg p-6 mb-8">
@@ -1272,42 +1364,102 @@ export const ComponentsShowcaseComplete: React.FC<
                         Installation
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6">
-                        Get started with AG Grid React Components in your
-                        project.
+                        Choose your installation approach based on your bundle
+                        size requirements.
                       </p>
 
-                      <div className="space-y-6">
+                      <div className="space-y-8">
+                        {/* Minimal Installation */}
                         <div>
-                          <AnchorHeading level={3} id="npm">
-                            NPM
+                          <AnchorHeading level={3} id="minimal-installation">
+                            Minimal Installation (25KB)
                           </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            Just the core components with native HTML5 date
+                            inputs.
+                          </p>
                           <CodeBlock
-                            code={`npm install ag-grid-react-components
+                            code={`# Core package only
+npm install @agrc/core
 
 # Required peer dependencies
-npm install ag-grid-community ag-grid-react ag-grid-enterprise date-fns`}
+npm install ag-grid-community ag-grid-react react react-dom`}
                             language="bash"
                           />
                         </div>
 
+                        {/* With Date Picker */}
                         <div>
-                          <AnchorHeading level={3} id="yarn">
-                            Yarn
+                          <AnchorHeading level={3} id="with-datepicker">
+                            With React DatePicker (65KB)
                           </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            Add a full-featured date picker component.
+                          </p>
                           <CodeBlock
-                            code={`yarn add ag-grid-react-components
+                            code={`# Core + adapters
+npm install @agrc/core @agrc/adapters
 
-# Required peer dependencies
-yarn add ag-grid-community ag-grid-react ag-grid-enterprise date-fns`}
+# Optional: react-datepicker will be installed automatically
+# when you import the adapter`}
                             language="bash"
                           />
+                        </div>
+
+                        {/* Full Installation */}
+                        <div>
+                          <AnchorHeading level={3} id="full-installation">
+                            Full Installation (85KB)
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            All features including compression and styles.
+                          </p>
+                          <CodeBlock
+                            code={`# All packages
+npm install @agrc/core @agrc/adapters @agrc/styles
+
+# Everything is lazy-loaded when used`}
+                            language="bash"
+                          />
+                        </div>
+
+                        {/* Migration from v1 */}
+                        <div>
+                          <AnchorHeading level={3} id="migration-from-v1">
+                            Migration from v1
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            Upgrading from v1? Use the compatibility layer for
+                            zero code changes.
+                          </p>
+                          <CodeBlock
+                            code={`# Replace your existing package
+npm uninstall ag-grid-react-components
+npm install @agrc/compat
+
+# Your existing imports will continue to work
+import { DateFilter, QuickFilterDropdown } from '@agrc/compat';`}
+                            language="bash"
+                          />
+                        </div>
+
+                        <div className="bg-green-900/20 border border-green-600/30 rounded-lg p-4">
+                          <p className="text-green-400 text-sm font-medium mb-2">
+                            🌱 Tree-Shaking Enabled
+                          </p>
+                          <p className="text-gray-300 text-sm">
+                            Only the code you import will be included in your
+                            bundle. Heavy dependencies like react-datepicker
+                            (100KB) are dynamically imported only when used.
+                          </p>
                         </div>
 
                         <div className="bg-amber-900/20 border border-amber-600/30 rounded-lg p-4">
                           <p className="text-amber-400 text-sm">
-                            <strong>Note:</strong> AG Grid Enterprise is
-                            required for the filter components. You can use the
-                            trial version or purchase a license from AG Grid.
+                            <strong>Note:</strong> AG Grid Enterprise provides
+                            additional features like floating filters and the
+                            filter tool panel. The components work with both
+                            Community (free) and Enterprise editions.
                           </p>
                         </div>
                       </div>
@@ -1331,71 +1483,152 @@ yarn add ag-grid-community ag-grid-react ag-grid-enterprise date-fns`}
                       <div className="space-y-8">
                         <div>
                           <AnchorHeading level={2} id="complete-example">
-                            Complete Example
+                            Usage Examples
                           </AnchorHeading>
-                          <CodeBlock
-                            code={`import React, { useState } from 'react';
-import { AgGridReact } from 'ag-grid-react';
-import {
-  DateFilter,
-  QuickFilterDropdown,
-  ActiveFilters,
-  setupFilterStatePersistence
-} from 'ag-grid-react-components';
 
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-quartz.css';
+                          {/* Minimal Example */}
+                          <div className="mb-8">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Minimal Setup (25KB)
+                            </h4>
+                            <CodeBlock
+                              code={`import React from 'react';
+import { AgGridReact } from 'ag-grid-react';
+import { createDateFilter } from '@agrc/core';
+
+// Create DateFilter with native HTML5 inputs
+const DateFilter = createDateFilter();
+
+function App() {
+  const columnDefs = [
+    {
+      field: 'date',
+      headerName: 'Date',
+      filter: DateFilter,
+    }
+  ];
+
+  return (
+    <div className="ag-theme-quartz" style={{ height: 600 }}>
+      <AgGridReact columnDefs={columnDefs} rowData={rowData} />
+    </div>
+  );
+}`}
+                              language="tsx"
+                            />
+                          </div>
+
+                          {/* With DatePicker Example */}
+                          <div className="mb-8">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              With React DatePicker (65KB)
+                            </h4>
+                            <CodeBlock
+                              code={`import React from 'react';
+import { AgGridReact } from 'ag-grid-react';
+import { createDateFilter, createQuickFilterDropdown } from '@agrc/core';
+import { reactDatePickerAdapter } from '@agrc/adapters/react-datepicker';
+
+// Create components with date picker support
+const DateFilter = createDateFilter({ 
+  datePickerAdapter: reactDatePickerAdapter 
+});
+const QuickFilterDropdown = createQuickFilterDropdown();
 
 function App() {
   const [gridApi, setGridApi] = useState(null);
-  const [filterModel, setFilterModel] = useState({});
-
+  
   const columnDefs = [
     {
       field: 'date',
       headerName: 'Date',
       filter: DateFilter,
       floatingFilter: true,
-    },
-    {
-      field: 'status',
-      headerName: 'Status',
-      filter: 'agSetColumnFilter',
     }
   ];
 
+  return (
+    <div>
+      <QuickFilterDropdown 
+        api={gridApi}
+        columnId="date"
+        options={[
+          { id: 'today', label: 'Today' },
+          { id: 'week', label: 'This Week' },
+          { id: 'month', label: 'This Month' },
+        ]}
+      />
+      
+      <div className="ag-theme-quartz" style={{ height: 600 }}>
+        <AgGridReact 
+          columnDefs={columnDefs} 
+          rowData={rowData}
+          onGridReady={params => setGridApi(params.api)}
+        />
+      </div>
+    </div>
+  );
+}`}
+                              language="tsx"
+                            />
+                          </div>
+
+                          {/* Full Featured Example */}
+                          <div>
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Full Featured with URL Persistence (85KB)
+                            </h4>
+                            <CodeBlock
+                              code={`import React, { useState } from 'react';
+import { AgGridReact } from 'ag-grid-react';
+import { 
+  createDateFilter, 
+  createQuickFilterDropdown,
+  createActiveFilters,
+  setupGridStatePersistence 
+} from '@agrc/core';
+import { reactDatePickerAdapter } from '@agrc/adapters/react-datepicker';
+import { createLZStringAdapter } from '@agrc/adapters/compression';
+import '@agrc/styles'; // Optional styles
+
+// Create all components
+const DateFilter = createDateFilter({ 
+  datePickerAdapter: reactDatePickerAdapter 
+});
+const QuickFilterDropdown = createQuickFilterDropdown();
+const ActiveFilters = createActiveFilters();
+
+function App() {
+  const [gridApi, setGridApi] = useState(null);
+  const [filterModel, setFilterModel] = useState({});
+
   const onGridReady = (params) => {
     setGridApi(params.api);
-    // Enable URL state persistence
-    setupFilterStatePersistence(params.api);
-  };
-
-  const onFilterChanged = () => {
-    if (gridApi) {
-      setFilterModel(gridApi.getFilterModel());
-    }
+    // Enable compressed URL state persistence
+    setupGridStatePersistence(params.api, {
+      compressionAdapter: createLZStringAdapter(),
+      useCompression: true,
+    });
   };
 
   return (
     <div>
-      {/* Show active filters when there are any */}
-      {gridApi && Object.keys(filterModel).length > 0 && (
-        <ActiveFilters api={gridApi} filterModel={filterModel} />
-      )}
-
+      <ActiveFilters api={gridApi} filterModel={filterModel} />
+      
       <div className="ag-theme-quartz" style={{ height: 600 }}>
         <AgGridReact
           columnDefs={columnDefs}
           onGridReady={onGridReady}
-          onFilterChanged={onFilterChanged}
+          onFilterChanged={() => setFilterModel(gridApi?.getFilterModel() || {})}
           rowData={rowData}
         />
       </div>
     </div>
   );
 }`}
-                            language="tsx"
-                          />
+                              language="tsx"
+                            />
+                          </div>
                         </div>
 
                         <div>
@@ -1405,26 +1638,79 @@ function App() {
                           <ul className="space-y-2 text-gray-300">
                             <li className="flex items-start">
                               <span className="text-gray-500 mr-2">•</span>
-                              Import the components you need from
-                              &apos;ag-grid-react-components&apos;
+                              Create components using factory functions from
+                              &apos;@agrc/core&apos;
                             </li>
                             <li className="flex items-start">
                               <span className="text-gray-500 mr-2">•</span>
-                              Set up column definitions with the custom filter
-                              components
+                              Add optional adapters for date pickers and
+                              compression
                             </li>
                             <li className="flex items-start">
                               <span className="text-gray-500 mr-2">•</span>
-                              Enable floating filters for better UX
+                              Only import what you need - unused code is
+                              tree-shaken
                             </li>
                             <li className="flex items-start">
                               <span className="text-gray-500 mr-2">•</span>
-                              Optionally enable URL state persistence
+                              Heavy dependencies load dynamically when used
                             </li>
                           </ul>
                         </div>
 
                         <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                          <AnchorHeading level={3} id="bundle-size-guide">
+                            Bundle Size Guide
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            Choose components based on your size requirements:
+                          </p>
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="border-b border-gray-700">
+                                <th className="text-left py-2 text-gray-300">
+                                  Feature
+                                </th>
+                                <th className="text-left py-2 text-gray-300">
+                                  Size Impact
+                                </th>
+                                <th className="text-left py-2 text-gray-300">
+                                  When to Use
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="text-gray-400">
+                              <tr className="border-b border-gray-800">
+                                <td className="py-3">Native date inputs</td>
+                                <td className="py-3">+0KB</td>
+                                <td className="py-3">
+                                  Mobile-friendly, minimal size
+                                </td>
+                              </tr>
+                              <tr className="border-b border-gray-800">
+                                <td className="py-3">React DatePicker</td>
+                                <td className="py-3">+40KB</td>
+                                <td className="py-3">
+                                  Better UX, calendar widget
+                                </td>
+                              </tr>
+                              <tr className="border-b border-gray-800">
+                                <td className="py-3">URL compression</td>
+                                <td className="py-3">+15KB</td>
+                                <td className="py-3">Shorter shareable URLs</td>
+                              </tr>
+                              <tr className="border-b border-gray-800">
+                                <td className="py-3">Styles package</td>
+                                <td className="py-3">+3KB</td>
+                                <td className="py-3">
+                                  Pre-built component styles
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <div className="bg-indigo-900/20 border border-indigo-600/30 rounded-lg p-6">
                           <AnchorHeading level={3} id="next-steps">
                             Next Steps
                           </AnchorHeading>
@@ -1435,7 +1721,7 @@ function App() {
                             <li>
                               <Link
                                 to="/docs/relativedatefilter"
-                                className="text-blue-400 hover:text-blue-300"
+                                className="text-indigo-400 hover:text-indigo-300"
                               >
                                 DateFilter documentation
                               </Link>{" "}
@@ -1444,7 +1730,7 @@ function App() {
                             <li>
                               <Link
                                 to="/docs/quickfilterdropdown"
-                                className="text-blue-400 hover:text-blue-300"
+                                className="text-indigo-400 hover:text-indigo-300"
                               >
                                 QuickFilterDropdown documentation
                               </Link>{" "}
@@ -1453,7 +1739,7 @@ function App() {
                             <li>
                               <Link
                                 to="/docs/activefilters"
-                                className="text-blue-400 hover:text-blue-300"
+                                className="text-indigo-400 hover:text-indigo-300"
                               >
                                 ActiveFilters documentation
                               </Link>{" "}
@@ -1462,7 +1748,7 @@ function App() {
                             <li>
                               <Link
                                 to="/demo"
-                                className="text-blue-400 hover:text-blue-300"
+                                className="text-indigo-400 hover:text-indigo-300"
                               >
                                 Live demo
                               </Link>{" "}
@@ -1484,7 +1770,9 @@ function App() {
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6">
                         A powerful date filter that supports both absolute dates
-                        and relative expressions.
+                        and relative expressions. Now available as a
+                        lightweight, modular component with optional date picker
+                        support.
                       </p>
 
                       <div className="space-y-8">
@@ -1496,8 +1784,18 @@ function App() {
                             Basic Usage
                           </AnchorHeading>
                           <CodeBlock
-                            code={`import { DateFilter } from 'ag-grid-react-components';
+                            code={`// Minimal (25KB) - Native HTML5 date inputs
+import { createDateFilter } from '@agrc/core';
+const DateFilter = createDateFilter();
 
+// With React DatePicker (65KB)
+import { createDateFilter } from '@agrc/core';
+import { reactDatePickerAdapter } from '@agrc/adapters/react-datepicker';
+const DateFilter = createDateFilter({ 
+  datePickerAdapter: reactDatePickerAdapter 
+});
+
+// Use in column definitions
 const columnDefs = [
   {
     field: 'dateField',
@@ -1592,13 +1890,88 @@ const columnDefs = [
                                     Include blank values in greater than
                                   </td>
                                 </tr>
-                                <tr>
+                                <tr className="border-b border-gray-800">
                                   <td className="py-3">includeBlanksInRange</td>
                                   <td className="py-3">boolean</td>
                                   <td className="py-3">No</td>
                                   <td className="py-3">false</td>
                                   <td className="py-3">
                                     Include blank values in range
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">dateFormat</td>
+                                  <td className="py-3">string</td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">"yyyy-MM-dd"</td>
+                                  <td className="py-3">
+                                    Date format for display (date-fns format)
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">dateParser</td>
+                                  <td className="py-3">function</td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">Built-in parser</td>
+                                  <td className="py-3">
+                                    Custom function to parse cell values to
+                                    dates
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">defaultMode</td>
+                                  <td className="py-3">
+                                    "absolute" | "relative"
+                                  </td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">"absolute"</td>
+                                  <td className="py-3">Default filter mode</td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">minDate</td>
+                                  <td className="py-3">Date</td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">-</td>
+                                  <td className="py-3">
+                                    Minimum selectable date in date picker
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">maxDate</td>
+                                  <td className="py-3">Date</td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">-</td>
+                                  <td className="py-3">
+                                    Maximum selectable date in date picker
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">afterInclusive</td>
+                                  <td className="py-3">boolean</td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">false</td>
+                                  <td className="py-3">
+                                    Whether 'after' filter includes the boundary
+                                    date (&gt;= vs &gt;)
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">beforeInclusive</td>
+                                  <td className="py-3">boolean</td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">false</td>
+                                  <td className="py-3">
+                                    Whether 'before' filter includes the
+                                    boundary date (&lt;= vs &lt;)
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="py-3">rangeInclusive</td>
+                                  <td className="py-3">{`{from?: boolean, to?: boolean}`}</td>
+                                  <td className="py-3">No</td>
+                                  <td className="py-3">{`{from: false, to: false}`}</td>
+                                  <td className="py-3">
+                                    Inclusivity for date ranges
                                   </td>
                                 </tr>
                               </tbody>
@@ -1626,7 +1999,24 @@ const columnDefs = [
       includeBlanksInEquals: false,
       includeBlanksInLessThan: true,
       includeBlanksInGreaterThan: false,
-      includeBlanksInRange: false
+      includeBlanksInRange: false,
+
+      // Date format and parsing
+      dateFormat: 'MM/dd/yyyy',
+      dateParser: (value) => new Date(value),
+      defaultMode: 'relative',
+
+      // Date constraints
+      minDate: new Date('2020-01-01'),
+      maxDate: new Date('2030-12-31'),
+
+      // Inclusivity settings
+      afterInclusive: true,     // >= instead of >
+      beforeInclusive: true,    // <= instead of <
+      rangeInclusive: {
+        from: true,  // Include start date
+        to: true     // Include end date
+      }
     }
   }
 ];`}
@@ -1765,6 +2155,138 @@ const columnDefs = [
                             />
                           </div>
                         </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="open-ended-date-ranges">
+                            Open-Ended Date Ranges
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            DateFilter supports filtering with only a start or
+                            end date, perfect for scenarios like "all dates
+                            after X" or "all dates before Y".
+                          </p>
+                          <CodeBlock
+                            code={`// Filter all dates after January 1, 2024
+const filterModel = {
+  type: "inRange",
+  mode: "absolute",
+  dateFrom: new Date("2024-01-01"),
+  dateTo: null,  // Open-ended to future
+};
+
+// Filter all dates before December 31, 2024
+const filterModel = {
+  type: "inRange",
+  mode: "absolute",
+  dateFrom: null,  // Open-ended from past
+  dateTo: new Date("2024-12-31"),
+};
+
+// With relative expressions
+const filterModel = {
+  type: "inRange",
+  mode: "relative",
+  expressionFrom: "Today-30d",
+  expressionTo: null,  // All dates from 30 days ago onwards
+};
+
+// Apply programmatically
+api.setFilterModel({
+  dateColumn: filterModel
+});`}
+                            language="typescript"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="inclusive-exclusive-filtering"
+                          >
+                            Inclusive vs Exclusive Filtering
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            Control whether date boundaries are inclusive or
+                            exclusive for precise filtering needs.
+                          </p>
+
+                          <div className="mb-6">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Filter Params Configuration
+                            </h4>
+                            <CodeBlock
+                              code={`const columnDefs = [
+  {
+    field: "date",
+    filter: DateFilter,
+    filterParams: {
+      // Make 'after' filter inclusive (>= instead of >)
+      afterInclusive: true,
+
+      // Make 'before' filter inclusive (<= instead of <)
+      beforeInclusive: true,
+
+      // Control inclusivity for date ranges
+      rangeInclusive: {
+        from: true,  // Include start date (>=)
+        to: true,    // Include end date (<=)
+      },
+    },
+  },
+];`}
+                              language="typescript"
+                            />
+                          </div>
+
+                          <div className="mb-6">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Per-Instance Configuration
+                            </h4>
+                            <CodeBlock
+                              code={`// Set inclusivity per filter instance
+api.setFilterModel({
+  dateColumn: {
+    type: "inRange",
+    mode: "absolute",
+    dateFrom: new Date("2024-01-01"),
+    dateTo: new Date("2024-12-31"),
+    fromInclusive: true,   // Include January 1st
+    toInclusive: false,    // Exclude December 31st
+  },
+});`}
+                              language="typescript"
+                            />
+                          </div>
+
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <h4 className="font-semibold text-white mb-3">
+                              Inclusivity Examples
+                            </h4>
+                            <ul className="space-y-2 text-sm text-gray-300">
+                              <li>
+                                <strong>Exclusive (default):</strong> "after
+                                2024-01-01" matches dates &gt; 2024-01-01
+                                (2024-01-02 onwards)
+                              </li>
+                              <li>
+                                <strong>Inclusive:</strong> "after 2024-01-01"
+                                with afterInclusive: true matches dates &gt;=
+                                2024-01-01 (includes 2024-01-01)
+                              </li>
+                              <li>
+                                <strong>Range exclusive:</strong> "2024-01-01 to
+                                2024-01-31" matches dates &gt; 2024-01-01 and
+                                &lt; 2024-01-31
+                              </li>
+                              <li>
+                                <strong>Range inclusive:</strong> "2024-01-01 to
+                                2024-01-31" with rangeInclusive:{" "}
+                                {`{from: true, to: true}`} matches dates &gt;=
+                                2024-01-01 and &lt;= 2024-01-31
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1778,9 +2300,10 @@ const columnDefs = [
                         QuickFilterDropdown
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6">
-                        A dropdown component for applying predefined filters
-                        with a single click. Works with any column type, not
-                        just dates.
+                        A lightweight dropdown component for applying predefined
+                        filters with a single click. Part of the modular v2.0
+                        architecture, it works with any column type and adds
+                        minimal bundle size.
                       </p>
 
                       <div className="space-y-8">
@@ -1792,7 +2315,9 @@ const columnDefs = [
                             Basic Usage
                           </AnchorHeading>
                           <CodeBlock
-                            code={`import { QuickFilterDropdown } from 'ag-grid-react-components';
+                            code={`// Create the component
+import { createQuickFilterDropdown } from '@agrc/core';
+const QuickFilterDropdown = createQuickFilterDropdown();
 
 // In your component
 <QuickFilterDropdown
@@ -2117,8 +2642,10 @@ const combinedFilters = [
                         ActiveFilters
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6">
-                        A component that displays active filters as removable
-                        pills, showing both column names and filter values.
+                        A zero-dependency component that displays active filters
+                        as removable pills. Part of the modular v2.0
+                        architecture, it shows both column names and filter
+                        values with minimal overhead.
                       </p>
 
                       <div className="space-y-8">
@@ -2130,7 +2657,9 @@ const combinedFilters = [
                             Basic Usage
                           </AnchorHeading>
                           <CodeBlock
-                            code={`import { ActiveFilters } from 'ag-grid-react-components';
+                            code={`// Create the component
+import { createActiveFilters } from '@agrc/core';
+const ActiveFilters = createActiveFilters();
 
 function MyGrid() {
   const [gridApi, setGridApi] = useState(null);

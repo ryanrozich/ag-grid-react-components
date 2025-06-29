@@ -85,11 +85,17 @@ test.describe("Test Filter Workaround", () => {
 
       // Check if filter instance has the model
       let instanceModel = null;
-      if (filterInstance && filterInstance.then) {
+      if (
+        filterInstance &&
+        typeof (filterInstance as any).then === "function"
+      ) {
         // It's a promise, can't get model synchronously
         instanceModel = "Promise - cannot inspect";
-      } else if (filterInstance && filterInstance.getModel) {
-        instanceModel = filterInstance.getModel();
+      } else if (
+        filterInstance &&
+        typeof (filterInstance as any).getModel === "function"
+      ) {
+        instanceModel = (filterInstance as any).getModel();
       }
 
       return {

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { useGridFilter } from "ag-grid-react";
-import { IRowNode } from "ag-grid-community";
+import { IRowNode, IFilter } from "ag-grid-community";
 import { format } from "date-fns";
 
 import { DateFilterParams, DateFilterModel } from "./types";
@@ -119,9 +119,11 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
         }
       }
 
-      // Add inclusivity settings
-      model.fromInclusive = rangeInclusive?.from ?? false;
-      model.toInclusive = rangeInclusive?.to ?? false;
+      // Add inclusivity settings - prefer state values, then model values, then prop defaults
+      model.fromInclusive =
+        filterState.fromInclusive ?? rangeInclusive?.from ?? false;
+      model.toInclusive =
+        filterState.toInclusive ?? rangeInclusive?.to ?? false;
 
       return model;
     }, [
@@ -132,6 +134,8 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
       filterState.absoluteDateTo,
       filterState.expressionFrom,
       filterState.expressionTo,
+      filterState.fromInclusive,
+      filterState.toInclusive,
       rangeInclusive?.from,
       rangeInclusive?.to,
     ]);
@@ -179,11 +183,9 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
           normalizedDateTo.setHours(0, 0, 0, 0);
         }
 
-        // Get inclusivity settings from model or fall back to props defaults
-        const fromInclusive =
-          currentModel?.fromInclusive ?? afterInclusive ?? false;
-        const toInclusive =
-          currentModel?.toInclusive ?? beforeInclusive ?? false;
+        // Get inclusivity settings from current model (which already includes filter state and prop defaults)
+        const fromInclusive = currentModel?.fromInclusive ?? false;
+        const toInclusive = currentModel?.toInclusive ?? false;
 
         console.log(
           "[DateFilter] Applying filter type:",
@@ -215,6 +217,24 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
               ? normalizedCellDate.getTime() <= normalizedDateFrom.getTime()
               : normalizedCellDate.getTime() < normalizedDateFrom.getTime();
           case "inRange": {
+            // Handle open-ended ranges
+            if (!normalizedDateFrom && !normalizedDateTo) return false;
+
+            // Only start date (open-ended to future)
+            if (normalizedDateFrom && !normalizedDateTo) {
+              return fromInclusive
+                ? normalizedCellDate.getTime() >= normalizedDateFrom.getTime()
+                : normalizedCellDate.getTime() > normalizedDateFrom.getTime();
+            }
+
+            // Only end date (open-ended from past)
+            if (!normalizedDateFrom && normalizedDateTo) {
+              return toInclusive
+                ? normalizedCellDate.getTime() <= normalizedDateTo.getTime()
+                : normalizedCellDate.getTime() < normalizedDateTo.getTime();
+            }
+
+            // Both dates present
             if (!normalizedDateFrom || !normalizedDateTo) return false;
             const afterStart = fromInclusive
               ? normalizedCellDate.getTime() >= normalizedDateFrom.getTime()
@@ -460,12 +480,17 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
     React.useImperativeHandle(
       ref,
       () => ({
+        // Include all the filter methods from callbacks
+        doesFilterPass: callbacks.doesFilterPass,
+        getModel: callbacks.getModel,
+        setModel: callbacks.setModel,
+        isFilterActive: callbacks.isFilterActive,
         afterGuiAttached: () => {
           // Method called after the filter is attached to the DOM
           // This helps AG Grid position popups correctly
         },
       }),
-      [],
+      [callbacks],
     );
 
     return (

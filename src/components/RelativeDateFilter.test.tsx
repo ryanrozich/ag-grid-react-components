@@ -95,7 +95,7 @@ describe("DateFilter", () => {
 
   it("handles invalid/unsupported model gracefully", () => {
     const invalidModel = {
-      type: "unknown",
+      type: "unknown" as any,
       mode: "absolute",
     } as DateFilterModel;
     const props = createTestProps({
@@ -210,7 +210,7 @@ describe("DateFilter", () => {
       } as DateFilterModel,
     };
 
-    render(<DateFilter {...testProps} />);
+    render(<DateFilter {...(testProps as DateFilterParams)} />);
 
     // Find the apply button and click it to trigger filter change
     const applyButton = screen.getByTestId("apply-button");

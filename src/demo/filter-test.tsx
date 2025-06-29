@@ -65,7 +65,7 @@ export const FilterTest: React.FC = () => {
     {
       field: "date",
       filter: "agDateColumnFilter",
-      valueFormatter: (params) => {
+      valueFormatter: (params: any) => {
         if (!params.value) return "";
         return params.value.toLocaleDateString();
       },

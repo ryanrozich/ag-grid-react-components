@@ -90,7 +90,7 @@ test.describe("AG Grid Filter API Investigation", () => {
             : null;
         }
       } catch (error) {
-        results.afterGetInstance.error = error.message;
+        results.afterGetInstance.error = (error as Error).message;
       }
 
       return results;

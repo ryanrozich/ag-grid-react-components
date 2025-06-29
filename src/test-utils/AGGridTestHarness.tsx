@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { GridApi, ColumnApi, GridReadyEvent } from "ag-grid-community";
+import { GridApi, GridReadyEvent } from "ag-grid-community";
 
 interface GridTestData {
   api: GridApi;
-  columnApi: ColumnApi;
 }
 
 declare global {
@@ -33,18 +32,16 @@ export const AGGridTestHarness: React.FC<AGGridTestHarnessProps> = ({
         window.__AG_GRID_TEST__ = {};
       }
 
-      // Store the grid API and column API
+      // Store the grid API
       window.__AG_GRID_TEST__[gridId] = {
         api: gridRef.current.api,
-        columnApi: gridRef.current.columnApi,
       };
 
       // Call the original onGridReady if provided
       if (onGridReady) {
         onGridReady({
           api: gridRef.current.api,
-          columnApi: gridRef.current.columnApi,
-        });
+        } as GridReadyEvent);
       }
     }
 

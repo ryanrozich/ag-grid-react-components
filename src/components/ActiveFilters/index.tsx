@@ -40,60 +40,89 @@ interface NumberFilterModel {
   filterTo?: number;
 }
 
+// Type guards
+function isDateFilterModel(model: SingleFilterModel): model is DateFilterModel {
+  return (
+    "mode" in model ||
+    "dateFrom" in model ||
+    "dateTo" in model ||
+    "expressionFrom" in model
+  );
+}
+
+function isSetFilterModel(model: SingleFilterModel): model is SetFilterModel {
+  return "values" in model && Array.isArray(model.values);
+}
+
+function isTextFilterModel(model: SingleFilterModel): model is TextFilterModel {
+  return "filter" in model && !("filterTo" in model);
+}
+
+function isNumberFilterModel(
+  model: SingleFilterModel,
+): model is NumberFilterModel {
+  return "filter" in model && "filterTo" in model;
+}
+
 function getFilterDisplayValue(model: SingleFilterModel): string {
   if (!model) return "";
 
   // Handle date filters
-  if (model.mode === "relative") {
-    const expression = model.expressionFrom || model.expression || "";
+  if (isDateFilterModel(model)) {
+    if (model.mode === "relative") {
+      const expression =
+        model.expressionFrom || (model as any).expression || "";
+      if (model.type === "inRange") {
+        return `${expression} to ${model.expressionTo || ""}`;
+      }
+      switch (model.type) {
+        case "equals":
+          return expression;
+        case "notEqual":
+          return `not ${expression}`;
+        case "before":
+          return `before ${expression}`;
+        case "after":
+          return `after ${expression}`;
+        default:
+          return expression;
+      }
+    }
+
     if (model.type === "inRange") {
-      return `${expression} to ${model.expressionTo || ""}`;
+      const from = model.dateFrom
+        ? new Date(model.dateFrom).toLocaleDateString()
+        : "";
+      const to = model.dateTo
+        ? new Date(model.dateTo).toLocaleDateString()
+        : "";
+      return `${from} to ${to}`;
     }
-    switch (model.type) {
-      case "equals":
-        return expression;
-      case "notEqual":
-        return `not ${expression}`;
-      case "before":
-        return `before ${expression}`;
-      case "after":
-        return `after ${expression}`;
-      default:
-        return expression;
-    }
-  }
 
-  if (model.type === "inRange") {
-    const from = model.dateFrom
-      ? new Date(model.dateFrom).toLocaleDateString()
-      : "";
-    const to = model.dateTo ? new Date(model.dateTo).toLocaleDateString() : "";
-    return `${from} to ${to}`;
-  }
-
-  if (model.dateFrom) {
-    const date = new Date(model.dateFrom).toLocaleDateString();
-    switch (model.type) {
-      case "equals":
-        return date;
-      case "notEqual":
-        return `not ${date}`;
-      case "before":
-        return `before ${date}`;
-      case "after":
-        return `after ${date}`;
-      default:
-        return date;
+    if (model.dateFrom) {
+      const date = new Date(model.dateFrom).toLocaleDateString();
+      switch (model.type) {
+        case "equals":
+          return date;
+        case "notEqual":
+          return `not ${date}`;
+        case "before":
+          return `before ${date}`;
+        case "after":
+          return `after ${date}`;
+        default:
+          return date;
+      }
     }
   }
 
   // Handle set filters
-  if (model.values && Array.isArray(model.values)) {
+  if (isSetFilterModel(model) && model.values) {
     return model.values.join(", ");
   }
 
-  // Handle text filters
-  if (model.filter !== undefined) {
+  // Handle text/number filters
+  if (isTextFilterModel(model) || isNumberFilterModel(model)) {
     return String(model.filter);
   }
 

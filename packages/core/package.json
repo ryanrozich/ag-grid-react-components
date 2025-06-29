@@ -1,0 +1,85 @@
+{
+  "name": "@agrc/core",
+  "version": "2.0.0-beta.1",
+  "description": "Headless, composable React components for AG Grid with minimal bundle size",
+  "keywords": [
+    "ag-grid",
+    "react",
+    "components",
+    "date-filter",
+    "quick-filter",
+    "headless",
+    "composable",
+    "typescript"
+  ],
+  "author": "Ryan Rozich <ryan@rozich.net>",
+  "homepage": "https://github.com/ryanrozich/ag-grid-react-components#readme",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./date-filter": {
+      "types": "./dist/date-filter/index.d.ts",
+      "import": "./dist/date-filter/index.js",
+      "require": "./dist/date-filter/index.cjs"
+    },
+    "./quick-filter": {
+      "types": "./dist/quick-filter/index.d.ts",
+      "import": "./dist/quick-filter/index.js",
+      "require": "./dist/quick-filter/index.cjs"
+    },
+    "./active-filters": {
+      "types": "./dist/active-filters/index.d.ts",
+      "import": "./dist/active-filters/index.js",
+      "require": "./dist/active-filters/index.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanrozich/ag-grid-react-components.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/ryanrozich/ag-grid-react-components/issues"
+  },
+  "peerDependencies": {
+    "ag-grid-community": ">=30.0.0",
+    "ag-grid-react": ">=30.0.0",
+    "date-fns": ">=2.0.0 || >=3.0.0 || >=4.0.0",
+    "react": ">=16.8.0 || >=17.0.0 || >=18.0.0 || >=19.0.0",
+    "react-dom": ">=16.8.0 || >=17.0.0 || >=18.0.0 || >=19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.4",
+    "@types/react-dom": "^19.1.5",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  }
+}

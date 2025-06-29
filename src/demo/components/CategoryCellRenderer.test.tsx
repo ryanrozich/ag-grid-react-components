@@ -8,7 +8,6 @@ import type {
   ColDef,
   Column,
   GridApi,
-  ColumnApi,
 } from "ag-grid-community";
 
 describe("CategoryCellRenderer", () => {
@@ -22,13 +21,11 @@ describe("CategoryCellRenderer", () => {
     colDef: {} as ColDef,
     column: {} as Column,
     api: {} as GridApi,
-    columnApi: {} as ColumnApi,
     context: null,
     refreshCell: () => {},
     eGridCell: {} as HTMLElement,
     eParentOfValue: {} as HTMLElement,
     registerRowDragger: () => {},
-    addRenderedRowListener: () => {},
     setTooltip: () => {},
   };
 
@@ -79,7 +76,7 @@ describe("CategoryCellRenderer", () => {
 
   it("returns null when value is not provided", () => {
     const { container } = render(
-      <CategoryCellRenderer {...mockParams} value={undefined} />,
+      <CategoryCellRenderer {...mockParams} value={undefined as any} />,
     );
 
     expect(container.firstChild).toBeNull();

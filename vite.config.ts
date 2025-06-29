@@ -77,8 +77,6 @@ export default defineConfig({
     },
     // Increase timeout for tests that might take longer
     testTimeout: 10000,
-    // Enable thread pooling for faster test execution
-    threads: true,
     // Show output for failing tests
     silent: false,
   },

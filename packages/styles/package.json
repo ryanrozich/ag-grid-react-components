@@ -1,0 +1,55 @@
+{
+  "name": "@agrc/styles",
+  "version": "2.0.0-beta.1",
+  "description": "Optional CSS styles for AG Grid React Components",
+  "keywords": [
+    "ag-grid",
+    "react",
+    "css",
+    "styles",
+    "themes"
+  ],
+  "author": "Ryan Rozich <ryan@rozich.net>",
+  "homepage": "https://github.com/ryanrozich/ag-grid-react-components#readme",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "main": "./dist/index.css",
+  "style": "./dist/index.css",
+  "exports": {
+    ".": "./dist/index.css",
+    "./core": "./dist/core.css",
+    "./date-filter": "./dist/date-filter.css",
+    "./quick-filter": "./dist/quick-filter.css",
+    "./active-filters": "./dist/active-filters.css"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanrozich/ag-grid-react-components.git",
+    "directory": "packages/styles"
+  },
+  "bugs": {
+    "url": "https://github.com/ryanrozich/ag-grid-react-components/issues"
+  },
+  "scripts": {
+    "build": "postcss src/**/*.css --dir dist",
+    "dev": "postcss src/**/*.css --dir dist --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "postcss": "^8.4.47",
+    "postcss-cli": "^11.0.0",
+    "postcss-import": "^16.1.0",
+    "postcss-preset-env": "^10.1.2"
+  }
+}

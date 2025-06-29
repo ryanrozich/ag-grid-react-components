@@ -62,7 +62,6 @@ test.describe("Debug QuickFilterDropdown", () => {
 
     // Get detailed info from the grid
     const gridInfo = await page.evaluate(() => {
-      // @ts-expect-error - agGridApi is added by the demo
       const api = window.agGridApi;
       if (!api) return { error: "No API found" };
 
@@ -90,7 +89,7 @@ test.describe("Debug QuickFilterDropdown", () => {
 
     // Check if the test data has dates in the last 7 days
     const dateInfo = await page.evaluate(() => {
-      const dates = [];
+      const dates: any[] = [];
       const api = window.agGridApi;
       if (!api) return { error: "No API" };
 
