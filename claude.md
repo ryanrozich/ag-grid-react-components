@@ -2,20 +2,29 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## IMPORTANT: Version 0.1.0 Modular Architecture (December 2024)
+## IMPORTANT: Version 0.1.0 Architecture (December 2024)
 
-This project has been completely refactored into a modular, tree-shakeable architecture with multiple npm packages:
+This project uses a single npm package with a modular, tree-shakeable architecture for optimal developer experience and bundle sizes.
 
 ### Package Structure
 
 ```
 ag-grid-react-components - Single tree-shakeable package
 - Minimal bundle: 25KB (just core components)
-- With React DatePicker: 65KB
-- Full featured: 85KB
-
-Total: Minimal bundle size starting at 25KB
+- With React DatePicker: 65KB (dynamically imported)
+- Full featured: 85KB (all components + optional dependencies)
 ```
+
+### Why Single Package?
+
+After careful consideration, we chose a single package approach because:
+
+1. **Excellent bundle sizes** - Tree-shaking works perfectly (25KB minimal)
+2. **Better developer experience** - One install command, one version to manage
+3. **Simpler maintenance** - One changelog, one release process
+4. **Flexibility retained** - Can split into multiple packages later if needed
+
+See GitHub issue #2 for the full discussion.
 
 ### Key Architecture Decisions
 
