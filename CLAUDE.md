@@ -206,6 +206,8 @@ npm run pre-commit        # Format + fix whitespace + check + typecheck
 1. **Before making changes**: `npm run lint` to see current state
 2. **After making changes**: `npm run lint:fix` to auto-fix issues
 3. **Before committing**: `npm run pre-commit` (this also runs automatically)
+4. **ALWAYS run e2e tests before declaring a problem fixed**: `npm run test:e2e`
+5. **Create new Playwright tests**: When fixing bugs, always create a new e2e test to prevent regressions
 
 **Trunk will automatically:**
 
@@ -585,6 +587,22 @@ The codebase uses Vitest with React Testing Library for unit testing:
 2. **Integration Tests**: Test DateFilter with AG Grid using AGGridTestHarness
 3. **E2E Tests**: Playwright tests for browser validation
 4. **Browser Tests**: Validate that the demo works correctly using Puppeteer
+
+### IMPORTANT: E2E Testing Requirements
+
+**Before declaring any UI issue or bug as "fixed", you MUST:**
+
+1. Run the full e2e test suite: `npm run test:e2e`
+2. If tests fail, investigate and fix the root cause
+3. Create a new Playwright test that specifically covers the bug you fixed
+4. Ensure all tests pass before telling the user the issue is resolved
+
+**When creating new e2e tests for bug fixes:**
+
+- Name the test file descriptively (e.g., `quickfilter-portal-rendering.spec.ts`)
+- Include a comment explaining what bug this test prevents
+- Test both the broken scenario and the fixed behavior
+- Add assertions for visual rendering if applicable
 
 ### Testing Utilities
 
