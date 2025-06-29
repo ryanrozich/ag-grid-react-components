@@ -129,6 +129,46 @@ export function getActiveFilterOption(
   }
 
   const filterModel = api.getFilterModel();
+
+  // Handle multi-column filters (_multi)
+  if (columnId === "_multi") {
+    // For multi-column filters, check if all filters in the option match current state
+    return (
+      options.find((option) => {
+        if (!option.buildFilterModel) {
+          return false;
+        }
+
+        // Build the expected filter model
+        const expectedModel = option.buildFilterModel(api, columnId);
+        if (!expectedModel) {
+          // This option would clear filters
+          return Object.keys(filterModel).length === 0;
+        }
+
+        // Check if all filters in expectedModel match current filterModel
+        for (const [colId, expectedFilter] of Object.entries(expectedModel)) {
+          const actualFilter = filterModel[colId];
+          if (JSON.stringify(actualFilter) !== JSON.stringify(expectedFilter)) {
+            return false;
+          }
+        }
+
+        // Also check that filterModel doesn't have extra filters not in expectedModel
+        // (unless they are for columns not managed by this multi-filter)
+        const managedColumns = Object.keys(expectedModel);
+        for (const colId of managedColumns) {
+          if (filterModel[colId] && !expectedModel[colId]) {
+            return false;
+          }
+        }
+
+        return true;
+      }) || null
+    );
+  }
+
+  // Single column filter logic
   const columnFilter = filterModel?.[columnId];
 
   if (!columnFilter) {

@@ -9,10 +9,10 @@ This project has been completely refactored into a modular, tree-shakeable archi
 ### Package Structure
 
 ```
-@agrc/core         - Headless components (5KB gzipped)
-@agrc/adapters     - Date pickers & compression (2KB gzipped)
-@agrc/styles       - Optional CSS (3KB gzipped)
-@agrc/compat       - v1 compatibility layer (5KB gzipped)
+ag-grid-react-components - Single tree-shakeable package
+- Minimal bundle: 25KB (just core components)
+- With React DatePicker: 65KB
+- Full featured: 85KB
 
 Total: Minimal bundle size starting at 25KB
 ```
@@ -38,24 +38,22 @@ npm run publish:beta --otp=123456
 npm run publish:latest --otp=123456
 ```
 
-Packages publish under `@agrc/` scope which is available on npm.
+Package publishes as `ag-grid-react-components` on npm.
 
 ### Example Usage Patterns
 
 ```typescript
 // MINIMAL (25KB total) - Uses native HTML5 date input
-import { createDateFilter } from "@agrc/core";
+import { createDateFilter } from "ag-grid-react-components";
 const DateFilter = createDateFilter();
 
 // WITH REACT DATEPICKER (65KB total) - Lazy loaded
-import { createDateFilter } from "@agrc/core";
-import { reactDatePickerAdapter } from "@agrc/adapters/react-datepicker";
+import { createDateFilter, reactDatePickerAdapter } from "ag-grid-react-components";
 const DateFilter = createDateFilter({ datePickerAdapter: reactDatePickerAdapter });
 
 // WITH COMPRESSION (adds 15KB when used)
-import { setupGridStatePersistence } from "@agrc/core";
-import { createLZStringAdapter } from "@agrc/adapters/compression";
-setupGridStatePersistence(api, { compressionAdapter: createLZStringAdapter() });
+import { setupGridStatePersistence } from "ag-grid-react-components";
+setupGridStatePersistence(api, { useCompression: true });
 ```
 
 ### Monorepo Structure

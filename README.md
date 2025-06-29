@@ -56,22 +56,22 @@ Choose your installation based on your needs:
 ### Minimal Installation (25KB)
 
 ```bash
-# Just the core components with native HTML5 date inputs
-npm install @agrc/core
+# Install the complete package (tree-shakeable)
+npm install ag-grid-react-components
 ```
 
 ### With React DatePicker (65KB)
 
 ```bash
-# Add full-featured date picker support
-npm install @agrc/core @agrc/adapters
+# Install with peer dependencies for date picker
+npm install ag-grid-react-components react-datepicker
 ```
 
 ### Full Installation (85KB)
 
 ```bash
-# Everything including compression and styles
-npm install @agrc/core @agrc/adapters @agrc/styles
+# Install with all optional dependencies
+npm install ag-grid-react-components react-datepicker lz-string
 ```
 
 ## 📋 Requirements
@@ -86,7 +86,7 @@ npm install @agrc/core @agrc/adapters @agrc/styles
 
 ```tsx
 import { AgGridReact } from "ag-grid-react";
-import { createDateFilter } from "@agrc/core";
+import { createDateFilter } from "ag-grid-react-components";
 
 // Create DateFilter with native HTML5 inputs
 const DateFilter = createDateFilter();
@@ -103,8 +103,7 @@ const columnDefs = [
 ### With React DatePicker (65KB)
 
 ```tsx
-import { createDateFilter } from "@agrc/core";
-import { reactDatePickerAdapter } from "@agrc/adapters/react-datepicker";
+import { createDateFilter, reactDatePickerAdapter } from "ag-grid-react-components";
 
 // Create DateFilter with React DatePicker
 const DateFilter = createDateFilter({
@@ -116,10 +115,7 @@ const DateFilter = createDateFilter({
 
 ```tsx
 import { AgGridReact } from "ag-grid-react";
-import { createDateFilter, createQuickFilterDropdown, createActiveFilters, setupGridStatePersistence } from "@agrc/core";
-import { reactDatePickerAdapter } from "@agrc/adapters/react-datepicker";
-import { createLZStringAdapter } from "@agrc/adapters/compression";
-import "@agrc/styles"; // Optional styles
+import { createDateFilter, createQuickFilterDropdown, createActiveFilters, setupGridStatePersistence, reactDatePickerAdapter } from "ag-grid-react-components";
 
 // Create all components
 const DateFilter = createDateFilter({
@@ -165,26 +161,21 @@ function App() {
 | With React DatePicker    | **65KB**    |
 | All components           | **85KB**    |
 
-## 🎯 Key Features by Package
+## 🎯 Key Features
 
-### @agrc/core (5KB)
+### Core Features (25KB minimal)
 
-- ✅ Headless components
-- ✅ Native date inputs
-- ✅ All filter logic
-- ✅ Zero dependencies
+- ✅ DateFilter with native HTML5 inputs
+- ✅ QuickFilterDropdown for preset filters
+- ✅ ActiveFilters display component
+- ✅ Tree-shakeable architecture
 
-### @agrc/adapters (2KB + deps)
+### Optional Features (loaded on demand)
 
-- 📅 React DatePicker adapter (loads on demand)
-- 🗜️ LZ-String compression adapter
-- 🔌 Pluggable architecture
-
-### @agrc/styles (3KB)
-
-- 🎨 Optional CSS
-- 📱 Responsive design
-- 🌙 Dark mode support
+- 📅 React DatePicker integration (+40KB when used)
+- 🗜️ LZ-String URL compression (+20KB when used)
+- 🎨 Pre-built styles (optional)
+- 🔌 Full TypeScript support
 
 ````
 
@@ -264,12 +255,10 @@ const QuickFilterDropdown = createQuickFilterDropdown();
 ### Grid State Persistence
 
 ```typescript
-import { setupGridStatePersistence } from "@agrc/core";
-import { createLZStringAdapter } from "@agrc/adapters/compression";
+import { setupGridStatePersistence } from "ag-grid-react-components";
 
-// With compression adapter
+// With compression (enabled by default)
 const cleanup = setupGridStatePersistence(gridApi, {
-  compressionAdapter: createLZStringAdapter(),
   useCompression: true,
   maxUrlLength: 2000,
 

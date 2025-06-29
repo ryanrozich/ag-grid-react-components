@@ -217,11 +217,11 @@ const FullFeaturedExample: React.FC = () => {
 npm install @agrc/core @agrc/adapters @agrc/styles
 
 // Usage
-import { 
-  createDateFilter, 
-  createQuickFilterDropdown, 
+import {
+  createDateFilter,
+  createQuickFilterDropdown,
   createActiveFilters,
-  setupGridStatePersistence 
+  setupGridStatePersistence
 } from '@agrc/core';
 import { reactDatePickerAdapter } from '@agrc/adapters/react-datepicker';
 import { createLZStringAdapter } from '@agrc/adapters/compression';

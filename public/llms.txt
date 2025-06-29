@@ -16,20 +16,14 @@ This project provides advanced date filtering components for AG Grid React appli
 
 ## Modular Architecture
 
-### @agrc/core (5KB gzipped)
-Headless components with zero dependencies:
-- DateFilter factory function
-- QuickFilterDropdown factory
-- ActiveFilters factory
-- Grid state persistence utilities
-
-### @agrc/adapters (2KB + dynamic imports)
-Optional adapters loaded on demand:
-- React DatePicker adapter (~40KB when used)
-- LZ-String compression adapter (~15KB when used)
-
-### @agrc/styles (3KB)
-Optional pre-built styles
+### Core Package Features
+All components in a single tree-shakeable package:
+- DateFilter with native HTML5 inputs (25KB minimal)
+- QuickFilterDropdown for preset filters
+- ActiveFilters display component
+- URL state persistence with automatic compression
+- Optional React DatePicker integration (+40KB when used)
+- Optional styles and themes
 
 
 ## Components
@@ -48,12 +42,11 @@ A modular date filter that supports both absolute dates and relative expressions
 **Usage:**
 ```typescript
 // Minimal (25KB total)
-import { createDateFilter } from '@agrc/core';
+import { createDateFilter } from 'ag-grid-react-components';
 const DateFilter = createDateFilter();
 
 // With React DatePicker (65KB total)
-import { createDateFilter } from '@agrc/core';
-import { reactDatePickerAdapter } from '@agrc/adapters/react-datepicker';
+import { createDateFilter, reactDatePickerAdapter } from 'ag-grid-react-components';
 const DateFilter = createDateFilter({
   datePickerAdapter: reactDatePickerAdapter
 });
@@ -106,7 +99,7 @@ A lightweight dropdown for applying predefined filters.
 
 **Usage:**
 ```typescript
-import { createQuickFilterDropdown } from '@agrc/core';
+import { createQuickFilterDropdown } from 'ag-grid-react-components';
 const QuickFilterDropdown = createQuickFilterDropdown();
 
 <QuickFilterDropdown
@@ -129,7 +122,7 @@ Display active filters as removable pills.
 
 **Usage:**
 ```typescript
-import { createActiveFilters } from '@agrc/core';
+import { createActiveFilters } from 'ag-grid-react-components';
 const ActiveFilters = createActiveFilters();
 
 <ActiveFilters

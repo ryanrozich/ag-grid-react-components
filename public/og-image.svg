@@ -1,0 +1,60 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <rect width="1200" height="630" fill="url(#gradient)"/>
+  
+  <!-- Grid pattern -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="1" opacity="0.3"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  
+  <!-- Content -->
+  <g transform="translate(100, 100)">
+    <!-- Logo/Title -->
+    <text x="0" y="0" font-family="Inter, system-ui, sans-serif" font-size="64" font-weight="bold" fill="white">
+      AG Grid React Components
+    </text>
+    
+    <!-- Subtitle -->
+    <text x="0" y="80" font-family="Inter, system-ui, sans-serif" font-size="32" font-weight="normal" fill="#94a3b8">
+      Give your users the date filtering they deserve
+    </text>
+    
+    <!-- Feature pills -->
+    <g transform="translate(0, 140)">
+      <rect x="0" y="0" width="240" height="50" rx="25" fill="#4f46e5" opacity="0.2"/>
+      <text x="30" y="32" font-family="Inter, system-ui, sans-serif" font-size="20" fill="#818cf8">Relative Dates</text>
+      
+      <rect x="260" y="0" width="240" height="50" rx="25" fill="#10b981" opacity="0.2"/>
+      <text x="290" y="32" font-family="Inter, system-ui, sans-serif" font-size="20" fill="#34d399">Quick Filters</text>
+      
+      <rect x="520" y="0" width="240" height="50" rx="25" fill="#f59e0b" opacity="0.2"/>
+      <text x="550" y="32" font-family="Inter, system-ui, sans-serif" font-size="20" fill="#fbbf24">URL Persistence</text>
+    </g>
+    
+    <!-- Code example -->
+    <g transform="translate(0, 240)">
+      <rect x="0" y="0" width="800" height="140" rx="8" fill="#1e293b" opacity="0.8"/>
+      <text x="20" y="35" font-family="'Fira Code', monospace" font-size="18" fill="#60a5fa">// Enable relative date queries like "Today-7d"</text>
+      <text x="20" y="65" font-family="'Fira Code', monospace" font-size="18" fill="#e5e7eb">const DateFilter = createDateFilter();</text>
+      <text x="20" y="95" font-family="'Fira Code', monospace" font-size="18" fill="#e5e7eb">filterParams: { defaultMode: 'relative' }</text>
+      <text x="20" y="125" font-family="'Fira Code', monospace" font-size="18" fill="#60a5fa">// "Last 30 days" stays last 30 days</text>
+    </g>
+  </g>
+  
+  <!-- Bundle size badge -->
+  <g transform="translate(950, 480)">
+    <rect x="0" y="0" width="150" height="60" rx="8" fill="#10b981" opacity="0.2"/>
+    <text x="75" y="25" font-family="Inter, system-ui, sans-serif" font-size="16" fill="#34d399" text-anchor="middle">Starting at</text>
+    <text x="75" y="45" font-family="Inter, system-ui, sans-serif" font-size="24" font-weight="bold" fill="#34d399" text-anchor="middle">25KB</text>
+  </g>
+  
+  <!-- Definitions -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e1b4b;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#312e81;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

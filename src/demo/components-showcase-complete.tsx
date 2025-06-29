@@ -183,10 +183,10 @@ const Footer: React.FC = () => (
             </li>
             <li>
               <a
-                href="https://www.npmjs.com/org/agrc"
+                href="https://www.npmjs.com/package/ag-grid-react-components"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                NPM Packages (@agrc/*)
+                NPM Package
               </a>
             </li>
             <li>
@@ -578,22 +578,7 @@ export const ComponentsShowcaseComplete: React.FC<
     // Initialize stats on first load
     setStats(calculateStats(params.api));
 
-    // Set default filter to "Last 7 Days" ONLY if no state was loaded from URL
-    const url = new URL(window.location.href);
-    const hasUrlState = url.searchParams.has("gridState");
-    const currentFilterModel = params.api.getFilterModel();
-    const hasExistingFilters =
-      currentFilterModel && Object.keys(currentFilterModel).length > 0;
-
-    // Only apply default filter if there&apos;s no URL state AND no existing filters
-    if (!hasUrlState && !hasExistingFilters) {
-      const defaultFilter = dateQuickFilters.find((f) => f.id === "last7days");
-      if (defaultFilter && defaultFilter.filterModel) {
-        params.api.setFilterModel({
-          dueDate: defaultFilter.filterModel,
-        });
-      }
-    }
+    // Start with unfiltered state - no default filters
 
     return cleanup;
   }, []);
@@ -763,16 +748,17 @@ export const ComponentsShowcaseComplete: React.FC<
                   </span>
                 </div>
                 <h1 className="mt-10 text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                  AG Grid React Components
+                  Give your users the date filtering they deserve
                 </h1>
                 <p className="mt-6 text-lg leading-8 text-gray-300">
                   <strong className="text-white">
-                    Modular, tree-shakeable
+                    Enable relative date queries like "this week" and "last
+                    month"
                   </strong>{" "}
-                  date filtering components for AG Grid. Start with just{" "}
-                  <strong className="text-green-400">25KB</strong> for basic
-                  features or add advanced capabilities as needed. 100% free and
-                  open source.
+                  that actually persist when users refresh or share links. Show
+                  active filters clearly, not hidden behind tiny blue dots.
+                  Build the filtering experience your users have been asking
+                  for.
                 </p>
                 <div className="mt-10 flex items-center gap-x-6">
                   <button
@@ -793,20 +779,36 @@ export const ComponentsShowcaseComplete: React.FC<
                 <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
                   <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
                     <CodeBlock
-                      code={`// MINIMAL (25KB total) - Uses native HTML5 date input
-import { createDateFilter } from "@agrc/core";
+                      code={`import { AgGridReact } from 'ag-grid-react';
+import { createDateFilter } from 'ag-grid-react-components';
+
+// Create the DateFilter component
 const DateFilter = createDateFilter();
 
-// WITH REACT DATEPICKER (65KB total) - Lazy loaded
-import { createDateFilter } from "@agrc/core";
-import { reactDatePickerAdapter } from "@agrc/adapters/react-datepicker";
-const DateFilter = createDateFilter({
-  datePickerAdapter: reactDatePickerAdapter
-});
+function App() {
+  const columnDefs = [
+    {
+      field: 'dueDate',
+      headerName: 'Due Date',
+      filter: DateFilter,
+      filterParams: {
+        // Enable relative date expressions
+        defaultMode: 'relative',
+        // Common date expressions work out of the box:
+        // "Today", "Today-7d", "StartOfMonth", "EndOfYear+1y"
+      }
+    },
+    // ... other columns
+  ];
 
-// BACKWARD COMPATIBLE (for v1 users)
-import { DateFilter } from "@agrc/compat";
-// Works exactly like v1 but uses v2 under the hood`}
+  return (
+    <AgGridReact
+      columnDefs={columnDefs}
+      rowData={rowData}
+      // ... other grid options
+    />
+  );
+}`}
                       language="tsx"
                       variant="hero"
                       showCopyButton={false}
@@ -817,69 +819,18 @@ import { DateFilter } from "@agrc/compat";
             </div>
           </div>
 
-          <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
+          {/* Main Features */}
+          <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-16">
             <div className="mx-auto max-w-2xl lg:text-center">
               <h2 className="text-base font-semibold leading-7 text-indigo-400">
-                Choose Your Bundle Size
+                Solve Real User Problems
               </h2>
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Pay only for what you use
+                The filtering UX your users have been waiting for
               </p>
             </div>
-            {/* Bundle Size Comparison */}
-            <div className="mx-auto mt-12 max-w-5xl">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
-                  <h4 className="text-sm font-medium text-gray-400 mb-2">
-                    Minimal Setup
-                  </h4>
-                  <div className="text-3xl font-bold text-green-400 mb-2">
-                    25KB
-                  </div>
-                  <div className="text-sm text-gray-500 mb-4">gzipped</div>
-                  <ul className="space-y-1 text-sm text-gray-400">
-                    <li>✓ DateFilter (native)</li>
-                    <li>✓ Core utilities</li>
-                    <li className="text-gray-600">✗ Date picker</li>
-                    <li className="text-gray-600">✗ Compression</li>
-                  </ul>
-                </div>
-                <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
-                  <h4 className="text-sm font-medium text-gray-400 mb-2">
-                    With Date Picker
-                  </h4>
-                  <div className="text-3xl font-bold text-blue-400 mb-2">
-                    65KB
-                  </div>
-                  <div className="text-sm text-gray-500 mb-4">gzipped</div>
-                  <ul className="space-y-1 text-sm text-gray-400">
-                    <li>✓ DateFilter</li>
-                    <li>✓ React DatePicker</li>
-                    <li>✓ Core utilities</li>
-                    <li className="text-gray-600">✗ Compression</li>
-                  </ul>
-                </div>
-                <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
-                  <h4 className="text-sm font-medium text-gray-400 mb-2">
-                    Full Featured
-                  </h4>
-                  <div className="text-3xl font-bold text-purple-400 mb-2">
-                    85KB
-                  </div>
-                  <div className="text-sm text-gray-500 mb-4">gzipped</div>
-                  <ul className="space-y-1 text-sm text-gray-400">
-                    <li>✓ All components</li>
-                    <li>✓ React DatePicker</li>
-                    <li>✓ URL compression</li>
-                    <li>✓ All utilities</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* Feature Cards */}
             <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-              <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+              <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-4">
                 <div className="flex flex-col">
                   <dt className="text-base font-semibold leading-7 text-white">
                     <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
@@ -897,13 +848,13 @@ import { DateFilter } from "@agrc/compat";
                         />
                       </svg>
                     </div>
-                    Modular Architecture
+                    DateFilter
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      Pick only what you need. Start with native date inputs at
-                      25KB or add React DatePicker when you need it. Every byte
-                      counts.
+                      Let users filter by "this week", "last month", or "next
+                      quarter". These relative queries stay current and work
+                      perfectly when bookmarked or shared.
                     </p>
                   </dd>
                 </div>
@@ -920,17 +871,49 @@ import { DateFilter } from "@agrc/compat";
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
+                          d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25"
                         />
                       </svg>
                     </div>
-                    Relative Date Expressions
+                    QuickFilterDropdown
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      Use intuitive expressions like &quot;Today-7d&quot; or
-                      &quot;StartOfMonth&quot; for dynamic filters that update
-                      automatically.
+                      Give users instant access to common filters like "Overdue
+                      tasks" or "Due this week". No more manual date picking for
+                      repetitive queries.
+                    </p>
+                  </dd>
+                </div>
+                <div className="flex flex-col">
+                  <dt className="text-base font-semibold leading-7 text-white">
+                    <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                      <svg
+                        className="h-6 w-6 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 6h.008v.008H6V6z"
+                        />
+                      </svg>
+                    </div>
+                    ActiveFilters
+                  </dt>
+                  <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
+                    <p className="flex-auto">
+                      No more hunting for tiny blue dots. Show exactly what's
+                      filtered in clear, removable pills that users can
+                      understand at a glance.
                     </p>
                   </dd>
                 </div>
@@ -951,17 +934,173 @@ import { DateFilter } from "@agrc/compat";
                         />
                       </svg>
                     </div>
-                    Tree-Shakeable
+                    URL State Persistence
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      Each component has its own entry point. Your bundler
-                      automatically removes unused code for optimal production
-                      builds.
+                      Users can bookmark their favorite views and share them
+                      with teammates. "Last 30 days" stays last 30 days, even
+                      next month.
                     </p>
                   </dd>
                 </div>
               </dl>
+            </div>
+          </div>
+
+          {/* Problem/Solution Section */}
+          <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
+            <div className="mx-auto max-w-2xl lg:text-center">
+              <h2 className="text-base font-semibold leading-7 text-indigo-400">
+                Why We Built This
+              </h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                Because your users deserve better
+              </p>
+              <p className="mt-6 text-lg text-gray-300">
+                We've all been there. Users asking "Can I filter by last week?"
+                or "Why can't I save this view?" AG Grid is powerful, but its
+                filtering UX feels stuck in 2010. We built these components to
+                give your users the modern filtering experience they expect.
+              </p>
+            </div>
+            <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+              <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+                <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
+                  <h3 className="text-xl font-semibold text-white mb-4">
+                    The Problem
+                  </h3>
+                  <ul className="space-y-3 text-gray-300">
+                    <li className="flex items-start">
+                      <span className="text-red-400 mr-2">×</span>
+                      Users manually pick dates every single time
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-red-400 mr-2">×</span>
+                      "Last 30 days" becomes outdated tomorrow
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-red-400 mr-2">×</span>
+                      Can't share or bookmark filtered views
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-red-400 mr-2">×</span>
+                      Tiny blue dots hide active filters
+                    </li>
+                  </ul>
+                </div>
+                <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
+                  <h3 className="text-xl font-semibold text-white mb-4">
+                    The Solution
+                  </h3>
+                  <ul className="space-y-3 text-gray-300">
+                    <li className="flex items-start">
+                      <span className="text-green-400 mr-2">✓</span>
+                      Relative date expressions that stay current
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-green-400 mr-2">✓</span>
+                      Quick filter presets for common queries
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-green-400 mr-2">✓</span>
+                      Shareable URLs with compressed state
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-green-400 mr-2">✓</span>
+                      Clear filter pills with one-click removal
+                    </li>
+                  </ul>
+                </div>
+                <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
+                  <h3 className="text-xl font-semibold text-white mb-4">
+                    The Result
+                  </h3>
+                  <ul className="space-y-3 text-gray-300">
+                    <li className="flex items-start">
+                      <span className="text-indigo-400 mr-2">→</span>
+                      Users save hours on repetitive filtering
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-indigo-400 mr-2">→</span>
+                      Teams share consistent report views
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-indigo-400 mr-2">→</span>
+                      Dashboards that update automatically
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-indigo-400 mr-2">→</span>
+                      Happy users, fewer support tickets
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bundle sizes section */}
+          <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
+            <div className="mx-auto max-w-2xl lg:text-center">
+              <h2 className="text-base font-semibold leading-7 text-indigo-400">
+                Built for Performance
+              </h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                Only pay for what you use
+              </p>
+            </div>
+            {/* Bundle Size Comparison */}
+            <div className="mx-auto mt-12 max-w-5xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
+                  <h4 className="text-sm font-medium text-gray-400 mb-2">
+                    Minimal Setup
+                  </h4>
+                  <div className="text-3xl font-bold text-green-400 mb-2">
+                    25KB
+                  </div>
+                  <div className="text-sm text-gray-500 mb-4">gzipped</div>
+                  <ul className="space-y-1 text-sm text-gray-400">
+                    <li>✓ DateFilter (native HTML5)</li>
+                    <li>✓ QuickFilterDropdown</li>
+                    <li>✓ ActiveFilters</li>
+                    <li className="text-gray-600">✗ React DatePicker</li>
+                    <li className="text-gray-600">✗ URL compression</li>
+                  </ul>
+                </div>
+                <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
+                  <h4 className="text-sm font-medium text-gray-400 mb-2">
+                    With Date Picker
+                  </h4>
+                  <div className="text-3xl font-bold text-blue-400 mb-2">
+                    65KB
+                  </div>
+                  <div className="text-sm text-gray-500 mb-4">gzipped</div>
+                  <ul className="space-y-1 text-sm text-gray-400">
+                    <li>✓ DateFilter</li>
+                    <li>✓ React DatePicker integration</li>
+                    <li>✓ QuickFilterDropdown</li>
+                    <li>✓ ActiveFilters</li>
+                    <li className="text-gray-600">✗ URL compression</li>
+                  </ul>
+                </div>
+                <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
+                  <h4 className="text-sm font-medium text-gray-400 mb-2">
+                    Full Featured
+                  </h4>
+                  <div className="text-3xl font-bold text-purple-400 mb-2">
+                    85KB
+                  </div>
+                  <div className="text-sm text-gray-500 mb-4">gzipped</div>
+                  <ul className="space-y-1 text-sm text-gray-400">
+                    <li>✓ All components</li>
+                    <li>✓ React DatePicker integration</li>
+                    <li>✓ URL state persistence</li>
+                    <li>✓ LZ-String compression</li>
+                    <li>✓ All features enabled</li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -987,6 +1126,7 @@ import { DateFilter } from "@agrc/compat";
       { id: "relativedatefilter", label: "DateFilter", indent: true },
       { id: "quickfilterdropdown", label: "QuickFilterDropdown", indent: true },
       { id: "activefilters", label: "ActiveFilters", indent: true },
+      { id: "urlstate", label: "URL State Persistence", indent: true },
 
       // Demo Guide Section
       { id: "demo-guide", label: "Demo Guide", isSection: true },
@@ -997,7 +1137,6 @@ import { DateFilter } from "@agrc/compat";
       { id: "references", label: "References", isSection: true },
       { id: "expressions", label: "Date Expressions", indent: true },
       { id: "types", label: "TypeScript Types", indent: true },
-      { id: "urlstate", label: "URL State Persistence", indent: true },
       { id: "date-vs-timestamp", label: "Date vs Timestamp", indent: true },
 
       // Known Issues Section
@@ -1059,9 +1198,10 @@ import { DateFilter } from "@agrc/compat";
                         AG Grid React Components Documentation
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6 text-lg">
-                        Welcome to the documentation for AG Grid React
-                        Components - a modular, tree-shakeable library for
-                        enhancing AG Grid with powerful filtering capabilities.
+                        Learn how to give your users the filtering experience
+                        they've been asking for. Enable relative date queries,
+                        quick filter presets, and shareable views with these
+                        powerful components for AG Grid.
                       </p>
                     </div>
 
@@ -1091,22 +1231,24 @@ import { DateFilter } from "@agrc/compat";
                           QuickFilterDropdown, and more.
                         </p>
                         <button
-                          onClick={() => setActiveDocSection("components")}
+                          onClick={() =>
+                            setActiveDocSection("relativedatefilter")
+                          }
                           className="text-indigo-400 hover:text-indigo-300 font-medium"
                         >
-                          View Components →
+                          Explore Components →
                         </button>
                       </div>
 
                       <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
                         <h3 className="text-lg font-semibold text-white mb-3">
-                          🎯 Key Features
+                          🎯 What You Can Build
                         </h3>
                         <ul className="text-gray-300 space-y-2">
-                          <li>• Minimal bundle size (25KB start)</li>
-                          <li>• Tree-shakeable architecture</li>
-                          <li>• TypeScript support</li>
-                          <li>• 100% free and open source</li>
+                          <li>• Reports that update automatically</li>
+                          <li>• Dashboards with shareable filters</li>
+                          <li>• Views that remember user preferences</li>
+                          <li>• Grids that are actually user-friendly</li>
                         </ul>
                       </div>
 
@@ -1160,38 +1302,23 @@ import { DateFilter } from "@agrc/compat";
                         Getting Started
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6">
-                        Welcome to AG Grid React Components! This is a{" "}
-                        <strong className="text-green-400">
-                          free and open source
-                        </strong>{" "}
-                        library that provides modular, tree-shakeable date
-                        filtering components for AG Grid. Start with just 25KB
-                        or add features as needed.
+                        Welcome to AG Grid React Components! This modular,
+                        tree-shakeable library provides powerful date filtering
+                        components for AG Grid. Start with just 25KB for basic
+                        features or add advanced capabilities as needed.
                       </p>
 
                       <div className="bg-green-900/20 border border-green-600/30 rounded-lg p-4 mb-6">
                         <p className="text-green-400 text-sm font-medium mb-2">
-                          🎆 New in v2.0: Modular Architecture
+                          🎆 Pre-release v0.1.0: Modular Architecture
                         </p>
                         <p className="text-gray-300 text-sm">
                           95% smaller bundle size! Choose only what you need:
                         </p>
                         <ul className="mt-2 space-y-1 text-sm text-gray-300">
-                          <li>
-                            • <strong>@agrc/core</strong> - Headless components
-                            (5KB)
-                          </li>
-                          <li>
-                            • <strong>@agrc/adapters</strong> - Date pickers &
-                            compression (2KB)
-                          </li>
-                          <li>
-                            • <strong>@agrc/styles</strong> - Optional CSS (3KB)
-                          </li>
-                          <li>
-                            • <strong>@agrc/compat</strong> - v1 compatibility
-                            (5KB)
-                          </li>
+                          <li>• Tree-shakeable architecture starts at 25KB</li>
+                          <li>• Optional features loaded only when used</li>
+                          <li>• Full featured setup is only 85KB</li>
                         </ul>
                       </div>
 
@@ -1457,6 +1584,17 @@ import { DateFilter } from "@agrc/compat";
                         size requirements.
                       </p>
 
+                      <div className="bg-blue-900/20 border border-blue-600/30 rounded-lg p-4 mb-6">
+                        <p className="text-blue-400 text-sm">
+                          <strong>Note:</strong> The npm package name is{" "}
+                          <code className="text-blue-300">
+                            ag-grid-react-components
+                          </code>
+                          . The modular architecture allows you to start with
+                          just 25KB and add features as needed.
+                        </p>
+                      </div>
+
                       <div className="space-y-8">
                         {/* Minimal Installation */}
                         <div>
@@ -1468,8 +1606,8 @@ import { DateFilter } from "@agrc/compat";
                             inputs.
                           </p>
                           <CodeBlock
-                            code={`# Core package only
-npm install @agrc/core
+                            code={`# Install the package
+npm install ag-grid-react-components
 
 # Required peer dependencies
 npm install ag-grid-community ag-grid-react react react-dom`}
@@ -1486,11 +1624,10 @@ npm install ag-grid-community ag-grid-react react react-dom`}
                             Add a full-featured date picker component.
                           </p>
                           <CodeBlock
-                            code={`# Core + adapters
-npm install @agrc/core @agrc/adapters
+                            code={`# Install with React DatePicker support
+npm install ag-grid-react-components react-datepicker
 
-# Optional: react-datepicker will be installed automatically
-# when you import the adapter`}
+# The date picker is dynamically imported only when used`}
                             language="bash"
                           />
                         </div>
@@ -1504,8 +1641,8 @@ npm install @agrc/core @agrc/adapters
                             All features including compression and styles.
                           </p>
                           <CodeBlock
-                            code={`# All packages
-npm install @agrc/core @agrc/adapters @agrc/styles
+                            code={`# Install with all optional dependencies
+npm install ag-grid-react-components react-datepicker lz-string
 
 # Everything is lazy-loaded when used`}
                             language="bash"
@@ -1522,12 +1659,9 @@ npm install @agrc/core @agrc/adapters @agrc/styles
                             zero code changes.
                           </p>
                           <CodeBlock
-                            code={`# Replace your existing package
-npm uninstall ag-grid-react-components
-npm install @agrc/compat
-
+                            code={`# The package is backward compatible
 # Your existing imports will continue to work
-import { DateFilter, QuickFilterDropdown } from '@agrc/compat';`}
+import { DateFilter, QuickFilterDropdown } from 'ag-grid-react-components';`}
                             language="bash"
                           />
                         </div>
@@ -1583,7 +1717,7 @@ import { DateFilter, QuickFilterDropdown } from '@agrc/compat';`}
                             <CodeBlock
                               code={`import React from 'react';
 import { AgGridReact } from 'ag-grid-react';
-import { createDateFilter } from '@agrc/core';
+import { createDateFilter } from 'ag-grid-react-components';
 
 // Create DateFilter with native HTML5 inputs
 const DateFilter = createDateFilter();
@@ -1615,8 +1749,7 @@ function App() {
                             <CodeBlock
                               code={`import React from 'react';
 import { AgGridReact } from 'ag-grid-react';
-import { createDateFilter, createQuickFilterDropdown } from '@agrc/core';
-import { reactDatePickerAdapter } from '@agrc/adapters/react-datepicker';
+import { createDateFilter, createQuickFilterDropdown, reactDatePickerAdapter } from 'ag-grid-react-components';
 
 // Create components with date picker support
 const DateFilter = createDateFilter({
@@ -1674,11 +1807,9 @@ import {
   createDateFilter,
   createQuickFilterDropdown,
   createActiveFilters,
-  setupGridStatePersistence
-} from '@agrc/core';
-import { reactDatePickerAdapter } from '@agrc/adapters/react-datepicker';
-import { createLZStringAdapter } from '@agrc/adapters/compression';
-import '@agrc/styles'; // Optional styles
+  setupGridStatePersistence,
+  reactDatePickerAdapter
+} from 'ag-grid-react-components';
 
 // Create all components
 const DateFilter = createDateFilter({
@@ -1728,7 +1859,7 @@ function App() {
                             <li className="flex items-start">
                               <span className="text-gray-500 mr-2">•</span>
                               Create components using factory functions from
-                              &apos;@agrc/core&apos;
+                              &apos;ag-grid-react-components&apos;
                             </li>
                             <li className="flex items-start">
                               <span className="text-gray-500 mr-2">•</span>
@@ -1874,12 +2005,11 @@ function App() {
                           </AnchorHeading>
                           <CodeBlock
                             code={`// Minimal (25KB) - Native HTML5 date inputs
-import { createDateFilter } from '@agrc/core';
+import { createDateFilter } from 'ag-grid-react-components';
 const DateFilter = createDateFilter();
 
 // With React DatePicker (65KB)
-import { createDateFilter } from '@agrc/core';
-import { reactDatePickerAdapter } from '@agrc/adapters/react-datepicker';
+import { createDateFilter, reactDatePickerAdapter } from 'ag-grid-react-components';
 const DateFilter = createDateFilter({
   datePickerAdapter: reactDatePickerAdapter
 });
@@ -2405,7 +2535,7 @@ api.setFilterModel({
                           </AnchorHeading>
                           <CodeBlock
                             code={`// Create the component
-import { createQuickFilterDropdown } from '@agrc/core';
+import { createQuickFilterDropdown } from 'ag-grid-react-components';
 const QuickFilterDropdown = createQuickFilterDropdown();
 
 // In your component
@@ -2747,7 +2877,7 @@ const combinedFilters = [
                           </AnchorHeading>
                           <CodeBlock
                             code={`// Create the component
-import { createActiveFilters } from '@agrc/core';
+import { createActiveFilters } from 'ag-grid-react-components';
 const ActiveFilters = createActiveFilters();
 
 function MyGrid() {
@@ -3811,8 +3941,11 @@ npm run dev:safe`}
                         URL State Persistence
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6">
-                        Automatically sync filter state with the URL for
-                        shareable links and browser history support.
+                        A powerful feature that automatically synchronizes your
+                        entire grid state (filters, columns, sorting, grouping)
+                        with the browser URL. Create shareable links, support
+                        browser history navigation, and persist user preferences
+                        - all with optional compression for smaller URLs.
                       </p>
 
                       <div className="space-y-8">
@@ -4273,28 +4406,37 @@ const customLoad = () => {
                               <div className="space-y-3">
                                 <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
                                   <h5 className="font-semibold text-blue-400 mb-1">
-                                    1. Compression
+                                    1. LZ-String Compression (Default)
                                   </h5>
                                   <p className="text-sm text-gray-400">
-                                    Use libraries like lz-string to compress
-                                    state by 50-90%
+                                    LZ-String compression is enabled by default
+                                    when using setupGridStatePersistence. It
+                                    reduces URLs by 50-90%, making it the
+                                    recommended approach for most applications.
                                   </p>
                                   <CodeBlock
-                                    code={`import LZString from 'lz-string';
-
-const compressed = LZString.compressToEncodedURIComponent(stateJSON);
-const decompressed = LZString.decompressFromEncodedURIComponent(compressed);`}
+                                    code={`// Compression is enabled by default
+setupGridStatePersistence(gridApi, {
+  useCompression: true, // Default: true
+  // LZ-String is automatically used
+});`}
                                     language="javascript"
                                   />
                                 </div>
 
                                 <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
                                   <h5 className="font-semibold text-blue-400 mb-1">
-                                    2. State Storage Service
+                                    2. Server-side Storage
                                   </h5>
                                   <p className="text-sm text-gray-400">
-                                    Store state server-side and use a short ID
-                                    in the URL
+                                    For very large states that exceed URL limits
+                                    even with compression, store state
+                                    server-side and use a short ID in the URL.
+                                    <span className="block mt-2 text-blue-300">
+                                      Note: We plan to provide a reference
+                                      implementation of a server-side service in
+                                      the future.
+                                    </span>
                                   </p>
                                   <CodeBlock
                                     code={`// Store state and get ID
@@ -4348,48 +4490,47 @@ const minimalState = {
                           <AnchorHeading level={3} id="filter-model-types">
                             Filter Model Types
                           </AnchorHeading>
-                          <CodeBlock
-                            code={`// DateFilter model structure
-interface DateFilterModel {
-  mode: 'absolute' | 'relative';
-  type: 'equals' | 'before' | 'after' | 'inRange' | 'blank' | 'notBlank';
-
-  // For absolute mode
-  dateFrom?: Date | null;
-  dateTo?: Date | null;
-
-  // For relative mode
-  expressionFrom?: string;
-  expressionTo?: string;
-}
-
-// Example filter models
-const absoluteFilter: DateFilterModel = {
-  mode: 'absolute',
-  type: 'inRange',
-  dateFrom: new Date('2024-01-01'),
-  dateTo: new Date('2024-12-31')
-};
-
-const relativeFilter: DateFilterModel = {
-  mode: 'relative',
-  type: 'inRange',
-  expressionFrom: 'Today-7d',
-  expressionTo: 'Today'
-};`}
-                            language="typescript"
-                          />
-                          <p className="text-sm text-gray-400 mt-2">
-                            View full type definitions on{" "}
-                            <a
-                              href="https://github.com/ryanrozich/ag-grid-react-components/blob/main/src/components/DateFilter/types/index.ts"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-indigo-400 hover:text-indigo-300"
-                            >
-                              GitHub
-                            </a>
-                          </p>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              The DateFilter uses a comprehensive model
+                              structure that supports both absolute dates and
+                              relative expressions.
+                            </p>
+                            <ul className="space-y-2 text-gray-300">
+                              <li>
+                                • <strong>DateFilterModel</strong>: Main
+                                interface with mode, type, and date/expression
+                                fields
+                              </li>
+                              <li>
+                                • <strong>Mode</strong>: 'absolute' for specific
+                                dates or 'relative' for expressions
+                              </li>
+                              <li>
+                                • <strong>Type</strong>: Filter operations like
+                                equals, before, after, inRange, blank, notBlank
+                              </li>
+                              <li>
+                                • <strong>Date Fields</strong>: dateFrom/dateTo
+                                for absolute mode
+                              </li>
+                              <li>
+                                • <strong>Expression Fields</strong>:
+                                expressionFrom/expressionTo for relative mode
+                              </li>
+                            </ul>
+                            <p className="text-sm text-gray-400 mt-4">
+                              View full type definitions in{" "}
+                              <a
+                                href="https://github.com/ryanrozich/ag-grid-react-components/blob/main/src/components/DateFilter/types/index.ts"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-indigo-400 hover:text-indigo-300"
+                              >
+                                src/components/DateFilter/types/index.ts
+                              </a>
+                            </p>
+                          </div>
                         </div>
 
                         <div>
@@ -4399,77 +4540,132 @@ const relativeFilter: DateFilterModel = {
                           >
                             QuickFilterDropdown Types
                           </AnchorHeading>
-                          <CodeBlock
-                            code={`interface QuickFilterOption {
-  id: string;
-  label: string;
-  icon?: string;
-  description?: string;
-  filterModel?: Record<string, unknown>;  // Column-specific filter model
-  onSelect?: (api: GridApi) => void;  // Custom handler
-}
-
-interface QuickFilterDropdownProps {
-  api: GridApi;
-  columnId?: string;  // Required unless using onSelect
-  options: QuickFilterOption[];
-  placeholder?: string;
-  showDescriptions?: boolean;
-  className?: string;
-  onFilterChange?: (option: QuickFilterOption | null) => void;
-}`}
-                            language="typescript"
-                          />
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              The QuickFilterDropdown uses a flexible
+                              option-based interface for defining predefined
+                              filters.
+                            </p>
+                            <ul className="space-y-2 text-gray-300">
+                              <li>
+                                • <strong>QuickFilterOption</strong>: Defines
+                                each dropdown option with id, label, icon, and
+                                filter model
+                              </li>
+                              <li>
+                                • <strong>QuickFilterDropdownProps</strong>:
+                                Component props including api, columnId, and
+                                options array
+                              </li>
+                              <li>
+                                • <strong>Filter Model</strong>: Column-specific
+                                filter configuration or custom onSelect handler
+                              </li>
+                              <li>
+                                • <strong>UI Options</strong>: Support for
+                                icons, descriptions, and custom styling
+                              </li>
+                            </ul>
+                            <p className="text-sm text-gray-400 mt-4">
+                              View type definitions in{" "}
+                              <a
+                                href="https://github.com/ryanrozich/ag-grid-react-components/blob/main/src/components/QuickFilterDropdown/types.ts"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-indigo-400 hover:text-indigo-300"
+                              >
+                                src/components/QuickFilterDropdown/types.ts
+                              </a>
+                            </p>
+                          </div>
                         </div>
 
                         <div>
                           <AnchorHeading
                             level={3}
-                            id="url-state-persistence-types"
+                            id="grid-state-persistence-types"
                           >
-                            URL State Persistence Types
+                            Grid State Persistence Types
                           </AnchorHeading>
-                          <CodeBlock
-                            code={`interface FilterStatePersistenceOptions {
-  onFilterLoad?: (filterModel: Record<string, unknown> | null) => void;
-  onFilterSave?: (filterModel: Record<string, unknown> | null) => void;
-  parameterName?: string;  // Default: 'filters'
-}
-
-// Usage
-function setupFilterStatePersistence(
-  api: GridApi,
-  options?: FilterStatePersistenceOptions
-): () => void;  // Returns cleanup function`}
-                            language="typescript"
-                          />
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              The grid state persistence utilities provide
+                              comprehensive type definitions for saving and
+                              restoring grid configurations.
+                            </p>
+                            <ul className="space-y-2 text-gray-300">
+                              <li>
+                                • <strong>GridStateOptions</strong>:
+                                Configuration for what state to include
+                                (filters, columns, sort, etc.)
+                              </li>
+                              <li>
+                                • <strong>GridState</strong>: The complete state
+                                object with all grid configuration
+                              </li>
+                              <li>
+                                • <strong>setupGridStatePersistence</strong>:
+                                Main function with options for compression and
+                                callbacks
+                              </li>
+                              <li>
+                                • <strong>Compression Support</strong>: Optional
+                                adapter interface for URL compression
+                              </li>
+                            </ul>
+                            <p className="text-sm text-gray-400 mt-4">
+                              View type definitions in{" "}
+                              <a
+                                href="https://github.com/ryanrozich/ag-grid-react-components/blob/main/src/utils/gridStateUtils.ts"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-indigo-400 hover:text-indigo-300"
+                              >
+                                src/utils/gridStateUtils.ts
+                              </a>
+                            </p>
+                          </div>
                         </div>
 
                         <div>
                           <AnchorHeading level={3} id="date-expression-types">
                             Date Expression Types
                           </AnchorHeading>
-                          <CodeBlock
-                            code={`// Valid date anchors
-type DateAnchor =
-  | 'Today'
-  | 'Now'
-  | 'StartOfWeek'
-  | 'EndOfWeek'
-  | 'StartOfMonth'
-  | 'EndOfMonth'
-  | 'StartOfYear'
-  | 'EndOfYear';
-
-// Valid time units
-type TimeUnit = 'd' | 'w' | 'M' | 'y' | 'h' | 'm';
-
-// Expression validation
-function isValidDateExpression(expression: string): boolean;
-function parseDateExpression(expression: string): ParseResult;
-function resolveDateExpression(expression: string): Date | null;`}
-                            language="typescript"
-                          />
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              The date expression parser uses well-defined types
+                              for anchors, units, and validation.
+                            </p>
+                            <ul className="space-y-2 text-gray-300">
+                              <li>
+                                • <strong>DateAnchor</strong>: Type union of
+                                valid anchors (Today, Now, StartOfWeek, etc.)
+                              </li>
+                              <li>
+                                • <strong>TimeUnit</strong>: Valid time units
+                                (d, w, M, y, h, m)
+                              </li>
+                              <li>
+                                • <strong>ParseResult</strong>: Structured
+                                result with anchor, operator, value, and unit
+                              </li>
+                              <li>
+                                • <strong>Validation Functions</strong>:
+                                Type-safe expression validation and parsing
+                              </li>
+                            </ul>
+                            <p className="text-sm text-gray-400 mt-4">
+                              View type definitions in{" "}
+                              <a
+                                href="https://github.com/ryanrozich/ag-grid-react-components/blob/main/src/utils/dateExpressionParser.ts"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-indigo-400 hover:text-indigo-300"
+                              >
+                                src/utils/dateExpressionParser.ts
+                              </a>
+                            </p>
+                          </div>
                         </div>
 
                         <div>
@@ -4479,30 +4675,34 @@ function resolveDateExpression(expression: string): Date | null;`}
                           >
                             AG Grid Integration Types
                           </AnchorHeading>
-                          <CodeBlock
-                            code={`// Filter params interface
-interface DateFilterParams extends IDateFilterParams {
-  buttons?: FilterButtonType[];
-  closeOnApply?: boolean;
-  includeBlanksInEquals?: boolean;
-  includeBlanksInLessThan?: boolean;
-  includeBlanksInGreaterThan?: boolean;
-  includeBlanksInRange?: boolean;
-}
-
-// Component interfaces
-interface IDateFilter extends IFilter {
-  // AG Grid required methods
-  doesFilterPass(params: IDoesFilterPassParams): boolean;
-  getModel(): DateFilterModel | null;
-  setModel(model: DateFilterModel | null): void;
-
-  // Optional AG Grid methods
-  afterGuiAttached?(): void;
-  onNewRowsLoaded?(): void;
-}`}
-                            language="typescript"
-                          />
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              Our components implement AG Grid's filter
+                              interfaces with full type safety.
+                            </p>
+                            <ul className="space-y-2 text-gray-300">
+                              <li>
+                                • <strong>IFilter Implementation</strong>: All
+                                required AG Grid filter methods
+                              </li>
+                              <li>
+                                • <strong>Filter Params</strong>: Extended
+                                interfaces for configuration options
+                              </li>
+                              <li>
+                                • <strong>Grid API Types</strong>: Full typing
+                                for AG Grid API interactions
+                              </li>
+                              <li>
+                                • <strong>Event Handlers</strong>: Type-safe
+                                callback definitions
+                              </li>
+                            </ul>
+                            <p className="text-sm text-gray-400 mt-4">
+                              These types ensure seamless integration with AG
+                              Grid's TypeScript definitions.
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
