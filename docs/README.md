@@ -4,15 +4,37 @@ Welcome to the comprehensive documentation for AG Grid React Components. This di
 
 ## 📚 Documentation Index
 
-### Core Documentation
+### Component API References
 
-- **[DateFilter API Reference](./DATEFILTER_API.md)** - Complete API documentation for DateFilter
+- **[DateFilter API](./DATEFILTER_API.md)** - Complete API documentation for DateFilter
 
   - Filter parameters and configuration
   - Open-ended date ranges
   - Inclusive/exclusive filtering
   - TypeScript interfaces
   - Code examples
+
+- **[QuickFilterDropdown API](./QUICKFILTERDROPDOWN_API.md)** - Dropdown component for predefined filters
+
+  - Component props and options
+  - Portal rendering modes
+  - Keyboard navigation
+  - Custom filter logic
+
+- **[ActiveFilters API](./ACTIVEFILTERS_API.md)** - Visual display of active filters
+
+  - Filter pill customization
+  - Display formatting
+  - Event callbacks
+  - Accessibility features
+
+- **[Grid State Persistence API](./GRIDSTATE_API.md)** - URL state management with compression
+  - Automatic URL synchronization
+  - Manual state capture/restore
+  - Compression adapters
+  - Server-side persistence
+
+### Feature Guides
 
 - **[Date Expressions Reference](./DATE_EXPRESSIONS.md)** - Complete guide to relative date expressions
 
@@ -27,25 +49,18 @@ Welcome to the comprehensive documentation for AG Grid React Components. This di
   - Dark mode support
   - Integration with CSS frameworks
 
-### Technical Documentation
+### Architecture & Deployment
 
-- **[Zod Evaluation](./ZOD_EVALUATION.md)** - Analysis of runtime validation options
+- **[Architecture Decisions](./decisions/)** - Key architectural decisions and evaluations
 
-  - Pros and cons of adding Zod
-  - Alternative approaches
-  - Recommendations
+  - Single package approach
+  - Technology evaluations
+  - Design rationale
 
-- **[Headless UI Evaluation](./HEADLESSUI_EVALUATION.md)** - Analysis of headless component patterns
-  - Benefits of Headless UI
-  - Integration considerations
-  - Alternative approaches
-
-### API Documentation
-
-- **[Component APIs](../src/components/)** - Source code with inline documentation
-  - DateFilter component
-  - QuickFilterDropdown component
-  - ActiveFilters component
+- **[Demo Deployment Guide](./DEMO-DEPLOYMENT.md)** - How the demo site is deployed
+  - Cloudflare Workers architecture
+  - GitHub Actions workflow
+  - Custom routing system
 
 ## 🚀 Quick Links
 

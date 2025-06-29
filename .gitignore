@@ -59,3 +59,35 @@ TODO.md
 
 # Development notes
 src/components/questions.md
+
+# Coverage reports
+coverage_full.txt
+coverage_output.txt
+coverage_report.txt
+coverage_output.json
+
+# Temporary/POC files
+*POC.ts
+*POC.tsx
+headlessdatefilterpoc.txt
+
+# Usage tracking
+usage_tracking*.json
+uploads/
+
+# Error logs
+dev-errors.log
+main-errors.log
+
+# Demo HTML files
+avatar-demo-example.html
+category-demo-example.html
+
+# Serena cache (if it exists)
+.serena/
+
+# Temporary report files
+CODE_REVIEW_*.md
+TEST_COVERAGE_*.md
+!docs/internal/legacy/CODE_REVIEW_*.md
+!docs/internal/legacy/TEST_COVERAGE_*.md
