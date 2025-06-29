@@ -7,7 +7,7 @@ Fixed the Playwright E2E test suite that was completely broken due to outdated t
 
 ### 1. JSX Syntax Errors in Demo
 - **Problem**: Unescaped comparison operators in `components-showcase-complete.tsx` caused page crashes
-- **Fix**: 
+- **Fix**:
   - Line 1664: Changed `(<= vs <)` to `(&lt;= vs &lt;)`
   - Line 1655: Changed `(>= vs >)` to `(&gt;= vs &gt;)`
 

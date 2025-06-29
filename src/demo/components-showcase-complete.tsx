@@ -348,7 +348,7 @@ export const ComponentsShowcaseComplete: React.FC<
   const [filterModel, setFilterModel] = useState<
     import("ag-grid-community").FilterModel
   >({});
-  const [activeDocSection, setActiveDocSection] = useState("getting-started");
+  const [activeDocSection, setActiveDocSection] = useState("overview");
 
   const [stats, setStats] = useState({
     taskCount: 0,
@@ -753,10 +753,10 @@ export const ComponentsShowcaseComplete: React.FC<
                     >
                       <circle cx={3} cy={3} r={3} fill="currentColor" />
                     </svg>
-                    v2.0 Now Available
+                    Pre-release v0.1.0
                   </span>
                   <span className="inline-flex items-center gap-x-1.5 rounded-full bg-indigo-600/10 px-3 py-1.5 text-sm font-medium text-indigo-400 ring-1 ring-inset ring-indigo-600/20">
-                    95% Smaller Bundle
+                    Minimal Bundle Size
                   </span>
                   <span className="inline-flex items-center gap-x-1.5 rounded-full bg-emerald-600/10 px-3 py-1.5 text-sm font-medium text-emerald-400 ring-1 ring-inset ring-emerald-600/20">
                     MIT License
@@ -800,8 +800,8 @@ const DateFilter = createDateFilter();
 // WITH REACT DATEPICKER (65KB total) - Lazy loaded
 import { createDateFilter } from "@agrc/core";
 import { reactDatePickerAdapter } from "@agrc/adapters/react-datepicker";
-const DateFilter = createDateFilter({ 
-  datePickerAdapter: reactDatePickerAdapter 
+const DateFilter = createDateFilter({
+  datePickerAdapter: reactDatePickerAdapter
 });
 
 // BACKWARD COMPATIBLE (for v1 users)
@@ -828,7 +828,7 @@ import { DateFilter } from "@agrc/compat";
             </div>
             {/* Bundle Size Comparison */}
             <div className="mx-auto mt-12 max-w-5xl">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
                   <h4 className="text-sm font-medium text-gray-400 mb-2">
                     Minimal Setup
@@ -872,21 +872,6 @@ import { DateFilter } from "@agrc/compat";
                     <li>✓ React DatePicker</li>
                     <li>✓ URL compression</li>
                     <li>✓ All utilities</li>
-                  </ul>
-                </div>
-                <div className="bg-gray-900/50 rounded-lg p-6 border border-orange-700">
-                  <h4 className="text-sm font-medium text-gray-400 mb-2">
-                    v1.0 (Old)
-                  </h4>
-                  <div className="text-3xl font-bold text-orange-400 mb-2">
-                    329KB
-                  </div>
-                  <div className="text-sm text-gray-500 mb-4">gzipped</div>
-                  <ul className="space-y-1 text-sm text-gray-400">
-                    <li>• Everything bundled</li>
-                    <li>• No tree-shaking</li>
-                    <li>• All dependencies</li>
-                    <li>• Not modular</li>
                   </ul>
                 </div>
               </div>
@@ -988,6 +973,9 @@ import { DateFilter } from "@agrc/compat";
 
   if (currentPage === "docs") {
     const docSections = [
+      // Overview
+      { id: "overview", label: "Documentation Home", isSection: false },
+
       // Getting Started Section
       { id: "getting-started", label: "Getting Started", isSection: true },
       { id: "prerequisites", label: "Prerequisites", indent: true },
@@ -1063,6 +1051,107 @@ import { DateFilter } from "@agrc/compat";
 
               {/* Main Content */}
               <main className="lg:col-span-9">
+                {/* Overview/Home Section */}
+                {activeDocSection === "overview" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="overview">
+                        AG Grid React Components Documentation
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6 text-lg">
+                        Welcome to the documentation for AG Grid React
+                        Components - a modular, tree-shakeable library for
+                        enhancing AG Grid with powerful filtering capabilities.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+                        <h3 className="text-lg font-semibold text-white mb-3">
+                          🚀 Quick Start
+                        </h3>
+                        <p className="text-gray-300 mb-4">
+                          Get up and running with minimal setup. Start with just
+                          25KB for basic features.
+                        </p>
+                        <button
+                          onClick={() => setActiveDocSection("getting-started")}
+                          className="text-indigo-400 hover:text-indigo-300 font-medium"
+                        >
+                          Getting Started →
+                        </button>
+                      </div>
+
+                      <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+                        <h3 className="text-lg font-semibold text-white mb-3">
+                          📦 Components
+                        </h3>
+                        <p className="text-gray-300 mb-4">
+                          Explore our modular components including DateFilter,
+                          QuickFilterDropdown, and more.
+                        </p>
+                        <button
+                          onClick={() => setActiveDocSection("components")}
+                          className="text-indigo-400 hover:text-indigo-300 font-medium"
+                        >
+                          View Components →
+                        </button>
+                      </div>
+
+                      <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+                        <h3 className="text-lg font-semibold text-white mb-3">
+                          🎯 Key Features
+                        </h3>
+                        <ul className="text-gray-300 space-y-2">
+                          <li>• Minimal bundle size (25KB start)</li>
+                          <li>• Tree-shakeable architecture</li>
+                          <li>• TypeScript support</li>
+                          <li>• 100% free and open source</li>
+                        </ul>
+                      </div>
+
+                      <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+                        <h3 className="text-lg font-semibold text-white mb-3">
+                          📖 Resources
+                        </h3>
+                        <div className="space-y-2">
+                          <a
+                            href="https://github.com/ryanrozich/ag-grid-react-components"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block text-indigo-400 hover:text-indigo-300"
+                          >
+                            GitHub Repository
+                          </a>
+                          <button
+                            onClick={() => setActiveDocSection("expressions")}
+                            className="block text-indigo-400 hover:text-indigo-300 text-left"
+                          >
+                            Date Expressions Guide
+                          </button>
+                          <button
+                            onClick={() => setActiveDocSection("types")}
+                            className="block text-indigo-400 hover:text-indigo-300 text-left"
+                          >
+                            TypeScript Reference
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-6 mt-8">
+                      <h3 className="text-lg font-semibold text-blue-300 mb-2">
+                        Pre-release Version
+                      </h3>
+                      <p className="text-gray-300">
+                        This is version 0.1.0, a pre-release seeking feedback
+                        from early adopters. The API may change before the 1.0
+                        release. We welcome your feedback and contributions!
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Getting Started Section */}
                 {activeDocSection === "getting-started" && (
                   <div className="space-y-8">
@@ -1071,7 +1160,7 @@ import { DateFilter } from "@agrc/compat";
                         Getting Started
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6">
-                        Welcome to AG Grid React Components v2.0! This is a{" "}
+                        Welcome to AG Grid React Components! This is a{" "}
                         <strong className="text-green-400">
                           free and open source
                         </strong>{" "}
@@ -1530,14 +1619,14 @@ import { createDateFilter, createQuickFilterDropdown } from '@agrc/core';
 import { reactDatePickerAdapter } from '@agrc/adapters/react-datepicker';
 
 // Create components with date picker support
-const DateFilter = createDateFilter({ 
-  datePickerAdapter: reactDatePickerAdapter 
+const DateFilter = createDateFilter({
+  datePickerAdapter: reactDatePickerAdapter
 });
 const QuickFilterDropdown = createQuickFilterDropdown();
 
 function App() {
   const [gridApi, setGridApi] = useState(null);
-  
+
   const columnDefs = [
     {
       field: 'date',
@@ -1549,7 +1638,7 @@ function App() {
 
   return (
     <div>
-      <QuickFilterDropdown 
+      <QuickFilterDropdown
         api={gridApi}
         columnId="date"
         options={[
@@ -1558,10 +1647,10 @@ function App() {
           { id: 'month', label: 'This Month' },
         ]}
       />
-      
+
       <div className="ag-theme-quartz" style={{ height: 600 }}>
-        <AgGridReact 
-          columnDefs={columnDefs} 
+        <AgGridReact
+          columnDefs={columnDefs}
           rowData={rowData}
           onGridReady={params => setGridApi(params.api)}
         />
@@ -1581,19 +1670,19 @@ function App() {
                             <CodeBlock
                               code={`import React, { useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
-import { 
-  createDateFilter, 
+import {
+  createDateFilter,
   createQuickFilterDropdown,
   createActiveFilters,
-  setupGridStatePersistence 
+  setupGridStatePersistence
 } from '@agrc/core';
 import { reactDatePickerAdapter } from '@agrc/adapters/react-datepicker';
 import { createLZStringAdapter } from '@agrc/adapters/compression';
 import '@agrc/styles'; // Optional styles
 
 // Create all components
-const DateFilter = createDateFilter({ 
-  datePickerAdapter: reactDatePickerAdapter 
+const DateFilter = createDateFilter({
+  datePickerAdapter: reactDatePickerAdapter
 });
 const QuickFilterDropdown = createQuickFilterDropdown();
 const ActiveFilters = createActiveFilters();
@@ -1614,7 +1703,7 @@ function App() {
   return (
     <div>
       <ActiveFilters api={gridApi} filterModel={filterModel} />
-      
+
       <div className="ag-theme-quartz" style={{ height: 600 }}>
         <AgGridReact
           columnDefs={columnDefs}
@@ -1791,8 +1880,8 @@ const DateFilter = createDateFilter();
 // With React DatePicker (65KB)
 import { createDateFilter } from '@agrc/core';
 import { reactDatePickerAdapter } from '@agrc/adapters/react-datepicker';
-const DateFilter = createDateFilter({ 
-  datePickerAdapter: reactDatePickerAdapter 
+const DateFilter = createDateFilter({
+  datePickerAdapter: reactDatePickerAdapter
 });
 
 // Use in column definitions

@@ -1,6 +1,6 @@
 {
   "name": "@agrc/styles",
-  "version": "2.0.0-beta.1",
+  "version": "0.1.0",
   "description": "Optional CSS styles for AG Grid React Components",
   "keywords": [
     "ag-grid",

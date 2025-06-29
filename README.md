@@ -1,10 +1,10 @@
-# AG Grid React Components v2.0
+# AG Grid React Components
 
-🎉 **NEW: Modular Architecture - 95% Smaller Bundle!**
+🎉 **Pre-release: Modular Architecture with Minimal Bundle Size!**
 
 A collection of powerful, tree-shakeable React components for AG Grid (v33.3.0+) that enhance your data grid with advanced filtering and state management capabilities. Start with just 25KB or add features as needed.
 
-📖 **[Full Documentation →](./docs/)**  
+📖 **[Full Documentation →](./docs/)**
 🚀 **[Live Demo →](https://demo.rozich.net/ag-grid-react-components/)**
 
 ## 🚀 Features
@@ -72,14 +72,6 @@ npm install @agrc/core @agrc/adapters
 ```bash
 # Everything including compression and styles
 npm install @agrc/core @agrc/adapters @agrc/styles
-```
-
-### Migration from v1
-
-```bash
-# Zero code changes required!
-npm uninstall ag-grid-react-components
-npm install @agrc/compat
 ```
 
 ## 📋 Requirements
@@ -165,13 +157,13 @@ function App() {
 }
 ```
 
-## 🌟 Bundle Size Comparison
+## 🌟 Bundle Sizes
 
-| Use Case                 | v1.0 Size | v2.0 Size | Reduction |
-| ------------------------ | --------- | --------- | --------- |
-| Just DateFilter (native) | 329KB     | **25KB**  | 92%       |
-| With React DatePicker    | 329KB     | **65KB**  | 80%       |
-| All components           | 329KB     | **85KB**  | 74%       |
+| Use Case                 | Bundle Size |
+| ------------------------ | ----------- |
+| Just DateFilter (native) | **25KB**    |
+| With React DatePicker    | **65KB**    |
+| All components           | **85KB**    |
 
 ## 🎯 Key Features by Package
 
@@ -193,13 +185,6 @@ function App() {
 - 🎨 Optional CSS
 - 📱 Responsive design
 - 🌙 Dark mode support
-
-### @agrc/compat (5KB)
-
-- 🔄 v1 compatibility layer
-- 📦 Zero migration effort
-- 🚀 Uses v2 under the hood
-  }
 
 ````
 

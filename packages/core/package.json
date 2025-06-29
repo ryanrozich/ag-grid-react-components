@@ -1,6 +1,6 @@
 {
   "name": "@agrc/core",
-  "version": "2.0.0-beta.1",
+  "version": "0.1.0",
   "description": "Headless, composable React components for AG Grid with minimal bundle size",
   "keywords": [
     "ag-grid",

@@ -1,6 +1,6 @@
 {
   "name": "@agrc/adapters",
-  "version": "2.0.0-beta.1",
+  "version": "0.1.0",
   "description": "Adapter packages for AG Grid React Components - date pickers, compression, and more",
   "keywords": [
     "ag-grid",
@@ -54,7 +54,7 @@
     "url": "https://github.com/ryanrozich/ag-grid-react-components/issues"
   },
   "peerDependencies": {
-    "@agrc/core": "^2.0.0",
+    "@agrc/core": "^0.1.0",
     "react": ">=16.8.0 || >=17.0.0 || >=18.0.0 || >=19.0.0"
   },
   "optionalDependencies": {

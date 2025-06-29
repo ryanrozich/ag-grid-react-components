@@ -13,7 +13,7 @@ Fixed all TypeScript build errors to make the project compatible with AG Grid v3
 ### 2. Type Safety Improvements
 - Added proper type guards in ActiveFilters component:
   - `isDateFilterModel()`
-  - `isSetFilterModel()` 
+  - `isSetFilterModel()`
   - `isTextFilterModel()`
   - `isNumberFilterModel()`
 - Fixed type narrowing issues with union types

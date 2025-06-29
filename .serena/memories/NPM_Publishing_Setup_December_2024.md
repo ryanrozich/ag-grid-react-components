@@ -3,7 +3,7 @@
 ## Package Names
 All packages publish under the `@agrc` scope which is available on npm:
 - @agrc/core
-- @agrc/adapters  
+- @agrc/adapters
 - @agrc/styles
 - @agrc/compat
 
@@ -41,7 +41,7 @@ Created `.github/workflows/publish.yml` for automated releases:
 
 ## Current Status
 - Core package successfully built (37.3KB)
-- All TypeScript compiled 
+- All TypeScript compiled
 - Ready to publish pending OTP
 - First publish will be @agrc/core@2.0.0-beta.1
 

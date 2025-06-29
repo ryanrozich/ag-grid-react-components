@@ -18,7 +18,7 @@ Successfully improved test coverage for the QuickFilterDropdown component from ~
   - `getActiveFilterOption()`
   - `applyQuickFilter()`
   - `DATE_FILTER_PRESETS` validation
-  
+
 - Created `agGridWorkaround.test.ts` with ~90% coverage for:
   - `applyFilterModelWithWorkaround()`
   - `applyFilterModelAlternative()`

@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## IMPORTANT: Version 2.0 Modular Architecture (December 2024)
+## IMPORTANT: Version 0.1.0 Modular Architecture (December 2024)
 
 This project has been completely refactored into a modular, tree-shakeable architecture with multiple npm packages:
 
@@ -14,7 +14,7 @@ This project has been completely refactored into a modular, tree-shakeable archi
 @agrc/styles       - Optional CSS (3KB gzipped)
 @agrc/compat       - v1 compatibility layer (5KB gzipped)
 
-Total: 95% smaller than v1 (25KB vs 329KB for minimal usage)
+Total: Minimal bundle size starting at 25KB
 ```
 
 ### Key Architecture Decisions
@@ -56,10 +56,6 @@ const DateFilter = createDateFilter({ datePickerAdapter: reactDatePickerAdapter 
 import { setupGridStatePersistence } from "@agrc/core";
 import { createLZStringAdapter } from "@agrc/adapters/compression";
 setupGridStatePersistence(api, { compressionAdapter: createLZStringAdapter() });
-
-// BACKWARD COMPATIBLE (for v1 users)
-import { DateFilter, QuickFilterDropdown } from "@agrc/compat";
-// Works exactly like v1 but uses v2 under the hood
 ```
 
 ### Monorepo Structure
@@ -71,12 +67,12 @@ import { DateFilter, QuickFilterDropdown } from "@agrc/compat";
 
 ### Bundle Size Achievements
 
-| Use Case                             | v1 Size | v2 Size | Reduction |
-| ------------------------------------ | ------- | ------- | --------- |
-| Just DateFilter (native)             | 329KB   | 25KB    | 92%       |
-| Just QuickFilter                     | 329KB   | 15KB    | 95%       |
-| All components (native)              | 329KB   | 45KB    | 86%       |
-| All components (w/ React DatePicker) | 329KB   | 85KB    | 74%       |
+| Use Case                             | Bundle Size |
+| ------------------------------------ | ----------- |
+| Just DateFilter (native)             | 25KB        |
+| Just QuickFilter                     | 15KB        |
+| All components (native)              | 45KB        |
+| All components (w/ React DatePicker) | 85KB        |
 
 ## Prerequisites
 
