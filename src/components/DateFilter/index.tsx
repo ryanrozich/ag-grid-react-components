@@ -466,11 +466,11 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
       console.log("[DateFilter] useEffect: model prop changed:", initialModel);
 
       // Only reinitialize if we have a model and it's different from current state
-      if (initialModel && filterState) {
+      if (initialModel) {
         console.log("[DateFilter] useEffect: Applying model from props");
         filterState.initializeFromModel(initialModel);
       }
-    }, [initialModel, filterState]);
+    }, [initialModel, filterState.initializeFromModel]);
     console.log("[DateFilter] useGridFilter returned:", gridFilterResult);
 
     // Model is handled during initial state creation in useFilterState
