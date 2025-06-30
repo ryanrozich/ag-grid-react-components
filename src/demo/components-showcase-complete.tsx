@@ -862,11 +862,8 @@ export const ComponentsShowcaseComplete: React.FC<
           {/* Main Features */}
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-16">
             <div className="mx-auto max-w-2xl lg:text-center">
-              <h2 className="text-base font-semibold leading-7 text-indigo-400">
-                Community-Built Components
-              </h2>
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                4 new UX features for AG Grid
+                New UX features for AG Grid
               </p>
               <p className="mt-6 text-lg text-gray-300">
                 AG Grid is incredibly extensible, but its filtering UX hasn't
@@ -997,9 +994,6 @@ export const ComponentsShowcaseComplete: React.FC<
           {/* Problem/Solution Section */}
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
             <div className="mx-auto max-w-2xl lg:text-center mb-16">
-              <h2 className="text-base font-semibold leading-7 text-indigo-400">
-                Why These Components Exist
-              </h2>
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
                 Your users understand dates differently than databases do
               </p>
@@ -1082,9 +1076,6 @@ export const ComponentsShowcaseComplete: React.FC<
           {/* Developer Experience section */}
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
             <div className="mx-auto max-w-2xl lg:text-center">
-              <h2 className="text-base font-semibold leading-7 text-indigo-400">
-                Built for Developers
-              </h2>
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
                 Developer experience that just works
               </p>
