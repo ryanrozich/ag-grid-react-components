@@ -8,6 +8,7 @@ repo:
     host: github.com
     owner: ryanrozich
     name: ag-grid-react-components
+  trunk_branch: main
 # Trunk provides extensibility via plugins. (https://docs.trunk.io/plugins)
 plugins:
   sources:

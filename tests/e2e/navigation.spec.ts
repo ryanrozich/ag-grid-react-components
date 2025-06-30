@@ -25,7 +25,9 @@ test.describe("Navigation between pages", () => {
     await page.waitForLoadState("networkidle");
 
     // Verify we're back on home
-    await expect(page.locator("text=Advanced Date Filtering")).toBeVisible();
+    await expect(
+      page.locator('text=AG Grid filters that understand "today"'),
+    ).toBeVisible();
 
     // Navigate to Demo again
     await page.click('a[href="/demo"]');
@@ -68,8 +70,10 @@ test.describe("Navigation between pages", () => {
     await page.click("text=Due Date");
     await page.waitForTimeout(500);
 
-    // Verify filter UI appears
-    const filterDialog = page.locator(".ag-theme-quartz-dark .ag-filter");
+    // Verify filter UI appears (use first() to avoid strict mode violation)
+    const filterDialog = page
+      .locator(".ag-theme-quartz-dark .ag-filter")
+      .first();
     await expect(filterDialog).toBeVisible();
 
     // Close filter

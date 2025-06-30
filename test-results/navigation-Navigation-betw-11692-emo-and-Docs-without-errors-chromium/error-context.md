@@ -15,7 +15,7 @@ Call log:
   - expect.toBeVisible with timeout 5000ms
   - waiting for locator('text=Advanced Date Filtering')
 
-    at /Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/tests/e2e/navigation.spec.ts:24:64
+    at /Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/tests/e2e/navigation.spec.ts:28:64
 ```
 
 # Page snapshot
@@ -41,14 +41,9 @@ Call log:
 - paragraph: If you're using AG Grid, you know users struggle with date filtering. They want "last 30 days" to mean last 30 days—tomorrow too. These open source React components make it happen.
 - button "View Live Demo"
 - button "Documentation"
-- heading "Component Screenshots Coming Soon" [level=3]
-- paragraph: Screenshots will showcase DateFilter, QuickFilterDropdown, and ActiveFilters in action.
-- img
-- paragraph: 16:9 Screenshots (1920x1080)
-- paragraph: See src/demo/assets/screenshots/README.md for capture guidelines
-- code: "npm install ag-grid-react-components // Just add to your existing AG Grid setup import { createDateFilter } from 'ag-grid-react-components'; const DateFilter = createDateFilter(); const columnDefs = [{ field: 'dueDate', filter: DateFilter, filterParams: { defaultMode: 'relative' } }];"
-- heading "Community-Built Components" [level=2]
-- paragraph: 4 new UX features for AG Grid
+- img "AG Grid React Components showcase - DateFilter with relative date expressions, QuickFilterDropdown with presets, and ActiveFilters display"
+- text: DateFilter QuickFilterDropdown ActiveFilters
+- paragraph: New UX features for AG Grid
 - paragraph: AG Grid is incredibly extensible, but its filtering UX hasn't kept up with modern apps. When you have dozens of columns and dynamic data, users need better ways to filter, save, and share their views. These open source components fill that gap.
 - term:
   - img
@@ -70,7 +65,6 @@ Call log:
   - text: URL State Persistence
 - definition:
   - paragraph: Users can bookmark their favorite views and share them with teammates. "Last 30 days" stays last 30 days, even next month.
-- heading "Why These Components Exist" [level=2]
 - paragraph: Your users understand dates differently than databases do
 - heading "The Problem" [level=3]
 - list:
@@ -90,9 +84,9 @@ Call log:
   - listitem: → Teams share consistent report views
   - listitem: → Dashboards that update automatically
   - listitem: → Happy users, fewer support tickets
-- heading "Built for Developers" [level=2]
 - paragraph: Developer experience that just works
 - paragraph: Clean APIs, zero dependencies, and thoughtful defaults. Style it your way or use it headless.
+- code: "npm install ag-grid-react-components // Just add to your existing AG Grid setup import { createDateFilter } from 'ag-grid-react-components'; const DateFilter = createDateFilter(); const columnDefs = [{ field: 'dueDate', filter: DateFilter, filterParams: { defaultMode: 'relative' } }];"
 - img
 - heading "Start in minutes" [level=3]
 - list:
@@ -153,80 +147,87 @@ Call log:
 # Test source
 
 ```ts
-   1 | import { test, expect } from '@playwright/test';
+   1 | import { test, expect } from "@playwright/test";
    2 |
-   3 | test.describe('Navigation between pages', () => {
-   4 |   test('should navigate between Home, Demo, and Docs without errors', async ({ page }) => {
-   5 |     // Start on the home page
-   6 |     await page.goto('/');
-   7 |     
-   8 |     // Verify we're on the home page
-   9 |     await expect(page.locator('h1').first()).toContainText('AG Grid React Components');
-  10 |     
-  11 |     // Navigate to Demo
-  12 |     await page.click('a[href="/demo"]');
-  13 |     await page.waitForLoadState('networkidle');
-  14 |     
-  15 |     // Verify the grid is loaded
-  16 |     await expect(page.locator('.ag-theme-quartz-dark')).toBeVisible();
-  17 |     await expect(page.locator('.ag-header-row')).toBeVisible();
-  18 |     
-  19 |     // Navigate back to Home
-  20 |     await page.click('a[href="/"]');
-  21 |     await page.waitForLoadState('networkidle');
-  22 |     
-  23 |     // Verify we're back on home
-> 24 |     await expect(page.locator('text=Advanced Date Filtering')).toBeVisible();
+   3 | test.describe("Navigation between pages", () => {
+   4 |   test("should navigate between Home, Demo, and Docs without errors", async ({
+   5 |     page,
+   6 |   }) => {
+   7 |     // Start on the home page
+   8 |     await page.goto("/");
+   9 |
+  10 |     // Verify we're on the home page
+  11 |     await expect(page.locator("h1").first()).toContainText(
+  12 |       "AG Grid React Components",
+  13 |     );
+  14 |
+  15 |     // Navigate to Demo
+  16 |     await page.click('a[href="/demo"]');
+  17 |     await page.waitForLoadState("networkidle");
+  18 |
+  19 |     // Verify the grid is loaded
+  20 |     await expect(page.locator(".ag-theme-quartz-dark")).toBeVisible();
+  21 |     await expect(page.locator(".ag-header-row")).toBeVisible();
+  22 |
+  23 |     // Navigate back to Home
+  24 |     await page.click('a[href="/"]');
+  25 |     await page.waitForLoadState("networkidle");
+  26 |
+  27 |     // Verify we're back on home
+> 28 |     await expect(page.locator("text=Advanced Date Filtering")).toBeVisible();
      |                                                                ^ Error: Timed out 5000ms waiting for expect(locator).toBeVisible()
-  25 |     
-  26 |     // Navigate to Demo again
-  27 |     await page.click('a[href="/demo"]');
-  28 |     await page.waitForLoadState('networkidle');
-  29 |     
-  30 |     // Verify the grid loads without errors
-  31 |     await expect(page.locator('.ag-theme-quartz-dark')).toBeVisible();
-  32 |     await expect(page.locator('.ag-header-row')).toBeVisible();
-  33 |     
-  34 |     // Check console for errors
-  35 |     const consoleErrors: string[] = [];
-  36 |     page.on('console', msg => {
-  37 |       if (msg.type() === 'error') {
-  38 |         consoleErrors.push(msg.text());
-  39 |       }
-  40 |     });
-  41 |     
-  42 |     // Navigate to docs and back
-  43 |     await page.click('a[href="/docs"]');
-  44 |     await page.waitForLoadState('networkidle');
-  45 |     await expect(page.locator('text=Documentation')).toBeVisible();
-  46 |     
-  47 |     await page.click('a[href="/demo"]');
-  48 |     await page.waitForLoadState('networkidle');
-  49 |     
-  50 |     // Final check for grid
-  51 |     await expect(page.locator('.ag-theme-quartz-dark')).toBeVisible();
-  52 |     
-  53 |     // Verify no console errors
-  54 |     expect(consoleErrors).toHaveLength(0);
-  55 |   });
+  29 |
+  30 |     // Navigate to Demo again
+  31 |     await page.click('a[href="/demo"]');
+  32 |     await page.waitForLoadState("networkidle");
+  33 |
+  34 |     // Verify the grid loads without errors
+  35 |     await expect(page.locator(".ag-theme-quartz-dark")).toBeVisible();
+  36 |     await expect(page.locator(".ag-header-row")).toBeVisible();
+  37 |
+  38 |     // Check console for errors
+  39 |     const consoleErrors: string[] = [];
+  40 |     page.on("console", (msg) => {
+  41 |       if (msg.type() === "error") {
+  42 |         consoleErrors.push(msg.text());
+  43 |       }
+  44 |     });
+  45 |
+  46 |     // Navigate to docs and back
+  47 |     await page.click('a[href="/docs"]');
+  48 |     await page.waitForLoadState("networkidle");
+  49 |     await expect(page.locator("text=Documentation")).toBeVisible();
+  50 |
+  51 |     await page.click('a[href="/demo"]');
+  52 |     await page.waitForLoadState("networkidle");
+  53 |
+  54 |     // Final check for grid
+  55 |     await expect(page.locator(".ag-theme-quartz-dark")).toBeVisible();
   56 |
-  57 |   test('should maintain grid state when staying on demo page', async ({ page }) => {
-  58 |     await page.goto('/demo');
-  59 |     await page.waitForLoadState('networkidle');
-  60 |     
-  61 |     // Apply a filter
-  62 |     await page.click('text=Due Date');
-  63 |     await page.waitForTimeout(500);
-  64 |     
-  65 |     // Verify filter UI appears
-  66 |     const filterDialog = page.locator('.ag-theme-quartz-dark .ag-filter');
-  67 |     await expect(filterDialog).toBeVisible();
-  68 |     
-  69 |     // Close filter
-  70 |     await page.keyboard.press('Escape');
-  71 |     
-  72 |     // Grid should still be functional
-  73 |     await expect(page.locator('.ag-header-row')).toBeVisible();
-  74 |   });
-  75 | });
+  57 |     // Verify no console errors
+  58 |     expect(consoleErrors).toHaveLength(0);
+  59 |   });
+  60 |
+  61 |   test("should maintain grid state when staying on demo page", async ({
+  62 |     page,
+  63 |   }) => {
+  64 |     await page.goto("/demo");
+  65 |     await page.waitForLoadState("networkidle");
+  66 |
+  67 |     // Apply a filter
+  68 |     await page.click("text=Due Date");
+  69 |     await page.waitForTimeout(500);
+  70 |
+  71 |     // Verify filter UI appears
+  72 |     const filterDialog = page.locator(".ag-theme-quartz-dark .ag-filter");
+  73 |     await expect(filterDialog).toBeVisible();
+  74 |
+  75 |     // Close filter
+  76 |     await page.keyboard.press("Escape");
+  77 |
+  78 |     // Grid should still be functional
+  79 |     await expect(page.locator(".ag-header-row")).toBeVisible();
+  80 |   });
+  81 | });
+  82 |
 ```
