@@ -22,6 +22,7 @@ import AvatarCellRenderer from "./components/AvatarCellRenderer";
 import CategoryCellRenderer from "./components/CategoryCellRenderer";
 import PercentBarRenderer from "./components/PercentBarRenderer";
 import { VERSION_DISPLAY, IS_PRERELEASE } from "./version";
+import heroScreenshot from "./assets/screenshots/hero-screenshot.png";
 // import { SimpleCodeBlock as CodeBlock } from "./components/SimpleCodeBlock";
 import "./styles/showcase-dark.css";
 import "./styles/code-override.css";
@@ -799,40 +800,109 @@ export const ComponentsShowcaseComplete: React.FC<
               <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
                 <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
                   <div className="space-y-8">
-                    {/* Screenshot Carousel Placeholder */}
-                    <div className="rounded-xl bg-gray-900/50 p-8 ring-1 ring-inset ring-gray-800">
-                      <div className="text-center">
-                        <h3 className="text-lg font-semibold text-white mb-4">
-                          Component Screenshots Coming Soon
-                        </h3>
-                        <p className="text-gray-400 mb-6">
-                          Screenshots will showcase DateFilter,
-                          QuickFilterDropdown, and ActiveFilters in action.
-                        </p>
-                        <div className="bg-gray-950 rounded-lg p-12 border border-gray-800">
-                          <div className="text-gray-600">
-                            <svg
-                              className="mx-auto h-24 w-24 mb-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={1}
-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                              />
-                            </svg>
-                            <p className="text-sm">
-                              16:9 Screenshots (1920x1080)
-                            </p>
+                    {/* Hero Component Showcase */}
+                    <div className="relative overflow-hidden rounded-2xl">
+                      {/* Gradient background */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-purple-600/20 to-pink-600/20 blur-3xl" />
+
+                      {/* Main container with glass effect */}
+                      <div className="relative rounded-2xl bg-gray-900/40 backdrop-blur-xl ring-1 ring-white/10 overflow-hidden">
+                        {/* Header section */}
+                        <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-4 sm:pb-6">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div>
+                              <h3 className="text-xl sm:text-2xl font-bold text-white">
+                                See It In Action
+                              </h3>
+                              <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-300">
+                                Three powerful components working together
+                                seamlessly
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center rounded-full bg-indigo-500/10 px-3 py-1 text-sm font-medium text-indigo-400 ring-1 ring-inset ring-indigo-500/20">
+                                Live Preview
+                              </span>
+                            </div>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-500 mt-4">
-                          See src/demo/assets/screenshots/README.md for capture
-                          guidelines
-                        </p>
+
+                        {/* Screenshot container */}
+                        <div className="relative">
+                          {/* Subtle top fade */}
+                          <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-gray-900/60 to-transparent z-10 pointer-events-none" />
+
+                          {/* Image wrapper with hover effect */}
+                          <div className="group relative overflow-hidden bg-gray-800/50">
+                            <img
+                              src={heroScreenshot}
+                              alt="AG Grid React Components showcase - DateFilter with relative date expressions, QuickFilterDropdown with presets, and ActiveFilters display"
+                              className="w-full h-auto transition-transform duration-700 group-hover:scale-[1.02] will-change-transform"
+                              loading="eager"
+                              decoding="async"
+                            />
+
+                            {/* Interactive overlay on hover */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                          </div>
+
+                          {/* Feature badges overlay */}
+                          <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 flex flex-wrap gap-2 sm:gap-3 z-20">
+                            <div className="bg-gray-950/80 backdrop-blur-md rounded-lg px-3 sm:px-4 py-1.5 sm:py-2 ring-1 ring-white/10">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                                <span className="text-xs sm:text-sm font-medium text-white">
+                                  DateFilter
+                                </span>
+                              </div>
+                            </div>
+                            <div className="bg-gray-950/80 backdrop-blur-md rounded-lg px-3 sm:px-4 py-1.5 sm:py-2 ring-1 ring-white/10">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+                                <span className="text-xs sm:text-sm font-medium text-white">
+                                  QuickFilterDropdown
+                                </span>
+                              </div>
+                            </div>
+                            <div className="bg-gray-950/80 backdrop-blur-md rounded-lg px-3 sm:px-4 py-1.5 sm:py-2 ring-1 ring-white/10">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
+                                <span className="text-xs sm:text-sm font-medium text-white">
+                                  ActiveFilters
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Bottom section with CTA */}
+                        <div className="px-6 sm:px-8 py-4 sm:py-6 bg-gradient-to-t from-gray-900/60 to-transparent">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <p className="text-xs sm:text-sm text-gray-400">
+                              Enterprise-ready components with a delightful
+                              developer experience
+                            </p>
+                            <button
+                              onClick={() => navigate("/demo")}
+                              className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors w-full sm:w-auto"
+                            >
+                              Try Live Demo
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M9 5l7 7-7 7"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
