@@ -89,7 +89,7 @@ describe("ActiveFilters", () => {
       // Check for the date value - handling potential timezone differences
       const dateElement = screen.getByText((content, element) => {
         return (
-          element?.className === "_filterValue_70fc69" &&
+          element?.className?.includes("filterValue") &&
           content.includes("/2024")
         );
       });
@@ -129,7 +129,7 @@ describe("ActiveFilters", () => {
       // Check for date range - handling potential timezone differences
       const dateRangeElement = screen.getByText((content, element) => {
         return (
-          element?.className === "_filterValue_70fc69" &&
+          element?.className?.includes("filterValue") &&
           content.includes(" to ") &&
           content.includes("/202")
         );
