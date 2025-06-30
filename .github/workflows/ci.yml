@@ -34,7 +34,7 @@ jobs:
         run: npm install -g @trunkio/launcher
 
       - name: Run Trunk check
-        run: trunk check --no-fix --ci
+        run: trunk check --no-fix --ci --upstream=origin/main
 
       - name: Check TypeScript
         run: npm run typecheck
