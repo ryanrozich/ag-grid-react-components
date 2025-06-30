@@ -531,14 +531,37 @@ describe("DateFilter Integration Tests", () => {
         props.getValue = vi.fn((node: any) => node.data?.date);
         render(<DateFilter {...props} />);
 
+        // Ensure callbacks are registered
         await waitFor(() => {
-          setModelCallback({
-            type: "equals",
-            mode: "absolute",
-            dateFrom: "2023-01-15T00:00:00.000Z",
-          });
+          expect(doesFilterPassCallback).toBeDefined();
+          expect(setModelCallback).toBeDefined();
         });
 
+        // Set the model
+        setModelCallback({
+          type: "equals",
+          mode: "absolute",
+          dateFrom: "2023-01-15T00:00:00.000Z",
+        });
+
+        // Wait for the filter to be properly initialized and test with a valid date first
+        await waitFor(
+          () => {
+            const testNode = { data: { date: new Date("2023-01-15") } };
+            const result = doesFilterPassCallback({ node: testNode });
+            expect(result).toBe(true);
+          },
+          { timeout: 2000 },
+        );
+
+        // Also verify that a non-matching date returns false to ensure filter is active
+        await waitFor(() => {
+          const nonMatchingNode = { data: { date: new Date("2023-01-16") } };
+          const result = doesFilterPassCallback({ node: nonMatchingNode });
+          expect(result).toBe(false);
+        });
+
+        // Now test null/invalid dates - they should not pass the filter
         const nullNode = { data: { date: null } };
         expect(doesFilterPassCallback({ node: nullNode })).toBe(false);
 

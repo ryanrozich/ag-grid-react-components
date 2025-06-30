@@ -22,6 +22,7 @@ import AvatarCellRenderer from "./components/AvatarCellRenderer";
 import CategoryCellRenderer from "./components/CategoryCellRenderer";
 import PercentBarRenderer from "./components/PercentBarRenderer";
 import { VERSION_DISPLAY, IS_PRERELEASE } from "./version";
+import heroScreenshot from "./assets/screenshots/hero-screenshot.png";
 // import { SimpleCodeBlock as CodeBlock } from "./components/SimpleCodeBlock";
 import "./styles/showcase-dark.css";
 import "./styles/code-override.css";
@@ -799,64 +800,58 @@ export const ComponentsShowcaseComplete: React.FC<
               <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
                 <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
                   <div className="space-y-8">
-                    {/* Screenshot Carousel Placeholder */}
-                    <div className="rounded-xl bg-gray-900/50 p-8 ring-1 ring-inset ring-gray-800">
-                      <div className="text-center">
-                        <h3 className="text-lg font-semibold text-white mb-4">
-                          Component Screenshots Coming Soon
-                        </h3>
-                        <p className="text-gray-400 mb-6">
-                          Screenshots will showcase DateFilter,
-                          QuickFilterDropdown, and ActiveFilters in action.
-                        </p>
-                        <div className="bg-gray-950 rounded-lg p-12 border border-gray-800">
-                          <div className="text-gray-600">
-                            <svg
-                              className="mx-auto h-24 w-24 mb-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={1}
-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                              />
-                            </svg>
-                            <p className="text-sm">
-                              16:9 Screenshots (1920x1080)
-                            </p>
+                    {/* Hero Component Showcase */}
+                    <div className="relative overflow-hidden rounded-2xl max-w-4xl">
+                      {/* Gradient background */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-purple-600/10 to-pink-600/10 blur-2xl" />
+
+                      {/* Main container with glass effect */}
+                      <div className="relative rounded-2xl bg-gray-900/40 backdrop-blur-xl ring-1 ring-white/10 overflow-hidden">
+                        {/* Screenshot container */}
+                        <div className="relative">
+                          {/* Image wrapper with hover effect */}
+                          <div className="group relative overflow-hidden bg-gray-800/50">
+                            <img
+                              src={heroScreenshot}
+                              alt="AG Grid React Components showcase - DateFilter with relative date expressions, QuickFilterDropdown with presets, and ActiveFilters display"
+                              className="w-full h-auto transition-transform duration-700 group-hover:scale-[1.02] will-change-transform"
+                              loading="eager"
+                              decoding="async"
+                            />
+
+                            {/* Interactive overlay on hover */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                          </div>
+
+                          {/* Feature badges overlay - matching the colors from the screenshot */}
+                          <div className="absolute bottom-4 left-4 right-4 flex flex-wrap gap-2 z-20">
+                            <div className="bg-gray-950/90 backdrop-blur-md rounded-lg px-3 py-1.5 ring-1 ring-white/10">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                <span className="text-xs font-medium text-white">
+                                  DateFilter
+                                </span>
+                              </div>
+                            </div>
+                            <div className="bg-gray-950/90 backdrop-blur-md rounded-lg px-3 py-1.5 ring-1 ring-white/10">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                                <span className="text-xs font-medium text-white">
+                                  QuickFilterDropdown
+                                </span>
+                              </div>
+                            </div>
+                            <div className="bg-gray-950/90 backdrop-blur-md rounded-lg px-3 py-1.5 ring-1 ring-white/10">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+                                <span className="text-xs font-medium text-white">
+                                  ActiveFilters
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-500 mt-4">
-                          See src/demo/assets/screenshots/README.md for capture
-                          guidelines
-                        </p>
                       </div>
-                    </div>
-
-                    {/* Code Example */}
-                    <div className="rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl lg:p-4">
-                      <CodeBlock
-                        code={`npm install ag-grid-react-components
-
-// Just add to your existing AG Grid setup
-import { createDateFilter } from 'ag-grid-react-components';
-
-const DateFilter = createDateFilter();
-
-const columnDefs = [{
-  field: 'dueDate',
-  filter: DateFilter,
-  filterParams: {
-    defaultMode: 'relative'
-  }
-}];`}
-                        language="tsx"
-                        variant="hero"
-                        showCopyButton={false}
-                      />
                     </div>
                   </div>
                 </div>
@@ -867,11 +862,8 @@ const columnDefs = [{
           {/* Main Features */}
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-16">
             <div className="mx-auto max-w-2xl lg:text-center">
-              <h2 className="text-base font-semibold leading-7 text-indigo-400">
-                Community-Built Components
-              </h2>
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                4 new UX features for AG Grid
+                New UX features for AG Grid
               </p>
               <p className="mt-6 text-lg text-gray-300">
                 AG Grid is incredibly extensible, but its filtering UX hasn't
@@ -1002,9 +994,6 @@ const columnDefs = [{
           {/* Problem/Solution Section */}
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
             <div className="mx-auto max-w-2xl lg:text-center mb-16">
-              <h2 className="text-base font-semibold leading-7 text-indigo-400">
-                Why These Components Exist
-              </h2>
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
                 Your users understand dates differently than databases do
               </p>
@@ -1087,9 +1076,6 @@ const columnDefs = [{
           {/* Developer Experience section */}
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
             <div className="mx-auto max-w-2xl lg:text-center">
-              <h2 className="text-base font-semibold leading-7 text-indigo-400">
-                Built for Developers
-              </h2>
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
                 Developer experience that just works
               </p>
@@ -1098,6 +1084,32 @@ const columnDefs = [{
                 your way or use it headless.
               </p>
             </div>
+
+            {/* Code Example */}
+            <div className="mx-auto mt-12 max-w-3xl">
+              <div className="rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl lg:p-4">
+                <CodeBlock
+                  code={`npm install ag-grid-react-components
+
+// Just add to your existing AG Grid setup
+import { createDateFilter } from 'ag-grid-react-components';
+
+const DateFilter = createDateFilter();
+
+const columnDefs = [{
+  field: 'dueDate',
+  filter: DateFilter,
+  filterParams: {
+    defaultMode: 'relative'
+  }
+}];`}
+                  language="tsx"
+                  variant="hero"
+                  showCopyButton={false}
+                />
+              </div>
+            </div>
+
             {/* Bundle Size Comparison */}
             <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
               <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -1340,11 +1352,9 @@ const columnDefs = [{
 
   if (currentPage === "docs") {
     const docSections = [
-      // Overview
-      { id: "overview", label: "Documentation Home", isSection: false },
-
       // Getting Started Section
       { id: "getting-started", label: "Getting Started", isSection: true },
+      { id: "overview", label: "Overview", indent: true },
       { id: "prerequisites", label: "Prerequisites", indent: true },
       { id: "installation", label: "Installation", indent: true },
       { id: "basic-setup", label: "Basic Setup", indent: true },
@@ -1541,11 +1551,10 @@ const columnDefs = [{
 
                       <div className="bg-green-900/20 border border-green-600/30 rounded-lg p-4 mb-6">
                         <p className="text-green-400 text-sm font-medium mb-2">
-                          🎆 {IS_PRERELEASE ? "Pre-release" : "Version"}{" "}
-                          {VERSION_DISPLAY}: Modular Architecture
+                          🎆 Modular Architecture
                         </p>
                         <p className="text-gray-300 text-sm">
-                          95% smaller bundle size! Choose only what you need:
+                          Choose only what you need:
                         </p>
                         <ul className="mt-2 space-y-1 text-sm text-gray-300">
                           <li>• Tree-shakeable architecture starts at 25KB</li>

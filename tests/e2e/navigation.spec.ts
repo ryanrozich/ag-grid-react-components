@@ -25,7 +25,9 @@ test.describe("Navigation between pages", () => {
     await page.waitForLoadState("networkidle");
 
     // Verify we're back on home
-    await expect(page.locator("text=Advanced Date Filtering")).toBeVisible();
+    await expect(
+      page.locator('text=AG Grid filters that understand "today"'),
+    ).toBeVisible();
 
     // Navigate to Demo again
     await page.click('a[href="/demo"]');
@@ -35,18 +37,33 @@ test.describe("Navigation between pages", () => {
     await expect(page.locator(".ag-theme-quartz-dark")).toBeVisible();
     await expect(page.locator(".ag-header-row")).toBeVisible();
 
-    // Check console for errors
+    // Check console for errors (excluding AG Grid license warnings)
     const consoleErrors: string[] = [];
     page.on("console", (msg) => {
       if (msg.type() === "error") {
-        consoleErrors.push(msg.text());
+        const text = msg.text();
+        // Ignore AG Grid Enterprise license warnings - they contain asterisks and license-related text
+        if (
+          !text.includes("AG Grid Enterprise") &&
+          !text.includes("License Key Not Found") &&
+          !text.includes("ag-grid.com") &&
+          !text.includes("****") &&
+          !text.includes("license")
+        ) {
+          consoleErrors.push(text);
+        }
       }
     });
 
     // Navigate to docs and back
     await page.click('a[href="/docs"]');
     await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Documentation")).toBeVisible();
+    // Use a more specific selector since there are multiple "Documentation" texts on the page
+    await expect(
+      page
+        .locator("h1")
+        .filter({ hasText: "AG Grid React Components Documentation" }),
+    ).toBeVisible();
 
     await page.click('a[href="/demo"]');
     await page.waitForLoadState("networkidle");
@@ -68,8 +85,10 @@ test.describe("Navigation between pages", () => {
     await page.click("text=Due Date");
     await page.waitForTimeout(500);
 
-    // Verify filter UI appears
-    const filterDialog = page.locator(".ag-theme-quartz-dark .ag-filter");
+    // Verify filter UI appears (use first() to avoid strict mode violation)
+    const filterDialog = page
+      .locator(".ag-theme-quartz-dark .ag-filter")
+      .first();
     await expect(filterDialog).toBeVisible();
 
     // Close filter
