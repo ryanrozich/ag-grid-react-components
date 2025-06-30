@@ -801,37 +801,14 @@ export const ComponentsShowcaseComplete: React.FC<
                 <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
                   <div className="space-y-8">
                     {/* Hero Component Showcase */}
-                    <div className="relative overflow-hidden rounded-2xl">
+                    <div className="relative overflow-hidden rounded-2xl max-w-4xl">
                       {/* Gradient background */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-purple-600/20 to-pink-600/20 blur-3xl" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-purple-600/10 to-pink-600/10 blur-2xl" />
 
                       {/* Main container with glass effect */}
                       <div className="relative rounded-2xl bg-gray-900/40 backdrop-blur-xl ring-1 ring-white/10 overflow-hidden">
-                        {/* Header section */}
-                        <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-4 sm:pb-6">
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                            <div>
-                              <h3 className="text-xl sm:text-2xl font-bold text-white">
-                                See It In Action
-                              </h3>
-                              <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-300">
-                                Three powerful components working together
-                                seamlessly
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center rounded-full bg-indigo-500/10 px-3 py-1 text-sm font-medium text-indigo-400 ring-1 ring-inset ring-indigo-500/20">
-                                Live Preview
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
                         {/* Screenshot container */}
                         <div className="relative">
-                          {/* Subtle top fade */}
-                          <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-gray-900/60 to-transparent z-10 pointer-events-none" />
-
                           {/* Image wrapper with hover effect */}
                           <div className="group relative overflow-hidden bg-gray-800/50">
                             <img
@@ -843,64 +820,35 @@ export const ComponentsShowcaseComplete: React.FC<
                             />
 
                             {/* Interactive overlay on hover */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                           </div>
 
-                          {/* Feature badges overlay */}
-                          <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 flex flex-wrap gap-2 sm:gap-3 z-20">
-                            <div className="bg-gray-950/80 backdrop-blur-md rounded-lg px-3 sm:px-4 py-1.5 sm:py-2 ring-1 ring-white/10">
+                          {/* Feature badges overlay - matching the colors from the screenshot */}
+                          <div className="absolute bottom-4 left-4 right-4 flex flex-wrap gap-2 z-20">
+                            <div className="bg-gray-950/90 backdrop-blur-md rounded-lg px-3 py-1.5 ring-1 ring-white/10">
                               <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                                <span className="text-xs sm:text-sm font-medium text-white">
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                <span className="text-xs font-medium text-white">
                                   DateFilter
                                 </span>
                               </div>
                             </div>
-                            <div className="bg-gray-950/80 backdrop-blur-md rounded-lg px-3 sm:px-4 py-1.5 sm:py-2 ring-1 ring-white/10">
+                            <div className="bg-gray-950/90 backdrop-blur-md rounded-lg px-3 py-1.5 ring-1 ring-white/10">
                               <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-                                <span className="text-xs sm:text-sm font-medium text-white">
+                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                                <span className="text-xs font-medium text-white">
                                   QuickFilterDropdown
                                 </span>
                               </div>
                             </div>
-                            <div className="bg-gray-950/80 backdrop-blur-md rounded-lg px-3 sm:px-4 py-1.5 sm:py-2 ring-1 ring-white/10">
+                            <div className="bg-gray-950/90 backdrop-blur-md rounded-lg px-3 py-1.5 ring-1 ring-white/10">
                               <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
-                                <span className="text-xs sm:text-sm font-medium text-white">
+                                <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+                                <span className="text-xs font-medium text-white">
                                   ActiveFilters
                                 </span>
                               </div>
                             </div>
-                          </div>
-                        </div>
-
-                        {/* Bottom section with CTA */}
-                        <div className="px-6 sm:px-8 py-4 sm:py-6 bg-gradient-to-t from-gray-900/60 to-transparent">
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                            <p className="text-xs sm:text-sm text-gray-400">
-                              Enterprise-ready components with a delightful
-                              developer experience
-                            </p>
-                            <button
-                              onClick={() => navigate("/demo")}
-                              className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors w-full sm:w-auto"
-                            >
-                              Try Live Demo
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M9 5l7 7-7 7"
-                                />
-                              </svg>
-                            </button>
                           </div>
                         </div>
                       </div>
