@@ -44,7 +44,7 @@ jobs:
           # First, clean up the existing files
           echo "Removing old files from R2..."
           wrangler r2 object delete rozich-demos/ag-grid-react-components/ --recursive || true
-          
+
           # Upload all files from dist-demo
           echo "Uploading new files to R2..."
           cd dist-demo
@@ -61,12 +61,8 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_KV_NAMESPACE_ID: ${{ secrets.CLOUDFLARE_KV_NAMESPACE_ID }}
         run: |
-          # Update metadata in KV store
-          TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          wrangler kv:key put \
-            --namespace-id="$CLOUDFLARE_KV_NAMESPACE_ID" \
-            "ag-grid-react-components" \
-            "{\"name\": \"AG Grid React Components\", \"updated\": \"$TIMESTAMP\"}"
+          # Skip KV update for now - wrangler syntax has changed
+          echo "Skipping KV metadata update - needs syntax update"
 
       - name: Purge Cloudflare cache
         env:
