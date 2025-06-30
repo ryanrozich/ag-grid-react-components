@@ -71,6 +71,12 @@ lint:
         - "src/components/**/*.test.tsx"
         - "**/agGridWorkaround.ts"
         - "**/agGridWorkaround.test.ts"
+    # Temporarily ignore ESLint for these files until ESLint v9 config is added
+    - linters: [eslint]
+      paths:
+        - "src/demo/components-showcase-complete.tsx"
+        - "src/types/images.d.ts"
+        - "src/components/DateFilter/DateFilter.issue8.test.tsx"
   # Use default git-diff-check configuration
 actions:
   disabled:
