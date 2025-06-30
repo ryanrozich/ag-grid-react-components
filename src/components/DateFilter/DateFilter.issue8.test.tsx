@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 import DateFilter from "./index";
@@ -34,11 +34,11 @@ describe("Issue #8: Relative date range 'to' field clearing", () => {
       getValue: mockGetValue,
       column: {
         getColId: () => "date",
-      },
-      api: {},
+      } as any,
+      api: {} as any,
       context: {},
       colDef: {},
-      rowModel: {},
+      rowModel: {} as any,
     } as IFilterParams;
   });
 
@@ -168,7 +168,7 @@ describe("Issue #8: Relative date range 'to' field clearing", () => {
     const toInput = screen.getByPlaceholderText("e.g., Today+30d");
 
     // Type rapidly without waiting
-    await user.type(toInput, "Today+7d", { delay: null });
+    await user.type(toInput, "Today+7d");
 
     // The value should be retained
     expect(toInput).toHaveValue("Today+7d");
