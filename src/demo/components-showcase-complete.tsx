@@ -853,29 +853,6 @@ export const ComponentsShowcaseComplete: React.FC<
                         </div>
                       </div>
                     </div>
-
-                    {/* Code Example */}
-                    <div className="rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl lg:p-4">
-                      <CodeBlock
-                        code={`npm install ag-grid-react-components
-
-// Just add to your existing AG Grid setup
-import { createDateFilter } from 'ag-grid-react-components';
-
-const DateFilter = createDateFilter();
-
-const columnDefs = [{
-  field: 'dueDate',
-  filter: DateFilter,
-  filterParams: {
-    defaultMode: 'relative'
-  }
-}];`}
-                        language="tsx"
-                        variant="hero"
-                        showCopyButton={false}
-                      />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -1116,6 +1093,32 @@ const columnDefs = [{
                 your way or use it headless.
               </p>
             </div>
+
+            {/* Code Example */}
+            <div className="mx-auto mt-12 max-w-3xl">
+              <div className="rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl lg:p-4">
+                <CodeBlock
+                  code={`npm install ag-grid-react-components
+
+// Just add to your existing AG Grid setup
+import { createDateFilter } from 'ag-grid-react-components';
+
+const DateFilter = createDateFilter();
+
+const columnDefs = [{
+  field: 'dueDate',
+  filter: DateFilter,
+  filterParams: {
+    defaultMode: 'relative'
+  }
+}];`}
+                  language="tsx"
+                  variant="hero"
+                  showCopyButton={false}
+                />
+              </div>
+            </div>
+
             {/* Bundle Size Comparison */}
             <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
               <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
