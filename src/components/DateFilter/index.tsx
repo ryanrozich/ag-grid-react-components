@@ -24,7 +24,6 @@ const DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
 const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
   (props, ref) => {
-
     const dateFormat = props.dateFormat || DEFAULT_DATE_FORMAT;
     const { handleError } = useErrorHandler();
     const filterRef = React.useRef<HTMLDivElement>(null);
@@ -165,7 +164,6 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
         // Get inclusivity settings from current model (which already includes filter state and prop defaults)
         const fromInclusive = currentModel?.fromInclusive ?? false;
         const toInclusive = currentModel?.toInclusive ?? false;
-
 
         switch (filterState.filterType) {
           case "equals":
