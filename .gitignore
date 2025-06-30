@@ -38,7 +38,7 @@ dist-demo
 ryans_notes/
 
 # Screenshots and temporary files
-*.png
+# *.png - Removed to allow hero screenshot
 simple-test.html
 clause copy.md
 clause*.md
