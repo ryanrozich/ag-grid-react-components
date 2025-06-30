@@ -359,6 +359,9 @@ export const ComponentsShowcaseComplete: React.FC<
     budgetRemaining: 0,
   });
 
+  // Store cleanup function reference
+  const cleanupRef = React.useRef<(() => void) | null>(null);
+
   // Router hooks
   const location = useLocation();
   const navigate = useNavigate();
@@ -378,6 +381,25 @@ export const ComponentsShowcaseComplete: React.FC<
       setActiveDocSection(section);
     }
   }, [section]);
+
+  // Cleanup when navigating away from demo
+  useEffect(() => {
+    // Only run cleanup when we're leaving the demo page
+    if (currentPage !== "demo") {
+      if (cleanupRef.current) {
+        console.log("Cleaning up grid state persistence");
+        cleanupRef.current();
+        cleanupRef.current = null;
+      }
+
+      // Also destroy the grid if it exists
+      if (gridApi) {
+        console.log("Destroying grid API");
+        gridApi.destroy();
+        setGridApi(null);
+      }
+    }
+  }, [currentPage, gridApi]); // Run when page changes
 
   // Column definitions
   const columnDefs: ColDef[] = useMemo(
@@ -581,7 +603,8 @@ export const ComponentsShowcaseComplete: React.FC<
 
     // Start with unfiltered state - no default filters
 
-    return cleanup;
+    // Store the cleanup function
+    cleanupRef.current = cleanup;
   }, []);
 
   const gridOptions: GridOptions = {
@@ -739,7 +762,8 @@ export const ComponentsShowcaseComplete: React.FC<
                     >
                       <circle cx={3} cy={3} r={3} fill="currentColor" />
                     </svg>
-                    {IS_PRERELEASE ? 'Pre-release' : 'Version'} {VERSION_DISPLAY}
+                    {IS_PRERELEASE ? "Pre-release" : "Version"}{" "}
+                    {VERSION_DISPLAY}
                   </span>
                   <span className="inline-flex items-center gap-x-1.5 rounded-full bg-indigo-600/10 px-3 py-1.5 text-sm font-medium text-indigo-400 ring-1 ring-inset ring-indigo-600/20">
                     Minimal Bundle Size
@@ -1487,10 +1511,14 @@ const columnDefs = [{
 
                     <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-6 mt-8">
                       <h3 className="text-lg font-semibold text-blue-300 mb-2">
-                        {IS_PRERELEASE ? 'Pre-release' : 'Current'} Version
+                        {IS_PRERELEASE ? "Pre-release" : "Current"} Version
                       </h3>
                       <p className="text-gray-300">
-                        This is version {VERSION_DISPLAY}, {IS_PRERELEASE ? 'a pre-release seeking feedback from early adopters' : 'the latest stable release'}. {IS_PRERELEASE && 'The API may change before the 1.0'}
+                        This is version {VERSION_DISPLAY},{" "}
+                        {IS_PRERELEASE
+                          ? "a pre-release seeking feedback from early adopters"
+                          : "the latest stable release"}
+                        . {IS_PRERELEASE && "The API may change before the 1.0"}
                         release. We welcome your feedback and contributions!
                       </p>
                     </div>
@@ -1513,7 +1541,8 @@ const columnDefs = [{
 
                       <div className="bg-green-900/20 border border-green-600/30 rounded-lg p-4 mb-6">
                         <p className="text-green-400 text-sm font-medium mb-2">
-                          🎆 {IS_PRERELEASE ? 'Pre-release' : 'Version'} {VERSION_DISPLAY}: Modular Architecture
+                          🎆 {IS_PRERELEASE ? "Pre-release" : "Version"}{" "}
+                          {VERSION_DISPLAY}: Modular Architecture
                         </p>
                         <p className="text-gray-300 text-sm">
                           95% smaller bundle size! Choose only what you need:
@@ -6623,6 +6652,19 @@ const handleFilterSelect = async (option) => {
   }
 
   // Demo page - real application layout
+  if (currentPage !== "demo") {
+    // Return empty div with navigation for non-demo pages
+    // This should not happen as hero and docs are handled above
+    return (
+      <div className="h-screen bg-gray-950 text-white flex flex-col overflow-hidden">
+        <Navigation currentPage={currentPage} />
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-gray-400">Page not found</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen bg-gray-950 text-white flex flex-col overflow-hidden">
       <Navigation currentPage={currentPage} />
