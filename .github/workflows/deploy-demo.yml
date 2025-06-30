@@ -41,9 +41,19 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           # Upload demo assets to R2
-          wrangler r2 object put rozich-demos/ag-grid-react-components/ \
-            --file=dist-demo \
-            --recursive
+          # First, clean up the existing files
+          echo "Removing old files from R2..."
+          wrangler r2 object delete rozich-demos/ag-grid-react-components/ --recursive || true
+          
+          # Upload all files from dist-demo
+          echo "Uploading new files to R2..."
+          cd dist-demo
+          find . -type f | while read -r file; do
+            # Remove leading ./ from the file path
+            file_path="${file#./}"
+            echo "Uploading: $file_path"
+            wrangler r2 object put "rozich-demos/ag-grid-react-components/$file_path" --file="$file"
+          done
 
       - name: Update demo metadata
         env:
