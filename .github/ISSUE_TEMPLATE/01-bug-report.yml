@@ -1,0 +1,140 @@
+name: 🐛 Bug Report
+description: Report a bug in components or demo (for AI agents and humans)
+title: "[BUG] "
+labels: ["bug", "status: needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! This template is designed for both AI agents and human contributors.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: What part of the project is affected?
+      options:
+        - Components (DateFilter, QuickFilter, ActiveFilters, etc.)
+        - Demo Application
+        - Build/TypeScript Configuration
+        - Documentation
+        - Tests
+      default: 0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Specific Component (if applicable)
+      description: Which component is affected?
+      options:
+        - N/A - Not component specific
+        - DateFilter
+        - QuickFilterDropdown
+        - ActiveFilters
+        - RelativeDateFilter
+        - Grid State Utilities
+        - Other
+      default: 0
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: Clear description of what's wrong
+      placeholder: |
+        The grand total row value overlaps with the date filter dropdown when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Minimal steps to reproduce the issue
+      placeholder: |
+        1. Navigate to /demo
+        2. Scroll to bottom of grid
+        3. Click date filter
+        4. Observe overlap
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What should happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happens?
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-context
+    attributes:
+      label: Technical Context (AI Agent Analysis)
+      description: For AI agents - include file locations, line numbers, and initial investigation
+      placeholder: |
+        - Found issue at: src/demo/components-showcase-complete.tsx:594
+        - Related to: grandTotalRow: "bottom" configuration
+        - Z-index conflict between .ag-grand-total-row and .ag-filter
+        - No explicit z-index found on grand total row
+
+  - type: dropdown
+    id: priority-suggestion
+    attributes:
+      label: Suggested Priority
+      description: Based on impact and user experience
+      options:
+        - "🔴 Critical - Blocks core functionality"
+        - "🟠 High - Significant impact on users"
+        - "🟡 Medium - Noticeable but has workarounds"
+        - "🟢 Low - Minor or cosmetic"
+      default: 2
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Estimated Complexity
+      description: How complex is the fix?
+      options:
+        - "🟢 Simple - CSS/config change only"
+        - "🟡 Medium - Component logic change"
+        - "🔴 Complex - Architectural change or AG Grid internals"
+      default: 0
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution(s)
+      description: Potential approaches to fix this
+      placeholder: |
+        1. Add z-index: 1001 to .ag-filter
+        2. Configure AG Grid's built-in z-index management
+        3. Use portal rendering for the filter
+
+  - type: input
+    id: related-files
+    attributes:
+      label: Related Files
+      description: Comma-separated list of files involved
+      placeholder: "src/demo/components-showcase-complete.tsx, src/components/DateFilter/index.tsx"
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: For AI agents - confirm these steps
+      options:
+        - label: I've searched existing issues and this isn't a duplicate
+        - label: I've tested with the latest version
+        - label: I've included specific file locations and line numbers where applicable
+        - label: I've identified whether this affects the components or just the demo

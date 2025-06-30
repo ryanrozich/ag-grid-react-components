@@ -21,6 +21,7 @@ import { AnchorHeading } from "./components/AnchorHeading";
 import AvatarCellRenderer from "./components/AvatarCellRenderer";
 import CategoryCellRenderer from "./components/CategoryCellRenderer";
 import PercentBarRenderer from "./components/PercentBarRenderer";
+import { VERSION_DISPLAY, IS_PRERELEASE } from "./version";
 // import { SimpleCodeBlock as CodeBlock } from "./components/SimpleCodeBlock";
 import "./styles/showcase-dark.css";
 import "./styles/code-override.css";
@@ -738,7 +739,7 @@ export const ComponentsShowcaseComplete: React.FC<
                     >
                       <circle cx={3} cy={3} r={3} fill="currentColor" />
                     </svg>
-                    Pre-release v0.1.0
+                    {IS_PRERELEASE ? 'Pre-release' : 'Version'} {VERSION_DISPLAY}
                   </span>
                   <span className="inline-flex items-center gap-x-1.5 rounded-full bg-indigo-600/10 px-3 py-1.5 text-sm font-medium text-indigo-400 ring-1 ring-inset ring-indigo-600/20">
                     Minimal Bundle Size
@@ -748,17 +749,13 @@ export const ComponentsShowcaseComplete: React.FC<
                   </span>
                 </div>
                 <h1 className="mt-10 text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                  Give your users the date filtering they deserve
+                  AG Grid filters that understand "today"
                 </h1>
                 <p className="mt-6 text-lg leading-8 text-gray-300">
-                  <strong className="text-white">
-                    Enable relative date queries like "this week" and "last
-                    month"
-                  </strong>{" "}
-                  that actually persist when users refresh or share links. Show
-                  active filters clearly, not hidden behind tiny blue dots.
-                  Build the filtering experience your users have been asking
-                  for.
+                  If you're using AG Grid, you know users struggle with date
+                  filtering. They want "last 30 days" to mean last 30
+                  days—tomorrow too. These open source React components make it
+                  happen.
                 </p>
                 <div className="mt-10 flex items-center gap-x-6">
                   <button
@@ -777,42 +774,66 @@ export const ComponentsShowcaseComplete: React.FC<
               </div>
               <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
                 <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
-                  <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
-                    <CodeBlock
-                      code={`import { AgGridReact } from 'ag-grid-react';
+                  <div className="space-y-8">
+                    {/* Screenshot Carousel Placeholder */}
+                    <div className="rounded-xl bg-gray-900/50 p-8 ring-1 ring-inset ring-gray-800">
+                      <div className="text-center">
+                        <h3 className="text-lg font-semibold text-white mb-4">
+                          Component Screenshots Coming Soon
+                        </h3>
+                        <p className="text-gray-400 mb-6">
+                          Screenshots will showcase DateFilter,
+                          QuickFilterDropdown, and ActiveFilters in action.
+                        </p>
+                        <div className="bg-gray-950 rounded-lg p-12 border border-gray-800">
+                          <div className="text-gray-600">
+                            <svg
+                              className="mx-auto h-24 w-24 mb-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                            <p className="text-sm">
+                              16:9 Screenshots (1920x1080)
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-500 mt-4">
+                          See src/demo/assets/screenshots/README.md for capture
+                          guidelines
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Code Example */}
+                    <div className="rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl lg:p-4">
+                      <CodeBlock
+                        code={`npm install ag-grid-react-components
+
+// Just add to your existing AG Grid setup
 import { createDateFilter } from 'ag-grid-react-components';
 
-// Create the DateFilter component
 const DateFilter = createDateFilter();
 
-function App() {
-  const columnDefs = [
-    {
-      field: 'dueDate',
-      headerName: 'Due Date',
-      filter: DateFilter,
-      filterParams: {
-        // Enable relative date expressions
-        defaultMode: 'relative',
-        // Common date expressions work out of the box:
-        // "Today", "Today-7d", "StartOfMonth", "EndOfYear+1y"
-      }
-    },
-    // ... other columns
-  ];
-
-  return (
-    <AgGridReact
-      columnDefs={columnDefs}
-      rowData={rowData}
-      // ... other grid options
-    />
-  );
-}`}
-                      language="tsx"
-                      variant="hero"
-                      showCopyButton={false}
-                    />
+const columnDefs = [{
+  field: 'dueDate',
+  filter: DateFilter,
+  filterParams: {
+    defaultMode: 'relative'
+  }
+}];`}
+                        language="tsx"
+                        variant="hero"
+                        showCopyButton={false}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -823,17 +844,23 @@ function App() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-16">
             <div className="mx-auto max-w-2xl lg:text-center">
               <h2 className="text-base font-semibold leading-7 text-indigo-400">
-                Solve Real User Problems
+                Community-Built Components
               </h2>
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                The filtering UX your users have been waiting for
+                4 new UX features for AG Grid
+              </p>
+              <p className="mt-6 text-lg text-gray-300">
+                AG Grid is incredibly extensible, but its filtering UX hasn't
+                kept up with modern apps. When you have dozens of columns and
+                dynamic data, users need better ways to filter, save, and share
+                their views. These open source components fill that gap.
               </p>
             </div>
             <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-              <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-4">
+              <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-4">
                 <div className="flex flex-col">
                   <dt className="text-base font-semibold leading-7 text-white">
-                    <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
                       <svg
                         className="h-6 w-6 text-white"
                         fill="none"
@@ -860,7 +887,7 @@ function App() {
                 </div>
                 <div className="flex flex-col">
                   <dt className="text-base font-semibold leading-7 text-white">
-                    <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
                       <svg
                         className="h-6 w-6 text-white"
                         fill="none"
@@ -887,7 +914,7 @@ function App() {
                 </div>
                 <div className="flex flex-col">
                   <dt className="text-base font-semibold leading-7 text-white">
-                    <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
                       <svg
                         className="h-6 w-6 text-white"
                         fill="none"
@@ -919,7 +946,7 @@ function App() {
                 </div>
                 <div className="flex flex-col">
                   <dt className="text-base font-semibold leading-7 text-white">
-                    <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
                       <svg
                         className="h-6 w-6 text-white"
                         fill="none"
@@ -950,21 +977,15 @@ function App() {
 
           {/* Problem/Solution Section */}
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
-            <div className="mx-auto max-w-2xl lg:text-center">
+            <div className="mx-auto max-w-2xl lg:text-center mb-16">
               <h2 className="text-base font-semibold leading-7 text-indigo-400">
-                Why We Built This
+                Why These Components Exist
               </h2>
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Because your users deserve better
-              </p>
-              <p className="mt-6 text-lg text-gray-300">
-                We've all been there. Users asking "Can I filter by last week?"
-                or "Why can't I save this view?" AG Grid is powerful, but its
-                filtering UX feels stuck in 2010. We built these components to
-                give your users the modern filtering experience they expect.
+                Your users understand dates differently than databases do
               </p>
             </div>
-            <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+            <div className="mx-auto max-w-2xl lg:mt-24 lg:max-w-none">
               <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                 <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
                   <h3 className="text-xl font-semibold text-white mb-4">
@@ -1014,7 +1035,7 @@ function App() {
                 </div>
                 <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
                   <h3 className="text-xl font-semibold text-white mb-4">
-                    The Result
+                    The Benefit
                   </h3>
                   <ul className="space-y-3 text-gray-300">
                     <li className="flex items-start">
@@ -1039,66 +1060,249 @@ function App() {
             </div>
           </div>
 
-          {/* Bundle sizes section */}
+          {/* Developer Experience section */}
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
             <div className="mx-auto max-w-2xl lg:text-center">
               <h2 className="text-base font-semibold leading-7 text-indigo-400">
-                Built for Performance
+                Built for Developers
               </h2>
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Only pay for what you use
+                Developer experience that just works
+              </p>
+              <p className="mt-6 text-lg text-gray-300">
+                Clean APIs, zero dependencies, and thoughtful defaults. Style it
+                your way or use it headless.
               </p>
             </div>
             {/* Bundle Size Comparison */}
-            <div className="mx-auto mt-12 max-w-5xl">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
-                  <h4 className="text-sm font-medium text-gray-400 mb-2">
-                    Minimal Setup
-                  </h4>
-                  <div className="text-3xl font-bold text-green-400 mb-2">
-                    25KB
+            <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+              <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+                <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
+                  <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                    <svg
+                      className="h-6 w-6 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
+                      />
+                    </svg>
                   </div>
-                  <div className="text-sm text-gray-500 mb-4">gzipped</div>
-                  <ul className="space-y-1 text-sm text-gray-400">
-                    <li>✓ DateFilter (native HTML5)</li>
-                    <li>✓ QuickFilterDropdown</li>
-                    <li>✓ ActiveFilters</li>
-                    <li className="text-gray-600">✗ React DatePicker</li>
-                    <li className="text-gray-600">✗ URL compression</li>
+                  <h3 className="text-xl font-semibold text-white mb-4">
+                    Start in minutes
+                  </h3>
+                  <ul className="space-y-3 text-gray-300">
+                    <li className="flex items-start">
+                      <span className="text-green-400 mr-2">→</span>
+                      Single npm install
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-green-400 mr-2">→</span>
+                      Works with AG Grid Community & Enterprise
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-green-400 mr-2">→</span>
+                      TypeScript support out of the box
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-green-400 mr-2">→</span>
+                      Minimal bundle: starts at 25KB
+                    </li>
                   </ul>
                 </div>
-                <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
-                  <h4 className="text-sm font-medium text-gray-400 mb-2">
-                    With Date Picker
-                  </h4>
-                  <div className="text-3xl font-bold text-blue-400 mb-2">
-                    65KB
+                <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
+                  <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                    <svg
+                      className="h-6 w-6 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"
+                      />
+                    </svg>
                   </div>
-                  <div className="text-sm text-gray-500 mb-4">gzipped</div>
-                  <ul className="space-y-1 text-sm text-gray-400">
-                    <li>✓ DateFilter</li>
-                    <li>✓ React DatePicker integration</li>
-                    <li>✓ QuickFilterDropdown</li>
-                    <li>✓ ActiveFilters</li>
-                    <li className="text-gray-600">✗ URL compression</li>
+                  <h3 className="text-xl font-semibold text-white mb-4">
+                    Style it your way
+                  </h3>
+                  <ul className="space-y-3 text-gray-300">
+                    <li className="flex items-start">
+                      <span className="text-indigo-400 mr-2">→</span>
+                      Headless by default
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-indigo-400 mr-2">→</span>
+                      CSS modules for scoped styles
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-indigo-400 mr-2">→</span>
+                      Override any style with className
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-indigo-400 mr-2">→</span>
+                      Works with Tailwind, CSS-in-JS, etc.
+                    </li>
                   </ul>
                 </div>
-                <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
-                  <h4 className="text-sm font-medium text-gray-400 mb-2">
-                    Full Featured
-                  </h4>
-                  <div className="text-3xl font-bold text-purple-400 mb-2">
-                    85KB
+                <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
+                  <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                    <svg
+                      className="h-6 w-6 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6 13.5V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 9.75V10.5"
+                      />
+                    </svg>
                   </div>
-                  <div className="text-sm text-gray-500 mb-4">gzipped</div>
-                  <ul className="space-y-1 text-sm text-gray-400">
-                    <li>✓ All components</li>
-                    <li>✓ React DatePicker integration</li>
-                    <li>✓ URL state persistence</li>
-                    <li>✓ LZ-String compression</li>
-                    <li>✓ All features enabled</li>
+                  <h3 className="text-xl font-semibold text-white mb-4">
+                    Configure everything
+                  </h3>
+                  <ul className="space-y-3 text-gray-300">
+                    <li className="flex items-start">
+                      <span className="text-purple-400 mr-2">→</span>
+                      Pluggable date picker adapters
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-purple-400 mr-2">→</span>
+                      Customizable date expressions
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-purple-400 mr-2">→</span>
+                      Extensible filter presets
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-purple-400 mr-2">→</span>
+                      Override any behavior with callbacks
+                    </li>
                   </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Open Source Contribution Section */}
+          <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
+            <div className="mx-auto max-w-2xl lg:text-center">
+              <h2 className="text-base font-semibold leading-7 text-indigo-400">
+                Open Source
+              </h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                Built by the community, for the community
+              </p>
+              <p className="mt-6 text-lg text-gray-300">
+                We actively encourage contributions. Found a bug? Have a feature
+                idea? Want to improve the docs? Jump in! This project exists
+                because developers like you make it better.
+              </p>
+            </div>
+            <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+              <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
+                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="text-center">
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-600">
+                      <svg
+                        className="h-8 w-8 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-white">
+                      Report Issues
+                    </h3>
+                    <p className="mt-2 text-gray-400">
+                      Found a bug? Let us know on GitHub
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-600">
+                      <svg
+                        className="h-8 w-8 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-white">
+                      Suggest Features
+                    </h3>
+                    <p className="mt-2 text-gray-400">
+                      Have an idea? We'd love to hear it
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-600">
+                      <svg
+                        className="h-8 w-8 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-white">
+                      Submit PRs
+                    </h3>
+                    <p className="mt-2 text-gray-400">
+                      Code contributions always welcome
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-8 text-center">
+                  <a
+                    href="https://github.com/ryanrozich/ag-grid-react-components"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100"
+                  >
+                    <svg
+                      className="mr-2 h-5 w-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Contribute on GitHub
+                  </a>
                 </div>
               </div>
             </div>
@@ -1283,11 +1487,10 @@ function App() {
 
                     <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-6 mt-8">
                       <h3 className="text-lg font-semibold text-blue-300 mb-2">
-                        Pre-release Version
+                        {IS_PRERELEASE ? 'Pre-release' : 'Current'} Version
                       </h3>
                       <p className="text-gray-300">
-                        This is version 0.1.0, a pre-release seeking feedback
-                        from early adopters. The API may change before the 1.0
+                        This is version {VERSION_DISPLAY}, {IS_PRERELEASE ? 'a pre-release seeking feedback from early adopters' : 'the latest stable release'}. {IS_PRERELEASE && 'The API may change before the 1.0'}
                         release. We welcome your feedback and contributions!
                       </p>
                     </div>
@@ -1310,7 +1513,7 @@ function App() {
 
                       <div className="bg-green-900/20 border border-green-600/30 rounded-lg p-4 mb-6">
                         <p className="text-green-400 text-sm font-medium mb-2">
-                          🎆 Pre-release v0.1.0: Modular Architecture
+                          🎆 {IS_PRERELEASE ? 'Pre-release' : 'Version'} {VERSION_DISPLAY}: Modular Architecture
                         </p>
                         <p className="text-gray-300 text-sm">
                           95% smaller bundle size! Choose only what you need:
@@ -6487,6 +6690,7 @@ const handleFilterSelect = async (option) => {
                         placeholder="Time period"
                         showDescriptions={false}
                         className="min-w-[140px]"
+                        usePortal="always"
                       />
                       <QuickFilterDropdown
                         api={gridApi}
@@ -6495,6 +6699,7 @@ const handleFilterSelect = async (option) => {
                         placeholder="Task type"
                         showDescriptions={false}
                         className="min-w-[140px]"
+                        usePortal="always"
                       />
                     </>
                   )}

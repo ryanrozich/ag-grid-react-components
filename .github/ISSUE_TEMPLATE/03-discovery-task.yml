@@ -1,0 +1,109 @@
+name: 🔍 Discovery/Investigation
+description: Document something that needs investigation or research
+title: "[DISCOVERY] "
+labels: ["investigation", "status: needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template when you discover something that needs investigation before action can be taken.
+        Perfect for AI agents doing code analysis or humans doing research.
+
+  - type: dropdown
+    id: discovery-type
+    attributes:
+      label: Discovery Type
+      options:
+        - Performance Issue
+        - Code Smell/Technical Debt
+        - Security Concern
+        - Dependency Issue
+        - Architecture Question
+        - AG Grid API Change
+        - Bundle Size Concern
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-found
+    attributes:
+      label: What Was Discovered
+      description: Describe what you found that needs investigation
+      placeholder: |
+        Found that QuickFilterDropdown creates a new portal on every render when usePortal="always".
+        This might cause performance issues with many dropdowns...
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-state
+    attributes:
+      label: Current State Analysis
+      description: Include file locations, code snippets, metrics
+      render: typescript
+      placeholder: |
+        Location: src/components/QuickFilterDropdown/index.tsx:337
+
+        ```typescript
+        ReactDOM.createPortal(
+          <div ref={dropdownRef}>
+            {/* Portal created on every render */}
+          </div>,
+          document.body
+        )
+        ```
+
+        Performance impact: Unknown, needs profiling
+
+  - type: textarea
+    id: questions
+    attributes:
+      label: Questions to Answer
+      description: What needs to be researched?
+      placeholder: |
+        1. How often do portals re-render in typical usage?
+        2. Is there a performance impact with 10+ dropdowns?
+        3. Should we memoize the portal creation?
+        4. What do other libraries (Radix, Headless UI) do?
+
+  - type: textarea
+    id: investigation-plan
+    attributes:
+      label: Investigation Plan
+      description: Steps to research this
+      placeholder: |
+        1. Add performance profiling to demo
+        2. Test with 50 QuickFilterDropdowns
+        3. Compare portal vs non-portal rendering performance
+        4. Research React Portal best practices
+        5. Check if AG Grid has recommendations
+
+  - type: textarea
+    id: resources
+    attributes:
+      label: Resources & References
+      description: Links, docs, similar issues
+      placeholder: |
+        - React Portal docs: https://react.dev/reference/react-dom/createPortal
+        - Similar issue in Radix: https://github.com/radix-ui/primitives/issues/1234
+        - AG Grid floating filter performance: https://...
+
+  - type: dropdown
+    id: impact-if-true
+    attributes:
+      label: Potential Impact if Confirmed
+      options:
+        - "🔴 Critical - Major performance/security issue"
+        - "🟠 High - Significant impact on users"
+        - "🟡 Medium - Should be addressed"
+        - "🟢 Low - Nice to optimize"
+        - "❓ Unknown - Needs investigation"
+      default: 4
+
+  - type: input
+    id: time-estimate
+    attributes:
+      label: Investigation Time Estimate
+      description: How long to research this properly?
+      placeholder: "2-4 hours"

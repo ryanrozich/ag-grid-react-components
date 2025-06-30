@@ -10,20 +10,20 @@ An Architecture Decision Record (ADR) captures an important architecture decisio
 
 ### [001 - Single Package Approach](./001-single-package-approach.md)
 
-**Date**: December 2024  
-**Status**: Accepted  
+**Date**: December 2024
+**Status**: Accepted
 **Summary**: Decision to use a single npm package instead of multiple modular packages, maintaining bundle size benefits through proper ESM exports and tree-shaking.
 
 ### [002 - Zod Schema Evaluation](./002-zod-evaluation.md)
 
-**Date**: December 2024  
-**Status**: Rejected  
+**Date**: December 2024
+**Status**: Rejected
 **Summary**: Evaluation of using Zod for runtime validation. Decision was to continue with manual validation to avoid adding dependencies.
 
 ### [003 - Headless UI Evaluation](./003-headless-ui-evaluation.md)
 
-**Date**: December 2024  
-**Status**: Rejected  
+**Date**: December 2024
+**Status**: Rejected
 **Summary**: Evaluation of using Headless UI for component accessibility. Decision was to maintain manual implementation to keep the library dependency-free.
 
 ## ADR Format

@@ -115,13 +115,13 @@ jobs:
               repo: context.repo.repo,
               title: `Post-release tasks for v${version}`,
               body: `## Post-release checklist for v${version}
-              
+
               - [ ] Verify npm package is available
               - [ ] Test installation in a fresh project
               - [ ] Update demo deployment if needed
               - [ ] Announce release on social media
               - [ ] Update any dependent projects
-              
+
               npm: https://www.npmjs.com/package/ag-grid-react-components/v/${version}
               GitHub Release: https://github.com/ryanrozich/ag-grid-react-components/releases/tag/v${version}`
             });

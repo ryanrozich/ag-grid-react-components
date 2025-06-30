@@ -1,0 +1,117 @@
+name: ✨ Feature Request
+description: Suggest an enhancement or new feature
+title: "[FEATURE] "
+labels: ["enhancement", "status: needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! This template works for both AI agents and human contributors.
+
+  - type: dropdown
+    id: feature-type
+    attributes:
+      label: Feature Type
+      description: What kind of enhancement is this?
+      options:
+        - New Component
+        - Component Enhancement
+        - Demo Enhancement
+        - Developer Experience (DX)
+        - Performance Optimization
+        - Documentation
+        - Testing/Quality
+      default: 1
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem Statement
+      description: What problem does this solve? Why is it needed?
+      placeholder: |
+        Users struggle with date filtering in AG Grid. They want to use expressions like "last 30 days" 
+        that update dynamically, but AG Grid only supports static date ranges...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: How would you solve this?
+      placeholder: |
+        Add a new RelativeDateFilter component that:
+        1. Accepts expressions like "today-30d"
+        2. Re-evaluates on each filter pass
+        3. Integrates with URL persistence
+    validations:
+      required: true
+
+  - type: textarea
+    id: api-design
+    attributes:
+      label: API Design (if applicable)
+      description: Proposed API for developers
+      render: typescript
+      placeholder: |
+        ```typescript
+        <DateFilter
+          enableRelativeMode={true}
+          relativeOptions={['today', 'yesterday', 'last7days']}
+          defaultMode="relative"
+        />
+        ```
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Other approaches you've thought about
+
+  - type: textarea
+    id: implementation-notes
+    attributes:
+      label: Implementation Notes (AI Agent Analysis)
+      description: Technical details for implementation
+      placeholder: |
+        - Would need to modify: src/components/DateFilter/index.tsx
+        - Add new hook: useRelativeDateExpression
+        - Update filter model interface in src/types/index.ts
+        - Requires date-fns for date calculations
+
+  - type: dropdown
+    id: breaking-change
+    attributes:
+      label: Breaking Change?
+      description: Would this break existing code?
+      options:
+        - "No - Fully backward compatible"
+        - "Minor - Optional new parameters"
+        - "Major - API changes required"
+      default: 0
+
+  - type: dropdown
+    id: effort-estimate
+    attributes:
+      label: Effort Estimate
+      options:
+        - "XS - Few hours"
+        - "S - 1-2 days"
+        - "M - 3-5 days"
+        - "L - 1-2 weeks"
+        - "XL - 2+ weeks"
+      default: 2
+
+  - type: textarea
+    id: success-criteria
+    attributes:
+      label: Success Criteria
+      description: How do we know when this is done?
+      placeholder: |
+        - [ ] Component supports relative date expressions
+        - [ ] Expressions persist in URL state
+        - [ ] Demo shows all capabilities
+        - [ ] 100% test coverage for new code
+        - [ ] Documentation updated

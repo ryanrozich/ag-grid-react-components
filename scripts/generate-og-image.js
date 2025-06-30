@@ -57,7 +57,7 @@ pills.forEach(pill => {
   ctx.beginPath();
   ctx.roundRect(pill.x, 260, 240, 50, 25);
   ctx.fill();
-  
+
   // Pill text
   ctx.font = '20px Inter, Arial, sans-serif';
   ctx.fillStyle = pill.textColor;

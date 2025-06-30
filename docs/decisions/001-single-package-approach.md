@@ -1,7 +1,7 @@
 # Architecture Decision: Single Package Approach
 
-**Date**: December 2024  
-**Status**: Accepted  
+**Date**: December 2024
+**Status**: Accepted
 **Issue**: [#2](https://github.com/ryanrozich/ag-grid-react-components/issues/2)
 
 ## Context
