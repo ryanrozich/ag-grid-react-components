@@ -1,0 +1,128 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release-type:
+        description: "Release type"
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+          - prerelease
+      prerelease-identifier:
+        description: "Prerelease identifier (beta, alpha, rc)"
+        required: false
+        default: "beta"
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: |
+          npm run test:unit
+          npm run lint
+          npm run typecheck
+
+      - name: Build package
+        run: npm run build
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create release version
+        id: version
+        run: |
+          if [[ "${{ github.event.inputs.release-type }}" == "prerelease" ]]; then
+            npm run release:${{ github.event.inputs.release-type }} -- --prerelease ${{ github.event.inputs.prerelease-identifier }}
+          else
+            npm run release:${{ github.event.inputs.release-type }}
+          fi
+          echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Push changes
+        run: |
+          git push --follow-tags origin main
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: ${{ github.event.inputs.release-type == 'prerelease' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to npm
+        run: |
+          if [[ "${{ github.event.inputs.release-type }}" == "prerelease" ]]; then
+            npm publish --tag ${{ github.event.inputs.prerelease-identifier }}
+          else
+            npm publish
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Update documentation
+        run: |
+          # Update demo if needed
+          npm run build:demo
+          # Could deploy to GitHub Pages or other hosting here
+
+      - name: Notify success
+        if: success()
+        run: |
+          echo "🎉 Successfully released v${{ steps.version.outputs.version }}!"
+          echo "📦 npm: https://www.npmjs.com/package/ag-grid-react-components/v/${{ steps.version.outputs.version }}"
+          echo "🏷️ GitHub: https://github.com/ryanrozich/ag-grid-react-components/releases/tag/v${{ steps.version.outputs.version }}"
+
+      - name: Create issue for post-release tasks
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = '${{ steps.version.outputs.version }}';
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Post-release tasks for v${version}`,
+              body: `## Post-release checklist for v${version}
+              
+              - [ ] Verify npm package is available
+              - [ ] Test installation in a fresh project
+              - [ ] Update demo deployment if needed
+              - [ ] Announce release on social media
+              - [ ] Update any dependent projects
+              
+              npm: https://www.npmjs.com/package/ag-grid-react-components/v/${version}
+              GitHub Release: https://github.com/ryanrozich/ag-grid-react-components/releases/tag/v${version}`
+            });
+            console.log(`Created issue #${issue.data.number}`);

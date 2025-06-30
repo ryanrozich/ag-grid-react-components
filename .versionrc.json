@@ -1,0 +1,25 @@
+{
+  "types": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "chore", "hidden": false, "section": "Maintenance" },
+    { "type": "docs", "section": "Documentation" },
+    { "type": "style", "hidden": true },
+    { "type": "refactor", "section": "Code Refactoring" },
+    { "type": "perf", "section": "Performance Improvements" },
+    { "type": "test", "hidden": true }
+  ],
+  "commitUrlFormat": "https://github.com/ryanrozich/ag-grid-react-components/commit/{{hash}}",
+  "compareUrlFormat": "https://github.com/ryanrozich/ag-grid-react-components/compare/{{previousTag}}...{{currentTag}}",
+  "issueUrlFormat": "https://github.com/ryanrozich/ag-grid-react-components/issues/{{id}}",
+  "skip": {
+    "bump": false,
+    "changelog": false,
+    "commit": false,
+    "tag": false
+  },
+  "scripts": {
+    "postbump": "npm run build",
+    "postchangelog": "echo 'Updated CHANGELOG.md'"
+  }
+}
