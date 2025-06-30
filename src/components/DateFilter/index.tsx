@@ -34,8 +34,6 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
       onModelChange,
       dateParser,
       getValue,
-      afterInclusive,
-      beforeInclusive,
       rangeInclusive,
       model: initialModel,
       defaultMode,
@@ -224,8 +222,6 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
         validation.effectiveDateFrom,
         validation.effectiveDateTo,
         filterState.filterType,
-        afterInclusive,
-        beforeInclusive,
       ],
     );
 
@@ -288,112 +284,131 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
       }
     }, [filterState, onModelChange, filterChangedCallback, handleError]);
 
-    // Register with AG Grid
-    const callbacks = {
-      doesFilterPass,
-      getModelAsString: () => {
-        if (!currentModel) return "";
+    const getModel = useCallback(() => {
+      if (!currentModel) return null;
 
-        if (currentModel.mode === "absolute") {
-          if (currentModel.type === "inRange") {
-            const fromStr = currentModel.dateFrom
-              ? format(currentModel.dateFrom, dateFormat)
-              : "";
-            const toStr = currentModel.dateTo
-              ? format(currentModel.dateTo, dateFormat)
-              : "";
-            return `${fromStr} to ${toStr}`;
-          }
-          return currentModel.dateFrom
-            ? format(currentModel.dateFrom, dateFormat)
-            : "";
-        } else {
-          if (currentModel.type === "inRange") {
-            return `${currentModel.expressionFrom || ""} to ${currentModel.expressionTo || ""}`;
-          }
-          return currentModel.expressionFrom || "";
+      // Ensure dates are serializable for AG Grid
+      const serializableModel = {
+        ...currentModel,
+        dateFrom:
+          currentModel.dateFrom instanceof Date
+            ? currentModel.dateFrom.toISOString()
+            : currentModel.dateFrom,
+        dateTo:
+          currentModel.dateTo instanceof Date
+            ? currentModel.dateTo.toISOString()
+            : currentModel.dateTo,
+      };
+
+      return serializableModel;
+    }, [currentModel]);
+
+    const setModel = useCallback(
+      (model: DateFilterModel | null) => {
+        logger.debug("[DateFilter] setModel called with:", model);
+
+        // Set a global flag for testing
+        if (typeof window !== "undefined") {
+          (
+            window as Window & { setModelWasCalled?: boolean }
+          ).setModelWasCalled = true;
         }
-      },
-      getModel: useCallback(() => {
-        if (!currentModel) return null;
 
-        // Ensure dates are serializable for AG Grid
-        const serializableModel = {
-          ...currentModel,
+        if (!model) {
+          resetFilter();
+          return;
+        }
+
+        // Deserialize dates if they are ISO strings
+        const deserializedModel = {
+          ...model,
           dateFrom:
-            currentModel.dateFrom instanceof Date
-              ? currentModel.dateFrom.toISOString()
-              : currentModel.dateFrom,
+            model.dateFrom && typeof model.dateFrom === "string"
+              ? new Date(model.dateFrom)
+              : model.dateFrom,
           dateTo:
-            currentModel.dateTo instanceof Date
-              ? currentModel.dateTo.toISOString()
-              : currentModel.dateTo,
+            model.dateTo && typeof model.dateTo === "string"
+              ? new Date(model.dateTo)
+              : model.dateTo,
         };
 
-        return serializableModel;
-      }, [currentModel]),
-      setModel: useCallback(
-        (model: DateFilterModel | null) => {
-          logger.debug("[DateFilter] setModel called with:", model);
+        filterState.initializeFromModel(deserializedModel);
 
-          // Set a global flag for testing
-          if (typeof window !== "undefined") {
-            (
-              window as Window & { setModelWasCalled?: boolean }
-            ).setModelWasCalled = true;
+        logger.debug("Filter state initialized from model:", model);
+
+        // IMPORTANT: For programmatic filter changes (like from QuickFilterDropdown),
+        // we need to ensure the grid is notified immediately
+        if (onModelChange) {
+          onModelChange(model);
+        }
+
+        // Use requestAnimationFrame to ensure state updates have been processed
+        // before triggering the filter changed callback
+        requestAnimationFrame(() => {
+          if (filterChangedCallback) {
+            filterChangedCallback();
           }
-
-          if (!model) {
-            resetFilter();
-            return;
-          }
-
-          // Deserialize dates if they are ISO strings
-          const deserializedModel = {
-            ...model,
-            dateFrom:
-              model.dateFrom && typeof model.dateFrom === "string"
-                ? new Date(model.dateFrom)
-                : model.dateFrom,
-            dateTo:
-              model.dateTo && typeof model.dateTo === "string"
-                ? new Date(model.dateTo)
-                : model.dateTo,
-          };
-
-          filterState.initializeFromModel(deserializedModel);
-
-          logger.debug("Filter state initialized from model:", model);
-
-          // IMPORTANT: For programmatic filter changes (like from QuickFilterDropdown),
-          // we need to ensure the grid is notified immediately
-          if (onModelChange) {
-            onModelChange(model);
-          }
-
-          // Use requestAnimationFrame to ensure state updates have been processed
-          // before triggering the filter changed callback
-          requestAnimationFrame(() => {
-            if (filterChangedCallback) {
-              filterChangedCallback();
-            }
-          });
-        },
-        [resetFilter, filterState, filterChangedCallback, onModelChange],
-      ),
-      onNewRowsLoaded: () => {
-        // Handle new rows if needed
+        });
       },
-      // AG Grid v33 requires this to know when the filter is active
-      isFilterActive: useCallback(() => {
-        const active = validation.isFilterValid && currentModel !== null;
-        return active;
-      }, [validation.isFilterValid, currentModel]),
-      // Log when callbacks are destroyed
-      destroy: useCallback(() => {
-        // Clean up when destroyed
-      }, []),
-    };
+      [resetFilter, filterState, filterChangedCallback, onModelChange],
+    );
+
+    const isFilterActive = useCallback(() => {
+      const active = validation.isFilterValid && currentModel !== null;
+      return active;
+    }, [validation.isFilterValid, currentModel]);
+
+    const destroy = useCallback(() => {
+      // Clean up when destroyed
+    }, []);
+
+    // Register with AG Grid
+    const callbacks = useMemo(
+      () => ({
+        doesFilterPass,
+        getModelAsString: () => {
+          if (!currentModel) return "";
+
+          if (currentModel.mode === "absolute") {
+            if (currentModel.type === "inRange") {
+              const fromStr = currentModel.dateFrom
+                ? format(currentModel.dateFrom, dateFormat)
+                : "";
+              const toStr = currentModel.dateTo
+                ? format(currentModel.dateTo, dateFormat)
+                : "";
+              return `${fromStr} to ${toStr}`;
+            }
+            return currentModel.dateFrom
+              ? format(currentModel.dateFrom, dateFormat)
+              : "";
+          } else {
+            if (currentModel.type === "inRange") {
+              return `${currentModel.expressionFrom || ""} to ${currentModel.expressionTo || ""}`;
+            }
+            return currentModel.expressionFrom || "";
+          }
+        },
+        getModel,
+        setModel,
+        onNewRowsLoaded: () => {
+          // Handle new rows if needed
+        },
+        // AG Grid v33 requires this to know when the filter is active
+        isFilterActive,
+        // Log when callbacks are destroyed
+        destroy,
+      }),
+      [
+        doesFilterPass,
+        currentModel,
+        dateFormat,
+        getModel,
+        setModel,
+        isFilterActive,
+        destroy,
+      ],
+    );
 
     useGridFilter(callbacks);
 
@@ -403,7 +418,7 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
       if (initialModel) {
         filterState.initializeFromModel(initialModel);
       }
-    }, [initialModel, filterState.initializeFromModel]);
+    }, [initialModel, filterState]);
 
     // Model is handled during initial state creation in useFilterState
     // No ongoing synchronization to avoid state conflicts

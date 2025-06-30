@@ -46,13 +46,13 @@ Call log:
 - paragraph: 1,000
 - img
 - paragraph: Total Budget
-- paragraph: $3,905,675
+- paragraph: $4,060,950
 - img
 - paragraph: Progress
-- paragraph: 47.6%
+- paragraph: 46.7%
 - img
 - paragraph: Budget Remaining
-- paragraph: $2,035,915
+- paragraph: $2,209,536
 - text: 1 to 25 of 1,001. Page 1 of 41
 - grid:
   - rowgroup:
@@ -67,212 +67,212 @@ Call log:
       - columnheader "Status"
       - columnheader "Progress"
   - rowgroup:
-    - row "16 [MOBILE-1016] Implement rate limiting (Sprint 26) 🔒 Security Medium Jessica Lopez Jessica Lopez 8/26/2025 $550 Testing 86%":
-      - gridcell "16"
-      - gridcell "[MOBILE-1016] Implement rate limiting (Sprint 26)"
-      - gridcell "🔒 Security"
-      - gridcell "Medium"
-      - gridcell "Jessica Lopez Jessica Lopez":
-        - img "Jessica Lopez"
-        - text: Jessica Lopez
-      - gridcell "8/26/2025"
-      - gridcell "$550"
-      - gridcell "Testing"
-      - gridcell "86%"
-    - row "951 [ADMIN-1951] Create deployment rollback 🔧 DevOps Medium Chris Martinez Chris Martinez 8/21/2025 $275 In Progress 42%":
-      - gridcell "951"
-      - gridcell "[ADMIN-1951] Create deployment rollback"
-      - gridcell "🔧 DevOps"
-      - gridcell "Medium"
-      - gridcell "Chris Martinez Chris Martinez":
-        - img "Chris Martinez"
-        - text: Chris Martinez
-      - gridcell "8/21/2025"
-      - gridcell "$275"
-      - gridcell "In Progress"
-      - gridcell "42%"
-    - row "865 [PROJ-1865] Test cross-browser compatibility (Security Audit) 🧪 Testing Low Jessica Lopez Jessica Lopez 9/7/2025 $3,500 In Progress 32%":
-      - gridcell "865"
-      - gridcell "[PROJ-1865] Test cross-browser compatibility (Security Audit)"
-      - gridcell "🧪 Testing"
+    - row "89 [APP-1089] Fix login form validation error (Q1 Goals) 🐛 Bug Low John Robinson John Robinson 8/28/2025 $550 Backlog 0%":
+      - gridcell "89"
+      - gridcell "[APP-1089] Fix login form validation error (Q1 Goals)"
+      - gridcell "🐛 Bug"
       - gridcell "Low"
-      - gridcell "Jessica Lopez Jessica Lopez":
-        - img "Jessica Lopez"
-        - text: Jessica Lopez
-      - gridcell "9/7/2025"
-      - gridcell "$3,500"
-      - gridcell "In Progress"
-      - gridcell "32%"
-    - row "912 [FRONTEND-1912] Add drag-and-drop file upload ✨ Feature High Michael Anderson Michael Anderson 8/22/2025 $625 In Progress 50%":
-      - gridcell "912"
-      - gridcell "[FRONTEND-1912] Add drag-and-drop file upload"
-      - gridcell "✨ Feature"
-      - gridcell "High"
-      - gridcell "Michael Anderson Michael Anderson":
-        - img "Michael Anderson"
-        - text: Michael Anderson
-      - gridcell "8/22/2025"
-      - gridcell "$625"
-      - gridcell "In Progress"
-      - gridcell "50%"
-    - row "177 [CORE-1177] Document security protocols (Q1 Goals) 📝 Documentation Critical Marcus Williams Marcus Williams 8/14/2025 $1,000 In Review 74%":
-      - gridcell "177"
-      - gridcell "[CORE-1177] Document security protocols (Q1 Goals)"
-      - gridcell "📝 Documentation"
-      - gridcell "Critical"
-      - gridcell "Marcus Williams Marcus Williams":
-        - img "Marcus Williams"
-        - text: Marcus Williams
-      - gridcell "8/14/2025"
-      - gridcell "$1,000"
-      - gridcell "In Review"
-      - gridcell "74%"
-    - row "717 [CORE-1717] Refactor error handling (Q2 Planning) ♻️ Refactor Critical Sarah Johnson Sarah Johnson 8/12/2025 $325 Backlog 0%":
-      - gridcell "717"
-      - gridcell "[CORE-1717] Refactor error handling (Q2 Planning)"
-      - gridcell "♻️ Refactor"
-      - gridcell "Critical"
-      - gridcell "Sarah Johnson Sarah Johnson":
-        - img "Sarah Johnson"
-        - text: Sarah Johnson
-      - gridcell "8/12/2025"
-      - gridcell "$325"
+      - gridcell "John Robinson John Robinson":
+        - img "John Robinson"
+        - text: John Robinson
+      - gridcell "8/28/2025"
+      - gridcell "$550"
       - gridcell "Backlog"
       - gridcell "0%"
-    - row "32 [USER-1032] Implement blue-green deployment (Sprint 25) 🔧 DevOps Low Chris Martinez Chris Martinez 9/7/2025 $3,300 In Progress 57%":
-      - gridcell "32"
-      - gridcell "[USER-1032] Implement blue-green deployment (Sprint 25)"
-      - gridcell "🔧 DevOps"
-      - gridcell "Low"
-      - gridcell "Chris Martinez Chris Martinez":
-        - img "Chris Martinez"
-        - text: Chris Martinez
-      - gridcell "9/7/2025"
-      - gridcell "$3,300"
-      - gridcell "In Progress"
-      - gridcell "57%"
-    - row "395 [AUTH-1395] Reduce API call frequency (Q2 Planning) ⚡ Performance Medium Jessica Lopez Jessica Lopez 8/27/2025 $725 Todo 19%":
-      - gridcell "395"
-      - gridcell "[AUTH-1395] Reduce API call frequency (Q2 Planning)"
-      - gridcell "⚡ Performance"
-      - gridcell "Medium"
-      - gridcell "Jessica Lopez Jessica Lopez":
-        - img "Jessica Lopez"
-        - text: Jessica Lopez
-      - gridcell "8/27/2025"
-      - gridcell "$725"
-      - gridcell "Todo"
-      - gridcell "19%"
-    - row "75 [PROJ-1075] Create troubleshooting guide (Q1 Goals) 📝 Documentation High Emily Jackson Emily Jackson 8/12/2025 $925 In Review 78%":
-      - gridcell "75"
-      - gridcell "[PROJ-1075] Create troubleshooting guide (Q1 Goals)"
-      - gridcell "📝 Documentation"
-      - gridcell "High"
-      - gridcell "Emily Jackson Emily Jackson":
-        - img "Emily Jackson"
-        - text: Emily Jackson
-      - gridcell "8/12/2025"
-      - gridcell "$925"
-      - gridcell "In Review"
-      - gridcell "78%"
-    - row "882 [INFRA-1882] Create architecture overview (Sprint 25) 📝 Documentation Medium Priya Sharma Priya Sharma 8/25/2025 $14,650 In Review 70%":
-      - gridcell "882"
-      - gridcell "[INFRA-1882] Create architecture overview (Sprint 25)"
-      - gridcell "📝 Documentation"
-      - gridcell "Medium"
+    - row "909 [APP-1909] Update to React 18 patterns (Tech Debt) ♻️ Refactor Critical Priya Sharma Priya Sharma 8/14/2025 $100 In Progress 31%":
+      - gridcell "909"
+      - gridcell "[APP-1909] Update to React 18 patterns (Tech Debt)"
+      - gridcell "♻️ Refactor"
+      - gridcell "Critical"
       - gridcell "Priya Sharma Priya Sharma":
         - img "Priya Sharma"
         - text: Priya Sharma
-      - gridcell "8/25/2025"
-      - gridcell "$14,650"
-      - gridcell "In Review"
-      - gridcell "70%"
-    - row "1 [MOBILE-1001] Add performance benchmarks (Q1 Goals) 🧪 Testing High Isabella Garcia Isabella Garcia 8/8/2025 $7,100 In Review 65%":
-      - gridcell "1"
-      - gridcell "[MOBILE-1001] Add performance benchmarks (Q1 Goals)"
-      - gridcell "🧪 Testing"
-      - gridcell "High"
-      - gridcell "Isabella Garcia Isabella Garcia":
-        - img "Isabella Garcia"
-        - text: Isabella Garcia
-      - gridcell "8/8/2025"
-      - gridcell "$7,100"
-      - gridcell "In Review"
-      - gridcell "65%"
-    - row "253 [WEB-1253] Add internationalization tests 🧪 Testing High Kevin Zhang Kevin Zhang 8/9/2025 $525 In Review 69%":
-      - gridcell "253"
-      - gridcell "[WEB-1253] Add internationalization tests"
-      - gridcell "🧪 Testing"
-      - gridcell "High"
-      - gridcell "Kevin Zhang Kevin Zhang":
-        - img "Kevin Zhang"
-        - text: Kevin Zhang
-      - gridcell "8/9/2025"
-      - gridcell "$525"
-      - gridcell "In Review"
-      - gridcell "69%"
-    - row "323 [WEB-1323] Update to ES6 modules (Sprint 27) ♻️ Refactor High Ryan Thomas Ryan Thomas 8/9/2025 $3,675 In Progress 28%":
-      - gridcell "323"
-      - gridcell "[WEB-1323] Update to ES6 modules (Sprint 27)"
-      - gridcell "♻️ Refactor"
-      - gridcell "High"
-      - gridcell "Ryan Thomas Ryan Thomas":
-        - img "Ryan Thomas"
-        - text: Ryan Thomas
-      - gridcell "8/9/2025"
-      - gridcell "$3,675"
+      - gridcell "8/14/2025"
+      - gridcell "$100"
       - gridcell "In Progress"
-      - gridcell "28%"
-    - row "868 [MOBILE-1868] Create data visualization charts ✨ Feature Medium Amanda White Amanda White 8/17/2025 $10,675 Todo 8%":
-      - gridcell "868"
-      - gridcell "[MOBILE-1868] Create data visualization charts"
-      - gridcell "✨ Feature"
-      - gridcell "Medium"
-      - gridcell "Amanda White Amanda White":
-        - img "Amanda White"
-        - text: Amanda White
-      - gridcell "8/17/2025"
-      - gridcell "$10,675"
-      - gridcell "Todo"
-      - gridcell "8%"
-    - row "880 [UI-1880] Update to ES6 modules ♻️ Refactor Medium Marcus Williams Marcus Williams 8/11/2025 $950 In Review 74%":
-      - gridcell "880"
-      - gridcell "[UI-1880] Update to ES6 modules"
-      - gridcell "♻️ Refactor"
-      - gridcell "Medium"
-      - gridcell "Marcus Williams Marcus Williams":
-        - img "Marcus Williams"
-        - text: Marcus Williams
-      - gridcell "8/11/2025"
-      - gridcell "$950"
-      - gridcell "In Review"
-      - gridcell "74%"
-    - row "917 [WEB-1917] Create onboarding tutorial (Sprint 23) 📝 Documentation Critical Kevin Zhang Kevin Zhang 8/7/2025 $525 In Progress 28%":
-      - gridcell "917"
-      - gridcell "[WEB-1917] Create onboarding tutorial (Sprint 23)"
-      - gridcell "📝 Documentation"
+      - gridcell "31%"
+    - row "614 [USER-1614] Implement service workers ⚡ Performance Critical Daniel Kim Daniel Kim 8/11/2025 $125 In Progress 55%":
+      - gridcell "614"
+      - gridcell "[USER-1614] Implement service workers"
+      - gridcell "⚡ Performance"
       - gridcell "Critical"
+      - gridcell "Daniel Kim Daniel Kim":
+        - img "Daniel Kim"
+        - text: Daniel Kim
+      - gridcell "8/11/2025"
+      - gridcell "$125"
+      - gridcell "In Progress"
+      - gridcell "55%"
+    - row "472 [MOBILE-1472] Correct data corruption in cache layer 🐛 Bug Critical James Wilson James Wilson 8/9/2025 $9,725 Backlog 0%":
+      - gridcell "472"
+      - gridcell "[MOBILE-1472] Correct data corruption in cache layer"
+      - gridcell "🐛 Bug"
+      - gridcell "Critical"
+      - gridcell "James Wilson James Wilson":
+        - img "James Wilson"
+        - text: James Wilson
+      - gridcell "8/9/2025"
+      - gridcell "$9,725"
+      - gridcell "Backlog"
+      - gridcell "0%"
+    - row "875 [FRONTEND-1875] Configure Docker containers (Sprint 25) 🔧 DevOps Low Kevin Zhang Kevin Zhang 8/23/2025 $825 Todo 10%":
+      - gridcell "875"
+      - gridcell "[FRONTEND-1875] Configure Docker containers (Sprint 25)"
+      - gridcell "🔧 DevOps"
+      - gridcell "Low"
       - gridcell "Kevin Zhang Kevin Zhang":
         - img "Kevin Zhang"
         - text: Kevin Zhang
-      - gridcell "8/7/2025"
-      - gridcell "$525"
+      - gridcell "8/23/2025"
+      - gridcell "$825"
+      - gridcell "Todo"
+      - gridcell "10%"
+    - row "886 [DASH-1886] Simplify complex conditionals (Sprint 23) ♻️ Refactor Critical Daniel Kim Daniel Kim 8/10/2025 $3,225 Backlog 0%":
+      - gridcell "886"
+      - gridcell "[DASH-1886] Simplify complex conditionals (Sprint 23)"
+      - gridcell "♻️ Refactor"
+      - gridcell "Critical"
+      - gridcell "Daniel Kim Daniel Kim":
+        - img "Daniel Kim"
+        - text: Daniel Kim
+      - gridcell "8/10/2025"
+      - gridcell "$3,225"
+      - gridcell "Backlog"
+      - gridcell "0%"
+    - row "916 [USER-1916] Document component props (Sprint 24) 📝 Documentation High Emma Davis Emma Davis 8/14/2025 $3,200 Testing 83%":
+      - gridcell "916"
+      - gridcell "[USER-1916] Document component props (Sprint 24)"
+      - gridcell "📝 Documentation"
+      - gridcell "High"
+      - gridcell "Emma Davis Emma Davis":
+        - img "Emma Davis"
+        - text: Emma Davis
+      - gridcell "8/14/2025"
+      - gridcell "$3,200"
+      - gridcell "Testing"
+      - gridcell "83%"
+    - row "266 [BACKEND-1266] Optimize database queries (Sprint 25) ⚡ Performance Medium David Lee David Lee 8/16/2025 $3,225 Backlog 0%":
+      - gridcell "266"
+      - gridcell "[BACKEND-1266] Optimize database queries (Sprint 25)"
+      - gridcell "⚡ Performance"
+      - gridcell "Medium"
+      - gridcell "David Lee David Lee":
+        - img "David Lee"
+        - text: David Lee
+      - gridcell "8/16/2025"
+      - gridcell "$3,225"
+      - gridcell "Backlog"
+      - gridcell "0%"
+    - row "690 [AUTH-1690] Add encryption at rest 🔒 Security High Chris Martinez Chris Martinez 8/10/2025 $2,825 Todo 5%":
+      - gridcell "690"
+      - gridcell "[AUTH-1690] Add encryption at rest"
+      - gridcell "🔒 Security"
+      - gridcell "High"
+      - gridcell "Chris Martinez Chris Martinez":
+        - img "Chris Martinez"
+        - text: Chris Martinez
+      - gridcell "8/10/2025"
+      - gridcell "$2,825"
+      - gridcell "Todo"
+      - gridcell "5%"
+    - row "15 [ADMIN-1015] Add brute force protection 🔒 Security Low Kevin Zhang Kevin Zhang 8/13/2025 $300 In Progress 35%":
+      - gridcell "15"
+      - gridcell "[ADMIN-1015] Add brute force protection"
+      - gridcell "🔒 Security"
+      - gridcell "Low"
+      - gridcell "Kevin Zhang Kevin Zhang":
+        - img "Kevin Zhang"
+        - text: Kevin Zhang
+      - gridcell "8/13/2025"
+      - gridcell "$300"
       - gridcell "In Progress"
-      - gridcell "28%"
+      - gridcell "35%"
+    - row "19 [DASH-1019] Test error boundary behavior (Sprint 25) 🧪 Testing Medium Olivia Brown Olivia Brown 8/18/2025 $825 In Progress 58%":
+      - gridcell "19"
+      - gridcell "[DASH-1019] Test error boundary behavior (Sprint 25)"
+      - gridcell "🧪 Testing"
+      - gridcell "Medium"
+      - gridcell "Olivia Brown Olivia Brown":
+        - img "Olivia Brown"
+        - text: Olivia Brown
+      - gridcell "8/18/2025"
+      - gridcell "$825"
+      - gridcell "In Progress"
+      - gridcell "58%"
+    - row "32 [PROJ-1032] Debug performance regression in search (Q2 Planning) 🐛 Bug Medium Maya Patel Maya Patel 8/12/2025 $1,375 Backlog 0%":
+      - gridcell "32"
+      - gridcell "[PROJ-1032] Debug performance regression in search (Q2 Planning)"
+      - gridcell "🐛 Bug"
+      - gridcell "Medium"
+      - gridcell "Maya Patel Maya Patel":
+        - img "Maya Patel"
+        - text: Maya Patel
+      - gridcell "8/12/2025"
+      - gridcell "$1,375"
+      - gridcell "Backlog"
+      - gridcell "0%"
+    - row "459 [API-1459] Write testing best practices (Sprint 27) 📝 Documentation High Alex Chen Alex Chen 8/8/2025 $6,525 In Progress 35%":
+      - gridcell "459"
+      - gridcell "[API-1459] Write testing best practices (Sprint 27)"
+      - gridcell "📝 Documentation"
+      - gridcell "High"
+      - gridcell "Alex Chen Alex Chen":
+        - img "Alex Chen"
+        - text: Alex Chen
+      - gridcell "8/8/2025"
+      - gridcell "$6,525"
+      - gridcell "In Progress"
+      - gridcell "35%"
+    - row "619 [ADMIN-1619] Debug crash on mobile Safari 🐛 Bug Medium Daniel Kim Daniel Kim 8/11/2025 $14,325 In Progress 53%":
+      - gridcell "619"
+      - gridcell "[ADMIN-1619] Debug crash on mobile Safari"
+      - gridcell "🐛 Bug"
+      - gridcell "Medium"
+      - gridcell "Daniel Kim Daniel Kim":
+        - img "Daniel Kim"
+        - text: Daniel Kim
+      - gridcell "8/11/2025"
+      - gridcell "$14,325"
+      - gridcell "In Progress"
+      - gridcell "53%"
+    - row "353 [USER-1353] Clean up deprecated APIs (Security Audit) ♻️ Refactor Medium Kevin Zhang Kevin Zhang 8/22/2025 $500 Backlog 0%":
+      - gridcell "353"
+      - gridcell "[USER-1353] Clean up deprecated APIs (Security Audit)"
+      - gridcell "♻️ Refactor"
+      - gridcell "Medium"
+      - gridcell "Kevin Zhang Kevin Zhang":
+        - img "Kevin Zhang"
+        - text: Kevin Zhang
+      - gridcell "8/22/2025"
+      - gridcell "$500"
+      - gridcell "Backlog"
+      - gridcell "0%"
+    - row "455 [AUTH-1455] Build custom report generator (Sprint 25) ✨ Feature High James Wilson James Wilson 8/11/2025 $1,300 Todo 10%":
+      - gridcell "455"
+      - gridcell "[AUTH-1455] Build custom report generator (Sprint 25)"
+      - gridcell "✨ Feature"
+      - gridcell "High"
+      - gridcell "James Wilson James Wilson":
+        - img "James Wilson"
+        - text: James Wilson
+      - gridcell "8/11/2025"
+      - gridcell "$1,300"
+      - gridcell "Todo"
+      - gridcell "10%"
   - rowgroup
   - rowgroup
   - rowgroup
   - rowgroup:
-    - row "$3,905,675 48%":
+    - row "$4,060,950 47%":
       - gridcell
       - gridcell
       - gridcell
       - gridcell
       - gridcell
       - gridcell
-      - gridcell "$3,905,675"
+      - gridcell "$4,060,950"
       - gridcell
-      - gridcell "48%"
+      - gridcell "47%"
   - rowgroup
 - tablist:
   - tab "Columns"
