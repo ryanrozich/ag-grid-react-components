@@ -88,7 +88,7 @@ describe("ActiveFilters", () => {
       expect(screen.getByText("DueDate:")).toBeInTheDocument();
       // Check for the date value - handling potential timezone differences
       const dateElement = screen.getByText((content, element) => {
-        return (
+        return !!(
           element?.className?.includes("filterValue") &&
           content.includes("/2024")
         );
@@ -128,7 +128,7 @@ describe("ActiveFilters", () => {
       expect(screen.getByText("Created:")).toBeInTheDocument();
       // Check for date range - handling potential timezone differences
       const dateRangeElement = screen.getByText((content, element) => {
-        return (
+        return !!(
           element?.className?.includes("filterValue") &&
           content.includes(" to ") &&
           content.includes("/202")
