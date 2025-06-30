@@ -31,7 +31,7 @@ body:
       label: Problem Statement
       description: What problem does this solve? Why is it needed?
       placeholder: |
-        Users struggle with date filtering in AG Grid. They want to use expressions like "last 30 days" 
+        Users struggle with date filtering in AG Grid. They want to use expressions like "last 30 days"
         that update dynamically, but AG Grid only supports static date ranges...
     validations:
       required: true
