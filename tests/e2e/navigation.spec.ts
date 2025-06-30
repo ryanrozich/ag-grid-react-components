@@ -42,10 +42,13 @@ test.describe("Navigation between pages", () => {
     page.on("console", (msg) => {
       if (msg.type() === "error") {
         const text = msg.text();
-        // Ignore AG Grid Enterprise license warnings
+        // Ignore AG Grid Enterprise license warnings - they contain asterisks and license-related text
         if (
           !text.includes("AG Grid Enterprise") &&
-          !text.includes("License Key Not Found")
+          !text.includes("License Key Not Found") &&
+          !text.includes("ag-grid.com") &&
+          !text.includes("****") &&
+          !text.includes("license")
         ) {
           consoleErrors.push(text);
         }
