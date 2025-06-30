@@ -1352,11 +1352,9 @@ const columnDefs = [{
 
   if (currentPage === "docs") {
     const docSections = [
-      // Overview
-      { id: "overview", label: "Documentation Home", isSection: false },
-
       // Getting Started Section
       { id: "getting-started", label: "Getting Started", isSection: true },
+      { id: "overview", label: "Overview", indent: true },
       { id: "prerequisites", label: "Prerequisites", indent: true },
       { id: "installation", label: "Installation", indent: true },
       { id: "basic-setup", label: "Basic Setup", indent: true },
@@ -1553,11 +1551,10 @@ const columnDefs = [{
 
                       <div className="bg-green-900/20 border border-green-600/30 rounded-lg p-4 mb-6">
                         <p className="text-green-400 text-sm font-medium mb-2">
-                          🎆 {IS_PRERELEASE ? "Pre-release" : "Version"}{" "}
-                          {VERSION_DISPLAY}: Modular Architecture
+                          🎆 Modular Architecture
                         </p>
                         <p className="text-gray-300 text-sm">
-                          95% smaller bundle size! Choose only what you need:
+                          Choose only what you need:
                         </p>
                         <ul className="mt-2 space-y-1 text-sm text-gray-300">
                           <li>• Tree-shakeable architecture starts at 25KB</li>
