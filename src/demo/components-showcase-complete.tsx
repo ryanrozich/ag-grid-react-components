@@ -8,6 +8,7 @@ import type {
   ICellRendererParams,
   GridReadyEvent,
 } from "ag-grid-community";
+import { themeQuartz } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import {
   RelativeDateFilter,
@@ -28,12 +29,31 @@ import { ServerSideDemo } from "./components/ServerSideDemo";
 import "./styles/showcase-dark.css";
 import "./styles/code-override.css";
 
-// Import AG Grid styles
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-quartz.css";
-
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);
+
+// Create a custom dark theme using modern Theming API
+const myDarkTheme = themeQuartz.withParams({
+  backgroundColor: "#0a0f19", // Very dark blue-black matching page background
+  foregroundColor: "#9ca3af", // gray-400 for softer contrast
+  borderColor: "rgba(31, 41, 55, 0.5)", // gray-800 with transparency
+  chromeBackgroundColor: "#0a0f19", // Match page background
+  headerBackgroundColor: "rgba(15, 23, 42, 0.8)", // slate-900 with transparency
+  headerTextColor: "#9ca3af", // gray-400 for less contrast
+  oddRowBackgroundColor: "rgba(15, 23, 42, 0.3)", // Very subtle striping
+  browserColorScheme: "dark",
+  accentColor: "#4f46e5", // indigo-600 - slightly darker
+  headerFontWeight: 500, // Lighter weight
+  // Additional params for better blending
+  rowHoverColor: "rgba(99, 102, 241, 0.06)", // Very subtle hover
+  selectedRowBackgroundColor: "rgba(99, 102, 241, 0.1)", // Subtle selection
+  rangeSelectionBorderColor: "rgba(99, 102, 241, 0.3)",
+  // Sidebar and grand total styling
+  sideBarBackgroundColor: "#0a0f19",
+  toolPanelBackgroundColor: "#0a0f19",
+  pinnedRowBackgroundColor: "rgba(30, 58, 138, 0.15)", // Dark blue for footer
+  pinnedColumnBackgroundColor: "rgba(15, 23, 42, 0.5)",
+});
 
 // Status chip renderer
 const StatusRenderer: React.FC<ICellRendererParams> = ({ value }) => {
@@ -6154,6 +6174,7 @@ const mockColumn = createMockColumn({ field: 'date' });`}
                           <CodeBlock
                             code={`import React, { useState, useCallback } from 'react';
 import { AgGridReact } from 'ag-grid-react';
+import { themeQuartz } from 'ag-grid-community';
 import {
   DateFilter,
   QuickFilterDropdown,
@@ -6161,9 +6182,11 @@ import {
   DATE_FILTER_PRESETS
 } from 'ag-grid-react-components';
 
-// Import AG Grid styles
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-quartz.css';
+// Create a custom theme (no CSS imports needed)
+const myTheme = themeQuartz.withParams({
+  accentColor: '#6366f1',
+  browserColorScheme: 'dark'
+});
 
 function DateFilterGrid() {
   const [gridApi, setGridApi] = useState(null);
@@ -6218,8 +6241,9 @@ function DateFilterGrid() {
         </div>
       )}
 
-      <div className="ag-theme-quartz" style={{ height: 400, width: '100%' }}>
+      <div style={{ height: 400, width: '100%' }}>
         <AgGridReact
+          theme={myTheme}
           rowData={rowData}
           columnDefs={columnDefs}
           onGridReady={onGridReady}
@@ -6926,11 +6950,11 @@ const handleFilterSelect = async (option) => {
 
                 {/* AG Grid - fills remaining height */}
                 <div
-                  className="flex-1 ag-theme-quartz-dark relative overflow-hidden"
+                  className="flex-1 relative overflow-hidden"
                   style={{ minHeight: "400px", height: "100%" }}
                 >
                   <AgGridReact
-                    theme="legacy"
+                    theme={myDarkTheme}
                     columnDefs={columnDefs}
                     defaultColDef={defaultColDef}
                     rowData={rowData}

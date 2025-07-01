@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
+import { themeQuartz } from "ag-grid-community";
 import type {
   ColDef,
   GridApi,
@@ -12,6 +13,22 @@ import { RelativeDateFilter, ActiveFilters } from "../../index";
 import AvatarCellRenderer from "./AvatarCellRenderer";
 import CategoryCellRenderer from "./CategoryCellRenderer";
 import PercentBarRenderer from "./PercentBarRenderer";
+
+// Create server-side demo theme
+const serverTheme = themeQuartz.withParams({
+  backgroundColor: "#0a0f19",
+  foregroundColor: "#9ca3af",
+  borderColor: "rgba(31, 41, 55, 0.5)",
+  chromeBackgroundColor: "#0a0f19",
+  headerBackgroundColor: "rgba(15, 23, 42, 0.8)",
+  headerTextColor: "#9ca3af",
+  oddRowBackgroundColor: "rgba(15, 23, 42, 0.3)",
+  browserColorScheme: "dark",
+  accentColor: "#4f46e5",
+  headerFontWeight: 500,
+  rowHoverColor: "rgba(99, 102, 241, 0.06)",
+  selectedRowBackgroundColor: "rgba(99, 102, 241, 0.1)",
+});
 
 // Stats display component
 const ServerStats: React.FC<{ apiUrl: string; filterModel: any }> = ({
@@ -296,11 +313,9 @@ export const ServerSideDemo: React.FC = () => {
       )}
 
       {/* Grid */}
-      <div
-        className="ag-theme-quartz-dark"
-        style={{ height: 600, width: "100%" }}
-      >
+      <div style={{ height: 600, width: "100%" }}>
         <AgGridReact
+          theme={serverTheme}
           ref={gridRef}
           columnDefs={columnDefs}
           defaultColDef={defaultColDef}
