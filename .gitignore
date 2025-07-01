@@ -92,5 +92,4 @@ TEST_COVERAGE_*.md
 !docs/internal/legacy/CODE_REVIEW_*.md
 !docs/internal/legacy/TEST_COVERAGE_*.md
 
-# GitHub identity management docs
-GITHUB_IDENTITY_MANAGEMENT.md
+# Personal Claude configuration files are gitignored
