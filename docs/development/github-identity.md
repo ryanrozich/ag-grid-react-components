@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes an optional pattern for managing GitHub identities when using Claude Code. This approach allows you to maintain contribution credit while enabling proper code review workflows.
+This document describes an optional pattern for managing GitHub identities when using Claude Code or other coding bots. This approach allows you to maintain contribution credit while enabling proper code review workflows.
 
 ## The Hybrid Approach (Recommended)
 
