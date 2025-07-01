@@ -41,8 +41,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        run: npm run test:unit
+      # Skip tests - already passed when merged to main
+      # - name: Run tests
+      #   run: npm run test:unit
 
       - name: Run typecheck
         run: npm run typecheck
