@@ -29,34 +29,43 @@
 /* AG Grid Dark Theme Customization */
 .ag-theme-quartz-dark {
   /* Background colors - matching our app theme */
-  --ag-background-color: rgb(17, 24, 39, 0.5); /* gray-900 with opacity */
-  --ag-foreground-color: #f3f4f6; /* gray-100 */
+  --ag-background-color: rgb(
+    17,
+    24,
+    39
+  ); /* gray-950 solid - matches page background */
+
+  --ag-foreground-color: #e5e7eb; /* gray-200 - slightly softer than before */
   --ag-secondary-foreground-color: #9ca3af; /* gray-400 */
   --ag-header-background-color: rgb(
-    31,
+    30,
     41,
-    55,
-    0.8
-  ); /* gray-800 with opacity */
+    59
+  ); /* slate-800 - subtle blue tint */
 
-  --ag-header-foreground-color: #f9fafb; /* gray-50 */
+  --ag-header-foreground-color: #f3f4f6; /* gray-100 */
   --ag-disabled-foreground-color: #6b7280; /* gray-500 */
-  --ag-subheader-background-color: rgb(31, 41, 55, 0.8);
-  --ag-subheader-toolbar-background-color: rgb(17, 24, 39, 0.5);
-  --ag-control-panel-background-color: rgb(17, 24, 39, 0.5);
-  --ag-side-bar-panel-background: rgb(17, 24, 39, 0.5);
+  --ag-subheader-background-color: rgb(30, 41, 59);
+  --ag-subheader-toolbar-background-color: rgb(17, 24, 39);
+  --ag-control-panel-background-color: rgb(17, 24, 39);
+  --ag-side-bar-panel-background: rgb(17, 24, 39);
   --ag-odd-row-background-color: rgb(
-    31,
+    30,
     41,
-    55,
+    59,
     0.3
-  ); /* gray-800 with opacity */
+  ); /* subtle striping with blue tint */
 
   --ag-modal-overlay-background-color: rgb(0, 0, 0, 0.7);
 
-  /* Borders */
-  --ag-border-color: #374151; /* gray-700 */
-  --ag-secondary-border-color: #1f2937; /* gray-800 */
+  /* Borders - more subtle */
+  --ag-border-color: rgb(55, 65, 81, 0.5); /* gray-700 with transparency */
+  --ag-secondary-border-color: rgb(
+    31,
+    41,
+    55,
+    0.5
+  ); /* gray-800 with transparency */
 
   /* Brand colors */
   --ag-accent-color: #6366f1; /* indigo-500 */
@@ -65,15 +74,33 @@
   --ag-material-accent-color: #6366f1;
 
   /* Row interaction colors */
-  --ag-row-hover-color: rgb(99, 102, 241, 0.1); /* indigo with opacity */
-  --ag-selected-row-background-color: rgb(99, 102, 241, 0.2);
-  --ag-range-selection-background-color: rgb(99, 102, 241, 0.15);
-  --ag-range-selection-border-color: #6366f1;
+  --ag-row-hover-color: rgb(
+    51,
+    65,
+    85,
+    0.5
+  ); /* slate-700 with opacity for subtle hover */
+
+  --ag-selected-row-background-color: rgb(
+    99,
+    102,
+    241,
+    0.15
+  ); /* softer indigo selection */
+
+  --ag-range-selection-background-color: rgb(99, 102, 241, 0.1);
+  --ag-range-selection-border-color: rgb(99, 102, 241, 0.5);
 
   /* Header styling */
   --ag-header-height: 48px;
-  --ag-header-column-separator-color: #374151;
-  --ag-header-column-resize-handle-color: #6366f1;
+  --ag-header-column-separator-color: rgb(
+    55,
+    65,
+    81,
+    0.3
+  ); /* very subtle separators */
+
+  --ag-header-column-resize-handle-color: rgb(99, 102, 241, 0.5);
 
   /* Cell styling */
   --ag-cell-horizontal-padding: 16px;
