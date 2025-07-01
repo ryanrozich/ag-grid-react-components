@@ -29,15 +29,15 @@ import { ServerSideDemo } from "./components/ServerSideDemo";
 import "./styles/showcase-dark.css";
 import "./styles/code-override.css";
 
+// Import AG Grid styles
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-quartz.css";
+
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);
 
 // Create dark theme
 const darkTheme = themeQuartz.withPart(colorSchemeDark);
-
-// Import AG Grid styles
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-quartz.css";
 
 // Status chip renderer
 const StatusRenderer: React.FC<ICellRendererParams> = ({ value }) => {
