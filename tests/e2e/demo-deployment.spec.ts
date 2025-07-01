@@ -4,15 +4,21 @@ test.describe("Demo Deployment", () => {
   test.beforeEach(async ({ page }) => {
     // Get the demo URL from environment variable or use default
     const demoUrl = process.env.DEMO_URL || "http://localhost:3000";
-    await page.goto(demoUrl);
+    // Navigate to the demo page, not the landing page
+    const demoDashboardUrl = demoUrl.endsWith("/")
+      ? `${demoUrl}demo`
+      : `${demoUrl}/demo`;
+    await page.goto(demoDashboardUrl);
   });
 
   test("should load demo page successfully", async ({ page }) => {
     // Check that the page loads without errors
     await expect(page).toHaveTitle(/AG Grid React Components/);
 
-    // Check for main heading
-    await expect(page.locator("h1")).toContainText("Project Tasks");
+    // Check for main heading - be more specific to avoid multiple matches
+    await expect(page.locator("h1.text-2xl.font-semibold")).toContainText(
+      "Project Tasks",
+    );
   });
 
   test("should load all assets correctly", async ({ page }) => {
@@ -31,11 +37,19 @@ test.describe("Demo Deployment", () => {
   });
 
   test("should display stats cards", async ({ page }) => {
-    // Check for stats cards
-    await expect(page.locator("text=Number of Tasks")).toBeVisible();
-    await expect(page.locator("text=Total Budget")).toBeVisible();
-    await expect(page.locator("text=Progress")).toBeVisible();
-    await expect(page.locator("text=Budget Remaining")).toBeVisible();
+    // Check for stats cards - use more specific selectors
+    await expect(
+      page.locator("p").filter({ hasText: "Number of Tasks" }),
+    ).toBeVisible();
+    await expect(
+      page.locator("p").filter({ hasText: "Total Budget" }),
+    ).toBeVisible();
+    await expect(
+      page.locator("p").filter({ hasText: /^Progress$/ }),
+    ).toBeVisible();
+    await expect(
+      page.locator("p").filter({ hasText: "Budget Remaining" }),
+    ).toBeVisible();
   });
 
   test("should render AG Grid", async ({ page }) => {
@@ -48,9 +62,9 @@ test.describe("Demo Deployment", () => {
   });
 
   test("should switch between client and server demos", async ({ page }) => {
-    // Check for demo tabs
-    const clientTab = page.locator("button:has-text('Client-Side Demo')");
-    const serverTab = page.locator("button:has-text('Server-Side Demo')");
+    // Check for demo tabs - match actual button text
+    const clientTab = page.locator("button:has-text('Client-Side Data')");
+    const serverTab = page.locator("button:has-text('Server-Side Data')");
 
     await expect(clientTab).toBeVisible();
     await expect(serverTab).toBeVisible();
@@ -101,7 +115,11 @@ test.describe("Deployment Validation", () => {
       ? url.pathname
       : url.pathname + "/";
 
-    await page.goto(demoUrl);
+    // Navigate to demo page
+    const demoDashboardUrl = demoUrl.endsWith("/")
+      ? `${demoUrl}demo`
+      : `${demoUrl}/demo`;
+    await page.goto(demoDashboardUrl);
 
     // Check that CSS and JS assets are loaded from correct path
     const cssLinks = await page.locator('link[rel="stylesheet"]').all();
