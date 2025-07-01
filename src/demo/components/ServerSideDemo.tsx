@@ -13,6 +13,69 @@ import { RelativeDateFilter, ActiveFilters } from "../../index";
 import AvatarCellRenderer from "./AvatarCellRenderer";
 import CategoryCellRenderer from "./CategoryCellRenderer";
 import PercentBarRenderer from "./PercentBarRenderer";
+import type { ICellRendererParams } from "ag-grid-community";
+
+// Status chip renderer
+const StatusRenderer: React.FC<ICellRendererParams> = ({ value }) => {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Backlog":
+        return "bg-gray-500/20 text-gray-400 border-gray-500/50";
+      case "Todo":
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
+      case "In Progress":
+        return "bg-blue-500/20 text-blue-400 border-blue-500/50";
+      case "In Review":
+        return "bg-purple-500/20 text-purple-400 border-purple-500/50";
+      case "Testing":
+        return "bg-orange-500/20 text-orange-400 border-orange-500/50";
+      case "Done":
+        return "bg-emerald-500/20 text-emerald-400 border-emerald-500/50";
+      case "Blocked":
+        return "bg-red-500/20 text-red-400 border-red-500/50";
+      default:
+        return "bg-gray-500/20 text-gray-400 border-gray-500/50";
+    }
+  };
+
+  return (
+    <div className="flex items-center h-full">
+      <span
+        className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(value)}`}
+      >
+        {value}
+      </span>
+    </div>
+  );
+};
+
+// Priority chip renderer
+const PriorityRenderer: React.FC<ICellRendererParams> = ({ value }) => {
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "Critical":
+        return "bg-red-500/20 text-red-400 border-red-500/50";
+      case "High":
+        return "bg-orange-500/20 text-orange-400 border-orange-500/50";
+      case "Medium":
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
+      case "Low":
+        return "bg-green-500/20 text-green-400 border-green-500/50";
+      default:
+        return "bg-gray-500/20 text-gray-400 border-gray-500/50";
+    }
+  };
+
+  return (
+    <div className="flex items-center h-full">
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(value)}`}
+      >
+        {value}
+      </span>
+    </div>
+  );
+};
 
 // Create server-side demo theme
 const serverTheme = themeQuartz.withParams({
@@ -28,6 +91,18 @@ const serverTheme = themeQuartz.withParams({
   headerFontWeight: 500,
   rowHoverColor: "rgba(99, 102, 241, 0.06)",
   selectedRowBackgroundColor: "rgba(99, 102, 241, 0.1)",
+  // Input and control styling for filters
+  inputBackgroundColor: "rgba(15, 23, 42, 0.8)",
+  inputBorderColor: "rgba(55, 65, 81, 0.5)",
+  inputFocusBorderColor: "#4f46e5",
+  inputDisabledBackgroundColor: "rgba(15, 23, 42, 0.5)",
+  inputDisabledBorderColor: "rgba(31, 41, 55, 0.3)",
+  // Menu and popup styling
+  menuBackgroundColor: "#0f172a",
+  menuBorderColor: "rgba(55, 65, 81, 0.5)",
+  menuTextColor: "#9ca3af",
+  menuShadow:
+    "0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2)",
 });
 
 // Stats display component
@@ -51,6 +126,13 @@ const ServerStats: React.FC<{ apiUrl: string; filterModel: any }> = ({
         setStats(data);
       } catch (error) {
         console.error("Error fetching stats:", error);
+        // Fallback stats on error
+        setStats({
+          totalTasks: 0,
+          totalBudget: 0,
+          averageProgress: 0,
+          totalSpent: 0,
+        });
       } finally {
         setLoading(false);
       }
@@ -109,6 +191,8 @@ export const ServerSideDemo: React.FC = () => {
   const [filterModel, setFilterModel] = useState({});
   const [rowCount, setRowCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
+  const [searchText, setSearchText] = useState("");
 
   // Determine API URL based on environment
   const getApiUrl = () => {
@@ -118,8 +202,8 @@ export const ServerSideDemo: React.FC = () => {
     const isLocal = window.location.hostname === "localhost";
 
     if (isLocal) {
-      // For local development, you'll need to run the API worker locally
-      return "http://localhost:8787/api";
+      // For local development, use Vite proxy
+      return "/api";
     }
 
     if (isPR) {
@@ -152,27 +236,64 @@ export const ServerSideDemo: React.FC = () => {
       field: "status",
       headerName: "Status",
       width: 140,
+      cellRenderer: "statusRenderer",
       filter: "agSetColumnFilter",
+      filterParams: {
+        values: [
+          "Todo",
+          "In Progress",
+          "Done",
+          "In Review",
+          "Testing",
+          "Blocked",
+          "Backlog",
+        ],
+        suppressSelectAll: true,
+      },
+      enableRowGroup: true,
     },
     {
       field: "priority",
       headerName: "Priority",
       width: 120,
+      cellRenderer: "priorityRenderer",
       filter: "agSetColumnFilter",
+      filterParams: {
+        values: ["Low", "Medium", "High", "Critical"],
+        suppressSelectAll: true,
+      },
+      enableRowGroup: true,
     },
     {
       field: "category",
       headerName: "Category",
       width: 140,
-      cellRenderer: CategoryCellRenderer,
+      cellRenderer: "categoryRenderer",
       filter: "agSetColumnFilter",
+      filterParams: {
+        values: [
+          "Frontend",
+          "Backend",
+          "DevOps",
+          "Testing",
+          "Design",
+          "Research",
+          "Refactoring",
+          "Bug",
+          "Feature",
+          "Enhancement",
+        ],
+        suppressSelectAll: true,
+      },
+      enableRowGroup: true,
     },
     {
       field: "assignee.name",
       headerName: "Assignee",
       width: 180,
-      cellRenderer: AvatarCellRenderer,
+      cellRenderer: "avatarRenderer",
       filter: "agTextColumnFilter",
+      enableRowGroup: true,
     },
     {
       field: "dueDate",
@@ -188,7 +309,7 @@ export const ServerSideDemo: React.FC = () => {
       field: "progress",
       headerName: "Progress",
       width: 150,
-      cellRenderer: PercentBarRenderer,
+      cellRenderer: "progressRenderer",
       filter: "agNumberColumnFilter",
     },
     {
@@ -263,57 +384,79 @@ export const ServerSideDemo: React.FC = () => {
     setFilterModel(event.api.getFilterModel());
   }, []);
 
-  const clearAllFilters = useCallback(() => {
-    gridApi?.setFilterModel(null);
-  }, [gridApi]);
-
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col h-full">
       {/* Info Banner */}
-      <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-4">
-        <h3 className="text-blue-400 font-semibold mb-2">
-          🚀 Server-Side Row Model Demo
-        </h3>
-        <p className="text-gray-300 text-sm">
-          This demo uses AG Grid's Server-Side Row Model with a real API
-          backend. Data is fetched on-demand as you scroll, filter, and sort.
-          The API endpoint is{" "}
-          <code className="bg-gray-800 px-2 py-1 rounded text-xs">
-            {apiUrl}/tasks
-          </code>
-        </p>
-        <p className="text-gray-400 text-xs mt-2">
-          Total rows on server:{" "}
-          <span className="font-mono">
-            {rowCount?.toLocaleString() || "..."}
-          </span>
-          {loading && <span className="ml-2">⏳ Loading...</span>}
-        </p>
-      </div>
+      {showBanner && (
+        <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-4 mb-4 relative">
+          <button
+            onClick={() => setShowBanner(false)}
+            className="absolute top-2 right-2 text-gray-400 hover:text-white transition-colors"
+            aria-label="Dismiss banner"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <h3 className="text-blue-400 font-semibold mb-2">
+            🚀 Server-Side Row Model Demo
+          </h3>
+          <p className="text-gray-300 text-sm pr-8">
+            This demo uses AG Grid's Server-Side Row Model with a real API
+            backend. Data is fetched on-demand as you scroll, filter, and sort.
+            The API endpoint is{" "}
+            <code className="bg-gray-800 px-2 py-1 rounded text-xs">
+              {apiUrl}/tasks
+            </code>
+          </p>
+          <p className="text-gray-400 text-xs mt-2">
+            Total rows on server:{" "}
+            <span className="font-mono">
+              {rowCount?.toLocaleString() || "..."}
+            </span>
+            {loading && <span className="ml-2">⏳ Loading...</span>}
+          </p>
+        </div>
+      )}
 
       {/* Server Stats */}
       <ServerStats apiUrl={apiUrl} filterModel={filterModel} />
 
+      {/* Search and Quick Filters */}
+      <div className="flex flex-wrap gap-4 mb-4">
+        <div className="flex-1 min-w-[200px]">
+          <input
+            type="text"
+            placeholder="Search all columns..."
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+            value={searchText}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+              gridApi?.setGridOption("quickFilterText", e.target.value);
+            }}
+          />
+        </div>
+      </div>
+
       {/* Active Filters */}
       {gridApi && Object.keys(filterModel).length > 0 && (
-        <div className="bg-gray-800 rounded-lg p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-gray-300">
-              Active Filters
-            </h3>
-            <button
-              onClick={clearAllFilters}
-              className="text-xs text-gray-400 hover:text-white"
-            >
-              Clear all
-            </button>
-          </div>
+        <div className="mb-4">
           <ActiveFilters api={gridApi} filterModel={filterModel} />
         </div>
       )}
 
-      {/* Grid */}
-      <div style={{ height: 600, width: "100%" }}>
+      {/* Grid - flex-1 takes remaining height */}
+      <div className="flex-1 min-h-0">
         <AgGridReact
           theme={serverTheme}
           ref={gridRef}
@@ -332,11 +475,19 @@ export const ServerSideDemo: React.FC = () => {
           suppressMenuHide={true}
           enableCellTextSelection={true}
           ensureDomOrder={true}
+          components={{
+            statusRenderer: StatusRenderer,
+            priorityRenderer: PriorityRenderer,
+            categoryRenderer: CategoryCellRenderer,
+            avatarRenderer: AvatarCellRenderer,
+            progressRenderer: PercentBarRenderer,
+          }}
+          floatingFilter={true}
         />
       </div>
 
       {/* API Health Check */}
-      <div className="text-xs text-gray-500 text-center">
+      <div className="text-xs text-gray-500 text-center mt-2">
         API Status: <span className="font-mono">{apiUrl}</span>
       </div>
     </div>

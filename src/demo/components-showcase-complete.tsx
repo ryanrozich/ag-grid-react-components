@@ -53,6 +53,18 @@ const myDarkTheme = themeQuartz.withParams({
   toolPanelBackgroundColor: "#0a0f19",
   pinnedRowBackgroundColor: "rgba(30, 58, 138, 0.15)", // Dark blue for footer
   pinnedColumnBackgroundColor: "rgba(15, 23, 42, 0.5)",
+  // Input and control styling for filters
+  inputBackgroundColor: "rgba(15, 23, 42, 0.8)",
+  inputBorderColor: "rgba(55, 65, 81, 0.5)",
+  inputFocusBorderColor: "#4f46e5",
+  inputDisabledBackgroundColor: "rgba(15, 23, 42, 0.5)",
+  inputDisabledBorderColor: "rgba(31, 41, 55, 0.3)",
+  // Menu and popup styling
+  menuBackgroundColor: "#0f172a",
+  menuBorderColor: "rgba(55, 65, 81, 0.5)",
+  menuTextColor: "#9ca3af",
+  menuShadow:
+    "0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2)",
 });
 
 // Status chip renderer
