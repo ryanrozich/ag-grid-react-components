@@ -43,7 +43,7 @@ jobs:
           # Upload demo assets to R2
           # First, clean up the existing files
           echo "Removing old files from R2..."
-          wrangler r2 object delete rozich-demos/ag-grid-react-components/ --recursive || true
+          wrangler r2 object delete rozich-demos/ag-grid-react-components/ --remote --recursive || true
 
           # Upload all files from dist-demo
           echo "Uploading new files to R2..."
@@ -52,7 +52,7 @@ jobs:
             # Remove leading ./ from the file path
             file_path="${file#./}"
             echo "Uploading: $file_path"
-            wrangler r2 object put "rozich-demos/ag-grid-react-components/$file_path" --file="$file"
+            wrangler r2 object put "rozich-demos/ag-grid-react-components/$file_path" --file="$file" --remote
           done
 
       - name: Update demo metadata
