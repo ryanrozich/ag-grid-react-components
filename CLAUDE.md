@@ -36,15 +36,46 @@ See GitHub issue #2 for the full discussion.
 
 ### Publishing to NPM
 
+#### Automated Publishing (Recommended)
+
+1. **Set up NPM token**:
+
+   - Go to <https://www.npmjs.com/settings/~/tokens>
+   - Create an "Automation" token (bypasses 2FA)
+   - Add as `NPM_TOKEN` secret in GitHub repo settings
+
+2. **Use GitHub Actions**:
+
+   ```bash
+   # Create a new release (tags, changelog, and publishes to NPM)
+   # Go to Actions → Create Release → Run workflow
+   # Enter version like "0.1.0" or "0.1.0-beta.1"
+
+   # Or publish existing version
+   # Go to Actions → Publish to NPM → Run workflow
+   ```
+
+3. **Via GitHub CLI**:
+
+   ```bash
+   # Trigger release workflow
+   gh workflow run release.yml -f version=0.1.0
+
+   # Trigger publish only
+   gh workflow run publish.yml -f tag=latest
+   ```
+
+#### Manual Publishing
+
 ```bash
-# Login first
+# Login first (one-time)
 npm login
 
-# Publish all packages with beta tag (requires OTP)
-npm run publish:beta --otp=123456
+# Publish with OTP
+npm publish --access public --otp=123456
 
-# Publish as latest
-npm run publish:latest --otp=123456
+# Publish with specific tag
+npm publish --access public --tag beta --otp=123456
 ```
 
 Package publishes as `ag-grid-react-components` on npm.

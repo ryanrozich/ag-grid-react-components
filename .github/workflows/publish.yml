@@ -6,21 +6,24 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Tag to publish (beta, rc, latest)"
+        description: "Tag to publish (latest, beta, alpha, next)"
         required: true
-        default: "beta"
+        default: "latest"
         type: choice
         options:
-          - beta
-          - rc
           - latest
+          - beta
+          - alpha
+          - next
+
+permissions:
+  contents: write
+  id-token: write # For npm provenance
 
 jobs:
   publish:
+    name: Publish Package
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write # For npm provenance
 
     steps:
       - name: Checkout code
@@ -33,9 +36,10 @@ jobs:
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
+          cache: "npm"
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - name: Run tests
         run: npm run test:unit
@@ -46,74 +50,68 @@ jobs:
       - name: Run typecheck
         run: npm run typecheck
 
-      - name: Build all packages
-        run: npx turbo run build
+      - name: Build package
+        run: npm run build
 
-      - name: Configure npm
+      - name: Configure npm authentication
         run: |
-          echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           npm whoami
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish packages
+      - name: Determine version and tag
+        id: version
         run: |
-          # Determine tag based on trigger
+          # Get current version from package.json
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+
           if [ "${{ github.event_name }}" == "release" ]; then
-            if [[ "${{ github.event.release.tag_name }}" == *"beta"* ]]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION="${VERSION#v}" # Remove 'v' prefix if present
+            
+            # Determine tag based on version string
+            if [[ "$VERSION" == *"beta"* ]]; then
               TAG="beta"
-            elif [[ "${{ github.event.release.tag_name }}" == *"rc"* ]]; then
-              TAG="rc"
+            elif [[ "$VERSION" == *"alpha"* ]]; then
+              TAG="alpha"
+            elif [[ "$VERSION" == *"rc"* ]]; then
+              TAG="next"
             else
               TAG="latest"
             fi
           else
+            VERSION="$CURRENT_VERSION"
             TAG="${{ github.event.inputs.tag }}"
           fi
 
-          echo "Publishing with tag: $TAG"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Publishing version $VERSION with tag $TAG"
 
-          # Publish core package
-          cd packages/core
-          npm publish --access public --tag $TAG
-          cd ../..
-
-          # Publish adapters
-          cd packages/adapters
-          npm publish --access public --tag $TAG
-          cd ../..
-
-          # Publish styles
-          cd packages/styles
-          npm publish --access public --tag $TAG
-          cd ../..
-
-          # Publish compat
-          cd packages/compat
-          npm publish --access public --tag $TAG
-          cd ../..
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Create GitHub Release Notes
-        if: github.event_name == 'release'
+      - name: Update package version (if needed)
+        if: steps.version.outputs.version != ''
         run: |
-          echo "## Published Packages" >> release-notes.md
-          echo "" >> release-notes.md
-          echo "- [@agrc/core@${{ github.event.release.tag_name }}](https://www.npmjs.com/package/@agrc/core)" >> release-notes.md
-          echo "- [@agrc/adapters@${{ github.event.release.tag_name }}](https://www.npmjs.com/package/@agrc/adapters)" >> release-notes.md
-          echo "- [@agrc/styles@${{ github.event.release.tag_name }}](https://www.npmjs.com/package/@agrc/styles)" >> release-notes.md
-          echo "- [@agrc/compat@${{ github.event.release.tag_name }}](https://www.npmjs.com/package/@agrc/compat)" >> release-notes.md
-          echo "" >> release-notes.md
-          echo "## Installation" >> release-notes.md
-          echo "" >> release-notes.md
-          echo '```bash' >> release-notes.md
-          echo "npm install @agrc/core@$TAG" >> release-notes.md
-          echo '```' >> release-notes.md
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          if [ "$CURRENT_VERSION" != "${{ steps.version.outputs.version }}" ]; then
+            npm version ${{ steps.version.outputs.version }} --no-git-tag-version
+          fi
 
-      - name: Update Release
-        if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v1
-        with:
-          append_body: true
-          body_path: release-notes.md
+      - name: Publish to NPM
+        run: npm publish --access public --tag ${{ steps.version.outputs.tag }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create deployment summary
+        run: |
+          echo "## 📦 Published to NPM" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Package:** ag-grid-react-components@${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Tag:** ${{ steps.version.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Installation" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "npm install ag-grid-react-components@${{ steps.version.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "View on NPM: https://www.npmjs.com/package/ag-grid-react-components" >> $GITHUB_STEP_SUMMARY

@@ -1,33 +1,36 @@
-name: Release
+name: Create Release
 
 on:
   workflow_dispatch:
     inputs:
-      release-type:
-        description: "Release type"
+      version:
+        description: "Release version (e.g., 1.0.0, 1.0.0-beta.1)"
         required: true
-        default: "patch"
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
-          - prerelease
-      prerelease-identifier:
-        description: "Prerelease identifier (beta, alpha, rc)"
-        required: false
-        default: "beta"
+        type: string
+      create_release:
+        description: "Create GitHub release"
+        required: true
+        default: true
+        type: boolean
+      publish_npm:
+        description: "Publish to NPM"
+        required: true
+        default: true
+        type: boolean
 
 permissions:
   contents: write
-  packages: write
   id-token: write
 
 jobs:
   release:
+    name: Create Release
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -37,92 +40,163 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          registry-url: "https://registry.npmjs.org"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: |
-          npm run test:unit
-          npm run lint
-          npm run typecheck
-
-      - name: Build package
-        run: npm run build
+          cache: "npm"
 
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Create release version
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate version
         id: version
         run: |
-          if [[ "${{ github.event.inputs.release-type }}" == "prerelease" ]]; then
-            npm run release:${{ github.event.inputs.release-type }} -- --prerelease ${{ github.event.inputs.prerelease-identifier }}
-          else
-            npm run release:${{ github.event.inputs.release-type }}
-          fi
-          echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+          VERSION="${{ github.event.inputs.version }}"
 
-      - name: Push changes
+          # Validate semver format
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?$ ]]; then
+            echo "Error: Invalid version format. Must be semver compliant (e.g., 1.0.0, 1.0.0-beta.1)"
+            exit 1
+          fi
+
+          # Determine NPM tag
+          if [[ "$VERSION" == *"beta"* ]]; then
+            TAG="beta"
+          elif [[ "$VERSION" == *"alpha"* ]]; then
+            TAG="alpha"
+          elif [[ "$VERSION" == *"rc"* ]]; then
+            TAG="next"
+          else
+            TAG="latest"
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION, NPM Tag: $TAG"
+
+      - name: Update version
         run: |
-          git push --follow-tags origin main
+          npm version ${{ steps.version.outputs.version }} --no-git-tag-version
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get the previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ -z "$PREV_TAG" ]; then
+            echo "No previous tag found, including all commits"
+            RANGE=""
+          else
+            echo "Previous tag: $PREV_TAG"
+            RANGE="$PREV_TAG..HEAD"
+          fi
+
+          # Generate changelog
+          {
+            echo "CHANGELOG<<EOF"
+            echo "## What's Changed"
+            echo ""
+            
+            # Features
+            FEATURES=$(git log $RANGE --pretty=format:"* %s (%h)" --grep="^feat" 2>/dev/null || echo "")
+            if [ ! -z "$FEATURES" ]; then
+              echo "### ✨ Features"
+              echo "$FEATURES"
+              echo ""
+            fi
+            
+            # Bug fixes
+            FIXES=$(git log $RANGE --pretty=format:"* %s (%h)" --grep="^fix" 2>/dev/null || echo "")
+            if [ ! -z "$FIXES" ]; then
+              echo "### 🐛 Bug Fixes"
+              echo "$FIXES"
+              echo ""
+            fi
+            
+            # Documentation
+            DOCS=$(git log $RANGE --pretty=format:"* %s (%h)" --grep="^docs" 2>/dev/null || echo "")
+            if [ ! -z "$DOCS" ]; then
+              echo "### 📚 Documentation"
+              echo "$DOCS"
+              echo ""
+            fi
+            
+            # Other changes
+            OTHERS=$(git log $RANGE --pretty=format:"* %s (%h)" --grep -v "^feat\|^fix\|^docs" 2>/dev/null || echo "")
+            if [ ! -z "$OTHERS" ]; then
+              echo "### 🔧 Other Changes"
+              echo "$OTHERS"
+              echo ""
+            fi
+            
+            echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...v${{ steps.version.outputs.version }}"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Commit version bump
+        run: |
+          git add package.json package-lock.json
+          git commit -m "chore(release): v${{ steps.version.outputs.version }}"
+
+      - name: Create and push tag
+        run: |
+          git tag -a "v${{ steps.version.outputs.version }}" -m "Release v${{ steps.version.outputs.version }}"
+          git push origin main
+          git push origin "v${{ steps.version.outputs.version }}"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ steps.version.outputs.version }}
-          name: v${{ steps.version.outputs.version }}
-          body_path: CHANGELOG.md
-          draft: false
-          prerelease: ${{ github.event.inputs.release-type == 'prerelease' }}
+        if: github.event.inputs.create_release == 'true'
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          release_name: v${{ steps.version.outputs.version }}
+          body: |
+            ${{ steps.changelog.outputs.CHANGELOG }}
 
-      - name: Publish to npm
-        run: |
-          if [[ "${{ github.event.inputs.release-type }}" == "prerelease" ]]; then
-            npm publish --tag ${{ github.event.inputs.prerelease-identifier }}
-          else
-            npm publish
-          fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+            ## Installation
 
-      - name: Update documentation
-        run: |
-          # Update demo if needed
-          npm run build:demo
-          # Could deploy to GitHub Pages or other hosting here
+            ```bash
+            npm install ag-grid-react-components@${{ steps.version.outputs.tag }}
+            ```
 
-      - name: Notify success
-        if: success()
-        run: |
-          echo "🎉 Successfully released v${{ steps.version.outputs.version }}!"
-          echo "📦 npm: https://www.npmjs.com/package/ag-grid-react-components/v/${{ steps.version.outputs.version }}"
-          echo "🏷️ GitHub: https://github.com/ryanrozich/ag-grid-react-components/releases/tag/v${{ steps.version.outputs.version }}"
+            ## Bundle Sizes
 
-      - name: Create issue for post-release tasks
-        if: success()
+            | Use Case | Bundle Size |
+            |----------|-------------|
+            | Minimal (just DateFilter) | ~25KB |
+            | With Quick Filters | ~45KB |
+            | Full Featured | ~85KB |
+          draft: false
+          prerelease: ${{ steps.version.outputs.tag != 'latest' }}
+
+  publish:
+    name: Publish to NPM
+    needs: release
+    if: github.event.inputs.publish_npm == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: v${{ github.event.inputs.version }}
+
+      - name: Trigger NPM publish workflow
         uses: actions/github-script@v7
         with:
           script: |
-            const version = '${{ steps.version.outputs.version }}';
-            const issue = await github.rest.issues.create({
+            await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Post-release tasks for v${version}`,
-              body: `## Post-release checklist for v${version}
-
-              - [ ] Verify npm package is available
-              - [ ] Test installation in a fresh project
-              - [ ] Update demo deployment if needed
-              - [ ] Announce release on social media
-              - [ ] Update any dependent projects
-
-              npm: https://www.npmjs.com/package/ag-grid-react-components/v/${version}
-              GitHub Release: https://github.com/ryanrozich/ag-grid-react-components/releases/tag/v${version}`
-            });
-            console.log(`Created issue #${issue.data.number}`);
+              workflow_id: 'publish.yml',
+              ref: 'main',
+              inputs: {
+                tag: '${{ needs.release.outputs.tag }}'
+              }
+            })
+            console.log('NPM publish workflow triggered')
