@@ -30,27 +30,58 @@ Co-authored-by: Claude <noreply@anthropic.com>"
    ```
 4. You create the PR from GitHub UI (allows you to review it)
 
-### Option B: Bot Account with Token (Recommended)
+### Option B: Bot Account with Token (Recommended) ✅
 
-**Setup Required (one-time)**:
+**Setup Complete**: Bot account `ryanrozich-bot` is configured with token at `~/.github-tokens/ryanrozich-bot.txt`
 
-1. Create bot account: `ryanrozich-bot`
-2. Generate PAT for bot account
-3. Save token: `echo "ghp_xxxx" > ~/.github-tokens/ryanrozich-bot.txt`
-4. Set permissions: `chmod 600 ~/.github-tokens/ryanrozich-bot.txt`
+**Full PR Workflow**:
 
-**Workflow**:
+1. **Claude creates branch and commits** (as Ryan with co-authorship):
 
-1. Claude commits as Ryan with co-authorship (normal git operations)
-2. Claude creates PR using bot token:
    ```bash
-   # One-line command to create PR as bot
+   git checkout -b feature/branch-name
+   # Make changes...
+   git commit -m "feat: description
+
+   Co-authored-by: Claude <noreply@anthropic.com>"
+   git push -u origin feature/branch-name
+   ```
+
+2. **Claude creates PR using bot token**:
+
+   ```bash
    GH_TOKEN=$(cat ~/.github-tokens/ryanrozich-bot.txt) gh pr create \
      --title "feat: your PR title" \
-     --body "Description"
+     --body "## Summary
+   - Change 1
+   - Change 2
+
+   ## Test Plan
+   - [ ] Tests pass
+   - [ ] Manual testing complete
+
+   Fixes #issue-number"
    ```
-3. PR shows as created by bot (you can review)
-4. All other operations continue as Ryan (no switching back needed)
+
+3. **Claude requests your review**:
+   ```bash
+   GH_TOKEN=$(cat ~/.github-tokens/ryanrozich-bot.txt) gh pr edit PR_NUMBER \
+     --add-reviewer ryanrozich
+   ```
+4. **Claude notifies you**: "I've created PR #X and requested your review. I'll wait for your feedback."
+
+5. **You review the PR**: Make comments, request changes, or approve
+
+6. **Claude addresses feedback**: Commits fixes and responds to comments
+
+7. **You merge the PR**: This gives you the merge commit credit
+
+**Key Points**:
+
+- Commits show as Ryan (contribution credit)
+- PRs created by bot (allows review)
+- You get merge commit credit
+- Clear audit trail of human review
 
 ### Option C: Direct PR (No Review Needed)
 
