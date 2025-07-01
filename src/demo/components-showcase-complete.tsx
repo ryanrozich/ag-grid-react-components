@@ -615,7 +615,6 @@ export const ComponentsShowcaseComplete: React.FC<
   }, []);
 
   const gridOptions: GridOptions = {
-    theme: "legacy",
     animateRows: true,
     pagination: true,
     paginationPageSize: 25,
