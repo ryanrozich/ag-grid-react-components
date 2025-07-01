@@ -2,15 +2,12 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ComponentsShowcaseComplete } from "./components-showcase-complete";
 
-// Get base path from environment or default
+// Get base path from Vite configuration
 const getBasePath = () => {
-  // In production, we're deployed at /ag-grid-react-components/
-  // @ts-expect-error - Vite provides import.meta.env
-  if (import.meta.env?.PROD) {
-    return "/ag-grid-react-components";
-  }
-  // In development, use root
-  return "";
+  // @ts-expect-error - Vite provides import.meta.env.BASE_URL
+  const baseUrl = import.meta.env?.BASE_URL || "/";
+  // Remove trailing slash for React Router
+  return baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
 };
 
 export const AppRouter: React.FC = () => {

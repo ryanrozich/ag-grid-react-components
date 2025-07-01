@@ -72,9 +72,24 @@ Co-authored-by: Claude <noreply@anthropic.com>"
 
 5. **You review the PR**: Make comments, request changes, or approve
 
-6. **Claude addresses feedback**: Commits fixes and responds to comments
+6. **Claude addresses review feedback**:
+   - **MUST check for review comments**: `gh api repos/ryanrozich/ag-grid-react-components/pulls/PR_NUMBER/comments`
+   - **MUST ask clarifying questions** if any comment is ambiguous
+   - **MUST confirm understanding** before implementing changes
+   - **MUST make the requested changes** in new commits
+   - **MUST reply to EACH review comment** explaining what was changed and in which commit
+   - **MUST post a summary comment** listing all changes made
 
 7. **You merge the PR**: This gives you the merge commit credit
+
+**Review Response Requirements**:
+Claude MUST:
+1. Reply to each individual review comment with:
+   - What was changed
+   - Which commit contains the fix
+   - Any clarifying questions if needed
+2. Post a summary comment after addressing all feedback
+3. Wait for your confirmation before considering the review complete
 
 **Key Points**:
 
