@@ -95,22 +95,23 @@ export const ServerSideDemo: React.FC = () => {
 
   // Determine API URL based on environment
   const getApiUrl = () => {
-    const isPR = window.location.hostname === "demo.rozich.net" && 
-                 window.location.pathname.includes("-pr-");
+    const isPR =
+      window.location.hostname === "demo.rozich.net" &&
+      window.location.pathname.includes("-pr-");
     const isLocal = window.location.hostname === "localhost";
-    
+
     if (isLocal) {
       // For local development, you'll need to run the API worker locally
       return "http://localhost:8787/api";
     }
-    
+
     if (isPR) {
       // Extract PR number from pathname
       const match = window.location.pathname.match(/pr-(\d+)/);
       const prNumber = match ? match[1] : "";
       return `https://api.rozich.net/ag-grid-pr-${prNumber}/api`;
     }
-    
+
     // Production
     return "https://api.rozich.net/ag-grid/api";
   };
@@ -217,7 +218,7 @@ export const ServerSideDemo: React.FC = () => {
             }
 
             const result = await response.json();
-            
+
             // Update row count
             setRowCount(result.lastRow);
 
@@ -236,9 +237,9 @@ export const ServerSideDemo: React.FC = () => {
       };
 
       // Set the datasource
-      params.api.setServerSideDatasource(datasource);
+      params.api.setGridOption("serverSideDatasource", datasource);
     },
-    [apiUrl]
+    [apiUrl],
   );
 
   const onFilterChanged = useCallback((event: FilterChangedEvent) => {
@@ -257,12 +258,18 @@ export const ServerSideDemo: React.FC = () => {
           🚀 Server-Side Row Model Demo
         </h3>
         <p className="text-gray-300 text-sm">
-          This demo uses AG Grid's Server-Side Row Model with a real API backend. 
-          Data is fetched on-demand as you scroll, filter, and sort. The API endpoint 
-          is <code className="bg-gray-800 px-2 py-1 rounded text-xs">{apiUrl}/tasks</code>
+          This demo uses AG Grid's Server-Side Row Model with a real API
+          backend. Data is fetched on-demand as you scroll, filter, and sort.
+          The API endpoint is{" "}
+          <code className="bg-gray-800 px-2 py-1 rounded text-xs">
+            {apiUrl}/tasks
+          </code>
         </p>
         <p className="text-gray-400 text-xs mt-2">
-          Total rows on server: <span className="font-mono">{rowCount?.toLocaleString() || "..."}</span>
+          Total rows on server:{" "}
+          <span className="font-mono">
+            {rowCount?.toLocaleString() || "..."}
+          </span>
           {loading && <span className="ml-2">⏳ Loading...</span>}
         </p>
       </div>
@@ -289,18 +296,22 @@ export const ServerSideDemo: React.FC = () => {
       )}
 
       {/* Grid */}
-      <div className="ag-theme-quartz-dark" style={{ height: 600, width: "100%" }}>
+      <div
+        className="ag-theme-quartz-dark"
+        style={{ height: 600, width: "100%" }}
+      >
         <AgGridReact
           ref={gridRef}
           columnDefs={columnDefs}
           defaultColDef={defaultColDef}
           rowModelType="serverSide"
-          serverSideInfiniteScroll={true}
           cacheBlockSize={100}
           maxBlocksInCache={10}
           onGridReady={onGridReady}
           onFilterChanged={onFilterChanged}
-          onSortChanged={onFilterChanged} // Reuse for simplicity
+          onSortChanged={() => {
+            /* Server-side handles sorting automatically */
+          }}
           animateRows={true}
           pagination={false} // Server-side doesn't use pagination
           suppressMenuHide={true}

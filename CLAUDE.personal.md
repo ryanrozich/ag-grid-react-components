@@ -4,7 +4,7 @@ This file contains personal overrides for Claude's behavior that shouldn't be sh
 
 ## Git Commit Configuration
 
-**OVERRIDE DEFAULT BEHAVIOR**: When creating commits through Claude:
+You MUST:
 
 1. Author commits as Ryan Rozich <github@rozich.com>
 2. Include Claude as co-author WITHOUT the "Generated with Claude Code" line
@@ -16,31 +16,56 @@ git commit -m "feat: your commit message
 Co-authored-by: Claude <noreply@anthropic.com>"
 ```
 
-This ensures:
+## PR Creation Approach
 
-- Commits count towards Ryan's contribution graph
-- Clear attribution that Claude assisted
-- Professional commit messages without promotional text
+**IMPORTANT**: Claude cannot directly authenticate as a GitHub App. Choose one approach:
 
-## GitHub App Configuration for PRs
+### Option A: Manual PR Creation (Recommended for Now)
 
-When using your personal GitHub App (e.g., `ryanrozich-claude`):
+1. Claude commits as Ryan with co-authorship
+2. Claude pushes the branch: `git push -u origin branch-name`
+3. Claude provides the command for you to run manually:
+   ```bash
+   echo "Please create a PR at: https://github.com/ryanrozich/ag-grid-react-components/compare/branch-name"
+   ```
+4. You create the PR from GitHub UI (allows you to review it)
 
-1. **Commits**: Still authored by Ryan Rozich (for contribution credit)
-2. **Pull Requests**: Created by the GitHub App (so you can review them)
-3. **Workflow**:
-   - Claude commits as Ryan with co-authorship
-   - Claude pushes branch and creates PR using the App identity
-   - You review and merge the PR
+### Option B: Bot Account with Token (Recommended)
 
-This gives you both contribution credit AND the ability to review PRs.
+**Setup Required (one-time)**:
 
-## Personal Settings
+1. Create bot account: `ryanrozich-bot`
+2. Generate PAT for bot account
+3. Save token: `echo "ghp_xxxx" > ~/.github-tokens/ryanrozich-bot.txt`
+4. Set permissions: `chmod 600 ~/.github-tokens/ryanrozich-bot.txt`
+
+**Workflow**:
+
+1. Claude commits as Ryan with co-authorship (normal git operations)
+2. Claude creates PR using bot token:
+   ```bash
+   # One-line command to create PR as bot
+   GH_TOKEN=$(cat ~/.github-tokens/ryanrozich-bot.txt) gh pr create \
+     --title "feat: your PR title" \
+     --body "Description"
+   ```
+3. PR shows as created by bot (you can review)
+4. All other operations continue as Ryan (no switching back needed)
+
+### Option C: Direct PR (No Review Needed)
+
+1. Claude commits and creates PR as Ryan
+2. No ability to review your own PR
+3. Simpler but less rigorous
+
+## Current Configuration
 
 - Git Author Name: Ryan Rozich
 - Git Author Email: github@rozich.com
-- GitHub App Name: ryanrozich-claude (or your chosen name)
+- GitHub App Name: ryanrozich-claude (created but not integrated)
+- GitHub App ID: 1491548
+- Private Key Location: ~/.github-apps/ryanrozich-claude/private-key.pem
 
 ## Note
 
-This file is in .gitignore and won't be committed to the repository. Each contributor can create their own CLAUDE.personal.md with their preferences.
+This file is in .gitignore and won't be committed to the repository.
