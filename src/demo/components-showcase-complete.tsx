@@ -6926,8 +6926,8 @@ const handleFilterSelect = async (option) => {
 
                 {/* AG Grid - fills remaining height */}
                 <div
-                  className="flex-1 ag-theme-quartz-dark relative"
-                  style={{ minHeight: "400px" }}
+                  className="flex-1 ag-theme-quartz-dark relative overflow-hidden"
+                  style={{ minHeight: "400px", height: "100%" }}
                 >
                   <AgGridReact
                     columnDefs={columnDefs}

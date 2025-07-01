@@ -26,25 +26,23 @@
   }
 }
 
-/* AG Grid Dark Theme Customization */
+/* Force dark mode for AG Grid */
 .ag-theme-quartz-dark {
+  /* Force dark mode */
+  color-scheme: dark;
+  background-color: rgb(17, 24, 39) !important;
+
   /* Background colors - matching our app theme */
-  --ag-background-color: rgb(17, 24, 39, 0.5); /* gray-900 with opacity */
+  --ag-background-color: rgb(17, 24, 39); /* gray-900 */
   --ag-foreground-color: #f3f4f6; /* gray-100 */
   --ag-secondary-foreground-color: #9ca3af; /* gray-400 */
-  --ag-header-background-color: rgb(
-    31,
-    41,
-    55,
-    0.8
-  ); /* gray-800 with opacity */
-
+  --ag-header-background-color: rgb(31, 41, 55); /* gray-800 */
   --ag-header-foreground-color: #f9fafb; /* gray-50 */
   --ag-disabled-foreground-color: #6b7280; /* gray-500 */
-  --ag-subheader-background-color: rgb(31, 41, 55, 0.8);
-  --ag-subheader-toolbar-background-color: rgb(17, 24, 39, 0.5);
-  --ag-control-panel-background-color: rgb(17, 24, 39, 0.5);
-  --ag-side-bar-panel-background: rgb(17, 24, 39, 0.5);
+  --ag-subheader-background-color: rgb(31, 41, 55);
+  --ag-subheader-toolbar-background-color: rgb(17, 24, 39);
+  --ag-control-panel-background-color: rgb(17, 24, 39);
+  --ag-side-bar-panel-background: rgb(17, 24, 39);
   --ag-odd-row-background-color: rgb(
     31,
     41,
@@ -130,6 +128,28 @@
 
 .ag-theme-quartz-dark .ag-root-wrapper {
   border-radius: 0;
+  background-color: rgb(17, 24, 39) !important;
+}
+
+/* Ensure all cells have dark background */
+.ag-theme-quartz-dark .ag-cell {
+  background-color: transparent !important;
+}
+
+.ag-theme-quartz-dark .ag-row {
+  background-color: rgb(17, 24, 39) !important;
+}
+
+.ag-theme-quartz-dark .ag-row-odd {
+  background-color: rgb(31, 41, 55, 0.3) !important;
+}
+
+.ag-theme-quartz-dark .ag-header {
+  background-color: rgb(31, 41, 55) !important;
+}
+
+.ag-theme-quartz-dark .ag-header-cell {
+  background-color: rgb(31, 41, 55) !important;
   border: none;
   height: 100%;
 }
