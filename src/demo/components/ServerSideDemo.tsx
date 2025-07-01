@@ -109,11 +109,11 @@ export const ServerSideDemo: React.FC = () => {
       // Extract PR number from pathname
       const match = window.location.pathname.match(/pr-(\d+)/);
       const prNumber = match ? match[1] : "";
-      return `https://api.rozich.net/ag-grid-pr-${prNumber}/api`;
+      return `https://demo.rozich.net/ag-grid-react-components-pr-${prNumber}/api`;
     }
 
     // Production
-    return "https://api.rozich.net/ag-grid/api";
+    return "https://demo.rozich.net/ag-grid-react-components/api";
   };
 
   const apiUrl = getApiUrl();

@@ -28,8 +28,12 @@ export default {
     }
 
     try {
+      // Extract the API path by removing the base path
+      // Handle both /api/tasks and /ag-grid-react-components/api/tasks formats
+      const apiPath = url.pathname.replace(/^.*\/api/, "/api");
+
       // Route: /api/tasks - Server-side data for AG Grid
-      if (url.pathname === "/api/tasks" || url.pathname === "/tasks") {
+      if (apiPath === "/api/tasks" || apiPath === "/tasks") {
         if (request.method === "POST") {
           const body = await request.json();
           const { startRow, endRow, filterModel, sortModel } = body;
@@ -72,7 +76,7 @@ export default {
       }
 
       // Route: /api/stats - Aggregated statistics
-      if (url.pathname === "/api/stats" || url.pathname === "/stats") {
+      if (apiPath === "/api/stats" || apiPath === "/stats") {
         const filterModel =
           request.method === "POST"
             ? (await request.json()).filterModel
@@ -83,7 +87,7 @@ export default {
       }
 
       // Route: /api/health - Health check
-      if (url.pathname === "/api/health" || url.pathname === "/health") {
+      if (apiPath === "/api/health" || apiPath === "/health") {
         return new Response(
           JSON.stringify({
             status: "healthy",
@@ -96,11 +100,7 @@ export default {
       }
 
       // Route: / - API documentation
-      if (
-        url.pathname === "/" ||
-        url.pathname === "/api" ||
-        url.pathname === "/api/"
-      ) {
+      if (apiPath === "/" || apiPath === "/api" || apiPath === "/api/") {
         const docs = {
           name: "AG Grid Demo API",
           version: "1.0.0",

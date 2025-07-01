@@ -88,7 +88,7 @@ jobs:
           compatibility_date = "2024-01-01"
 
           [[routes]]
-          pattern = "api.rozich.net/ag-grid-pr-${PR_NUMBER}/*"
+          pattern = "demo.rozich.net/ag-grid-react-components-pr-${PR_NUMBER}/api/*"
           zone_name = "rozich.net"
 
           [vars]
@@ -124,7 +124,7 @@ jobs:
             const comment = `🚀 **Demo Preview Ready!**
 
             Preview URL: https://demo.rozich.net/ag-grid-react-components-pr-${prNumber}/
-            API URL: https://api.rozich.net/ag-grid-pr-${prNumber}/api
+            API URL: https://demo.rozich.net/ag-grid-react-components-pr-${prNumber}/api/
 
             ${testsPassed ? '✅ Deployment tests passed' : '⚠️ Deployment tests failed - please check the workflow logs'}
 

@@ -7,7 +7,7 @@ name = "ag-grid-demo-api"
 
 # Route configuration
 [[env.production.routes]]
-pattern = "api.rozich.net/ag-grid/*"
+pattern = "demo.rozich.net/ag-grid-react-components/api/*"
 zone_name = "rozich.net"
 
 # Variables for production
