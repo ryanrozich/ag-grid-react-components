@@ -93,3 +93,6 @@ TEST_COVERAGE_*.md
 !docs/internal/legacy/TEST_COVERAGE_*.md
 
 # Personal Claude configuration files are gitignored
+CLAUDE.personal.md
+.claude.personal.md
+**/CLAUDE.personal.md
