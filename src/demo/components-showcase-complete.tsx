@@ -8,6 +8,7 @@ import type {
   ICellRendererParams,
   GridReadyEvent,
 } from "ag-grid-community";
+import { themeQuartz, colorSchemeDark } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import {
   RelativeDateFilter,
@@ -30,6 +31,9 @@ import "./styles/code-override.css";
 
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);
+
+// Create dark theme
+const darkTheme = themeQuartz.withPart(colorSchemeDark);
 
 // Import AG Grid styles
 import "ag-grid-community/styles/ag-grid.css";
@@ -6926,10 +6930,11 @@ const handleFilterSelect = async (option) => {
 
                 {/* AG Grid - fills remaining height */}
                 <div
-                  className="flex-1 ag-theme-quartz-dark relative overflow-hidden"
+                  className="flex-1 relative overflow-hidden"
                   style={{ minHeight: "400px", height: "100%" }}
                 >
                   <AgGridReact
+                    theme={darkTheme}
                     columnDefs={columnDefs}
                     defaultColDef={defaultColDef}
                     rowData={rowData}
