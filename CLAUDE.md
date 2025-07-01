@@ -2,6 +2,27 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Personal Configuration (CLAUDE.personal.md)
+
+**For Contributors**: You can create a `CLAUDE.personal.md` file in the project root for personal overrides. This file:
+
+- Is automatically loaded by Claude if it exists
+- Is in .gitignore and won't be committed
+- Can override any settings in this file
+- Is perfect for personal development workflows
+
+Use it for:
+
+- Personal git author settings (name, email)
+- Custom commit message formats
+- Individual GitHub App configurations
+- Personal development commands or workflows
+- Any preferences that shouldn't be shared project-wide
+
+Example: If you want Claude to commit with your name and create PRs via your GitHub App for review workflows, put those instructions in CLAUDE.personal.md.
+
+Note: The file linking feature (@mentions) is coming soon to Claude Code, but for now Claude automatically reads both CLAUDE.md and CLAUDE.personal.md if present.
+
 ## IMPORTANT: Version 0.1.0 Architecture (December 2024)
 
 This project uses a single npm package with a modular, tree-shakeable architecture for optimal developer experience and bundle sizes.

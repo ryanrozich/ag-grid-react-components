@@ -22,7 +22,9 @@ import AvatarCellRenderer from "./components/AvatarCellRenderer";
 import CategoryCellRenderer from "./components/CategoryCellRenderer";
 import PercentBarRenderer from "./components/PercentBarRenderer";
 import { VERSION_DISPLAY, IS_PRERELEASE } from "./version";
+import VersionInfo from "./components/VersionInfo";
 import heroScreenshot from "./assets/screenshots/hero-screenshot.png";
+import { ServerSideDemo } from "./components/ServerSideDemo";
 // import { SimpleCodeBlock as CodeBlock } from "./components/SimpleCodeBlock";
 import "./styles/showcase-dark.css";
 import "./styles/code-override.css";
@@ -362,6 +364,9 @@ export const ComponentsShowcaseComplete: React.FC<
 
   // Store cleanup function reference
   const cleanupRef = React.useRef<(() => void) | null>(null);
+  
+  // State for demo tabs
+  const [activeDemoTab, setActiveDemoTab] = useState<"client" | "server">("client");
 
   // Router hooks
   const location = useLocation();
@@ -6694,11 +6699,43 @@ const handleFilterSelect = async (option) => {
                 Manage and track your team&apos;s progress
               </p>
             </div>
+            
+            {/* Demo Tabs */}
+            <div className="border-b border-gray-700 mb-4">
+              <nav className="-mb-px flex space-x-8">
+                <button
+                  onClick={() => setActiveDemoTab("client")}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeDemoTab === "client"
+                      ? "border-indigo-500 text-white"
+                      : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
+                  }`}
+                >
+                  Client-Side Data
+                </button>
+                <button
+                  onClick={() => setActiveDemoTab("server")}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeDemoTab === "server"
+                      ? "border-indigo-500 text-white"
+                      : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
+                  }`}
+                >
+                  Server-Side Data
+                  <span className="ml-2 px-2 py-0.5 text-xs bg-indigo-600 text-white rounded-full">
+                    API
+                  </span>
+                </button>
+              </nav>
+            </div>
 
-            {/* Integrated Toolbar */}
-            <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg">
-              {/* Search and Quick Filters Row */}
-              <div className="p-3">
+            {/* Client-Side Demo */}
+            {activeDemoTab === "client" && (
+              <>
+                {/* Integrated Toolbar */}
+                <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg">
+                  {/* Search and Quick Filters Row */}
+                  <div className="p-3">
                 <div className="flex items-center gap-3 flex-wrap">
                   {/* Search Bar */}
                   <div className="relative flex-1 min-w-[240px]">
@@ -6759,20 +6796,19 @@ const handleFilterSelect = async (option) => {
                 </div>
               </div>
 
-              {/* Active Filters Row (when present) */}
-              {gridApi && Object.keys(filterModel).length > 0 && (
-                <div className="border-t border-gray-700/50 bg-gray-800/20 p-3">
-                  <ActiveFilters api={gridApi} filterModel={filterModel} />
+                  {/* Active Filters Row (when present) */}
+                  {gridApi && Object.keys(filterModel).length > 0 && (
+                    <div className="border-t border-gray-700/50 bg-gray-800/20 p-3">
+                      <ActiveFilters api={gridApi} filterModel={filterModel} />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
 
-          {/* Grid Container - fills remaining height */}
-          <div className="flex-1 bg-gray-900/50 rounded-xl border border-gray-800 flex flex-col">
-            {/* Hero Stats Bar */}
-            <div className="border-b border-gray-700/50 bg-gray-900/30">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x divide-gray-700/50">
+                {/* Grid Container - fills remaining height */}
+                <div className="flex-1 bg-gray-900/50 rounded-xl border border-gray-800 flex flex-col">
+                  {/* Hero Stats Bar */}
+                  <div className="border-b border-gray-700/50 bg-gray-900/30">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x divide-gray-700/50">
                 <div className="px-6 py-5">
                   <div className="flex items-center gap-4">
                     <div className="p-2.5 bg-indigo-500/10 rounded-lg">
@@ -6887,21 +6923,30 @@ const handleFilterSelect = async (option) => {
               </div>
             </div>
 
-            {/* AG Grid - fills remaining height */}
-            <div
-              className="flex-1 ag-theme-quartz-dark relative"
-              style={{ minHeight: 0 }}
-            >
-              <AgGridReact
-                columnDefs={columnDefs}
-                defaultColDef={defaultColDef}
-                rowData={rowData}
-                gridOptions={gridOptions}
-                onGridReady={onGridReady}
-                domLayout="normal"
-              />
-            </div>
-          </div>
+                  {/* AG Grid - fills remaining height */}
+                  <div
+                    className="flex-1 ag-theme-quartz-dark relative"
+                    style={{ minHeight: 0 }}
+                  >
+                    <AgGridReact
+                      columnDefs={columnDefs}
+                      defaultColDef={defaultColDef}
+                      rowData={rowData}
+                      gridOptions={gridOptions}
+                      onGridReady={onGridReady}
+                      domLayout="normal"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+            
+            {/* Server-Side Demo */}
+            {activeDemoTab === "server" && (
+              <div className="flex-1 flex flex-col">
+                <ServerSideDemo />
+              </div>
+            )}
         </div>
       </div>
     </div>

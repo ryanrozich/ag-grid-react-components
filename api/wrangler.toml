@@ -1,0 +1,26 @@
+name = "ag-grid-demo-api"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+[env.production]
+name = "ag-grid-demo-api"
+
+# Route configuration
+[[env.production.routes]]
+pattern = "api.rozich.net/ag-grid/*"
+zone_name = "rozich.net"
+
+# Variables for production
+[env.production.vars]
+ENVIRONMENT = "production"
+
+[env.preview]
+name = "ag-grid-demo-api-preview"
+
+# Route configuration for previews
+[[env.preview.routes]]
+pattern = "api.rozich.net/ag-grid-pr-*/*"
+zone_name = "rozich.net"
+
+[env.preview.vars]
+ENVIRONMENT = "preview"

@@ -33,6 +33,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install API dependencies
+        run: cd api && npm install
+
       - name: Build demo
         run: npm run build:demo
         env:
@@ -77,6 +80,14 @@ jobs:
           wrangler kv key put "$DEPLOY_PATH" \
             '{"name": "AG Grid React Components", "description": "Tree-shakeable React filter components for AG Grid", "updated": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' \
             --namespace-id="$CLOUDFLARE_KV_NAMESPACE_ID"
+
+      - name: Deploy API Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          cd api
+          npx wrangler deploy --env production
 
       - name: Purge Cloudflare cache
         env:
