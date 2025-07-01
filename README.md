@@ -333,14 +333,16 @@ Example compressed URL:
 https://app.com/?gridState=N4IgZgpgLghgbgUwHZQKYQPYFMCeEB0IA5gMYD2AdAK4C2E...
 ```
 
-#### Migration from Legacy Version
+#### State Persistence Options
+
+You can choose between filter-only persistence or full grid state persistence:
 
 ```tsx
-// Old (filters only)
+// Option 1: Filter persistence only (lightweight)
 import { setupFilterStatePersistence } from "ag-grid-react-components";
 setupFilterStatePersistence(params.api);
 
-// New (full state with options)
+// Option 2: Full grid state persistence (recommended)
 import { setupGridStatePersistence } from "ag-grid-react-components";
 setupGridStatePersistence(params.api, {
   useCompression: true,

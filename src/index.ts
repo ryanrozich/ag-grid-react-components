@@ -2,7 +2,7 @@
 import DateFilter from "./components/DateFilter";
 export { DateFilter };
 
-// Export RelativeDateFilter as alias for backward compatibility
+// Export RelativeDateFilter as alias (alternative name)
 export { DateFilter as RelativeDateFilter };
 
 // Quick Filter Dropdown
@@ -19,7 +19,7 @@ export { ActiveFilters };
 // Export all types from central location
 export * from "./types";
 
-// Legacy type exports for backward compatibility
+// Common type exports for convenience
 export type {
   DateFilterType,
   DateFilterMode,
@@ -67,5 +67,5 @@ import "./styles.css";
 // @ts-expect-error - Add metadata for AG Grid to properly recognize components
 DateFilter.__AG_GRID_COMPONENT = true;
 
-// Default export remains the DateFilter for backward compatibility
+// Default export for convenience
 export default DateFilter;

@@ -41,15 +41,8 @@ A modular date filter that supports both absolute dates and relative expressions
 
 **Usage:**
 ```typescript
-// Minimal (25KB total)
-import { createDateFilter } from 'ag-grid-react-components';
-const DateFilter = createDateFilter();
-
-// With React DatePicker (65KB total)
-import { createDateFilter, reactDatePickerAdapter } from 'ag-grid-react-components';
-const DateFilter = createDateFilter({
-  datePickerAdapter: reactDatePickerAdapter
-});
+// Import the DateFilter component
+import { DateFilter } from 'ag-grid-react-components';
 
 // Column definition
 {
@@ -57,6 +50,7 @@ const DateFilter = createDateFilter({
   filter: DateFilter,
   floatingFilter: true,
   filterParams: {
+    // Optional: customize date boundaries
     afterInclusive: true,
     beforeInclusive: true,
     rangeInclusive: { from: true, to: true }

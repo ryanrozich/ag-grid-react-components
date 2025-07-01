@@ -99,7 +99,7 @@ jobs:
             echo "CHANGELOG<<EOF"
             echo "## What's Changed"
             echo ""
-            
+
             # Features
             FEATURES=$(git log $RANGE --pretty=format:"* %s (%h)" --grep="^feat" 2>/dev/null || echo "")
             if [ ! -z "$FEATURES" ]; then
@@ -107,7 +107,7 @@ jobs:
               echo "$FEATURES"
               echo ""
             fi
-            
+
             # Bug fixes
             FIXES=$(git log $RANGE --pretty=format:"* %s (%h)" --grep="^fix" 2>/dev/null || echo "")
             if [ ! -z "$FIXES" ]; then
@@ -115,7 +115,7 @@ jobs:
               echo "$FIXES"
               echo ""
             fi
-            
+
             # Documentation
             DOCS=$(git log $RANGE --pretty=format:"* %s (%h)" --grep="^docs" 2>/dev/null || echo "")
             if [ ! -z "$DOCS" ]; then
@@ -123,7 +123,7 @@ jobs:
               echo "$DOCS"
               echo ""
             fi
-            
+
             # Other changes
             OTHERS=$(git log $RANGE --pretty=format:"* %s (%h)" --grep -v "^feat\|^fix\|^docs" 2>/dev/null || echo "")
             if [ ! -z "$OTHERS" ]; then
@@ -131,7 +131,7 @@ jobs:
               echo "$OTHERS"
               echo ""
             fi
-            
+
             echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...v${{ steps.version.outputs.version }}"
             echo "EOF"
           } >> $GITHUB_OUTPUT

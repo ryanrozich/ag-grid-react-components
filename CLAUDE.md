@@ -897,15 +897,15 @@ LZ-String compression provides significant URL length reduction:
 
 The compression is most effective with repetitive data like column definitions and complex filter models.
 
-### Migration from setupFilterStatePersistence
+### State Persistence Options
 
-The original `setupFilterStatePersistence` is still available for backward compatibility, but we recommend migrating to `setupGridStatePersistence` for full state management:
+Both `setupFilterStatePersistence` and `setupGridStatePersistence` are available, each serving different use cases:
 
 ```typescript
-// Old (filters only)
+// Option 1: Filter-only persistence (lightweight)
 setupFilterStatePersistence(params.api);
 
-// New (full state with options)
+// Option 2: Full state persistence (recommended for complex grids)
 setupGridStatePersistence(params.api, {
   useCompression: true,
   includeFilters: true,
