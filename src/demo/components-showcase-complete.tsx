@@ -6930,6 +6930,7 @@ const handleFilterSelect = async (option) => {
                   style={{ minHeight: "400px", height: "100%" }}
                 >
                   <AgGridReact
+                    theme="legacy"
                     columnDefs={columnDefs}
                     defaultColDef={defaultColDef}
                     rowData={rowData}
