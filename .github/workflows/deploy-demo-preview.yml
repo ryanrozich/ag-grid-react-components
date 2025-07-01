@@ -78,11 +78,22 @@ jobs:
           cd api
           PR_NUMBER=${{ github.event.pull_request.number }}
 
-          # Update wrangler.toml with PR-specific name
-          sed -i.bak 's/ag-grid-demo-api-preview/ag-grid-demo-api-pr-'${PR_NUMBER}'/' wrangler.toml
+          # Create a custom wrangler config for this PR
+          cat > wrangler-pr.toml << EOF
+          name = "ag-grid-demo-api-pr-${PR_NUMBER}"
+          main = "index.js"
+          compatibility_date = "2024-01-01"
 
-          # Deploy the API worker
-          npx wrangler deploy --env preview
+          [[routes]]
+          pattern = "api.rozich.net/ag-grid-pr-${PR_NUMBER}/*"
+          zone_name = "rozich.net"
+
+          [vars]
+          ENVIRONMENT = "preview"
+          EOF
+
+          # Deploy using the PR-specific config
+          npx wrangler deploy --config wrangler-pr.toml
 
       - name: Comment on PR
         uses: actions/github-script@v7

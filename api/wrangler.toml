@@ -16,11 +16,7 @@ ENVIRONMENT = "production"
 
 [env.preview]
 name = "ag-grid-demo-api-preview"
-
-# Route configuration for previews
-[[env.preview.routes]]
-pattern = "api.rozich.net/ag-grid-pr-*/*"
-zone_name = "rozich.net"
+# PR previews use dynamic config - see deploy-demo-preview.yml
 
 [env.preview.vars]
 ENVIRONMENT = "preview"
