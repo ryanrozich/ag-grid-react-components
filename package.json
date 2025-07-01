@@ -12,10 +12,10 @@
   ],
   "scripts": {
     "// Development": "Development commands",
-    "dev": "vite",
-    "demo": "vite",
+    "dev": "node scripts/generate-version-info.js && vite",
+    "demo": "node scripts/generate-version-info.js && vite",
     "build": "tsc -p tsconfig.build.json && vite build",
-    "build:demo": "vite build --config vite.config.demo.ts",
+    "build:demo": "node scripts/generate-version-info.js && vite build --config vite.config.demo.ts",
     "preview": "vite preview",
     "preview:demo": "vite preview --config vite.config.demo.ts",
     "dev:safe": "npm run quality && npm run dev",

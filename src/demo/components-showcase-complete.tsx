@@ -22,6 +22,7 @@ import AvatarCellRenderer from "./components/AvatarCellRenderer";
 import CategoryCellRenderer from "./components/CategoryCellRenderer";
 import PercentBarRenderer from "./components/PercentBarRenderer";
 import { VERSION_DISPLAY, IS_PRERELEASE } from "./version";
+import VersionInfo from "./components/VersionInfo";
 import heroScreenshot from "./assets/screenshots/hero-screenshot.png";
 // import { SimpleCodeBlock as CodeBlock } from "./components/SimpleCodeBlock";
 import "./styles/showcase-dark.css";
@@ -127,6 +128,7 @@ const Navigation: React.FC<{
           </nav>
         </div>
         <div className="flex items-center gap-4">
+          <VersionInfo className="hidden md:block" />
           <div className="flex items-center gap-2 text-sm text-gray-400">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -1521,15 +1523,11 @@ const columnDefs = [{
 
                     <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-6 mt-8">
                       <h3 className="text-lg font-semibold text-blue-300 mb-2">
-                        {IS_PRERELEASE ? "Pre-release" : "Current"} Version
+                        Version {VERSION_DISPLAY}
                       </h3>
                       <p className="text-gray-300">
-                        This is version {VERSION_DISPLAY},{" "}
-                        {IS_PRERELEASE
-                          ? "a pre-release seeking feedback from early adopters"
-                          : "the latest stable release"}
-                        . {IS_PRERELEASE && "The API may change before the 1.0"}
-                        release. We welcome your feedback and contributions!
+                        This is the latest release of AG Grid React Components.
+                        We welcome your feedback and contributions!
                       </p>
                     </div>
                   </div>
