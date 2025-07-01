@@ -1890,19 +1890,21 @@ npm install ag-grid-react-components react-datepicker lz-string
                           />
                         </div>
 
-                        {/* Migration from v1 */}
+                        {/* Import Examples */}
                         <div>
-                          <AnchorHeading level={3} id="migration-from-v1">
-                            Migration from v1
+                          <AnchorHeading level={3} id="import-examples">
+                            Import Examples
                           </AnchorHeading>
                           <p className="text-gray-400 mb-4">
-                            Upgrading from v1? Use the compatibility layer for
-                            zero code changes.
+                            Simple imports for all components - just one package
+                            to install.
                           </p>
                           <CodeBlock
-                            code={`# The package is backward compatible
-# Your existing imports will continue to work
-import { DateFilter, QuickFilterDropdown } from 'ag-grid-react-components';`}
+                            code={`# Import what you need - tree-shaking handles the rest
+import { DateFilter, QuickFilterDropdown } from 'ag-grid-react-components';
+
+# Or import specific utilities
+import { setupGridStatePersistence } from 'ag-grid-react-components';`}
                             language="bash"
                           />
                         </div>
@@ -4212,7 +4214,7 @@ const onGridReady = (params) => {
   return cleanup;
 };
 
-// Or use the legacy filter-only version
+// Or use the filter-only version for lightweight persistence
 import { setupFilterStatePersistence } from 'ag-grid-react-components';`}
                             language="typescript"
                           />
