@@ -79,7 +79,8 @@ jobs:
 
           wrangler kv key put "$DEPLOY_PATH" \
             '{"name": "AG Grid React Components", "description": "Tree-shakeable React filter components for AG Grid", "updated": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' \
-            --namespace-id="$CLOUDFLARE_KV_NAMESPACE_ID"
+            --namespace-id="$CLOUDFLARE_KV_NAMESPACE_ID" \
+            --remote
 
       - name: Deploy API Worker
         env:

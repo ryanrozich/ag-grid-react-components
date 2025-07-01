@@ -68,7 +68,8 @@ jobs:
 
           wrangler kv key put "ag-grid-react-components-pr-${PR_NUMBER}" \
             '{"name": "AG Grid React Components (PR #'${PR_NUMBER}')", "description": "Preview for pull request #'${PR_NUMBER}'", "updated": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'", "isPR": true}' \
-            --namespace-id="$CLOUDFLARE_KV_NAMESPACE_ID"
+            --namespace-id="$CLOUDFLARE_KV_NAMESPACE_ID" \
+            --remote
 
       - name: Deploy API Worker Preview
         env:
