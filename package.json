@@ -12,10 +12,10 @@
   ],
   "scripts": {
     "// Development": "Development commands",
-    "dev": "vite",
-    "demo": "vite",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:api\"",
+    "dev:frontend": "vite",
     "dev:api": "wrangler dev api/index.js --local --port 8787",
-    "dev:all": "concurrently \"npm run dev\" \"npm run dev:api\"",
+    "demo": "vite",
     "build": "tsc -p tsconfig.build.json && vite build",
     "build:demo": "vite build --config vite.config.demo.ts",
     "preview": "vite preview",
