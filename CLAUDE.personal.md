@@ -10,7 +10,7 @@ You MUST:
 2. Include Claude as co-author WITHOUT the "Generated with Claude Code" line
 3. Format:
 
-```
+```bash
 git commit -m "feat: your commit message
 
 Co-authored-by: Claude <noreply@anthropic.com>"
@@ -61,7 +61,7 @@ Co-authored-by: Claude <noreply@anthropic.com>"
 ## Current Configuration
 
 - Git Author Name: Ryan Rozich
-- Git Author Email: github@rozich.com
+- Git Author Email: `github@rozich.com`
 - GitHub App Name: ryanrozich-claude (created but not integrated)
 - GitHub App ID: 1491548
 - Private Key Location: ~/.github-apps/ryanrozich-claude/private-key.pem

@@ -20,17 +20,17 @@ To run the API alongside the demo app:
 npm install
 
 # Run both the demo app and API
-npm run dev:all
+npm run dev
 ```
 
 Or run them separately:
 
 ```bash
-# Terminal 1: Run the demo app
-npm run dev
+# Terminal 1: Run the demo app only
+npm run frontend
 
-# Terminal 2: Run the API worker
-npm run dev:api
+# Terminal 2: Run the API worker only
+npm run api
 ```
 
 The API will be available at:

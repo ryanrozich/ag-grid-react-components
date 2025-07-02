@@ -369,7 +369,7 @@ export const ServerSideDemo: React.FC = () => {
             // Show error message in UI
             if (error instanceof Error) {
               alert(
-                `Error loading data: ${error.message}\n\nMake sure the API is running with: npm run dev:api`,
+                `Error loading data: ${error.message}\n\nMake sure the API is running with: npm run api`,
               );
             }
 

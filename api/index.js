@@ -1,5 +1,4 @@
 /* eslint-env browser */
-/* global Response */
 // Cloudflare Worker for AG Grid Demo API
 import { processDataRequest, getStats } from "./data-generator.js";
 
