@@ -5,16 +5,16 @@ import { faker } from "@faker-js/faker";
 const TOTAL_RECORDS = 10000; // Large dataset for server-side demo
 let cachedData = null;
 
-// Categories with colors (matching frontend)
+// Categories with colors (matching frontend CategoryCellRenderer)
 const categories = [
-  { name: "Feature", color: "blue" },
+  { name: "Feature", color: "green" },
   { name: "Bug", color: "red" },
-  { name: "Enhancement", color: "green" },
-  { name: "Documentation", color: "purple" },
-  { name: "Testing", color: "orange" },
-  { name: "Refactoring", color: "yellow" },
-  { name: "Research", color: "pink" },
-  { name: "Design", color: "indigo" },
+  { name: "Documentation", color: "blue" },
+  { name: "Refactor", color: "purple" },
+  { name: "Testing", color: "yellow" },
+  { name: "DevOps", color: "gray" },
+  { name: "Security", color: "orange" },
+  { name: "Performance", color: "indigo" },
 ];
 
 const statuses = [

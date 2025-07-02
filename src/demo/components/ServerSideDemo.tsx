@@ -192,7 +192,6 @@ export const ServerSideDemo: React.FC = () => {
   const [rowCount, setRowCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
-  const [searchText, setSearchText] = useState("");
 
   // Determine API URL based on environment
   const getApiUrl = () => {
@@ -272,16 +271,14 @@ export const ServerSideDemo: React.FC = () => {
       filter: "agSetColumnFilter",
       filterParams: {
         values: [
-          "Frontend",
-          "Backend",
-          "DevOps",
-          "Testing",
-          "Design",
-          "Research",
-          "Refactoring",
           "Bug",
           "Feature",
-          "Enhancement",
+          "Documentation",
+          "Refactor",
+          "Testing",
+          "DevOps",
+          "Security",
+          "Performance",
         ],
         suppressSelectAll: true,
       },
@@ -367,6 +364,15 @@ export const ServerSideDemo: React.FC = () => {
             });
           } catch (error) {
             console.error("Error fetching data:", error);
+            console.error("API URL:", `${apiUrl}/tasks`);
+
+            // Show error message in UI
+            if (error instanceof Error) {
+              alert(
+                `Error loading data: ${error.message}\n\nMake sure the API is running with: npm run dev:api`,
+              );
+            }
+
             params.fail();
           } finally {
             setLoading(false);
@@ -432,20 +438,12 @@ export const ServerSideDemo: React.FC = () => {
       {/* Server Stats */}
       <ServerStats apiUrl={apiUrl} filterModel={filterModel} />
 
-      {/* Search and Quick Filters */}
-      <div className="flex flex-wrap gap-4 mb-4">
-        <div className="flex-1 min-w-[200px]">
-          <input
-            type="text"
-            placeholder="Search all columns..."
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-            value={searchText}
-            onChange={(e) => {
-              setSearchText(e.target.value);
-              gridApi?.setGridOption("quickFilterText", e.target.value);
-            }}
-          />
-        </div>
+      {/* Search info for server-side */}
+      <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-3 mb-4 text-sm">
+        <p className="text-yellow-300">
+          💡 Note: Server-side row model uses column filters for searching. Use
+          the floating filters below each column header to search.
+        </p>
       </div>
 
       {/* Active Filters */}
