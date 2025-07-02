@@ -134,6 +134,53 @@ Format: `type(scope): description`
 - Types: feat, fix, docs, refactor, test, chore
 - Scopes: components, utils, demo, test, deps, build
 
+## GitHub Issue Labeling Taxonomy
+
+When creating or managing GitHub issues, you MUST use this labeling system:
+
+### Type Labels (Choose ONE):
+
+- `bug` - Something isn't working
+- `enhancement` - New feature or request
+- `documentation` - Improvements or additions to documentation
+- `question` - Further information is requested
+- `good first issue` - Good for newcomers
+- `help wanted` - Extra attention is needed
+
+### Priority Labels (Choose ONE):
+
+- `priority: critical` - Must fix ASAP, blocking usage
+- `priority: high` - Important, should be fixed soon
+- `priority: medium` - Normal priority
+- `priority: low` - Nice to have, can wait
+
+### Area Labels (Choose ALL that apply):
+
+- `area: components` - Related to the React components
+- `area: demo` - Related to the demo/showcase application
+- `area: build` - Build tools, bundling, TypeScript config
+- `area: ci/cd` - GitHub Actions, deployment, automation
+- `area: testing` - Test suite, coverage, test infrastructure
+- `area: docs` - Documentation (README, API docs, guides)
+
+### Example Usage:
+
+When creating an issue for a bug in the DateFilter component:
+
+```bash
+gh issue create --title "DateFilter fails with null dates" \
+  --body "Description..." \
+  --label "bug" \
+  --label "priority: high" \
+  --label "area: components"
+```
+
+### When Working on Issues:
+
+- Ask "What should we work on next?" to filter by type, priority, or area
+- Use `gh issue list --label "priority: high" --label "bug"` to find critical bugs
+- Use `gh issue list --label "good first issue"` to find beginner-friendly tasks
+
 ## Essential NPM Scripts
 
 Development:
@@ -214,3 +261,4 @@ When displaying filter values, you MUST use AG Grid's type values:
 - You MUST use conventional commits
 - You MUST NOT create files unless absolutely necessary
 - You MUST prefer editing existing files
+- You MUST apply appropriate labels when creating GitHub issues
