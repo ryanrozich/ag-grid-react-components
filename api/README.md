@@ -5,9 +5,10 @@ This is a Cloudflare Worker that provides a server-side API for the AG Grid demo
 ## Features
 
 - Server-side data processing with pagination
+- **Search across all columns** with real-time debouncing
 - Filtering support (text, set, date filters)
 - Sorting support (single and multi-column)
-- Row grouping support
+- Row grouping support (partial - in development)
 - Statistics calculation
 - Efficient data generation and processing
 

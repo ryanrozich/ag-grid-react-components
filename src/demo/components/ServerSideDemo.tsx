@@ -192,6 +192,14 @@ export const ServerSideDemo: React.FC = () => {
   const [rowCount, setRowCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
+  const [searchText, setSearchText] = useState("");
+  const searchTextRef = useRef("");
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    searchTextRef.current = searchText;
+  }, [searchText]);
 
   // Determine API URL based on environment
   const getApiUrl = () => {
@@ -345,6 +353,7 @@ export const ServerSideDemo: React.FC = () => {
                 endRow: params.request.endRow,
                 filterModel: params.request.filterModel,
                 sortModel: params.request.sortModel,
+                searchText: searchTextRef.current,
               }),
             });
 
@@ -438,12 +447,36 @@ export const ServerSideDemo: React.FC = () => {
       {/* Server Stats */}
       <ServerStats apiUrl={apiUrl} filterModel={filterModel} />
 
-      {/* Search info for server-side */}
-      <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-3 mb-4 text-sm">
-        <p className="text-yellow-300">
-          💡 Note: Server-side row model uses column filters for searching. Use
-          the floating filters below each column header to search.
-        </p>
+      {/* Search bar */}
+      <div className="flex flex-wrap gap-4 mb-4">
+        <div className="flex-1 min-w-[200px]">
+          <input
+            type="text"
+            placeholder="Search all columns..."
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+            value={searchText}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSearchText(value);
+
+              // Debounce the server request
+              if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+              }
+
+              searchTimeoutRef.current = setTimeout(() => {
+                // Refresh the server-side data with new search
+                gridApi?.refreshServerSide({ purge: true });
+              }, 300); // 300ms debounce
+            }}
+          />
+        </div>
+        <div className="text-sm text-gray-400 flex items-center">
+          {loading && <span className="mr-2">🔍 Searching...</span>}
+          {rowCount !== null && (
+            <span>{rowCount.toLocaleString()} results</span>
+          )}
+        </div>
       </div>
 
       {/* Active Filters */}

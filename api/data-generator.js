@@ -209,21 +209,63 @@ function applySorting(data, sortModel) {
   });
 }
 
+// Apply search text filter across all columns
+function applySearchText(data, searchText) {
+  if (!searchText || searchText.trim() === "") {
+    return data;
+  }
+
+  const search = searchText.toLowerCase();
+  return data.filter((row) => {
+    // Search in all string/number fields
+    return Object.entries(row).some(([, value]) => {
+      if (value === null || value === undefined) return false;
+
+      // Handle nested objects (like assignee)
+      if (typeof value === "object") {
+        return Object.values(value).some((nestedVal) =>
+          String(nestedVal).toLowerCase().includes(search),
+        );
+      }
+
+      // Convert to string and search
+      return String(value).toLowerCase().includes(search);
+    });
+  });
+}
+
 // Main function to process data request
 export function processDataRequest({
   startRow = 0,
   endRow = 100,
   filterModel = {},
   sortModel = [],
+  searchText = "",
+  rowGroupCols = [],
+  groupKeys = [],
 }) {
   // Get full dataset
   let data = getFullDataset();
+
+  // Apply search text first (like a pre-filter)
+  data = applySearchText(data, searchText);
 
   // Apply filters
   data = applyFilters(data, filterModel);
 
   // Apply sorting
   data = applySorting(data, sortModel);
+
+  // Handle row grouping if enabled
+  if (rowGroupCols && rowGroupCols.length > 0) {
+    // TODO: Implement proper grouping logic
+    // For now, just return flat data
+    console.log(
+      "Row grouping requested but not fully implemented:",
+      rowGroupCols,
+      groupKeys,
+    );
+  }
 
   // Get total after filtering
   const totalRows = data.length;

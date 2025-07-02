@@ -35,7 +35,15 @@ export default {
       if (apiPath === "/api/tasks" || apiPath === "/tasks") {
         if (request.method === "POST") {
           const body = await request.json();
-          const { startRow, endRow, filterModel, sortModel } = body;
+          const {
+            startRow,
+            endRow,
+            filterModel,
+            sortModel,
+            searchText,
+            rowGroupCols,
+            groupKeys,
+          } = body;
 
           // Simulate network delay (optional)
           if (url.searchParams.get("delay")) {
@@ -47,6 +55,9 @@ export default {
             endRow: endRow || 100,
             filterModel: filterModel || {},
             sortModel: sortModel || [],
+            searchText: searchText || "",
+            rowGroupCols: rowGroupCols || [],
+            groupKeys: groupKeys || [],
           });
 
           return new Response(JSON.stringify(result), { headers });
@@ -68,6 +79,7 @@ export default {
             endRow,
             filterModel,
             sortModel,
+            searchText: url.searchParams.get("searchText") || "",
           });
 
           return new Response(JSON.stringify(result), { headers });
