@@ -45,10 +45,10 @@ let issues = 0;
 
 for (const file of filesToCheck) {
   if (!fs.existsSync(file)) continue;
-  
+
   const content = fs.readFileSync(file, 'utf8');
   const lines = content.split('\n');
-  
+
   for (const pattern of securityPatterns) {
     let match;
     while ((match = pattern.pattern.exec(content)) !== null) {

@@ -1,4 +1,4 @@
-import { Page, expect } from "@playwright/test";
+import { Page } from "@playwright/test";
 
 /**
  * Wait for AG Grid to be fully loaded and ready
@@ -34,7 +34,6 @@ export async function waitForFilterUpdate(page: Page) {
     if (!api) return false;
 
     // Check if any async operations are pending
-    const columnApi = api.getColumnApi ? api.getColumnApi() : api;
     return !api.isAnyFilterPresent || api.isAnyFilterPresent();
   });
 

@@ -17,7 +17,7 @@ else
   echo "Required status checks:"
   gh api repos/ryanrozich/ag-grid-react-components/branches/main/protection \
     --jq '.required_status_checks.checks[] | "   - " + .context' 2>/dev/null || echo "   None"
-  
+
   echo ""
   echo "Settings:"
   gh api repos/ryanrozich/ag-grid-react-components/branches/main/protection --jq '
