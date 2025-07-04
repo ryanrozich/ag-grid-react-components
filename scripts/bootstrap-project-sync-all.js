@@ -176,10 +176,17 @@ async function getProjectItems() {
 async function updateLabels(type, number, labelsToAdd, labelsToRemove) {
   const command = type === 'pr' ? 'pr' : 'issue';
   
+  // Validate number is an integer
+  const issueNumber = parseInt(number, 10);
+  if (isNaN(issueNumber) || issueNumber <= 0) {
+    console.error(`Invalid ${type} number: ${number}`);
+    return;
+  }
+  
   // Remove labels
   for (const label of labelsToRemove) {
     try {
-      execSync(`gh ${command} edit ${number} --remove-label "${label}"`, {
+      execSync(`gh ${command} edit ${issueNumber} --remove-label "${label}"`, {
         stdio: 'pipe',
         encoding: 'utf8'
       });
@@ -193,7 +200,7 @@ async function updateLabels(type, number, labelsToAdd, labelsToRemove) {
   if (labelsToAdd.length > 0) {
     const addLabels = labelsToAdd.map(l => `--add-label "${l}"`).join(' ');
     try {
-      execSync(`gh ${command} edit ${number} ${addLabels}`, {
+      execSync(`gh ${command} edit ${issueNumber} ${addLabels}`, {
         stdio: 'pipe',
         encoding: 'utf8'
       });

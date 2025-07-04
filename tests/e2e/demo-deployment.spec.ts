@@ -128,18 +128,22 @@ test.describe("Deployment Validation", () => {
     for (const link of cssLinks) {
       const href = await link.getAttribute("href");
       if (href && !href.startsWith("http")) {
-        expect(href).toMatch(
-          new RegExp(`^${expectedBasePath.replace(/\//g, "\\/")}assets`),
+        const escapedPath = expectedBasePath.replace(
+          /[.*+?^${}()|[\]\\]/g,
+          "\\$&",
         );
+        expect(href).toMatch(new RegExp(`^${escapedPath}assets`));
       }
     }
 
     for (const script of scriptTags) {
       const src = await script.getAttribute("src");
       if (src && !src.startsWith("http")) {
-        expect(src).toMatch(
-          new RegExp(`^${expectedBasePath.replace(/\//g, "\\/")}assets`),
+        const escapedPath = expectedBasePath.replace(
+          /[.*+?^${}()|[\]\\]/g,
+          "\\$&",
         );
+        expect(src).toMatch(new RegExp(`^${escapedPath}assets`));
       }
     }
   });

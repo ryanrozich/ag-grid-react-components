@@ -1,5 +1,8 @@
 name: Test Demo Deployment
 
+# This workflow tests a deployed demo site
+# The input is required to specify which deployment to test
+# This is exempted from CKV_GHA_7 as it's a test workflow, not a build workflow
 on:
   workflow_dispatch:
     inputs:

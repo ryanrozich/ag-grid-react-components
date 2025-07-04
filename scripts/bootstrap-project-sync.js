@@ -165,10 +165,17 @@ async function getProjectItems() {
 }
 
 async function updateIssueLabels(issueNumber, labelsToAdd, labelsToRemove) {
+  // Validate issueNumber is an integer
+  const validIssueNumber = parseInt(issueNumber, 10);
+  if (isNaN(validIssueNumber) || validIssueNumber <= 0) {
+    console.error(`Invalid issue number: ${issueNumber}`);
+    return;
+  }
+  
   // Remove labels
   for (const label of labelsToRemove) {
     try {
-      execSync(`gh issue edit ${issueNumber} --remove-label "${label}"`, {
+      execSync(`gh issue edit ${validIssueNumber} --remove-label "${label}"`, {
         stdio: 'pipe',
         encoding: 'utf8'
       });
@@ -182,7 +189,7 @@ async function updateIssueLabels(issueNumber, labelsToAdd, labelsToRemove) {
   if (labelsToAdd.length > 0) {
     const addLabels = labelsToAdd.map(l => `--add-label "${l}"`).join(' ');
     try {
-      execSync(`gh issue edit ${issueNumber} ${addLabels}`, {
+      execSync(`gh issue edit ${validIssueNumber} ${addLabels}`, {
         stdio: 'pipe',
         encoding: 'utf8'
       });
