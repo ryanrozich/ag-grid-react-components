@@ -18,6 +18,12 @@ export async function applyQuickFilter(
     return;
   }
 
+  // Check if the API is still valid
+  if (typeof api.getFilterModel !== "function") {
+    console.warn("[QuickFilter] API is invalid or destroyed");
+    return;
+  }
+
   console.log("[QuickFilter] Applying filter:", {
     option: option?.label,
     columnId,
@@ -25,7 +31,13 @@ export async function applyQuickFilter(
   });
 
   // Get current filter model
-  const currentModel = api.getFilterModel() || {};
+  let currentModel;
+  try {
+    currentModel = api.getFilterModel() || {};
+  } catch (error) {
+    console.warn("[QuickFilter] Error getting filter model:", error);
+    return;
+  }
   console.log("[QuickFilter] Current grid filter model:", currentModel);
 
   if (!option) {
@@ -41,7 +53,14 @@ export async function applyQuickFilter(
     }
   } else if (option.buildFilterModel) {
     // Use custom filter builder if provided
-    const filterModel = option.buildFilterModel(api, columnId);
+    let filterModel;
+    try {
+      filterModel = option.buildFilterModel(api, columnId);
+    } catch (error) {
+      console.warn("[QuickFilter] Error building filter model:", error);
+      return;
+    }
+
     if (filterModel) {
       // If clearing multi-column filter first
       if (columnId === "_multi") {
@@ -84,7 +103,14 @@ export async function applyQuickFilter(
 
     // For multi-column filters with buildFilterModel, apply workaround to each column
     if (option && option.buildFilterModel && columnId === "_multi") {
-      const filterModel = option.buildFilterModel(api, columnId);
+      let filterModel;
+      try {
+        filterModel = option.buildFilterModel(api, columnId);
+      } catch (error) {
+        console.warn("[QuickFilter] Error building filter model:", error);
+        return;
+      }
+
       if (filterModel) {
         // Apply workaround for each column in the filter model
         for (const [colId, colFilter] of Object.entries(filterModel)) {
@@ -128,7 +154,19 @@ export function getActiveFilterOption(
     return null;
   }
 
-  const filterModel = api.getFilterModel();
+  // Check if the API is still valid and has the required method
+  if (typeof api.getFilterModel !== "function") {
+    console.warn("[QuickFilter] API is invalid or destroyed");
+    return null;
+  }
+
+  let filterModel;
+  try {
+    filterModel = api.getFilterModel();
+  } catch (error) {
+    console.warn("[QuickFilter] Error getting filter model:", error);
+    return null;
+  }
 
   // Handle multi-column filters (_multi)
   if (columnId === "_multi") {
@@ -140,7 +178,14 @@ export function getActiveFilterOption(
         }
 
         // Build the expected filter model
-        const expectedModel = option.buildFilterModel(api, columnId);
+        let expectedModel;
+        try {
+          expectedModel = option.buildFilterModel(api, columnId);
+        } catch (error) {
+          console.warn("[QuickFilter] Error building filter model:", error);
+          return false;
+        }
+
         if (!expectedModel) {
           // This option would clear filters
           return Object.keys(filterModel).length === 0;

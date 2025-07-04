@@ -88,12 +88,18 @@ export default {
 
       // Route: /api/stats - Aggregated statistics
       if (apiPath === "/api/stats" || apiPath === "/stats") {
-        const filterModel =
-          request.method === "POST"
-            ? (await request.json()).filterModel
-            : JSON.parse(url.searchParams.get("filterModel") || "{}");
+        let filterModel, searchText;
 
-        const stats = getStats(filterModel);
+        if (request.method === "POST") {
+          const body = await request.json();
+          filterModel = body.filterModel || {};
+          searchText = body.searchText || "";
+        } else {
+          filterModel = JSON.parse(url.searchParams.get("filterModel") || "{}");
+          searchText = url.searchParams.get("searchText") || "";
+        }
+
+        const stats = getStats(filterModel, searchText);
         return new Response(JSON.stringify(stats), { headers });
       }
 

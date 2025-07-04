@@ -37,23 +37,18 @@ function generateTask(id) {
       ? faker.date.between({ from: startDate, to: new Date() })
       : null;
 
-  const budget = faker.number.int({ min: 1000, max: 50000 });
-  const spent = faker.number.int({ min: 0, max: budget });
-  const progress = faker.number.int({ min: 0, max: 100 });
+  const value = faker.number.int({ min: 1000, max: 50000 });
+  const amountDelivered = faker.number.int({ min: 0, max: value });
+  const percentDelivered = faker.number.int({ min: 0, max: 100 });
 
   return {
-    id,
-    taskId: `TASK-${id}`,
-    title: faker.hacker.phrase(),
+    id: `TASK-${id}`,
+    name: faker.hacker.phrase(),
     description: faker.lorem.paragraph(),
     status: faker.helpers.arrayElement(statuses),
     priority: faker.helpers.arrayElement(priorities),
     category: faker.helpers.arrayElement(categories).name,
-    assignee: {
-      name: faker.person.fullName(),
-      email: faker.internet.email(),
-      avatar: faker.image.avatar(),
-    },
+    assignee: faker.person.fullName(),
     reporter: faker.person.fullName(),
     createdDate: faker.date.recent({ days: 60 }).toISOString(),
     startDate: startDate.toISOString(),
@@ -61,10 +56,10 @@ function generateTask(id) {
     completedDate: completedDate?.toISOString() || null,
     estimatedHours: faker.number.int({ min: 1, max: 40 }),
     actualHours: faker.number.int({ min: 0, max: 50 }),
-    progress,
-    budget,
-    spent,
-    remaining: budget - spent,
+    percentDelivered,
+    value,
+    amountDelivered,
+    remaining: value - amountDelivered,
     tags: faker.helpers.arrayElements(
       [
         "frontend",
@@ -281,16 +276,21 @@ export function processDataRequest({
 }
 
 // Get aggregated stats (for dashboard)
-export function getStats(filterModel = {}) {
+export function getStats(filterModel = {}, searchText = "") {
   let data = getFullDataset();
+
+  // Apply search text first (like in processDataRequest)
+  data = applySearchText(data, searchText);
+
+  // Then apply filters
   data = applyFilters(data, filterModel);
 
   const stats = {
     totalTasks: data.length,
-    totalBudget: data.reduce((sum, task) => sum + task.budget, 0),
-    totalSpent: data.reduce((sum, task) => sum + task.spent, 0),
+    totalBudget: data.reduce((sum, task) => sum + task.value, 0),
+    totalSpent: data.reduce((sum, task) => sum + task.amountDelivered, 0),
     averageProgress: Math.round(
-      data.reduce((sum, task) => sum + task.progress, 0) / data.length,
+      data.reduce((sum, task) => sum + task.percentDelivered, 0) / data.length,
     ),
     statusBreakdown: {},
     priorityBreakdown: {},

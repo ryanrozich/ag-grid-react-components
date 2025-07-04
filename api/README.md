@@ -9,7 +9,8 @@ This is a Cloudflare Worker that provides a server-side API for the AG Grid demo
 - Filtering support (text, set, date filters)
 - Sorting support (single and multi-column)
 - Row grouping support (partial - in development)
-- Statistics calculation
+- Statistics calculation with search support
+- Real-time aggregations for grand totals
 - Efficient data generation and processing
 
 ## Running Locally
@@ -53,6 +54,7 @@ Request body:
   "endRow": 100,
   "filterModel": {},
   "sortModel": [],
+  "searchText": "",
   "groupKeys": [],
   "rowGroupCols": []
 }
@@ -60,15 +62,26 @@ Request body:
 
 ### POST /api/stats
 
-Get statistics based on the current filter model.
+Get statistics based on the current filter model and search text.
 
 Request body:
 
 ```json
 {
-  "filterModel": {}
+  "filterModel": {},
+  "searchText": ""
 }
 ```
+
+Response includes aggregations for:
+
+- totalTasks
+- totalBudget
+- totalSpent
+- averageProgress
+- statusBreakdown
+- priorityBreakdown
+- categoryBreakdown
 
 ### GET /api/health
 

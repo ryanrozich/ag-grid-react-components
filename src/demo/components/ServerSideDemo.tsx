@@ -1,115 +1,39 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useMemo,
+} from "react";
 import { AgGridReact } from "ag-grid-react";
-import { themeQuartz } from "ag-grid-community";
 import type {
-  ColDef,
   GridApi,
   IServerSideDatasource,
   IServerSideGetRowsParams,
   GridReadyEvent,
   FilterChangedEvent,
 } from "ag-grid-community";
-import { RelativeDateFilter, ActiveFilters } from "../../index";
-import AvatarCellRenderer from "./AvatarCellRenderer";
-import CategoryCellRenderer from "./CategoryCellRenderer";
-import PercentBarRenderer from "./PercentBarRenderer";
-import type { ICellRendererParams } from "ag-grid-community";
+import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
+import { ActiveFilters } from "../../index";
+import {
+  darkTheme,
+  getColumnDefs,
+  defaultColDef,
+  components,
+  sideBarConfig,
+  getStatusBarConfig,
+} from "../config/sharedGridConfig";
+import { DemoToolbar, StatsBar } from "../config/commonUIConfig";
 
-// Status chip renderer
-const StatusRenderer: React.FC<ICellRendererParams> = ({ value }) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Backlog":
-        return "bg-gray-500/20 text-gray-400 border-gray-500/50";
-      case "Todo":
-        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
-      case "In Progress":
-        return "bg-blue-500/20 text-blue-400 border-blue-500/50";
-      case "In Review":
-        return "bg-purple-500/20 text-purple-400 border-purple-500/50";
-      case "Testing":
-        return "bg-orange-500/20 text-orange-400 border-orange-500/50";
-      case "Done":
-        return "bg-emerald-500/20 text-emerald-400 border-emerald-500/50";
-      case "Blocked":
-        return "bg-red-500/20 text-red-400 border-red-500/50";
-      default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/50";
-    }
-  };
+// Register AG Grid Enterprise modules
+ModuleRegistry.registerModules([AllEnterpriseModule]);
 
-  return (
-    <div className="flex items-center h-full">
-      <span
-        className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(value)}`}
-      >
-        {value}
-      </span>
-    </div>
-  );
-};
-
-// Priority chip renderer
-const PriorityRenderer: React.FC<ICellRendererParams> = ({ value }) => {
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "Critical":
-        return "bg-red-500/20 text-red-400 border-red-500/50";
-      case "High":
-        return "bg-orange-500/20 text-orange-400 border-orange-500/50";
-      case "Medium":
-        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
-      case "Low":
-        return "bg-green-500/20 text-green-400 border-green-500/50";
-      default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/50";
-    }
-  };
-
-  return (
-    <div className="flex items-center h-full">
-      <span
-        className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(value)}`}
-      >
-        {value}
-      </span>
-    </div>
-  );
-};
-
-// Create server-side demo theme
-const serverTheme = themeQuartz.withParams({
-  backgroundColor: "#0a0f19",
-  foregroundColor: "#9ca3af",
-  borderColor: "rgba(31, 41, 55, 0.5)",
-  chromeBackgroundColor: "#0a0f19",
-  headerBackgroundColor: "rgba(15, 23, 42, 0.8)",
-  headerTextColor: "#9ca3af",
-  oddRowBackgroundColor: "rgba(15, 23, 42, 0.3)",
-  browserColorScheme: "dark",
-  accentColor: "#4f46e5",
-  headerFontWeight: 500,
-  rowHoverColor: "rgba(99, 102, 241, 0.06)",
-  selectedRowBackgroundColor: "rgba(99, 102, 241, 0.1)",
-  // Input and control styling for filters
-  inputBackgroundColor: "rgba(15, 23, 42, 0.8)",
-  inputBorderColor: "rgba(55, 65, 81, 0.5)",
-  inputFocusBorderColor: "#4f46e5",
-  inputDisabledBackgroundColor: "rgba(15, 23, 42, 0.5)",
-  inputDisabledBorderColor: "rgba(31, 41, 55, 0.3)",
-  // Menu and popup styling
-  menuBackgroundColor: "#0f172a",
-  menuBorderColor: "rgba(55, 65, 81, 0.5)",
-  menuTextColor: "#9ca3af",
-  menuShadow:
-    "0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2)",
-});
-
-// Stats display component
-const ServerStats: React.FC<{ apiUrl: string; filterModel: any }> = ({
-  apiUrl,
-  filterModel,
-}) => {
+// Stats display component - using server data
+const ServerStats: React.FC<{
+  apiUrl: string;
+  filterModel: any;
+  searchText: string;
+}> = ({ apiUrl, filterModel, searchText }) => {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
@@ -120,18 +44,24 @@ const ServerStats: React.FC<{ apiUrl: string; filterModel: any }> = ({
         const response = await fetch(`${apiUrl}/stats`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ filterModel }),
+          body: JSON.stringify({ filterModel, searchText }),
         });
         const data = await response.json();
-        setStats(data);
+        // Transform server stats to match our common format
+        setStats({
+          taskCount: data.totalTasks,
+          totalBudget: data.totalBudget,
+          avgProgress: data.averageProgress,
+          budgetRemaining: data.totalBudget - data.totalSpent,
+        });
       } catch (error) {
         console.error("Error fetching stats:", error);
         // Fallback stats on error
         setStats({
-          totalTasks: 0,
+          taskCount: 0,
           totalBudget: 0,
-          averageProgress: 0,
-          totalSpent: 0,
+          avgProgress: 0,
+          budgetRemaining: 0,
         });
       } finally {
         setLoading(false);
@@ -139,50 +69,31 @@ const ServerStats: React.FC<{ apiUrl: string; filterModel: any }> = ({
     };
 
     fetchStats();
-  }, [apiUrl, filterModel]);
+  }, [apiUrl, filterModel, searchText]);
 
   if (loading || !stats) {
     return (
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="bg-gray-800 rounded-lg p-4 animate-pulse">
-            <div className="h-4 bg-gray-700 rounded w-1/2 mb-2"></div>
-            <div className="h-8 bg-gray-700 rounded"></div>
-          </div>
-        ))}
+      <div className="border-b border-gray-700/50 bg-gray-900/30">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x divide-gray-700/50">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="px-6 py-5">
+              <div className="flex items-center gap-4">
+                <div className="p-2.5 bg-gray-700/50 rounded-lg animate-pulse">
+                  <div className="w-5 h-5"></div>
+                </div>
+                <div className="flex-1">
+                  <div className="h-3 bg-gray-700 rounded w-1/2 mb-2 animate-pulse"></div>
+                  <div className="h-6 bg-gray-700 rounded animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="grid grid-cols-4 gap-4 mb-6">
-      <div className="bg-gray-800 rounded-lg p-4">
-        <div className="text-sm text-gray-400">Total Tasks</div>
-        <div className="text-2xl font-bold text-white">
-          {stats.totalTasks.toLocaleString()}
-        </div>
-        <div className="text-xs text-gray-500 mt-1">From server</div>
-      </div>
-      <div className="bg-gray-800 rounded-lg p-4">
-        <div className="text-sm text-gray-400">Total Budget</div>
-        <div className="text-2xl font-bold text-white">
-          ${stats.totalBudget.toLocaleString()}
-        </div>
-      </div>
-      <div className="bg-gray-800 rounded-lg p-4">
-        <div className="text-sm text-gray-400">Average Progress</div>
-        <div className="text-2xl font-bold text-white">
-          {stats.averageProgress}%
-        </div>
-      </div>
-      <div className="bg-gray-800 rounded-lg p-4">
-        <div className="text-sm text-gray-400">Budget Remaining</div>
-        <div className="text-2xl font-bold text-white">
-          ${(stats.totalBudget - stats.totalSpent).toLocaleString()}
-        </div>
-      </div>
-    </div>
-  );
+  return <StatsBar stats={stats} />;
 };
 
 export const ServerSideDemo: React.FC = () => {
@@ -195,6 +106,7 @@ export const ServerSideDemo: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const searchTextRef = useRef("");
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [aggregations, setAggregations] = useState<any>(null);
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -226,113 +138,29 @@ export const ServerSideDemo: React.FC = () => {
 
   const apiUrl = getApiUrl();
 
-  const columnDefs: ColDef[] = [
-    {
-      field: "taskId",
-      headerName: "Task ID",
-      width: 120,
-      pinned: "left",
-    },
-    {
-      field: "title",
-      headerName: "Title",
-      width: 300,
-      filter: "agTextColumnFilter",
-    },
-    {
-      field: "status",
-      headerName: "Status",
-      width: 140,
-      cellRenderer: "statusRenderer",
-      filter: "agSetColumnFilter",
-      filterParams: {
-        values: [
-          "Todo",
-          "In Progress",
-          "Done",
-          "In Review",
-          "Testing",
-          "Blocked",
-          "Backlog",
-        ],
-        suppressSelectAll: true,
-      },
-      enableRowGroup: true,
-    },
-    {
-      field: "priority",
-      headerName: "Priority",
-      width: 120,
-      cellRenderer: "priorityRenderer",
-      filter: "agSetColumnFilter",
-      filterParams: {
-        values: ["Low", "Medium", "High", "Critical"],
-        suppressSelectAll: true,
-      },
-      enableRowGroup: true,
-    },
-    {
-      field: "category",
-      headerName: "Category",
-      width: 140,
-      cellRenderer: "categoryRenderer",
-      filter: "agSetColumnFilter",
-      filterParams: {
-        values: [
-          "Bug",
-          "Feature",
-          "Documentation",
-          "Refactor",
-          "Testing",
-          "DevOps",
-          "Security",
-          "Performance",
-        ],
-        suppressSelectAll: true,
-      },
-      enableRowGroup: true,
-    },
-    {
-      field: "assignee.name",
-      headerName: "Assignee",
-      width: 180,
-      cellRenderer: "avatarRenderer",
-      filter: "agTextColumnFilter",
-      enableRowGroup: true,
-    },
-    {
-      field: "dueDate",
-      headerName: "Due Date",
-      width: 150,
-      filter: RelativeDateFilter,
-      valueFormatter: (params) => {
-        if (!params.value) return "";
-        return new Date(params.value).toLocaleDateString();
-      },
-    },
-    {
-      field: "progress",
-      headerName: "Progress",
-      width: 150,
-      cellRenderer: "progressRenderer",
-      filter: "agNumberColumnFilter",
-    },
-    {
-      field: "budget",
-      headerName: "Budget",
-      width: 120,
-      filter: "agNumberColumnFilter",
-      valueFormatter: (params) => `$${params.value.toLocaleString()}`,
-    },
-  ];
+  // Fetch aggregations for grand total row
+  const fetchAggregations = useCallback(async () => {
+    try {
+      const response = await fetch(`${apiUrl}/stats`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filterModel,
+          searchText: searchTextRef.current,
+        }),
+      });
+      const data = await response.json();
+      setAggregations(data);
+    } catch (error) {
+      console.error("Error fetching aggregations:", error);
+    }
+  }, [apiUrl, filterModel]);
 
-  const defaultColDef: ColDef = {
-    sortable: true,
-    resizable: true,
-    filterParams: {
-      buttons: ["reset", "apply"],
-    },
-  };
+  // Get column definitions for server-side
+  const columnDefs = useMemo(() => getColumnDefs(true), []);
+
+  // Get status bar config for server-side
+  const statusBarConfig = useMemo(() => getStatusBarConfig(true), []);
 
   const onGridReady = useCallback(
     (params: GridReadyEvent) => {
@@ -366,6 +194,9 @@ export const ServerSideDemo: React.FC = () => {
             // Update row count
             setRowCount(result.lastRow);
 
+            // Fetch aggregations for the grand total row
+            fetchAggregations();
+
             // Supply rows to grid
             params.success({
               rowData: result.rows,
@@ -392,7 +223,7 @@ export const ServerSideDemo: React.FC = () => {
       // Set the datasource
       params.api.setGridOption("serverSideDatasource", datasource);
     },
-    [apiUrl],
+    [apiUrl, fetchAggregations],
   );
 
   const onFilterChanged = useCallback((event: FilterChangedEvent) => {
@@ -444,77 +275,103 @@ export const ServerSideDemo: React.FC = () => {
         </div>
       )}
 
-      {/* Server Stats */}
-      <ServerStats apiUrl={apiUrl} filterModel={filterModel} />
-
       {/* Search bar */}
-      <div className="flex flex-wrap gap-4 mb-4">
-        <div className="flex-1 min-w-[200px]">
-          <input
-            type="text"
-            placeholder="Search all columns..."
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-            value={searchText}
-            onChange={(e) => {
-              const value = e.target.value;
-              setSearchText(value);
+      <DemoToolbar
+        searchPlaceholder="Search all columns..."
+        onSearchChange={(value) => {
+          setSearchText(value);
 
-              // Debounce the server request
-              if (searchTimeoutRef.current) {
-                clearTimeout(searchTimeoutRef.current);
-              }
+          // Debounce the server request
+          if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+          }
 
-              searchTimeoutRef.current = setTimeout(() => {
-                // Refresh the server-side data with new search
-                gridApi?.refreshServerSide({ purge: true });
-              }, 300); // 300ms debounce
-            }}
-          />
-        </div>
+          searchTimeoutRef.current = setTimeout(() => {
+            // Refresh the server-side data with new search
+            gridApi?.refreshServerSide({ purge: true });
+          }, 300); // 300ms debounce
+        }}
+      >
         <div className="text-sm text-gray-400 flex items-center">
           {loading && <span className="mr-2">🔍 Searching...</span>}
           {rowCount !== null && (
             <span>{rowCount.toLocaleString()} results</span>
           )}
         </div>
-      </div>
+      </DemoToolbar>
 
       {/* Active Filters */}
       {gridApi && Object.keys(filterModel).length > 0 && (
-        <div className="mb-4">
-          <ActiveFilters api={gridApi} filterModel={filterModel} />
+        <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg mt-3">
+          <div className="border-t border-gray-700/50 bg-gray-800/20 p-3">
+            <ActiveFilters api={gridApi} filterModel={filterModel} />
+          </div>
         </div>
       )}
 
-      {/* Grid - flex-1 takes remaining height */}
-      <div className="flex-1 min-h-0">
-        <AgGridReact
-          theme={serverTheme}
-          ref={gridRef}
-          columnDefs={columnDefs}
-          defaultColDef={defaultColDef}
-          rowModelType="serverSide"
-          cacheBlockSize={100}
-          maxBlocksInCache={10}
-          onGridReady={onGridReady}
-          onFilterChanged={onFilterChanged}
-          onSortChanged={() => {
-            /* Server-side handles sorting automatically */
-          }}
-          animateRows={true}
-          pagination={false} // Server-side doesn't use pagination
-          suppressMenuHide={true}
-          enableCellTextSelection={true}
-          ensureDomOrder={true}
-          components={{
-            statusRenderer: StatusRenderer,
-            priorityRenderer: PriorityRenderer,
-            categoryRenderer: CategoryCellRenderer,
-            avatarRenderer: AvatarCellRenderer,
-            progressRenderer: PercentBarRenderer,
-          }}
-          floatingFilter={true}
+      {/* Grid Container - fills remaining height */}
+      <div className="flex-1 bg-gray-900/50 rounded-xl border border-gray-800 flex flex-col mt-4">
+        {/* Server Stats Bar */}
+        <ServerStats
+          apiUrl={apiUrl}
+          filterModel={filterModel}
+          searchText={searchText}
         />
+
+        {/* AG Grid - fills remaining height */}
+        <div
+          className="flex-1 relative overflow-hidden"
+          style={{ minHeight: "400px", height: "100%" }}
+        >
+          <AgGridReact
+            theme={darkTheme}
+            ref={gridRef}
+            columnDefs={columnDefs}
+            defaultColDef={defaultColDef}
+            rowModelType="serverSide"
+            cacheBlockSize={100}
+            maxBlocksInCache={10}
+            onGridReady={onGridReady}
+            onFilterChanged={onFilterChanged}
+            onSortChanged={() => {
+              /* Server-side handles sorting automatically */
+            }}
+            animateRows={true}
+            pagination={false} // Server-side doesn't use pagination
+            suppressMenuHide={true}
+            enableCellTextSelection={true}
+            ensureDomOrder={true}
+            components={components}
+            sideBar={sideBarConfig}
+            statusBar={statusBarConfig}
+            domLayout="normal"
+            pinnedBottomRowData={
+              aggregations
+                ? [
+                    {
+                      id: "TOTAL",
+                      name: "Grand Total",
+                      value: aggregations.totalBudget,
+                      amountDelivered: aggregations.totalSpent,
+                      remaining:
+                        aggregations.totalBudget - aggregations.totalSpent,
+                      percentDelivered: aggregations.averageProgress,
+                    },
+                  ]
+                : []
+            }
+            getRowStyle={(params) => {
+              if (params.node.rowPinned) {
+                return {
+                  fontWeight: "bold",
+                  backgroundColor: "rgba(79, 70, 229, 0.1)",
+                  borderTop: "2px solid rgba(79, 70, 229, 0.3)",
+                };
+              }
+              return undefined;
+            }}
+          />
+        </div>
       </div>
 
       {/* API Health Check */}

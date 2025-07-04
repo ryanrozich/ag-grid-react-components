@@ -1,17 +1,9 @@
 import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 import { AgGridReact } from "ag-grid-react";
-import type {
-  ColDef,
-  GridApi,
-  GridOptions,
-  ICellRendererParams,
-  GridReadyEvent,
-} from "ag-grid-community";
-import { themeQuartz } from "ag-grid-community";
+import type { GridApi, GridReadyEvent } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import {
-  RelativeDateFilter,
   QuickFilterDropdown,
   ActiveFilters,
   setupGridStatePersistence,
@@ -19,115 +11,24 @@ import {
 import { generateData } from "./data/generator";
 import { CodeBlock } from "./components/CodeBlock";
 import { AnchorHeading } from "./components/AnchorHeading";
-import AvatarCellRenderer from "./components/AvatarCellRenderer";
-import CategoryCellRenderer from "./components/CategoryCellRenderer";
-import PercentBarRenderer from "./components/PercentBarRenderer";
 import { VERSION_DISPLAY, IS_PRERELEASE } from "./version";
 import heroScreenshot from "./assets/screenshots/hero-screenshot.png";
 import { ServerSideDemo } from "./components/ServerSideDemo";
+import {
+  darkTheme,
+  getColumnDefs,
+  defaultColDef,
+  components,
+  sideBarConfig,
+  getStatusBarConfig,
+} from "./config/sharedGridConfig";
+import { DemoToolbar, StatsBar } from "./config/commonUIConfig";
 // import { SimpleCodeBlock as CodeBlock } from "./components/SimpleCodeBlock";
 import "./styles/showcase-dark.css";
 import "./styles/code-override.css";
 
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);
-
-// Create a custom dark theme using modern Theming API
-const myDarkTheme = themeQuartz.withParams({
-  backgroundColor: "#0a0f19", // Very dark blue-black matching page background
-  foregroundColor: "#9ca3af", // gray-400 for softer contrast
-  borderColor: "rgba(31, 41, 55, 0.5)", // gray-800 with transparency
-  chromeBackgroundColor: "#0a0f19", // Match page background
-  headerBackgroundColor: "rgba(15, 23, 42, 0.8)", // slate-900 with transparency
-  headerTextColor: "#9ca3af", // gray-400 for less contrast
-  oddRowBackgroundColor: "rgba(15, 23, 42, 0.3)", // Very subtle striping
-  browserColorScheme: "dark",
-  accentColor: "#4f46e5", // indigo-600 - slightly darker
-  headerFontWeight: 500, // Lighter weight
-  // Additional params for better blending
-  rowHoverColor: "rgba(99, 102, 241, 0.06)", // Very subtle hover
-  selectedRowBackgroundColor: "rgba(99, 102, 241, 0.1)", // Subtle selection
-  rangeSelectionBorderColor: "rgba(99, 102, 241, 0.3)",
-  // Sidebar and grand total styling
-  sideBarBackgroundColor: "#0a0f19",
-  toolPanelBackgroundColor: "#0a0f19",
-  pinnedRowBackgroundColor: "rgba(30, 58, 138, 0.15)", // Dark blue for footer
-  pinnedColumnBackgroundColor: "rgba(15, 23, 42, 0.5)",
-  // Input and control styling for filters
-  inputBackgroundColor: "rgba(15, 23, 42, 0.8)",
-  inputBorderColor: "rgba(55, 65, 81, 0.5)",
-  inputFocusBorderColor: "#4f46e5",
-  inputDisabledBackgroundColor: "rgba(15, 23, 42, 0.5)",
-  inputDisabledBorderColor: "rgba(31, 41, 55, 0.3)",
-  // Menu and popup styling
-  menuBackgroundColor: "#0f172a",
-  menuBorderColor: "rgba(55, 65, 81, 0.5)",
-  menuTextColor: "#9ca3af",
-  menuShadow:
-    "0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2)",
-});
-
-// Status chip renderer
-const StatusRenderer: React.FC<ICellRendererParams> = ({ value }) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Backlog":
-        return "bg-gray-500/20 text-gray-400 border-gray-500/50";
-      case "Todo":
-        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
-      case "In Progress":
-        return "bg-blue-500/20 text-blue-400 border-blue-500/50";
-      case "In Review":
-        return "bg-purple-500/20 text-purple-400 border-purple-500/50";
-      case "Testing":
-        return "bg-orange-500/20 text-orange-400 border-orange-500/50";
-      case "Done":
-        return "bg-emerald-500/20 text-emerald-400 border-emerald-500/50";
-      case "Blocked":
-        return "bg-red-500/20 text-red-400 border-red-500/50";
-      default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/50";
-    }
-  };
-
-  return (
-    <div className="flex items-center h-full">
-      <span
-        className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(value)}`}
-      >
-        {value}
-      </span>
-    </div>
-  );
-};
-
-// Priority chip renderer with colors
-const PriorityRenderer: React.FC<ICellRendererParams> = ({ value }) => {
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "Critical":
-        return "bg-red-500/20 text-red-400 border-red-500/50";
-      case "High":
-        return "bg-orange-500/20 text-orange-400 border-orange-500/50";
-      case "Medium":
-        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
-      case "Low":
-        return "bg-green-500/20 text-green-400 border-green-500/50";
-      default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/50";
-    }
-  };
-
-  return (
-    <div className="flex items-center h-full">
-      <span
-        className={`px-3 py-1 rounded-full text-xs font-medium border ${getPriorityColor(value)}`}
-      >
-        {value}
-      </span>
-    </div>
-  );
-};
 
 // Navigation component
 const Navigation: React.FC<{
@@ -379,7 +280,7 @@ export const ComponentsShowcaseComplete: React.FC<
   ComponentsShowcaseCompleteProps
 > = ({ initialPage = "hero" }) => {
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
-  const [rowData] = useState(() => generateData(1000));
+  const [rowData] = useState(() => generateData(10000));
   const [filterModel, setFilterModel] = useState<
     import("ag-grid-community").FilterModel
   >({});
@@ -400,6 +301,18 @@ export const ComponentsShowcaseComplete: React.FC<
   const [activeDemoTab, setActiveDemoTab] = useState<"client" | "server">(
     "client",
   );
+
+  // Clean up grid API when switching tabs
+  useEffect(() => {
+    return () => {
+      // Clean up when tab changes
+      if (gridApi) {
+        console.log("Cleaning up grid API on tab change");
+        setGridApi(null);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeDemoTab]);
 
   // Router hooks
   const location = useLocation();
@@ -440,152 +353,9 @@ export const ComponentsShowcaseComplete: React.FC<
     }
   }, [currentPage, gridApi]); // Run when page changes
 
-  // Column definitions
-  const columnDefs: ColDef[] = useMemo(
-    () => [
-      {
-        field: "id",
-        headerName: "ID",
-        width: 70,
-        filter: "agNumberColumnFilter",
-      },
-      {
-        field: "name",
-        headerName: "Task Name",
-        flex: 2,
-        minWidth: 350,
-        filter: "agTextColumnFilter",
-      },
-      {
-        field: "category",
-        headerName: "Category",
-        width: 180,
-        filter: "agSetColumnFilter",
-        cellRenderer: CategoryCellRenderer,
-        enableRowGroup: true,
-      },
-      {
-        field: "priority",
-        headerName: "Priority",
-        width: 130,
-        filter: "agSetColumnFilter",
-        cellRenderer: PriorityRenderer,
-        enableRowGroup: true,
-      },
-      {
-        field: "assignee",
-        headerName: "Assignee",
-        width: 190,
-        filter: "agTextColumnFilter",
-        cellRenderer: AvatarCellRenderer,
-        enableRowGroup: true,
-      },
-      {
-        field: "dueDate",
-        headerName: "Due Date",
-        width: 140,
-        filter: RelativeDateFilter,
-        filterParams: {
-          buttons: ["reset", "apply"],
-          closeOnApply: true,
-        },
-        valueFormatter: (params) => {
-          if (!params.value) return "";
-          return new Date(params.value).toLocaleDateString();
-        },
-      },
-      {
-        field: "value",
-        headerName: "Budget",
-        width: 120,
-        filter: "agNumberColumnFilter",
-        aggFunc: "sum",
-        enableValue: true,
-        valueFormatter: (params) => {
-          if (params.value == null) return "";
-          return new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-          }).format(params.value);
-        },
-      },
-      {
-        field: "status",
-        headerName: "Status",
-        width: 130,
-        filter: "agSetColumnFilter",
-        cellRenderer: StatusRenderer,
-        enableRowGroup: true,
-        valueGetter: (params) => {
-          // Don&apos;t show aggregate value for status in grand total row
-          if (params.node?.footer) {
-            return "";
-          }
-          return params.data?.status;
-        },
-      },
-      {
-        field: "percentDelivered",
-        headerName: "Progress",
-        width: 170,
-        cellRenderer: PercentBarRenderer,
-        aggFunc: "avg", // Use simple average for aggregation
-        enableValue: true,
-      },
-      {
-        field: "amountDelivered",
-        headerName: "Spent",
-        width: 130,
-        aggFunc: "sum",
-        valueFormatter: (params) => {
-          if (params.value == null) return "";
-          return new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-          }).format(params.value);
-        },
-      },
-      {
-        field: "remaining",
-        headerName: "Remaining",
-        width: 150,
-        valueGetter: (params) => {
-          if (params.node?.footer) {
-            // For footer rows, AG Grid handles aggregation automatically
-            // This will show the sum of all "remaining" values
-            return null; // Let AG Grid handle the aggregation
-          }
-          // For regular rows, calculate budget - spent
-          return (
-            (params.data?.value || 0) - (params.data?.amountDelivered || 0)
-          );
-        },
-        aggFunc: "sum",
-        valueFormatter: (params) => {
-          if (params.value == null) return "";
-          return new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-          }).format(params.value);
-        },
-      },
-    ],
-    [],
-  );
-
-  const defaultColDef: ColDef = useMemo(
-    () => ({
-      sortable: true,
-      filter: true,
-      resizable: true,
-      floatingFilter: false, // Removed floating filters since we have active filters display
-    }),
+  // Get column definitions from shared config
+  const columnDefs = useMemo(
+    () => getColumnDefs(false), // false for client-side
     [],
   );
 
@@ -646,64 +416,7 @@ export const ComponentsShowcaseComplete: React.FC<
     cleanupRef.current = cleanup;
   }, []);
 
-  const gridOptions: GridOptions = {
-    animateRows: true,
-    pagination: true,
-    paginationPageSize: 25,
-    paginationPageSizeSelector: [25, 50, 100, 200],
-    suppressMenuHide: true,
-    cellSelection: true,
-    grandTotalRow: "bottom",
-    rowSelection: "multiple",
-    suppressRowClickSelection: true,
-    suppressCellFocus: false,
-    enableCellTextSelection: true,
-    ensureDomOrder: true,
-    getRowStyle: (params) => {
-      if (params.node.footer) {
-        return {
-          fontWeight: "bold",
-          backgroundColor: "rgba(59, 130, 246, 0.1)",
-        };
-      }
-      return undefined;
-    },
-    sideBar: {
-      toolPanels: [
-        {
-          id: "columns",
-          labelDefault: "Columns",
-          labelKey: "columns",
-          iconKey: "columns",
-          toolPanel: "agColumnsToolPanel",
-          minWidth: 225,
-          width: 225,
-          maxWidth: 350,
-          toolPanelParams: {
-            suppressRowGroups: false,
-            suppressValues: false,
-            suppressPivots: true,
-            suppressPivotMode: true,
-          },
-        },
-        {
-          id: "filters",
-          labelDefault: "Filters",
-          labelKey: "filters",
-          iconKey: "filter",
-          toolPanel: "agFiltersToolPanel",
-        },
-      ],
-      defaultToolPanel: "",
-      position: "right",
-    },
-    statusBar: {
-      statusPanels: [
-        { statusPanel: "agSelectedRowCountComponent", align: "left" },
-        { statusPanel: "agAggregationComponent", align: "right" },
-      ],
-    },
-  };
+  // Grid options are now passed directly as props to avoid conflicts between demos
 
   // dateQuickFilters is now defined outside the component
 
@@ -3804,10 +3517,13 @@ npm run dev:safe`}
                               </AnchorHeading>
                               <ul className="space-y-1 text-sm text-gray-300">
                                 <li>
-                                  • 1000 realistic software development records
+                                  • 10,000 realistic software development
+                                  records
                                 </li>
                                 <li>• Multiple column types and renderers</li>
-                                <li>• Sorting, filtering, and pagination</li>
+                                <li>
+                                  • Sorting, filtering, and infinite scroll
+                                </li>
                                 <li>• Enterprise features when available</li>
                               </ul>
                             </div>
@@ -3944,7 +3660,7 @@ npm run dev:safe`}
                             Sample Data
                           </AnchorHeading>
                           <p className="text-gray-300 mb-4">
-                            The demo uses 1000 rows of realistic software
+                            The demo uses 10,000 rows of realistic software
                             development data including tasks, bugs, features,
                             and more.
                           </p>
@@ -4439,11 +4155,14 @@ function MyGrid() {
                           </AnchorHeading>
                           <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
                             <p className="text-gray-300 mb-4">
-                              The new{" "}
+                              The{" "}
                               <code className="text-blue-400">
                                 setupGridStatePersistence
                               </code>{" "}
-                              now supports <strong>complete grid state</strong>:
+                              function provides{" "}
+                              <strong>real-time URL state persistence</strong>.
+                              Every change you make to the grid is instantly
+                              saved to the URL:
                             </p>
                             <ul className="space-y-2 text-gray-400">
                               <li className="flex items-start">
@@ -4456,8 +4175,20 @@ function MyGrid() {
                               <li className="flex items-start">
                                 <span className="text-green-400 mr-2">✓</span>
                                 <span>
-                                  <strong>Column State:</strong> Visibility,
-                                  order, width, pinning
+                                  <strong>Column State:</strong>
+                                  <ul className="ml-6 mt-1 space-y-1 text-sm">
+                                    <li>
+                                      • Column width (when you resize columns)
+                                    </li>
+                                    <li>
+                                      • Column order (when you drag columns)
+                                    </li>
+                                    <li>
+                                      • Column visibility (show/hide columns)
+                                    </li>
+                                    <li>• Column pinning (pin left/right)</li>
+                                    <li>• Column aggregation functions</li>
+                                  </ul>
                                 </span>
                               </li>
                               <li className="flex items-start">
@@ -4538,6 +4269,68 @@ function MyGrid() {
                                 </span>
                               </li>
                             </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="try-url-persistence">
+                            Try It Yourself
+                          </AnchorHeading>
+                          <div className="bg-indigo-900/20 border border-indigo-600/30 rounded-lg p-6">
+                            <p className="text-gray-300 mb-4">
+                              Watch the URL in your browser as you:
+                            </p>
+                            <ol className="space-y-2 text-gray-300">
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 font-semibold mr-2">
+                                  1.
+                                </span>
+                                <span>
+                                  <strong>Resize a column</strong> - The width
+                                  is saved instantly
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 font-semibold mr-2">
+                                  2.
+                                </span>
+                                <span>
+                                  <strong>Apply a filter</strong> - Filter state
+                                  appears in the URL
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 font-semibold mr-2">
+                                  3.
+                                </span>
+                                <span>
+                                  <strong>Sort a column</strong> - Sort
+                                  direction is preserved
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 font-semibold mr-2">
+                                  4.
+                                </span>
+                                <span>
+                                  <strong>Hide columns</strong> - Via the column
+                                  menu or sidebar
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 font-semibold mr-2">
+                                  5.
+                                </span>
+                                <span>
+                                  <strong>Copy the URL</strong> - Share it or
+                                  bookmark it!
+                                </span>
+                              </li>
+                            </ol>
+                            <p className="text-sm text-gray-400 mt-4">
+                              💡 <strong>Tip:</strong> Use the browser
+                              back/forward buttons to undo/redo grid changes!
+                            </p>
                           </div>
                         </div>
 
@@ -6768,197 +6561,56 @@ const handleFilterSelect = async (option) => {
 
           {/* Client-Side Demo */}
           {activeDemoTab === "client" && (
-            <div className="flex-1 flex flex-col">
+            <div key="client-demo" className="flex-1 flex flex-col">
               {/* Integrated Toolbar */}
-              <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg">
-                {/* Search and Quick Filters Row */}
-                <div className="p-3">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    {/* Search Bar */}
-                    <div className="relative flex-1 min-w-[240px]">
-                      <input
-                        type="text"
-                        placeholder="Search tasks..."
-                        className="w-full px-3 py-2 pl-10 bg-gray-800/50 border border-gray-700 rounded-md text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
-                        onChange={(e) => {
-                          if (gridApi) {
-                            gridApi.setGridOption(
-                              "quickFilterText",
-                              e.target.value,
-                            );
-                          }
-                        }}
-                      />
-                      <svg
-                        className="absolute left-3 top-2.5 w-4 h-4 text-gray-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                        />
-                      </svg>
-                    </div>
+              <DemoToolbar
+                searchPlaceholder="Search tasks..."
+                onSearchChange={(value) => {
+                  if (gridApi) {
+                    gridApi.setGridOption("quickFilterText", value);
+                  }
+                }}
+              >
+                {/* Quick Filters */}
+                {gridApi && (
+                  <>
+                    <QuickFilterDropdown
+                      key={`${activeDemoTab}-date-filter`}
+                      api={gridApi}
+                      columnId="dueDate"
+                      options={dateQuickFilters}
+                      placeholder="Time period"
+                      showDescriptions={false}
+                      className="min-w-[140px]"
+                      usePortal="always"
+                    />
+                    <QuickFilterDropdown
+                      key={`${activeDemoTab}-task-filter`}
+                      api={gridApi}
+                      columnId="_multi"
+                      options={taskTypeFilters}
+                      placeholder="Task type"
+                      showDescriptions={false}
+                      className="min-w-[140px]"
+                      usePortal="always"
+                    />
+                  </>
+                )}
+              </DemoToolbar>
 
-                    {/* Divider */}
-                    <div className="h-8 w-px bg-gray-700"></div>
-
-                    {/* Quick Filters */}
-                    {gridApi && (
-                      <>
-                        <QuickFilterDropdown
-                          api={gridApi}
-                          columnId="dueDate"
-                          options={dateQuickFilters}
-                          placeholder="Time period"
-                          showDescriptions={false}
-                          className="min-w-[140px]"
-                          usePortal="always"
-                        />
-                        <QuickFilterDropdown
-                          api={gridApi}
-                          columnId="_multi"
-                          options={taskTypeFilters}
-                          placeholder="Task type"
-                          showDescriptions={false}
-                          className="min-w-[140px]"
-                          usePortal="always"
-                        />
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                {/* Active Filters Row (when present) */}
-                {gridApi && Object.keys(filterModel).length > 0 && (
+              {/* Active Filters Row (when present) */}
+              {gridApi && Object.keys(filterModel).length > 0 && (
+                <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg mt-3">
                   <div className="border-t border-gray-700/50 bg-gray-800/20 p-3">
                     <ActiveFilters api={gridApi} filterModel={filterModel} />
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Grid Container - fills remaining height */}
               <div className="flex-1 bg-gray-900/50 rounded-xl border border-gray-800 flex flex-col mt-4">
                 {/* Hero Stats Bar */}
-                <div className="border-b border-gray-700/50 bg-gray-900/30">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x divide-gray-700/50">
-                    <div className="px-6 py-5">
-                      <div className="flex items-center gap-4">
-                        <div className="p-2.5 bg-indigo-500/10 rounded-lg">
-                          <svg
-                            className="w-5 h-5 text-indigo-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 uppercase tracking-wider">
-                            Number of Tasks
-                          </p>
-                          <p className="text-2xl font-semibold text-white mt-0.5">
-                            {stats.taskCount.toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="px-6 py-5">
-                      <div className="flex items-center gap-4">
-                        <div className="p-2.5 bg-green-500/10 rounded-lg">
-                          <svg
-                            className="w-5 h-5 text-green-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 uppercase tracking-wider">
-                            Total Budget
-                          </p>
-                          <p className="text-2xl font-semibold text-white mt-0.5">
-                            ${stats.totalBudget.toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="px-6 py-5">
-                      <div className="flex items-center gap-4">
-                        <div className="p-2.5 bg-blue-500/10 rounded-lg">
-                          <svg
-                            className="w-5 h-5 text-blue-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 uppercase tracking-wider">
-                            Progress
-                          </p>
-                          <p className="text-2xl font-semibold text-white mt-0.5">
-                            {stats.avgProgress.toFixed(1)}%
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="px-6 py-5">
-                      <div className="flex items-center gap-4">
-                        <div className="p-2.5 bg-amber-500/10 rounded-lg">
-                          <svg
-                            className="w-5 h-5 text-amber-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 uppercase tracking-wider">
-                            Budget Remaining
-                          </p>
-                          <p className="text-2xl font-semibold text-white mt-0.5">
-                            ${stats.budgetRemaining.toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <StatsBar stats={stats} />
 
                 {/* AG Grid - fills remaining height */}
                 <div
@@ -6966,13 +6618,36 @@ const handleFilterSelect = async (option) => {
                   style={{ minHeight: "400px", height: "100%" }}
                 >
                   <AgGridReact
-                    theme={myDarkTheme}
+                    theme={darkTheme}
                     columnDefs={columnDefs}
                     defaultColDef={defaultColDef}
                     rowData={rowData}
-                    gridOptions={gridOptions}
+                    animateRows={true}
+                    pagination={false}
+                    suppressMenuHide={true}
+                    cellSelection={true}
+                    grandTotalRow="bottom"
+                    rowSelection={{
+                      mode: "multiRow",
+                      enableClickSelection: false,
+                    }}
+                    suppressCellFocus={false}
+                    statusBar={getStatusBarConfig(false)}
+                    enableCellTextSelection={true}
+                    ensureDomOrder={true}
+                    getRowStyle={(params) => {
+                      if (params.node.footer) {
+                        return {
+                          fontWeight: "bold",
+                          backgroundColor: "rgba(59, 130, 246, 0.1)",
+                        };
+                      }
+                      return undefined;
+                    }}
                     onGridReady={onGridReady}
                     domLayout="normal"
+                    components={components}
+                    sideBar={sideBarConfig}
                   />
                 </div>
               </div>

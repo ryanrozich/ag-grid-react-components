@@ -599,4 +599,8 @@ MIT
 ## 🤝 Contributing
 
 Contributions are welcome! Please read our contributing guidelines before submitting PRs.
-test
+
+### For AI Agents & Automation
+
+- **[GitHub Project Automation](./docs/github-project-automation.md)** - How issue labels sync to project fields
+- **[CLAUDE.md](./CLAUDE.md)** - Instructions for AI assistants working with this codebase

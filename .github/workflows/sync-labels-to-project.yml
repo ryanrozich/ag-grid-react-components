@@ -1,0 +1,182 @@
+name: Sync Issue Labels to Project Fields
+
+on:
+  issues:
+    types: [opened, labeled, unlabeled]
+  project_card:
+    types: [created, moved]
+
+permissions:
+  issues: read
+  repository-projects: write
+
+jobs:
+  sync-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync Labels to Project Fields
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = context.issue?.number || context.payload.issue?.number;
+            if (!issueNumber) {
+              console.log('No issue number found');
+              return;
+            }
+
+            // Get issue details with labels
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber
+            });
+
+            console.log(`Processing issue #${issueNumber} with labels:`, issue.labels.map(l => l.name));
+
+            // Define label to field mappings
+            const labelMappings = {
+              // Priority mapping
+              'priority: critical': { field: 'Priority', value: 'Critical' },
+              'priority: high': { field: 'Priority', value: 'High' },
+              'priority: medium': { field: 'Priority', value: 'Medium' },
+              'priority: low': { field: 'Priority', value: 'Low' },
+              
+              // Area mapping
+              'area: components': { field: 'Area', value: 'Components' },
+              'area: demo': { field: 'Area', value: 'Demo' },
+              'area: build': { field: 'Area', value: 'Build' },
+              'area: ci/cd': { field: 'Area', value: 'CI/CD' },
+              'area: testing': { field: 'Area', value: 'Testing' },
+              'area: docs': { field: 'Area', value: 'Docs' },
+              
+              // Type mapping
+              'bug': { field: 'Type', value: 'Bug' },
+              'enhancement': { field: 'Type', value: 'Enhancement' },
+              'documentation': { field: 'Type', value: 'Documentation' },
+              'question': { field: 'Type', value: 'Question' },
+              'good first issue': { field: 'Type', value: 'Good First Issue' },
+              'help wanted': { field: 'Type', value: 'Help Wanted' },
+              
+              // Component mapping (if you have component labels)
+              'component: date-filter': { field: 'Component', value: 'DateFilter' },
+              'component: quick-filter': { field: 'Component', value: 'QuickFilter' },
+              'component: active-filters': { field: 'Component', value: 'ActiveFilters' },
+            };
+
+            // Extract field updates from labels
+            const fieldUpdates = {};
+            for (const label of issue.labels) {
+              const mapping = labelMappings[label.name];
+              if (mapping) {
+                fieldUpdates[mapping.field] = mapping.value;
+              }
+            }
+
+            if (Object.keys(fieldUpdates).length === 0) {
+              console.log('No matching labels found for project fields');
+              return;
+            }
+
+            console.log('Field updates to apply:', fieldUpdates);
+
+            // GraphQL to find the project and update fields
+            const projectQuery = `
+              query($owner: String!, $repo: String!, $issue: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  issue(number: $issue) {
+                    projectItems(first: 10) {
+                      nodes {
+                        id
+                        project {
+                          id
+                          title
+                          fields(first: 20) {
+                            nodes {
+                              ... on ProjectV2Field {
+                                id
+                                name
+                              }
+                              ... on ProjectV2SingleSelectField {
+                                id
+                                name
+                                options {
+                                  id
+                                  name
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            const projectData = await github.graphql(projectQuery, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue: issueNumber
+            });
+
+            const projectItems = projectData.repository.issue.projectItems.nodes;
+            if (projectItems.length === 0) {
+              console.log('Issue not found in any project');
+              return;
+            }
+
+            // Update each project item
+            for (const projectItem of projectItems) {
+              const project = projectItem.project;
+              console.log(`Updating project "${project.title}"`);
+
+              // Apply field updates
+              for (const [fieldName, fieldValue] of Object.entries(fieldUpdates)) {
+                const field = project.fields.nodes.find(f => f.name === fieldName);
+                if (!field) {
+                  console.log(`Field "${fieldName}" not found in project`);
+                  continue;
+                }
+
+                // For single select fields, find the option ID
+                let optionId = fieldValue;
+                if (field.options) {
+                  const option = field.options.find(o => o.name === fieldValue);
+                  if (!option) {
+                    console.log(`Option "${fieldValue}" not found for field "${fieldName}"`);
+                    continue;
+                  }
+                  optionId = option.id;
+                }
+
+                // Update the field
+                const updateMutation = `
+                  mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
+                    updateProjectV2ItemFieldValue(input: {
+                      projectId: $projectId
+                      itemId: $itemId
+                      fieldId: $fieldId
+                      value: $value
+                    }) {
+                      projectV2Item {
+                        id
+                      }
+                    }
+                  }
+                `;
+
+                try {
+                  await github.graphql(updateMutation, {
+                    projectId: project.id,
+                    itemId: projectItem.id,
+                    fieldId: field.id,
+                    value: { singleSelectOptionId: optionId }
+                  });
+                  console.log(`✅ Updated ${fieldName} to ${fieldValue}`);
+                } catch (error) {
+                  console.error(`❌ Failed to update ${fieldName}:`, error.message);
+                }
+              }
+            }
