@@ -134,52 +134,86 @@ Format: `type(scope): description`
 - Types: feat, fix, docs, refactor, test, chore
 - Scopes: components, utils, demo, test, deps, build
 
-## GitHub Issue Labeling Taxonomy
+## GitHub Issue Labeling Requirements
 
-When creating or managing GitHub issues, you MUST use this labeling system:
+When creating GitHub issues, you MUST ALWAYS apply these labels to ensure proper project tracking:
 
-### Type Labels (Choose ONE):
+### Required Labels (Choose One From Each Category)
 
-- `bug` - Something isn't working
-- `enhancement` - New feature or request
-- `documentation` - Improvements or additions to documentation
-- `question` - Further information is requested
-- `good first issue` - Good for newcomers
-- `help wanted` - Extra attention is needed
+1. **Type Label** (REQUIRED - pick one):
 
-### Priority Labels (Choose ONE):
+   - `bug` - Something isn't working
+   - `enhancement` - New feature or request
+   - `documentation` - Documentation improvements
+   - `question` - Further information requested
+   - `good first issue` - Good for newcomers
+   - `help wanted` - Extra attention is needed
 
-- `priority: critical` - Must fix ASAP, blocking usage
-- `priority: high` - Important, should be fixed soon
-- `priority: medium` - Normal priority
-- `priority: low` - Nice to have, can wait
+2. **Priority Label** (REQUIRED - pick one):
 
-### Area Labels (Choose ALL that apply):
+   - `priority: critical` - Must fix ASAP, blocking usage
+   - `priority: high` - Important, should be fixed soon
+   - `priority: medium` - Normal priority
+   - `priority: low` - Nice to have, can wait
 
-- `area: components` - Related to the React components
-- `area: demo` - Related to the demo/showcase application
-- `area: build` - Build tools, bundling, TypeScript config
-- `area: ci/cd` - GitHub Actions, deployment, automation
-- `area: testing` - Test suite, coverage, test infrastructure
-- `area: docs` - Documentation (README, API docs, guides)
+3. **Area Label** (REQUIRED - pick at least one):
+   - `area: components` - Related to the React components
+   - `area: demo` - Related to the demo/showcase application
+   - `area: build` - Build tools, bundling, TypeScript config
+   - `area: ci/cd` - GitHub Actions, deployment, automation
+   - `area: testing` - Test suite, coverage, test infrastructure
+   - `area: docs` - Documentation (README, API docs, guides)
 
-### Example Usage:
+### Optional Labels
 
-When creating an issue for a bug in the DateFilter component:
+4. **Status Label** (OPTIONAL - only if not "Needs Triage"):
+
+   - `status: needs-triage` - Default for new issues (add if unsure)
+   - `status: triaging` - Being evaluated
+   - `status: backlog` - Ready for development
+   - `status: in-progress` - Being worked on
+   - `status: in-review` - PR submitted
+   - `status: done` - Completed
+
+5. **Component Label** (OPTIONAL - only if issue is component-specific):
+   - `component: date-filter` - DateFilter/RelativeDateFilter components
+   - `component: quick-filter-dropdown` - QuickFilterDropdown component
+   - `component: active-filters` - ActiveFilters component
+   - `component: grid-state-utils` - Grid state persistence utilities
+   - `component: demo-app` - Demo application specific
+
+### Example Issue Creation
 
 ```bash
-gh issue create --title "DateFilter fails with null dates" \
+# Bug in a specific component
+gh issue create \
+  --title "DateFilter fails with null dates" \
   --body "Description..." \
   --label "bug" \
   --label "priority: high" \
-  --label "area: components"
+  --label "area: components" \
+  --label "component: date-filter"
+
+# General enhancement
+gh issue create \
+  --title "Add dark mode support" \
+  --body "Description..." \
+  --label "enhancement" \
+  --label "priority: medium" \
+  --label "area: demo"
 ```
 
-### When Working on Issues:
+### Project Management
+
+- **[View Issues](https://github.com/ryanrozich/ag-grid-react-components/issues)** - All open issues
+- **[Project Board](https://github.com/users/ryanrozich/projects/1)** - Track status and priorities
+- Labels automatically sync to project fields via GitHub Actions
+
+### When Working on Issues
 
 - Ask "What should we work on next?" to filter by type, priority, or area
 - Use `gh issue list --label "priority: high" --label "bug"` to find critical bugs
-- Use `gh issue list --label "good first issue"` to find beginner-friendly tasks
+- Use `gh issue list --label "status: backlog"` to find issues ready for development
 
 ## Essential NPM Scripts
 

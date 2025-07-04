@@ -600,6 +600,14 @@ MIT
 
 Contributions are welcome! Please read our contributing guidelines before submitting PRs.
 
+### 📋 Issues & Project Management
+
+- **[Open Issues](https://github.com/ryanrozich/ag-grid-react-components/issues)** - Report bugs or request features
+- **[Project Board](https://github.com/users/ryanrozich/projects/1)** - Track progress and priorities
+- **[Automation Guide](./docs/github-project-automation.md)** - How our label/project sync works
+
+When creating issues, our automation will sync labels to project fields for better organization.
+
 ### For AI Agents & Automation
 
 - **[GitHub Project Automation](./docs/github-project-automation.md)** - How issue labels sync to project fields
