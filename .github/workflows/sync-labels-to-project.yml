@@ -66,13 +66,25 @@ jobs:
               'component: grid-state-utils': { field: 'Component', value: 'Grid State Utils' },
               'component: demo-app': { field: 'Component', value: 'Demo App' },
               
+              // Effort mapping
+              'effort: xs': { field: 'Effort', value: 'XS (< 1 hour)' },
+              'effort: s': { field: 'Effort', value: 'S (1-4 hours)' },
+              'effort: m': { field: 'Effort', value: 'M (1-2 days)' },
+              'effort: l': { field: 'Effort', value: 'L (3-5 days)' },
+              'effort: xl': { field: 'Effort', value: 'XL (1+ week)' },
+              
               // Status mapping
               'status: needs-triage': { field: 'Status', value: 'Needs Triage' },
               'status: triaging': { field: 'Status', value: 'Triaging' },
               'status: backlog': { field: 'Status', value: 'Backlog' },
               'status: in-progress': { field: 'Status', value: 'In Progress' },
-              'status: in-review': { field: 'Status', value: 'In Review' },
+              'status: in-product-review': { field: 'Status', value: 'In Product Review' },
               'status: done': { field: 'Status', value: 'Done' },
+              // PR statuses
+              'status: pr-in-progress': { field: 'Status', value: 'PR In Progress' },
+              'status: in-code-review': { field: 'Status', value: 'In Code Review' },
+              'status: code-review-complete': { field: 'Status', value: 'Code Review Complete' },
+              'status: merged': { field: 'Status', value: 'Merged' },
             };
 
             // Extract field updates from labels

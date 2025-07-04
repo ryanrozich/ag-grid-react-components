@@ -168,19 +168,36 @@ When creating GitHub issues, you MUST ALWAYS apply these labels to ensure proper
 
 4. **Status Label** (OPTIONAL - only if not "Needs Triage"):
 
+   **Issue Statuses:**
+
    - `status: needs-triage` - Default for new issues (add if unsure)
    - `status: triaging` - Being evaluated
    - `status: backlog` - Ready for development
    - `status: in-progress` - Being worked on
-   - `status: in-review` - PR submitted
-   - `status: done` - Completed
+   - `status: in-product-review` - Feature deployed, awaiting product review
+   - `status: done` - Completed and verified
+
+   **PR Statuses (auto-managed):**
+
+   - `status: pr-in-progress` - Draft PR, not ready for review
+   - `status: in-code-review` - Ready for code review
+   - `status: code-review-complete` - Code approved, ready to merge
+   - `status: merged` - PR merged
 
 5. **Component Label** (OPTIONAL - only if issue is component-specific):
+
    - `component: date-filter` - DateFilter/RelativeDateFilter components
    - `component: quick-filter-dropdown` - QuickFilterDropdown component
    - `component: active-filters` - ActiveFilters component
    - `component: grid-state-utils` - Grid state persistence utilities
    - `component: demo-app` - Demo application specific
+
+6. **Effort Label** (OPTIONAL - estimate once scope is clear):
+   - `effort: xs` - Extra small (< 1 hour)
+   - `effort: s` - Small (1-4 hours)
+   - `effort: m` - Medium (1-2 days)
+   - `effort: l` - Large (3-5 days)
+   - `effort: xl` - Extra large (1+ week)
 
 ### Example Issue Creation
 
@@ -214,6 +231,30 @@ gh issue create \
 - Ask "What should we work on next?" to filter by type, priority, or area
 - Use `gh issue list --label "priority: high" --label "bug"` to find critical bugs
 - Use `gh issue list --label "status: backlog"` to find issues ready for development
+
+### Pull Request Automation
+
+PRs automatically inherit labels from linked issues:
+
+```bash
+# Creating a PR that fixes an issue
+gh pr create --title "Fix date filter bug" \
+  --body "Fixes #123\n\nDescription of changes..." \
+  --base main
+
+# The PR will automatically get all labels from issue #123 (except status)
+```
+
+**Recognized linking patterns:**
+
+- `fixes #123`, `closes #123`, `resolves #123`
+- Also works with full URLs
+
+**Manual sync if needed:**
+
+```bash
+npm run sync:pr-labels  # Sync all PRs with their linked issues
+```
 
 ## Essential NPM Scripts
 
