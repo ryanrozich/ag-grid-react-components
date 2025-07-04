@@ -22,21 +22,27 @@ When you create or update issue labels, a GitHub Action automatically updates th
 
 3. **Label-to-Field Mappings:**
 
-   | Label                | Project Field | Field Value   |
-   | -------------------- | ------------- | ------------- |
-   | `priority: critical` | Priority      | Critical      |
-   | `priority: high`     | Priority      | High          |
-   | `priority: medium`   | Priority      | Medium        |
-   | `priority: low`      | Priority      | Low           |
-   | `area: components`   | Area          | Components    |
-   | `area: demo`         | Area          | Demo          |
-   | `area: build`        | Area          | Build         |
-   | `area: ci/cd`        | Area          | CI/CD         |
-   | `area: testing`      | Area          | Testing       |
-   | `area: docs`         | Area          | Docs          |
-   | `bug`                | Type          | Bug           |
-   | `enhancement`        | Type          | Enhancement   |
-   | `documentation`      | Type          | Documentation |
+   | Label                              | Project Field | Field Value         |
+   | ---------------------------------- | ------------- | ------------------- |
+   | `priority: critical`               | Priority      | Critical            |
+   | `priority: high`                   | Priority      | High                |
+   | `priority: medium`                 | Priority      | Medium              |
+   | `priority: low`                    | Priority      | Low                 |
+   | `area: components`                 | Area          | Components          |
+   | `area: demo`                       | Area          | Demo                |
+   | `area: build`                      | Area          | Build               |
+   | `area: ci/cd`                      | Area          | CI/CD               |
+   | `area: testing`                    | Area          | Testing             |
+   | `area: docs`                       | Area          | Docs                |
+   | `bug`                              | Type          | Bug                 |
+   | `enhancement`                      | Type          | Enhancement         |
+   | `documentation`                    | Type          | Documentation       |
+   | `component: date-filter`           | Component     | DateFilter          |
+   | `component: quick-filter-dropdown` | Component     | QuickFilterDropdown |
+   | `component: active-filters`        | Component     | ActiveFilters       |
+   | `component: relative-date-filter`  | Component     | RelativeDateFilter  |
+   | `component: grid-state-utils`      | Component     | Grid State Utils    |
+   | `component: demo-app`              | Component     | Demo App            |
 
 ## For AI Agents (Claude, GitHub Copilot, etc.)
 

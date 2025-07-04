@@ -58,10 +58,13 @@ jobs:
               'good first issue': { field: 'Type', value: 'Good First Issue' },
               'help wanted': { field: 'Type', value: 'Help Wanted' },
               
-              // Component mapping (if you have component labels)
+              // Component mapping
               'component: date-filter': { field: 'Component', value: 'DateFilter' },
-              'component: quick-filter': { field: 'Component', value: 'QuickFilter' },
+              'component: quick-filter-dropdown': { field: 'Component', value: 'QuickFilterDropdown' },
               'component: active-filters': { field: 'Component', value: 'ActiveFilters' },
+              'component: relative-date-filter': { field: 'Component', value: 'RelativeDateFilter' },
+              'component: grid-state-utils': { field: 'Component', value: 'Grid State Utils' },
+              'component: demo-app': { field: 'Component', value: 'Demo App' },
             };
 
             // Extract field updates from labels
