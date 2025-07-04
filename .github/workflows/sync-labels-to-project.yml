@@ -65,6 +65,14 @@ jobs:
               'component: relative-date-filter': { field: 'Component', value: 'RelativeDateFilter' },
               'component: grid-state-utils': { field: 'Component', value: 'Grid State Utils' },
               'component: demo-app': { field: 'Component', value: 'Demo App' },
+              
+              // Status mapping
+              'status: needs-triage': { field: 'Status', value: 'Needs Triage' },
+              'status: triaging': { field: 'Status', value: 'Triaging' },
+              'status: backlog': { field: 'Status', value: 'Backlog' },
+              'status: in-progress': { field: 'Status', value: 'In Progress' },
+              'status: in-review': { field: 'Status', value: 'In Review' },
+              'status: done': { field: 'Status', value: 'Done' },
             };
 
             // Extract field updates from labels

@@ -43,6 +43,12 @@ When you create or update issue labels, a GitHub Action automatically updates th
    | `component: relative-date-filter`  | Component     | RelativeDateFilter  |
    | `component: grid-state-utils`      | Component     | Grid State Utils    |
    | `component: demo-app`              | Component     | Demo App            |
+   | `status: needs-triage`             | Status        | Needs Triage        |
+   | `status: triaging`                 | Status        | Triaging            |
+   | `status: backlog`                  | Status        | Backlog             |
+   | `status: in-progress`              | Status        | In Progress         |
+   | `status: in-review`                | Status        | In Review           |
+   | `status: done`                     | Status        | Done                |
 
 ## For AI Agents (Claude, GitHub Copilot, etc.)
 
@@ -56,7 +62,8 @@ gh issue create \
   --body "..." \
   --label "bug" \
   --label "priority: high" \
-  --label "area: components"
+  --label "area: components" \
+  --label "status: needs-triage"
 ```
 
 This will automatically set:
@@ -64,6 +71,7 @@ This will automatically set:
 - Type → Bug
 - Priority → High
 - Area → Components
+- Status → Needs Triage
 
 ## Adding New Mappings
 
@@ -97,7 +105,7 @@ gh run view <run-id>
 1. **Create Project Fields:**
 
    - Go to Project Settings
-   - Add fields: Priority, Area, Type, etc.
+   - Add fields: Priority, Area, Type, Component, Status
    - Set as "Single Select" type
    - Add options matching the mapping values
 
@@ -105,6 +113,7 @@ gh run view <run-id>
    - Project Settings → Workflows
    - Enable "Auto-add to project"
    - Configure for your repository
+   - Set default status to "Needs Triage" for new issues
 
 ## Best Practices
 
