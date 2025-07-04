@@ -50,11 +50,12 @@
 .textInput {
   width: 100%;
   padding: var(--ag-grid-size, 0.5rem);
-  border: 1px solid var(--ag-border-color, #d1d5db);
+  border: 1px solid
+    var(--ag-input-border-color, var(--ag-border-color, #d1d5db));
   border-radius: var(--ag-border-radius, 0.375rem);
   font-size: var(--ag-font-size, 0.875rem);
   background-color: var(
-    --ag-control-panel-background-color,
+    --ag-input-background-color,
     var(--ag-background-color)
   );
   color: var(--ag-foreground-color);
@@ -103,11 +104,12 @@
 .dateInput {
   width: 100%;
   padding: var(--ag-grid-size, 0.5rem);
-  border: 1px solid var(--ag-border-color, #d1d5db);
+  border: 1px solid
+    var(--ag-input-border-color, var(--ag-border-color, #d1d5db));
   border-radius: var(--ag-border-radius, 0.375rem);
   font-size: var(--ag-font-size, 0.875rem);
   background-color: var(
-    --ag-control-panel-background-color,
+    --ag-input-background-color,
     var(--ag-background-color)
   );
   color: var(--ag-foreground-color);
@@ -162,11 +164,12 @@
 :global(.react-datepicker__input-container input) {
   width: 100%;
   padding: var(--ag-grid-size, 0.5rem);
-  border: 1px solid var(--ag-border-color, #d1d5db);
+  border: 1px solid
+    var(--ag-input-border-color, var(--ag-border-color, #d1d5db));
   border-radius: var(--ag-border-radius, 0.375rem);
   font-size: var(--ag-font-size, 0.875rem);
   background-color: var(
-    --ag-control-panel-background-color,
+    --ag-input-background-color,
     var(--ag-background-color)
   );
   color: var(--ag-foreground-color);
@@ -279,7 +282,7 @@
 
 :global(.react-datepicker__day--selected),
 :global(.react-datepicker__day--keyboard-selected) {
-  background-color: var(--ag-material-primary-color, #2563eb);
+  background-color: var(--ag-accent-color, #2563eb);
   color: white;
 }
 

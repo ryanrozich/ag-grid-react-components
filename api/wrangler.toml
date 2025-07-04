@@ -1,0 +1,22 @@
+name = "ag-grid-demo-api"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+[env.production]
+name = "ag-grid-demo-api"
+
+# Route configuration
+[[env.production.routes]]
+pattern = "demo.rozich.net/ag-grid-react-components/api/*"
+zone_name = "rozich.net"
+
+# Variables for production
+[env.production.vars]
+ENVIRONMENT = "production"
+
+[env.preview]
+name = "ag-grid-demo-api-preview"
+# PR previews use dynamic config - see deploy-demo-preview.yml
+
+[env.preview.vars]
+ENVIRONMENT = "preview"

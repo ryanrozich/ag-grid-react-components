@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install API dependencies
+        run: cd api && npm install
+
       - name: Build demo
         run: npm run build:demo
         env:
@@ -40,10 +43,14 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
+          # Determine deploy path
+          DEPLOY_PATH="ag-grid-react-components"
+          echo "Deploying to path: $DEPLOY_PATH"
+
           # Upload demo assets to R2
           # First, clean up the existing files
           echo "Removing old files from R2..."
-          wrangler r2 object delete rozich-demos/ag-grid-react-components/ --recursive || true
+          wrangler r2 object delete "rozich-demos/$DEPLOY_PATH/" --remote --recursive || true
 
           # Upload all files from dist-demo
           echo "Uploading new files to R2..."
@@ -52,7 +59,7 @@ jobs:
             # Remove leading ./ from the file path
             file_path="${file#./}"
             echo "Uploading: $file_path"
-            wrangler r2 object put "rozich-demos/ag-grid-react-components/$file_path" --file="$file"
+            wrangler r2 object put "rozich-demos/$DEPLOY_PATH/$file_path" --file="$file" --remote
           done
 
       - name: Update demo metadata
@@ -61,8 +68,21 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_KV_NAMESPACE_ID: ${{ secrets.CLOUDFLARE_KV_NAMESPACE_ID }}
         run: |
-          # Skip KV update for now - wrangler syntax has changed
-          echo "Skipping KV metadata update - needs syntax update"
+          # Update KV metadata to register demo with router
+          DEPLOY_PATH="ag-grid-react-components"
+
+          wrangler kv key put "$DEPLOY_PATH" \
+            '{"name": "AG Grid React Components", "description": "Tree-shakeable React filter components for AG Grid", "updated": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' \
+            --namespace-id="$CLOUDFLARE_KV_NAMESPACE_ID" \
+            --remote
+
+      - name: Deploy API Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          cd api
+          npx wrangler deploy --env production
 
       - name: Purge Cloudflare cache
         env:

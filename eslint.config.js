@@ -131,6 +131,28 @@ export default [
       "@typescript-eslint/no-explicit-any": "off", // Complex AG Grid filter models
     },
   },
+  // Configuration for API directory JavaScript files
+  {
+    files: ["api/**/*.js"],
+    languageOptions: {
+      ecmaVersion: 2021,
+      sourceType: "module",
+      globals: {
+        URL: "readonly",
+        Response: "readonly",
+        setTimeout: "readonly",
+        console: "readonly",
+        process: "readonly",
+        __dirname: "readonly",
+        __filename: "readonly",
+        Buffer: "readonly",
+        global: "readonly",
+        module: "readonly",
+        require: "readonly",
+        exports: "readonly",
+      },
+    },
+  },
   {
     ignores: [
       "dist/**",

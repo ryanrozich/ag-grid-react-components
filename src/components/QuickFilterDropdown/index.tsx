@@ -64,8 +64,17 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
 
   // Get the currently active filter from AG Grid
   useEffect(() => {
-    const activeOption = getActiveFilterOption(api, columnId, options);
-    setState((prev) => ({ ...prev, selectedOption: activeOption }));
+    // Skip if API is not available or invalid
+    if (!api || typeof api.getFilterModel !== "function") {
+      return;
+    }
+
+    try {
+      const activeOption = getActiveFilterOption(api, columnId, options);
+      setState((prev) => ({ ...prev, selectedOption: activeOption }));
+    } catch (error) {
+      console.warn("[QuickFilterDropdown] Error getting active filter:", error);
+    }
   }, [api, columnId, options]);
 
   // Calculate dropdown position (only used when portal is enabled)
@@ -108,17 +117,27 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
   // Handle option selection
   const handleSelectOption = useCallback(
     async (option: QuickFilterOption | null) => {
-      await applyQuickFilter(api, columnId, option);
-      setState((prev) => ({
-        ...prev,
-        selectedOption: option,
-        isOpen: false,
-        searchQuery: "",
-        highlightedIndex: -1,
-      }));
-      setDropdownPosition(null);
-      onFilterChange?.(option);
-      triggerRef.current?.focus();
+      // Check if API is still valid before applying filter
+      if (!api || typeof api.getFilterModel !== "function") {
+        console.warn("[QuickFilterDropdown] API is invalid or destroyed");
+        return;
+      }
+
+      try {
+        await applyQuickFilter(api, columnId, option);
+        setState((prev) => ({
+          ...prev,
+          selectedOption: option,
+          isOpen: false,
+          searchQuery: "",
+          highlightedIndex: -1,
+        }));
+        setDropdownPosition(null);
+        onFilterChange?.(option);
+        triggerRef.current?.focus();
+      } catch (error) {
+        console.error("[QuickFilterDropdown] Error applying filter:", error);
+      }
     },
     [api, columnId, onFilterChange],
   );

@@ -17,7 +17,7 @@
 }
 
 .filterButton:focus-visible {
-  outline: 2px solid var(--ag-material-primary-color, #2563eb);
+  outline: 2px solid var(--ag-accent-color, #2563eb);
   outline-offset: 2px;
 }
 
@@ -37,16 +37,18 @@
 }
 
 .applyButton {
-  background-color: var(--ag-material-primary-color, #2563eb);
-  color: var(--ag-primary-foreground-color, #fff);
+  background-color: var(--ag-accent-color, #2563eb);
+  color: #fff;
 }
 
 .applyButton:hover:not(:disabled) {
-  background-color: var(--ag-material-accent-color, #1d4ed8);
+  background-color: var(--ag-accent-color, #1d4ed8);
+  filter: brightness(0.9);
 }
 
 .applyButton:active:not(:disabled) {
-  background-color: var(--ag-alpine-active-color, #1e40af);
+  background-color: var(--ag-accent-color, #1e40af);
+  filter: brightness(0.8);
 }
 
 .applyButton:disabled {

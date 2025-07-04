@@ -1,1015 +1,339 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides instructions for Claude Code when working with this repository.
 
-## IMPORTANT: Version 0.1.0 Architecture (December 2024)
+## Load Personal Configuration
 
-This project uses a single npm package with a modular, tree-shakeable architecture for optimal developer experience and bundle sizes.
+You MUST first check if `CLAUDE.personal.md` exists and load it. Personal configurations override any instructions in this file.
 
-### Package Structure
+## Core Architecture Principles
 
-```
-ag-grid-react-components - Single tree-shakeable package
-- Minimal bundle: 25KB (just core components)
-- With React DatePicker: 65KB (dynamically imported)
-- Full featured: 85KB (all components + optional dependencies)
-```
+You MUST follow these architectural principles:
 
-### Why Single Package?
+1. **Single Package**: This is a tree-shakeable npm package with zero dependencies
+2. **Headless Components**: Components have NO styles by default
+3. **Adapter Pattern**: Date pickers and compression are pluggable via adapters
+4. **Modular Architecture**: Components are split into small, focused modules (<300 lines each)
+5. **TypeScript Strict Mode**: You MUST NOT use `any` type. Use `unknown` with type guards
 
-After careful consideration, we chose a single package approach because:
+## Required Development Workflow
 
-1. **Excellent bundle sizes** - Tree-shaking works perfectly (25KB minimal)
-2. **Better developer experience** - One install command, one version to manage
-3. **Simpler maintenance** - One changelog, one release process
-4. **Flexibility retained** - Can split into multiple packages later if needed
+### 1. Test-Driven Development (TDD)
 
-See GitHub issue #2 for the full discussion.
+You MUST follow TDD:
 
-### Key Architecture Decisions
+1. Write failing tests FIRST before implementing features
+2. Write minimal code to make tests pass
+3. Refactor while keeping tests green
+4. You MUST have tests for all new functionality
 
-1. **Headless by default** - Components come with zero styles
-2. **Adapter pattern** - Date pickers and compression are pluggable
-3. **Dynamic imports** - Heavy dependencies load only when used
-4. **Tree-shakeable** - Each component has its own entry point
-5. **Zero dependencies** in core package
+### 2. Before Starting Any Work
 
-### Publishing to NPM
-
-#### Automated Publishing (Recommended)
-
-1. **Set up NPM token**:
-
-   - Go to <https://www.npmjs.com/settings/~/tokens>
-   - Create an "Automation" token (bypasses 2FA)
-   - Add as `NPM_TOKEN` secret in GitHub repo settings
-
-2. **Use GitHub Actions**:
-
-   ```bash
-   # Create a new release (tags, changelog, and publishes to NPM)
-   # Go to Actions → Create Release → Run workflow
-   # Enter version like "0.1.0" or "0.1.0-beta.1"
-
-   # Or publish existing version
-   # Go to Actions → Publish to NPM → Run workflow
-   ```
-
-3. **Via GitHub CLI**:
-
-   ```bash
-   # Trigger release workflow
-   gh workflow run release.yml -f version=0.1.0
-
-   # Trigger publish only
-   gh workflow run publish.yml -f tag=latest
-   ```
-
-#### Manual Publishing
+You MUST run these commands:
 
 ```bash
-# Login first (one-time)
-npm login
-
-# Publish with OTP
-npm publish --access public --otp=123456
-
-# Publish with specific tag
-npm publish --access public --tag beta --otp=123456
+npm run lint          # Check current state
+npm run test:unit     # Ensure tests pass
 ```
 
-Package publishes as `ag-grid-react-components` on npm.
+### 3. During Development
 
-### Example Usage Patterns
+You MUST:
 
-```typescript
-// MINIMAL (25KB total) - Uses native HTML5 date input
-import { createDateFilter } from "ag-grid-react-components";
-const DateFilter = createDateFilter();
+- Keep `npm run test:watch` running in another terminal
+- Run `npm run lint:fix` after making changes
+- Run `npm run typecheck` frequently
+- Use `npm run dev:safe` instead of `npm run dev`
 
-// WITH REACT DATEPICKER (65KB total) - Lazy loaded
-import { createDateFilter, reactDatePickerAdapter } from "ag-grid-react-components";
-const DateFilter = createDateFilter({ datePickerAdapter: reactDatePickerAdapter });
+### 4. Before Committing
 
-// WITH COMPRESSION (adds 15KB when used)
-import { setupGridStatePersistence } from "ag-grid-react-components";
-setupGridStatePersistence(api, { useCompression: true });
-```
-
-### Monorepo Structure
-
-- Uses npm workspaces for package management
-- Turbo for build orchestration
-- Each package has its own package.json and build config
-- Shared TypeScript config at root
-
-### Bundle Size Achievements
-
-| Use Case                             | Bundle Size |
-| ------------------------------------ | ----------- |
-| Just DateFilter (native)             | 25KB        |
-| Just QuickFilter                     | 15KB        |
-| All components (native)              | 45KB        |
-| All components (w/ React DatePicker) | 85KB        |
-
-## Prerequisites
-
-### Installing Trunk
-
-This project uses Trunk.io for code quality. Install it globally:
+You MUST run:
 
 ```bash
-# macOS/Linux
-curl https://get.trunk.io -fsSL | bash
-
-# Or via Homebrew
-brew install trunk-io
-
-# Windows (WSL required)
-curl https://get.trunk.io -fsSL | bash
+npm run pre-commit    # This runs format, lint, typecheck, and tests
 ```
 
-After installation, run `trunk` in the project directory to ensure it's set up correctly.
+### 5. E2E Testing for UI Changes
 
-## Commands
+You MUST:
 
-This project uses npm scripts for all commands. To see available commands, run `npm run` or check the scripts section in `package.json`.
+1. Run `npm run test:e2e` before declaring any UI bug fixed
+2. Create a new Playwright test for any bug you fix
+3. Never say a UI issue is resolved without passing e2e tests
 
-### Development
+## Component Structure
 
-```bash
-# Start development server
-npm run dev
-
-# Start development with quality checks first
-npm run dev:safe
-
-# Build the library
-npm run build
-
-# Preview the built package
-npm run preview
-```
-
-### Testing
-
-```bash
-# Run all tests (unit + e2e)
-npm test
-
-# Run unit tests only
-npm run test:unit
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage
-npm run test:coverage
-
-# Run specific test file
-npm run test:file -- DateFilter.test
-
-# E2E tests
-npm run test:e2e           # Run playwright tests
-npm run test:e2e:ui        # Open playwright UI
-npm run test:e2e:debug     # Debug mode
-npm run test:e2e:headed    # Run with visible browser
-
-# Browser tests
-npm run test:browser       # Validate demo works
-npm run test:filter-click  # Test filter clicking
-
-# Generate and open coverage report
-npm run coverage:report
-```
-
-### Code Quality (Powered by Trunk)
-
-This project uses **Trunk.io** as the primary code quality runner. Trunk manages multiple linters and formatters in a single, fast, and consistent interface.
-
-#### Trunk Commands
-
-```bash
-# Check all files (shows issues without fixing)
-npm run lint              # or: trunk check
-
-# Check and auto-fix issues
-npm run lint:fix          # or: trunk check --fix
-
-# Format all files
-npm run format            # or: trunk fmt
-
-# Check specific linter
-npm run lint:styles       # CSS only (stylelint)
-npm run format:check      # Formatting only (prettier)
-
-# Type checking (not managed by Trunk)
-npm run typecheck         # TypeScript compiler
-
-# Combined checks
-npm run check             # Trunk check + TypeScript
-npm run quality           # All Trunk checks (no fix)
-
-# Whitespace checks
-npm run check:whitespace  # Check for trailing whitespace
-npm run fix:whitespace    # Fix trailing whitespace
-
-# Pre-commit (auto-fixes issues)
-npm run pre-commit        # Format + fix whitespace + check + typecheck
-```
-
-#### What Trunk Checks
-
-- **prettier**: Code formatting
-- **eslint**: JavaScript/TypeScript linting
-- **stylelint**: CSS/PostCSS linting
-- **markdownlint**: Markdown formatting
-- **git-diff-check**: Git whitespace issues (trailing spaces, tabs)
-- **checkov**: Infrastructure as Code security
-- **osv-scanner**: Dependency vulnerabilities
-- **trufflehog**: Secrets detection
-- **oxipng**: PNG optimization
-
-#### CRITICAL for Claude Code
-
-**You MUST run these commands frequently when making changes:**
-
-1. **Before making changes**: `npm run lint` to see current state
-2. **After making changes**: `npm run lint:fix` to auto-fix issues
-3. **Before committing**: `npm run pre-commit` (this also runs automatically)
-4. **ALWAYS run e2e tests before declaring a problem fixed**: `npm run test:e2e`
-5. **Create new Playwright tests**: When fixing bugs, always create a new e2e test to prevent regressions
-
-**Trunk will automatically:**
-
-- Format code consistently
-- Fix linting issues where possible
-- Catch security issues
-- Optimize images
-- Check for secrets
-
-**Example workflow:**
-
-```bash
-# 1. Make your changes
-# 2. Check what Trunk finds
-npm run lint
-
-# 3. Auto-fix what's possible
-npm run lint:fix
-
-# 4. Run pre-commit to ensure everything passes
-npm run pre-commit
-
-# 5. If all passes, commit your changes
-git add -A && git commit -m "feat: add new feature"
-```
-
-**Note**: The pre-commit hook will run automatically, but it's good practice to run it manually first to catch issues early.
-
-#### Whitespace Enforcement
-
-This project enforces strict whitespace rules to ensure clean code:
-
-- **No trailing whitespace** at the end of lines
-- **No whitespace on blank lines**
-- **Consistent line endings** (LF, not CRLF)
-- **No tabs in indentation** (spaces only)
-
-Whitespace is enforced by:
-
-1. **Trunk's git-diff-check**: Catches whitespace issues during `trunk check`
-2. **Custom scripts**: Additional validation in `npm run check:whitespace`
-3. **Git attributes**: `.gitattributes` configures git's whitespace detection
-4. **Pre-commit hooks**: Automatically fixes whitespace issues
-
-If you see whitespace errors:
-
-```bash
-# Check for whitespace issues
-npm run check:whitespace
-
-# Fix them automatically
-npm run fix:whitespace
-
-# Or run pre-commit which includes the fix
-npm run pre-commit
-```
-
-### Utility Commands
-
-```bash
-# Install dependencies
-npm install
-
-# Clean build artifacts
-npm run clean
-
-# Fresh start (clean + install + build)
-npm run fresh
-
-# Check bundle size
-npm run bundle-size
-
-# Run TypeScript file directly
-npm run run-tsx src/demo/test.tsx
-```
-
-### Commits and Releases
-
-**IMPORTANT**: This project uses conventional commits for semantic versioning. Always use:
-
-```bash
-# Create a conventional commit interactively
-npm run commit
-
-# This will prompt you for:
-# - Type (feat, fix, docs, style, refactor, test, chore)
-# - Scope (optional: core, components, utils, demo, test, deps, build, docs, ci)
-# - Description
-# - Breaking changes
-# - Issues closed
-```
-
-#### Release Management
-
-```bash
-# Create a new release (auto-determines version from commits)
-npm run release
-
-# Specific version bumps
-npm run release:patch   # 1.0.0 → 1.0.1
-npm run release:minor   # 1.0.0 → 1.1.0
-npm run release:major   # 1.0.0 → 2.0.0
-
-# Preview what would happen
-npm run release:dry-run
-
-# Create the very first release (for new projects)
-npm run release:first
-```
-
-The release process will:
-
-1. Analyze commits since last release
-2. Bump version in package.json
-3. Generate/update CHANGELOG.md
-4. Create a git tag
-5. Commit all changes
-
-## Architecture
-
-This repository contains custom components for AG Grid including a date filter, quick filters, active filters display, and various cell renderers that supports both absolute dates and relative date expressions. Following a recent major refactoring, the codebase now uses a modular component architecture.
-
-### Component Structure (Modular Architecture)
-
-The date filter has been decomposed from a 971-line monolith into a clean, modular architecture:
+You MUST follow this structure for components:
 
 ```txt
-src/components/DateFilter/
-├── index.tsx                    # Main orchestrator (291 lines, 70% reduction)
-├── components/
-│   ├── FilterModeToggle.tsx    # Toggle between absolute/relative modes
-│   ├── FilterTypeSelector.tsx  # Dropdown for filter types
-│   ├── AbsoluteDatePicker.tsx  # Date picker UI for absolute mode
-│   ├── RelativeExpressionInput.tsx # Expression input for relative mode
-│   └── FilterActions.tsx       # Reset/Apply buttons
-├── hooks/
-│   ├── useFilterState.ts       # Centralized state management (13+ state variables)
-│   └── useFilterValidation.ts  # Validation logic and date resolution
-└── types.ts                    # TypeScript interfaces and types
+src/components/ComponentName/
+├── index.tsx                    # Main component (orchestrator only)
+├── components/                  # Sub-components
+├── hooks/                       # Custom hooks
+├── utils/                       # Utility functions
+├── types.ts                     # TypeScript interfaces
+└── ComponentName.test.tsx       # Tests (REQUIRED)
 ```
 
-### Core Components
+## Code Quality Requirements
 
-1. **DateFilter (index.tsx)**: The main filter component that implements AG Grid's IFilter interface. Key responsibilities:
+You MUST:
 
-   - AG Grid integration via useGridFilter hook
-   - Orchestrates child components
-   - Implements required callbacks (doesFilterPass, getModel, setModel)
+1. **Run Trunk frequently**: `npm run lint:fix` after changes
+2. **Fix whitespace**: `npm run fix:whitespace` if needed
+3. **Type everything**: No implicit any, no type assertions without guards
+4. **Validate inputs**: Validate at all system boundaries
+5. **Handle errors**: Never let errors bubble up unhandled
 
-2. **RelativeDateFloatingFilter.tsx**: A companion component that displays the current filter state in AG Grid's floating filter header.
+## AG Grid Integration Rules
 
-### Utilities
+When working with AG Grid filters, you MUST:
 
-1. **dateExpressionParser.ts**: Handles parsing and resolving relative date expressions like "Today+7d" using date-fns.
+1. Implement `getModel`, `setModel`, and `doesFilterPass`
+2. Use `useGridFilter` hook for integration
+3. Sync internal state with AG Grid's model
+4. Use `useCallback` for all AG Grid callbacks
+5. Handle the v33 setFilterModel bug with the workaround function
 
-   - `parseDateExpression`: Parses expressions and validates them
-   - `isValidDateExpression`: Checks if an expression is valid
-   - `resolveDateExpression`: Resolves expressions to actual Date objects
+## Testing Requirements
 
-2. **filterStateUtils.ts**: Handles filter serialization and URL persistence.
-   - `serializeFilterModel`: Serializes Date objects in filter models for storage
-   - `deserializeFilterModel`: Deserializes string dates back to Date objects
-   - `setupFilterStatePersistence`: Sets up browser history integration
+You MUST:
 
-### Custom Cell Renderers
+1. Write tests BEFORE implementation (TDD)
+2. Use Vitest and React Testing Library
+3. Test components in isolation AND with AG Grid integration
+4. Achieve >80% coverage for new code
+5. Create e2e tests for UI bugs
 
-The demo includes several custom cell renderers for enhanced visual presentation:
+Test types you MUST write:
 
-1. **PriorityRenderer**: Color-coded pills for priority levels
+- Unit tests for utilities
+- Component tests with React Testing Library
+- Integration tests with AGGridTestHarness
+- E2e tests with Playwright for UI bugs
 
-   - Critical: Red background/border
-   - High: Orange background/border
-   - Medium: Yellow background/border
-   - Low: Green background/border
+## Documentation Updates
 
-2. **StatusRenderer**: Status badges with appropriate colors
-3. **AvatarCellRenderer**: User avatars with fallback initials
-4. **CategoryCellRenderer**: Category pills with predefined colors
-5. **PercentBarRenderer**: Progress bars for percentage values
+When changing functionality, you MUST update ALL of:
 
-### Stats Dashboard
+1. README.md - API changes, examples, features
+2. Demo app (`src/demo/components-showcase-complete.tsx`) - Working examples
+3. llms.txt - Component descriptions and usage
+4. TypeScript interfaces and JSDoc comments
 
-The demo features a stats dashboard that displays:
+## Commit Standards
 
-- Number of Tasks (with dynamic filtering)
-- Total Budget (sum of all visible rows)
-- Average Progress (percentage)
-- Budget Remaining (budget - spent)
-
-Stats are calculated using `api.forEachNodeAfterFilterAndSort()` and update automatically when filters change.
-
-### Demo
-
-The package includes a comprehensive demo in `src/demo/components-showcase-complete.tsx` that showcases:
-
-- Both absolute and relative date filtering
-- Integration with AG Grid Enterprise features
-- Filter state persistence in the URL
-- Quick filter buttons for common date ranges
-
-### Data Flow
-
-1. User interacts with the filter UI (selects dates or enters expressions)
-2. Component validates input and creates a filter model
-3. AG Grid calls the `doesFilterPass` method to filter rows
-4. Filter state can be serialized for persistence and later restored
-
-## Integration Points
-
-When working with this codebase, be aware of these key integration points:
-
-1. **AG Grid API**: The components use the AG Grid v33+ API with `useGridFilter` hook. This is a critical integration point.
-
-2. **date-fns**: All date manipulation relies on date-fns v4+ functions.
-
-3. **Browser History API**: Filter state persistence uses the browser's History API for URL-based state management.
-
-## Design Patterns
-
-1. **Component State Management**: Uses React hooks (useState, useCallback, useMemo) extensively for state management.
-
-2. **Serialization/Deserialization**: Dates are serialized to ISO strings for storage and deserialized back to Date objects.
-
-3. **Callback Registration**: The filter registers callback functions with AG Grid through the useGridFilter hook.
-
-4. **Expression Parsing**: The date expression parser uses regex pattern matching for parsing relative date expressions.
-
-## Expert Architectural Advice
-
-Based on our comprehensive refactoring, here are key principles to maintain code quality:
-
-### Component Design
-
-1. **Single Responsibility**: Each component should have ONE clear purpose. If you find yourself using "and" to describe what a component does, it needs to be split.
-2. **Component Size**: Target <300 lines per component. Our 971→291 line reduction proves this is achievable.
-3. **Props Interface**: Keep props interfaces focused. If a component needs >5-7 props, consider if it's doing too much.
-
-### State Management
-
-1. **Centralize Complex State**: Use custom hooks (like useFilterState) when managing >3-4 related state variables.
-2. **Avoid Prop Drilling**: If passing props through >2 levels, consider context or composition.
-3. **Type Safety First**: Never use `any`. Use `unknown` with type guards for dynamic data.
-
-### AG Grid Integration
-
-1. **Required Callbacks**: Always implement getModel, setModel, and doesFilterPass for custom filters.
-2. **State Synchronization**: AG Grid expects filters to be controlled components - always sync internal state with AG Grid's model.
-3. **Memory Management**: Use useCallback for all AG Grid callbacks to prevent unnecessary re-renders.
-
-### Code Quality Standards
-
-1. **Type Everything**: TypeScript strict mode should be enabled. No implicit any.
-2. **Validation Boundaries**: Validate at system boundaries (user input, API responses, URL params).
-3. **Error Handling**: Use proper error boundaries and graceful degradation.
-4. **Performance**: Use React.memo, useMemo, and useCallback appropriately.
-
-### Security Considerations
-
-1. **Input Sanitization**: Always validate and sanitize user inputs, especially date expressions.
-2. **XSS Prevention**: Never use dangerouslySetInnerHTML. Validate all dynamic content.
-3. **Type Guards**: Use type guards for all external data (API responses, URL params).
-
-## Common Development Tasks
-
-When implementing or modifying features:
-
-1. Start by updating tests to reflect the new behavior (TDD approach)
-2. Update the component implementation
-3. Test both the component in isolation and its integration with AG Grid
-4. For any new filter capabilities, update both the main filter and floating filter
-5. Ensure backward compatibility with existing filter models
-6. Run `npm run pre-commit` before committing to ensure all quality standards are met
-
-### IMPORTANT: Documentation and Demo Updates
-
-**When making changes to components, ALWAYS update both:**
-
-1. **README.md** - Update the documentation to reflect:
-
-   - New features or APIs
-   - Updated examples
-   - Changed behavior
-   - Installation/usage instructions
-   - TypeScript interfaces
-
-2. **Demo Application** (`src/demo/components-showcase-complete.tsx`):
-   - Add examples of new features
-   - Update existing examples if behavior changes
-   - Ensure all component capabilities are demonstrated
-   - Test that the demo runs correctly with `npm run dev`
-
-This ensures users have accurate documentation and working examples of all features.
-
-### Demo Feature Documentation
-
-When making notable changes to the demo that showcase AG Grid features or serve as implementation examples, you MUST also:
-
-1. **Update Demo Documentation** - In the Demo Guide section of `components-showcase-complete.tsx`:
-
-   - Document any new AG Grid features enabled (e.g., grand totals, group totals, custom cell renderers)
-   - Note which features are Enterprise vs Community
-   - Add implementation details if they serve as good examples for users
-   - Include links to relevant AG Grid documentation
-
-2. **Create GitHub Documentation** - If the feature implementation is substantial:
-
-   - Create a corresponding documentation page in the GitHub repository
-   - Document the implementation approach
-   - Include code examples
-   - Explain any design decisions
-
-3. **Keep Information in Sync** - Ensure consistency between:
-   - Demo documentation in the showcase
-   - GitHub repository documentation
-   - README.md
-   - llms.txt
-
-Examples of demo features that should be documented:
-
-- Custom cell renderers (avatar renderer, category pills)
-- Aggregation features (grand totals, group totals)
-- Filtering implementations
-- Styling customizations
-- Performance optimizations
-
-### Standard Development Workflow
+You MUST use conventional commits:
 
 ```bash
-# 1. Start your work
-npm run dev:safe         # Runs quality checks before starting dev server
-
-# 2. During development
-npm run test:watch       # Keep tests running in another terminal
-npm run check           # Periodically check for issues
-
-# 3. Before committing
-npm run pre-commit      # Formats code and runs all checks
-
-# 4. Create your commit
-npm run commit          # Interactive conventional commit
-# OR use git with conventional format:
-# git commit -m "feat(components): add date range support"
-# git commit -m "fix(utils): correct timezone handling"
-
-# 5. Check your work
-npm run bundle-size     # Ensure bundle size is reasonable
+npm run commit    # Interactive commit tool
 ```
 
-### Commit Message Format
+Format: `type(scope): description`
 
-Follow the conventional commits specification:
+- Types: feat, fix, docs, refactor, test, chore
+- Scopes: components, utils, demo, test, deps, build
+
+## GitHub Issue Labeling Requirements
+
+When creating GitHub issues, you MUST ALWAYS apply these labels to ensure proper project tracking:
+
+### Required Labels (Choose One From Each Category)
+
+1. **Type Label** (REQUIRED - pick one):
+
+   - `bug` - Something isn't working
+   - `enhancement` - New feature or request
+   - `documentation` - Documentation improvements
+   - `question` - Further information requested
+   - `good first issue` - Good for newcomers
+   - `help wanted` - Extra attention is needed
+
+2. **Priority Label** (REQUIRED - pick one):
+
+   - `priority: critical` - Must fix ASAP, blocking usage
+   - `priority: high` - Important, should be fixed soon
+   - `priority: medium` - Normal priority
+   - `priority: low` - Nice to have, can wait
+
+3. **Area Label** (REQUIRED - pick at least one):
+   - `area: components` - Related to the React components
+   - `area: demo` - Related to the demo/showcase application
+   - `area: build` - Build tools, bundling, TypeScript config
+   - `area: ci/cd` - GitHub Actions, deployment, automation
+   - `area: testing` - Test suite, coverage, test infrastructure
+   - `area: docs` - Documentation (README, API docs, guides)
+
+### Optional Labels
+
+4. **Status Label** (OPTIONAL - only if not "Needs Triage"):
+
+   **Issue Statuses:**
+
+   - `status: needs-triage` - Default for new issues (add if unsure)
+   - `status: triaging` - Being evaluated
+   - `status: backlog` - Ready for development
+   - `status: in-progress` - Being worked on
+   - `status: in-product-review` - Feature deployed, awaiting product review
+   - `status: done` - Completed and verified
+
+   **PR Statuses (auto-managed):**
+
+   - `status: pr-in-progress` - Draft PR, not ready for review
+   - `status: in-code-review` - Ready for code review
+   - `status: code-review-complete` - Code approved, ready to merge
+   - `status: merged` - PR merged
+
+5. **Component Label** (OPTIONAL - only if issue is component-specific):
+
+   - `component: date-filter` - DateFilter/RelativeDateFilter components
+   - `component: quick-filter-dropdown` - QuickFilterDropdown component
+   - `component: active-filters` - ActiveFilters component
+   - `component: grid-state-utils` - Grid state persistence utilities
+   - `component: demo-app` - Demo application specific
+
+6. **Effort Label** (OPTIONAL - estimate once scope is clear):
+   - `effort: xs` - Extra small (< 1 hour)
+   - `effort: s` - Small (1-4 hours)
+   - `effort: m` - Medium (1-2 days)
+   - `effort: l` - Large (3-5 days)
+   - `effort: xl` - Extra large (1+ week)
+
+### Example Issue Creation
+
+```bash
+# Bug in a specific component
+gh issue create \
+  --title "DateFilter fails with null dates" \
+  --body "Description..." \
+  --label "bug" \
+  --label "priority: high" \
+  --label "area: components" \
+  --label "component: date-filter"
+
+# General enhancement
+gh issue create \
+  --title "Add dark mode support" \
+  --body "Description..." \
+  --label "enhancement" \
+  --label "priority: medium" \
+  --label "area: demo"
+```
+
+### Project Management
+
+- **[View Issues](https://github.com/ryanrozich/ag-grid-react-components/issues)** - All open issues
+- **[Project Board](https://github.com/users/ryanrozich/projects/1)** - Track status and priorities
+- Labels automatically sync to project fields via GitHub Actions
+
+### When Working on Issues
+
+- Ask "What should we work on next?" to filter by type, priority, or area
+- Use `gh issue list --label "priority: high" --label "bug"` to find critical bugs
+- Use `gh issue list --label "status: backlog"` to find issues ready for development
+
+### Pull Request Automation
+
+PRs automatically inherit labels from linked issues:
+
+```bash
+# Creating a PR that fixes an issue
+gh pr create --title "Fix date filter bug" \
+  --body "Fixes #123\n\nDescription of changes..." \
+  --base main
+
+# The PR will automatically get all labels from issue #123 (except status)
+```
+
+**Recognized linking patterns:**
+
+- `fixes #123`, `closes #123`, `resolves #123`
+- Also works with full URLs
+
+**Manual sync if needed:**
+
+```bash
+npm run sync:pr-labels  # Sync all PRs with their linked issues
+```
+
+## Essential NPM Scripts
+
+Development:
+
+- `npm run dev:safe` - Start with quality checks
+- `npm run build` - Build the library
+- `npm run test:watch` - TDD mode
+
+Quality:
+
+- `npm run lint:fix` - Fix linting issues
+- `npm run typecheck` - TypeScript checking
+- `npm run pre-commit` - Full quality check
+
+Testing:
+
+- `npm run test:unit` - Unit tests only
+- `npm run test:e2e` - Playwright tests
+- `npm run test:coverage` - Coverage report
+
+## Project Structure
 
 ```txt
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
+src/
+├── components/           # All components
+│   ├── DateFilter/      # Main date filter
+│   ├── ActiveFilters/   # Filter pills display
+│   └── QuickFilterDropdown/  # Quick filter UI
+├── utils/               # Shared utilities
+├── demo/                # Demo application
+└── index.ts            # Main exports
 ```
 
-Examples:
+## Critical Integration Points
 
-- `feat(components): add relative date shortcuts`
-- `fix(core): resolve memory leak in filter state`
-- `docs(readme): update installation instructions`
-- `refactor(utils): extract date validation logic`
-- `test(components): add coverage for edge cases`
-- `chore(deps): update ag-grid to v34`
+1. **AG Grid v33+**: Use `useGridFilter` hook
+2. **date-fns v4+**: All date operations
+3. **React 18+**: Use modern hooks and patterns
+4. **TypeScript 5+**: Strict mode enabled
 
-**Breaking Changes**: Use `BREAKING CHANGE:` in the footer or `!` after the type/scope.
+## Security Requirements
 
-## Testing Approach
+You MUST:
 
-The codebase uses Vitest with React Testing Library for unit testing:
+1. Validate ALL user inputs
+2. Sanitize date expressions before parsing
+3. Never use `dangerouslySetInnerHTML`
+4. Use type guards for external data
 
-1. **Unit Tests**: Test individual functions and components in isolation
-2. **Integration Tests**: Test DateFilter with AG Grid using AGGridTestHarness
-3. **E2E Tests**: Playwright tests for browser validation
-4. **Browser Tests**: Validate that the demo works correctly using Puppeteer
+## Performance Requirements
 
-### IMPORTANT: E2E Testing Requirements
+You MUST:
 
-**Before declaring any UI issue or bug as "fixed", you MUST:**
+1. Use dynamic imports for heavy dependencies
+2. Keep components under 300 lines
+3. Use React.memo for expensive components
+4. Use useMemo/useCallback appropriately
 
-1. Run the full e2e test suite: `npm run test:e2e`
-2. If tests fail, investigate and fix the root cause
-3. Create a new Playwright test that specifically covers the bug you fixed
-4. Ensure all tests pass before telling the user the issue is resolved
-
-**When creating new e2e tests for bug fixes:**
-
-- Name the test file descriptively (e.g., `quickfilter-portal-rendering.spec.ts`)
-- Include a comment explaining what bug this test prevents
-- Test both the broken scenario and the fixed behavior
-- Add assertions for visual rendering if applicable
-
-### Testing Utilities
-
-- **AGGridTestHarness**: Test component for AG Grid integration testing
-- **agGridTestUtils.ts**: Helper functions for testing AG Grid components
-- **Test fixtures**: Consistent test data in `tests/fixtures/testData.ts`
-
-## Supported Configurations
-
-- AG Grid versions: 33.3.0+
-- React versions: 18 or later
-- date-fns versions: 4+
-- Node.js: 18+
-- TypeScript: 5+
-
-## Important Notes
-
-- The filter works with both AG Grid Community and Enterprise editions
-- Enterprise features (like Filter Tool Panel) are automatically enabled when available
-- All date filter operations support configurable inclusive/exclusive boundaries
-- The filter model is serializable for bookmarking and browser history integration
-
-## Demo Deployment
-
-The demo is deployed to <https://demo.rozich.net/ag-grid-react-components/> using a custom Cloudflare Workers architecture. This deployment system allows hosting multiple demos under a single domain with edge caching and global distribution.
-
-For detailed information about the deployment architecture and how to deploy updates, see [DEMO-DEPLOYMENT.md](./DEMO-DEPLOYMENT.md).
-
-Key points:
-
-- Uses Cloudflare Workers for routing and R2 for asset storage
-- Automatic deployment via GitHub Actions on push to main
-- Demo router repository: <https://github.com/ryanrozich/demo-router-worker>
-- All infrastructure fits within Cloudflare's free tier
-
-## Prettier Configuration
-
-This project uses Prettier for code formatting. Prettier is integrated into the workflow:
-
-```bash
-# Format all files
-npm run format
-
-# Check if files are formatted correctly
-npm run format:check
-```
-
-Prettier will automatically:
-
-- Format TypeScript/JavaScript files
-- Format CSS/SCSS files
-- Format JSON files
-- Format Markdown files
-
-The configuration follows standard Prettier defaults with minimal customization to ensure consistency across the codebase.
-
-**Note**: Always run `npm run format` before committing or use `npm run pre-commit` which includes formatting.
-
-## CRITICAL: Documentation Synchronization
-
-**When making ANY changes to component functionality or APIs, you MUST update ALL of the following:**
-
-1. **README.md** - Main repository documentation
-
-   - Component APIs and parameters
-   - Usage examples
-   - Installation instructions
-   - Feature descriptions
-
-2. **Demo Documentation** (`src/demo/components-showcase-complete.tsx`)
-
-   - Update the docs page sections
-   - Update code examples
-   - Update parameter tables
-   - Update feature lists
-
-3. **llms.txt** (`public/llms.txt`)
-   - Keep component descriptions current
-   - Update usage examples
-   - Maintain accurate feature lists
-
-**Synchronization Checklist:**
-
-- [ ] Component parameter changes → Update ALL documentation
-- [ ] New features → Document in README, demo docs, and llms.txt
-- [ ] API changes → Update all code examples everywhere
-- [ ] Bug fixes that change behavior → Note in documentation
-- [ ] New expressions or operators → Document in expressions section
-
-**Documentation Standards:**
-
-- Use consistent terminology across all docs
-- Keep code examples working and tested
-- Maintain the same level of detail in all locations
-- Update version numbers if applicable
-
-**Remember:** The demo site documentation IS the primary documentation for many users. It must always be accurate and complete.
-
-## Component Library
-
-### ActiveFilters Component
-
-**Purpose**: Display active AG Grid filters as removable pills showing both column names and filter values.
-
-**Location**: `src/components/ActiveFilters/`
-
-**Key Features**:
-
-- Shows filter values alongside column names (e.g., "Due Date: Last 7 days")
-- Individual filter removal via × button
-- "Clear all" button to remove all filters
-- Handles various filter types: date ranges, set filters, text filters
-- TypeScript interfaces for type safety
-- CSS Modules for styling isolation
-
-**API**:
-
-```typescript
-export interface ActiveFiltersProps {
-  api: GridApi;
-  filterModel: FilterModel;
-  className?: string;
-}
-```
-
-**CSS Styling Notes**:
-
-- Uses `rgb()` notation with decimal alpha values (e.g., `rgb(99, 102, 241, 0.1)`)
-- This satisfies stylelint's `color-function-notation: "legacy"` rule
-- Do NOT use `rgba()` or modern `rgb(99 102 241 / 0.1)` syntax
-
-### QuickFilterDropdown Component
-
-**Portal Rendering Architecture**:
-
-The component supports optional portal rendering via the `usePortal` prop:
-
-- **`"never"` (default)**: Uses simple CSS positioning for best performance
-- **`"always"`**: Forces React Portal rendering for constrained containers
-- **`"auto"`**: Experimental auto-detection (currently defaults to "never")
-
-**Design Philosophy**:
-
-- Performance first: Don't make users pay for complexity they don't need
-- Progressive enhancement: Simple cases should use simple solutions
-- Escape hatches: Always provide ways to handle edge cases
-
-**When to use portal**:
-
-- Only when dropdown is inside containers with `overflow: hidden/auto/scroll`
-- When dropdown appears clipped or cut off
-- When z-index battles can't be resolved with CSS alone
-
-**Implementation Details**:
-
-- Portal renders at `document.body` level
-- Position calculated dynamically based on trigger button
-- Includes viewport boundary detection
-- Resize/scroll handlers only active when portal is used
-- Clean separation between portal and non-portal rendering paths
-
-## Component Library Notes
-
-### Free and Open Source
-
-**IMPORTANT**: AG Grid React Components is 100% free and open source under the MIT license. There is no paid version of these components. The components work with both:
-
-- **AG Grid Community (Free)**: All component features work fully
-- **AG Grid Enterprise (Paid)**: Enables additional AG Grid features like floating filters, filter tool panel, etc.
-
-The components themselves are always free regardless of which AG Grid edition you use.
-
-## Demo UI/UX Improvements (December 2024)
-
-### Key Improvements Made
-
-1. **Stats Panel Bug Fix**: Fixed initial load showing no data by adding `setStats(calculateStats(params.api))` in onGridReady
-
-2. **Z-Index Layering Fixes**:
-
-   - QuickFilterDropdown z-index: 50 → 1050 (in CSS module)
-   - Added z-index: 10 to pagination panel
-   - Added z-index: 1 to grand total row
-   - Added relative z-20 to grid toolbar
-
-3. **Layout Enhancements**:
-
-   - Moved "Project Tasks" heading above stats cards
-   - Added search bar with AG Grid quick filter integration
-   - Full viewport height layout with proper flexbox
-   - Removed documentation tabs for cleaner application look
-
-4. **Search Implementation**:
-   ```tsx
-   onChange={(e) => {
-     if (gridApi) {
-       gridApi.setGridOption('quickFilterText', e.target.value);
-     }
-   }}
-   ```
-
-## Grid State Persistence
-
-### Overview
-
-The library now includes comprehensive grid state persistence with URL compression, allowing you to save and restore complete grid configurations including filters, columns, sorting, and grouping.
-
-### Implementation Details
-
-**Core Utilities** (`src/utils/gridStateUtils.ts`):
-
-- `setupGridStatePersistence`: Automatic URL synchronization with compression
-- `captureGridState`: Manual state capture for custom persistence
-- `applyGridState`: Manual state restoration
-
-**Features**:
-
-- **Complete State Capture**: Filters, columns (visibility, order, width, pinning), sorting, row grouping
-- **URL Compression**: Uses LZ-String for 50-90% URL size reduction
-- **Browser Navigation**: Full back/forward button support
-- **Selective Persistence**: Choose which state elements to include
-- **TypeScript Support**: Full type safety with GridState and GridStateOptions interfaces
-
-### Usage Examples
-
-```typescript
-// Basic setup with compression
-const cleanup = setupGridStatePersistence(params.api, {
-  useCompression: true,
-  maxUrlLength: 2000,
-  onStateLoad: (state) => {
-    console.log("Grid state loaded:", state);
-  },
-});
-
-// Selective state persistence
-const cleanup = setupGridStatePersistence(params.api, {
-  includeFilters: true,
-  includeColumns: true,
-  includeSort: true,
-  includeRowGrouping: false, // Exclude grouping
-});
-
-// Manual state management
-import { captureGridState, applyGridState } from "ag-grid-react-components";
-
-const state = captureGridState(gridApi);
-localStorage.setItem("gridState", JSON.stringify(state));
-
-// Later...
-const savedState = JSON.parse(localStorage.getItem("gridState"));
-applyGridState(gridApi, savedState);
-```
-
-### Compression Statistics
-
-LZ-String compression provides significant URL length reduction:
-
-- Simple filter state: ~54% reduction (312 → 88 chars)
-- Complex grid state: ~88% reduction (2,890 → 342 chars)
-
-The compression is most effective with repetitive data like column definitions and complex filter models.
-
-### State Persistence Options
-
-Both `setupFilterStatePersistence` and `setupGridStatePersistence` are available, each serving different use cases:
-
-```typescript
-// Option 1: Filter-only persistence (lightweight)
-setupFilterStatePersistence(params.api);
-
-// Option 2: Full state persistence (recommended for complex grids)
-setupGridStatePersistence(params.api, {
-  useCompression: true,
-  includeFilters: true,
-  includeColumns: true,
-  includeSort: true,
-});
-```
-
-### URL Length Considerations
-
-When using URL state persistence, be aware of browser limits:
-
-- **Safe limit**: 2,000 characters (Chrome, Firefox, IE)
-- **Safari**: ~80,000 characters
-- **Servers**: Usually 8,192 characters default
-
-For very large states, consider:
-
-1. Using compression (enabled by default)
-2. Selective state persistence (exclude less important state)
-3. Server-side storage with short IDs in URLs
-4. Local storage as a fallback
-
-## Known Issues and Workarounds
+## Known Issues
 
 ### AG Grid v33 setFilterModel Bug
 
-**Issue**: When calling `api.setFilterModel()` programmatically on custom React filter components, the filter doesn't properly initialize. The component receives the model in props but doesn't apply it to internal state, causing filters to not work.
+You MUST use `applyFilterModelWithWorkaround` from `agGridWorkaround.ts` when setting filter models programmatically.
 
-**Related GitHub Issues**:
+## ActiveFilters Component
 
-- [ag-grid/ag-grid#2256](https://github.com/ag-grid/ag-grid/issues/2256)
-- [ag-grid/ag-grid#2709](https://github.com/ag-grid/ag-grid/issues/2709)
-- [ag-grid/ag-grid#4870](https://github.com/ag-grid/ag-grid/issues/4870)
-
-**Workaround**: Use the `applyFilterModelWithWorkaround` function from `src/components/QuickFilterDropdown/utils/agGridWorkaround.ts`:
-
-```typescript
-import { applyFilterModelWithWorkaround } from "./utils/agGridWorkaround";
-
-// Instead of:
-api.setFilterModel({ columnId: filterModel });
-
-// Use:
-await applyFilterModelWithWorkaround(api, columnId, filterModel);
-```
-
-This workaround:
-
-- Handles AG Grid v33's Promise-based filter instances
-- Manually calls setModel on the filter instance
-- Forces grid refresh to ensure DOM updates
-- Adds proper timing for React component lifecycle
-
-**Note**: This workaround should be removed once AG Grid fixes the underlying issue.
-
-## DateFilter Component Enhancements
-
-### Recent Enhancements (December 2024)
-
-The DateFilter component has been enhanced with two major features:
-
-1. **Open-Ended Date Ranges**: The component now supports date ranges with only a start or end date:
-
-   - `dateFrom` with `dateTo: null` - filters all dates from the start date onwards
-   - `dateFrom: null` with `dateTo` - filters all dates up to the end date
-   - Works with both absolute and relative date modes
-
-2. **Configurable Inclusivity**: Full control over whether date boundaries are inclusive or exclusive:
-   - `afterInclusive` - controls whether 'after' filter uses >= (inclusive) or > (exclusive)
-   - `beforeInclusive` - controls whether 'before' filter uses <= (inclusive) or < (exclusive)
-   - `rangeInclusive: {from, to}` - controls inclusivity for date ranges
-   - Can be set via filterParams or per filter instance in the model
-
-### Implementation Details
-
-- The inclusivity flags are managed in the `useFilterState` hook
-- Open-ended ranges are validated to ensure at least one date is present
-- The `doesFilterPass` method properly handles all combinations of open-ended ranges and inclusivity
-- Test coverage increased from 54.58% to 82.27% with comprehensive integration tests
-
-### Documentation
-
-Full documentation is available in:
-
-- [DateFilter API Reference](./docs/DATEFILTER_API.md) - Complete API documentation
-- [README.md](./README.md#advanced-datefilter-features) - User-facing documentation with examples
-- [llms.txt](./public/llms.txt) - Summarized documentation for LLMs
-
-## ActiveFilters Component Notes
-
-When displaying filter values in the ActiveFilters component, be aware that AG Grid date filters use these type values:
+When displaying filter values, you MUST use AG Grid's type values:
 
 - `"after"` (not "greaterThan")
 - `"before"` (not "lessThan")
-- `"equals"`
-- `"notEqual"`
 - `"inRange"`
 
-The component's `getFilterDisplayValue` function must handle these specific type values to correctly display filter conditions like "after Today" or "before 2024-01-01".
+## Important Reminders
 
-## important-instruction-reminders
-
-Do what has been asked; nothing more, nothing less.
-NEVER create files unless they're absolutely necessary for achieving your goal.
-ALWAYS prefer editing an existing file to creating a new one.
-NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User.
+- You MUST follow TDD - write tests first
+- You MUST run e2e tests for UI changes
+- You MUST update all documentation when changing APIs
+- You MUST use conventional commits
+- You MUST NOT create files unless absolutely necessary
+- You MUST prefer editing existing files
+- You MUST apply appropriate labels when creating GitHub issues

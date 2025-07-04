@@ -1,0 +1,190 @@
+name: Auto-Set PR Status Based on State
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, converted_to_draft, closed]
+  pull_request_review:
+    types: [submitted]
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+  repository-projects: write
+
+jobs:
+  set-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set PR Status Based on State
+        if: github.event_name == 'pull_request' && github.event.action != 'closed'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const isDraft = pr.draft;
+            let newStatus;
+
+            if (isDraft) {
+              newStatus = 'status: pr-in-progress';
+              console.log(`PR #${pr.number} is a draft, setting to "PR In Progress"`);
+            } else {
+              newStatus = 'status: in-code-review';
+              console.log(`PR #${pr.number} is ready, setting to "In Code Review"`);
+            }
+
+            // Remove any existing PR status labels
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number
+            });
+
+            const prStatusLabels = labels.filter(l =>
+              l.name.startsWith('status: pr-') ||
+              l.name === 'status: in-code-review' ||
+              l.name === 'status: code-review-complete' ||
+              l.name === 'status: merged'
+            );
+
+            for (const label of prStatusLabels) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  name: label.name
+                });
+              } catch (e) {}
+            }
+
+            // Add the appropriate label
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: [newStatus]
+              });
+              console.log(`✓ Added ${newStatus} label`);
+            } catch (error) {
+              console.error('Failed to add label:', error.message);
+            }
+
+      - name: Handle Code Review Approval
+        if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            console.log(`PR #${pr.number} was approved, setting to "Code Review Complete"`);
+
+            // Check if currently in code review
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number
+            });
+
+            const hasCodeReviewLabel = labels.some(l => l.name === 'status: in-code-review');
+            if (!hasCodeReviewLabel) {
+              console.log('PR not in code review status, skipping');
+              return;
+            }
+
+            // Remove in-code-review
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                name: 'status: in-code-review'
+              });
+            } catch (e) {}
+
+            // Add code-review-complete
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: ['status: code-review-complete']
+              });
+              console.log('✓ Added status: code-review-complete');
+
+              // Comment about deployment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: '🎉 Code review approved! The demo preview is ready for product review at the link above.'
+              });
+            } catch (error) {
+              console.error('Failed to update status:', error.message);
+            }
+
+      - name: Set PR Status to Merged
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            console.log(`PR #${pr.number} was merged, setting to "Merged"`);
+
+            // Remove any existing status labels
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number
+            });
+
+            const statusLabels = labels.filter(l => l.name.startsWith('status:'));
+
+            for (const label of statusLabels) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  name: label.name
+                });
+              } catch (e) {}
+            }
+
+            // Add merged label
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: ['status: merged']
+              });
+              console.log('✓ Added status: merged label');
+            } catch (error) {
+              console.error('Failed to add label:', error.message);
+            }
+
+      - name: Set Issue Status to Needs Triage
+        if: github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log(`Setting Issue #${context.payload.issue.number} to "Needs Triage" status`);
+
+            // Add the needs-triage label
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.issue.number,
+                labels: ['status: needs-triage']
+              });
+              console.log('✓ Added status: needs-triage label');
+            } catch (error) {
+              console.error('Failed to add label:', error.message);
+            }
