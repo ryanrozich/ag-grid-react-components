@@ -24,25 +24,25 @@ const issueToPRs = new Map();
 // Find PRs that reference issues
 prs.forEach(pr => {
   const references = [];
-  
+
   // Check PR body for issue references
   const body = pr.body || '';
   const title = pr.title || '';
   const fullText = `${title} ${body}`;
-  
+
   // Match issue references
   const patterns = [
     /(?:fixes?|closes?|resolves?|fix|close|resolve)\s+#(\d+)/gi,
     /(?:fixes?|closes?|resolves?|fix|close|resolve)\s+(?:https?:\/\/github\.com\/[^\/]+\/[^\/]+\/issues\/)(\d+)/gi
   ];
-  
+
   patterns.forEach(pattern => {
     let match;
     while ((match = pattern.exec(fullText)) !== null) {
       references.push(parseInt(match[1]));
     }
   });
-  
+
   // Add PR to each referenced issue
   references.forEach(issueNum => {
     if (!issueToPRs.has(issueNum)) {
@@ -65,10 +65,10 @@ async function updateStatus(issueNumber, oldStatus, newStatus) {
     if (oldStatus) {
       execSync(`gh issue edit ${issueNumber} --remove-label "${oldStatus}"`, { stdio: 'pipe' });
     }
-    
+
     // Add new status
     execSync(`gh issue edit ${issueNumber} --add-label "${newStatus}"`, { stdio: 'pipe' });
-    
+
     console.log(`  ✓ #${issueNumber}: ${oldStatus || 'no status'} → ${newStatus}`);
     return true;
   } catch (error) {
@@ -85,25 +85,25 @@ for (const issue of issues) {
   if (issue.state === 'CLOSED' || issue.labels.some(l => l.name === 'status: done')) {
     continue;
   }
-  
+
   const currentStatus = getCurrentStatus(issue.labels);
   let targetStatus = null;
-  
+
   // Check if issue has associated PRs
   const associatedPRs = issueToPRs.get(issue.number) || [];
-  
+
   if (associatedPRs.length > 0) {
     // Determine status based on PR states
     const openPRs = associatedPRs.filter(pr => pr.state === 'OPEN');
     const mergedPRs = associatedPRs.filter(pr => pr.state === 'MERGED');
-    
+
     if (mergedPRs.length > 0) {
       // If any PR is merged, issue should be done
       targetStatus = 'status: done';
     } else if (openPRs.length > 0) {
       // Check PR status labels
       const prStatuses = openPRs.map(pr => getCurrentStatus(pr.labels)).filter(Boolean);
-      
+
       if (prStatuses.includes('status: code-review-complete')) {
         targetStatus = 'status: in-product-review';
       } else if (prStatuses.includes('status: in-code-review')) {
@@ -121,7 +121,7 @@ for (const issue of issues) {
       targetStatus = 'status: backlog';
     }
   }
-  
+
   // Update if needed
   if (targetStatus && targetStatus !== currentStatus) {
     if (await updateStatus(issue.number, currentStatus, targetStatus)) {

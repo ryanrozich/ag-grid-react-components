@@ -3,7 +3,7 @@
 /**
  * Manual sync script that can run without GitHub Actions
  * Use this when workflows aren't available on main branch
- * 
+ *
  * Usage: GITHUB_TOKEN=ghp_xxx node scripts/manual-project-sync.js
  * Note: Token needs 'repo' and 'read:project' scopes
  */

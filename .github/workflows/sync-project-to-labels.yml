@@ -161,50 +161,50 @@ jobs:
             // Process each project
             for (const project of result.repository.projectsV2.nodes) {
               console.log(`Processing project: ${project.title}`);
-              
+
               for (const item of project.items.nodes) {
                 if (!item.content || !item.content.number) continue;
-                
+
                 const number = item.content.number;
                 const isIssue = item.content.id.includes('I_');
                 const itemType = isIssue ? 'issue' : 'pr';
                 const currentLabels = item.content.labels.nodes.map(l => l.name);
                 const labelsToAdd = [];
                 const labelsToRemove = [];
-                
+
                 // Check each field value
                 for (const fieldValue of item.fieldValues.nodes) {
                   if (!fieldValue.field || !fieldValue.name) continue;
-                  
+
                   const fieldName = fieldValue.field.name;
                   const fieldMapping = fieldMappings[fieldName];
-                  
+
                   if (!fieldMapping) continue;
-                  
+
                   // Find the corresponding label for this field value
                   const targetLabel = fieldMapping[fieldValue.name];
                   if (!targetLabel) continue;
-                  
+
                   // Find all labels in this category (e.g., all priority labels)
                   const categoryLabels = Object.values(fieldMapping);
-                  
+
                   // Remove other labels in this category
                   for (const categoryLabel of categoryLabels) {
                     if (categoryLabel !== targetLabel && currentLabels.includes(categoryLabel)) {
                       labelsToRemove.push(categoryLabel);
                     }
                   }
-                  
+
                   // Add the target label if not present
                   if (!currentLabels.includes(targetLabel)) {
                     labelsToAdd.push(targetLabel);
                   }
                 }
-                
+
                 // Apply label changes
                 if (labelsToAdd.length > 0 || labelsToRemove.length > 0) {
                   console.log(`${itemType.toUpperCase()} #${number}: Adding [${labelsToAdd.join(', ')}], Removing [${labelsToRemove.join(', ')}]`);
-                  
+
                   try {
                     if (labelsToRemove.length > 0) {
                       for (const label of labelsToRemove) {
@@ -216,7 +216,7 @@ jobs:
                         }).catch(e => console.log(`Failed to remove label ${label}: ${e.message}`));
                       }
                     }
-                    
+
                     if (labelsToAdd.length > 0) {
                       await github.rest.issues.addLabels({
                         owner: context.repo.owner,

@@ -121,7 +121,7 @@ Call log:
    12 |       if (msg.type() === "error") {
    13 |         const text = msg.text();
    14 |         // Ignore AG Grid license warnings
-   15 |         if (!text.includes("AG Grid Enterprise License") && 
+   15 |         if (!text.includes("AG Grid Enterprise License") &&
    16 |             !text.includes("License Key Not Found") &&
    17 |             !text.includes("***")) {
    18 |           criticalErrors.push(text);
@@ -170,10 +170,10 @@ Call log:
    60 |     // Check for specific server-side headers
    61 |     await expect(page.locator('.ag-header-cell-text:has-text("Task ID")')).toBeVisible();
    62 |     await expect(page.locator('.ag-header-cell-text:has-text("Title")')).toBeVisible();
-   63 |     
+   63 |
    64 |     // Wait for data rows to appear
    65 |     await page.waitForSelector(".ag-row", { timeout: 10000 });
-   66 |     
+   66 |
    67 |     // Verify data is loaded
    68 |     const rows = await page.locator(".ag-row").count();
    69 |     expect(rows).toBeGreaterThan(0);
@@ -217,7 +217,7 @@ Call log:
   107 |
   108 |     // Wait for debounce and check results
   109 |     await page.waitForTimeout(500);
-  110 |     
+  110 |
   111 |     // Verify search is working by checking for results indicator
   112 |     await expect(page.locator('text="results"')).toBeVisible();
   113 |   });
@@ -226,15 +226,15 @@ Call log:
   116 |     // First check client-side headers
   117 |     await page.waitForSelector(".ag-header-cell-text");
   118 |     const clientHeaders = await page.locator(".ag-header-cell-text").allTextContents();
-  119 |     
+  119 |
   120 |     // Switch to server-side
   121 |     await page.click('button:has-text("Server-Side Data")');
   122 |     await page.waitForTimeout(1000);
-  123 |     
+  123 |
   124 |     // Check server-side headers
   125 |     await page.waitForSelector(".ag-header-cell-text");
   126 |     const serverHeaders = await page.locator(".ag-header-cell-text").allTextContents();
-  127 |     
+  127 |
   128 |     // Headers should be different (Task ID vs ID, Title vs Task, etc.)
   129 |     expect(serverHeaders).toContain("Task ID");
   130 |     expect(serverHeaders).toContain("Title");

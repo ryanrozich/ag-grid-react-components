@@ -68,23 +68,23 @@ let assigned = 0;
 function shouldAssign(item, isPR = false) {
   // Already has a milestone
   if (item.milestone) return false;
-  
+
   const labels = item.labels.map(l => l.name);
   const isBug = labels.includes('bug');
   const isFeature = labels.includes('enhancement');
-  
+
   // For patch releases, only bugs
   if (isPatchRelease && !isBug) return false;
-  
+
   // For minor releases, features and bugs
   if (isMinorRelease && !isBug && !isFeature) return false;
-  
+
   // Check status - only assign if ready
   const hasBacklogStatus = labels.includes('status: backlog');
   const hasInProgressStatus = labels.includes('status: in-progress');
   const hasPRInProgress = labels.includes('status: pr-in-progress');
   const hasInCodeReview = labels.includes('status: in-code-review');
-  
+
   return hasBacklogStatus || hasInProgressStatus || hasPRInProgress || hasInCodeReview;
 }
 
@@ -93,7 +93,7 @@ console.log('📋 Checking issues...\n');
 for (const issue of issues) {
   const labels = issue.labels.map(l => l.name);
   const type = labels.includes('bug') ? '🐛 bug' : '✨ feature';
-  
+
   // Debug logging
   if (issue.milestone) {
     console.log(`  ⏭️  #${issue.number} (${type}): Already has milestone`);

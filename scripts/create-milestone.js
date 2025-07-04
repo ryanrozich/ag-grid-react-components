@@ -27,8 +27,8 @@ if (!versionMatch) {
 }
 
 const [, major, minor, patch, prerelease] = versionMatch;
-const versionType = major === '0' && minor === '0' ? 'patch' : 
-                   major === '0' ? 'minor' : 
+const versionType = major === '0' && minor === '0' ? 'patch' :
+                   major === '0' ? 'minor' :
                    'major';
 
 // Build full title
@@ -60,26 +60,26 @@ try {
   const repoInfo = execSync('gh repo view --json nameWithOwner', { encoding: 'utf8' });
   const { nameWithOwner } = JSON.parse(repoInfo);
   const [owner, repo] = nameWithOwner.split('/');
-  
+
   // Create milestone using API
   const milestoneData = {
     title: fullTitle,
     description: fullDescription
   };
-  
+
   const output = execSync(
     `gh api repos/${owner}/${repo}/milestones --method POST --field title="${fullTitle}" --field description="${fullDescription}"`,
     { encoding: 'utf8' }
   );
-  
+
   const createdMilestone = JSON.parse(output);
-  
+
   console.log(`✅ Created milestone: ${fullTitle}`);
   console.log(`   Version: ${versionTag} (${versionType} release)`);
   console.log(`   Number: #${createdMilestone.number}`);
   console.log(`\n💡 To assign issues: gh issue edit <number> --milestone ${createdMilestone.number}`);
   console.log(`   To view: ${createdMilestone.html_url}`);
-  
+
 } catch (error) {
   console.error('Failed to create milestone:', error.message);
   process.exit(1);

@@ -8,19 +8,19 @@ import { execSync } from 'child_process';
 
 async function main() {
   console.log('🔧 Fixing ALL PR statuses\n');
-  
+
   // Get all PRs (open and closed)
   const allPRsJson = execSync('gh pr list --state all --limit 100 --json number,title,state,isDraft,labels,mergedAt', {
     encoding: 'utf8'
   });
   const allPRs = JSON.parse(allPRsJson);
-  
+
   console.log(`Found ${allPRs.length} total PRs\n`);
-  
+
   // All possible status labels
   const allStatusLabels = [
     'status: needs-triage',
-    'status: triaging', 
+    'status: triaging',
     'status: backlog',
     'status: in-progress',
     'status: in-product-review',
@@ -31,15 +31,15 @@ async function main() {
     'status: merged',
     'status: in-review' // old label
   ];
-  
+
   let fixedCount = 0;
-  
+
   for (const pr of allPRs) {
     const currentLabels = pr.labels.map(l => l.name);
     const currentStatusLabels = currentLabels.filter(l => allStatusLabels.includes(l));
-    
+
     let correctStatus;
-    
+
     // Determine correct status
     if (pr.state === 'MERGED' || pr.mergedAt) {
       correctStatus = 'status: merged';
@@ -50,17 +50,17 @@ async function main() {
       // Open PR
       correctStatus = pr.isDraft ? 'status: pr-in-progress' : 'status: in-code-review';
     }
-    
+
     // Check if we need to fix this PR
     const hasCorrectStatus = correctStatus ? currentStatusLabels.includes(correctStatus) : currentStatusLabels.length === 0;
     const hasOnlyCorrectStatus = hasCorrectStatus && currentStatusLabels.length === (correctStatus ? 1 : 0);
-    
+
     if (!hasOnlyCorrectStatus) {
       console.log(`\nPR #${pr.number}: ${pr.title}`);
       console.log(`  State: ${pr.state}${pr.mergedAt ? ' (merged)' : ''}${pr.isDraft ? ' (draft)' : ''}`);
       console.log(`  Current status labels: ${currentStatusLabels.join(', ') || 'none'}`);
       console.log(`  Should have: ${correctStatus || 'no status labels'}`);
-      
+
       // Remove all status labels
       for (const label of allStatusLabels) {
         if (currentLabels.includes(label)) {
@@ -75,7 +75,7 @@ async function main() {
           }
         }
       }
-      
+
       // Add correct status
       if (correctStatus) {
         try {
@@ -88,14 +88,14 @@ async function main() {
           console.error(`  ✗ Failed to add ${correctStatus}: ${error.message}`);
         }
       }
-      
+
       fixedCount++;
     }
   }
-  
+
   console.log('\n' + '═'.repeat(50));
   console.log(`✅ Fixed ${fixedCount} PRs!`);
-  
+
   if (fixedCount === 0) {
     console.log('   All PRs already have correct status labels.');
   }

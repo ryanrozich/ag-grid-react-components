@@ -3,7 +3,7 @@
 /**
  * Script to add missing required labels to issues
  * This ensures all issues have at least one label from each required category
- * 
+ *
  * Usage: node scripts/add-missing-labels.js
  */
 
@@ -40,7 +40,7 @@ function getIssues() {
 function checkMissingLabels(issue) {
   const currentLabels = issue.labels.map(l => l.name);
   const missing = {};
-  
+
   // Check each category
   for (const [category, labels] of Object.entries(LABEL_CATEGORIES)) {
     const hasLabel = labels.some(label => currentLabels.includes(label));
@@ -48,30 +48,30 @@ function checkMissingLabels(issue) {
       missing[category] = DEFAULT_LABELS[category];
     }
   }
-  
+
   return missing;
 }
 
 async function main() {
   console.log('🏷️  Add Missing Labels to Issues\n');
-  
+
   const issues = getIssues();
   console.log(`Found ${issues.length} open issues\n`);
-  
+
   let updatedCount = 0;
-  
+
   for (const issue of issues) {
     const missing = checkMissingLabels(issue);
     const missingCategories = Object.keys(missing);
-    
+
     if (missingCategories.length > 0) {
       console.log(`\n#${issue.number}: ${issue.title}`);
       console.log(`  Missing: ${missingCategories.join(', ')}`);
-      
+
       // Add missing labels
       const labelsToAdd = Object.values(missing);
       const addCommand = labelsToAdd.map(l => `--add-label "${l}"`).join(' ');
-      
+
       try {
         execSync(`gh issue edit ${issue.number} ${addCommand}`, {
           stdio: 'pipe',
@@ -84,10 +84,10 @@ async function main() {
       }
     }
   }
-  
+
   console.log('\n' + '─'.repeat(50));
   console.log(`✅ Complete! Updated ${updatedCount} issues.`);
-  
+
   if (updatedCount === 0) {
     console.log('   All issues already have required labels.');
   } else {

@@ -3,7 +3,7 @@
 /**
  * Bootstrap script to sync all existing project fields to issue labels
  * This ensures all issues have the correct labels based on their current project field values
- * 
+ *
  * Usage: node scripts/bootstrap-project-sync.js
  * Or with GitHub token: GITHUB_TOKEN=ghp_xxx node scripts/bootstrap-project-sync.js
  */
@@ -171,7 +171,7 @@ async function updateIssueLabels(issueNumber, labelsToAdd, labelsToRemove) {
     console.error(`Invalid issue number: ${issueNumber}`);
     return;
   }
-  
+
   // Remove labels
   for (const label of labelsToRemove) {
     try {
@@ -266,8 +266,8 @@ async function main() {
         // Apply changes
         if (hasChanges) {
           await updateIssueLabels(
-            issueNumber, 
-            Array.from(labelsToAdd), 
+            issueNumber,
+            Array.from(labelsToAdd),
             Array.from(labelsToRemove)
           );
           updatedIssues++;
@@ -282,7 +282,7 @@ async function main() {
     console.log(`   Total issues processed: ${totalIssues}`);
     console.log(`   Issues updated: ${updatedIssues}`);
     console.log(`   Already in sync: ${totalIssues - updatedIssues}`);
-    
+
     if (updatedIssues > 0) {
       console.log('\n💡 The scheduled workflow will maintain sync going forward.');
       console.log('   It runs every 5 minutes to catch any project changes.');

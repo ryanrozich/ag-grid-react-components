@@ -14,7 +14,7 @@ const statusLabels = [
   { name: 'status: in-progress', color: '0e8a16', description: 'Issue actively being worked on' },
   { name: 'status: in-product-review', color: '9f7efe', description: 'Feature deployed, awaiting product review' },
   { name: 'status: done', color: '0e8a16', description: 'Issue completed and verified' },
-  
+
   // PR statuses
   { name: 'status: pr-in-progress', color: 'fbca04', description: 'PR draft/WIP, not ready for review' },
   { name: 'status: in-code-review', color: '5319e7', description: 'PR ready, awaiting code review' },

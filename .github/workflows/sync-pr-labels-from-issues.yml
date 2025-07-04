@@ -22,13 +22,13 @@ jobs:
             // Helper function to extract issue numbers from PR body
             function extractIssueNumbers(body) {
               if (!body) return [];
-              
+
               // Match various linking patterns
               const patterns = [
                 /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s*#(\d+)/gi,
                 /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s*https:\/\/github\.com\/[^\/]+\/[^\/]+\/issues\/(\d+)/gi
               ];
-              
+
               const numbers = new Set();
               for (const pattern of patterns) {
                 const matches = body.matchAll(pattern);
@@ -36,7 +36,7 @@ jobs:
                   numbers.add(parseInt(match[1]));
                 }
               }
-              
+
               return Array.from(numbers);
             }
 
@@ -44,20 +44,20 @@ jobs:
             if (context.eventName === 'pull_request') {
               const pr = context.payload.pull_request;
               console.log(`Processing PR #${pr.number}: ${pr.title}`);
-              
+
               // Extract linked issue numbers
               const issueNumbers = extractIssueNumbers(pr.body);
-              
+
               if (issueNumbers.length === 0) {
                 console.log('No linked issues found in PR body');
                 return;
               }
-              
+
               console.log(`Found linked issues: ${issueNumbers.join(', ')}`);
-              
+
               // Get all labels from linked issues
               const allLabels = new Set();
-              
+
               for (const issueNum of issueNumbers) {
                 try {
                   const issue = await github.rest.issues.get({
@@ -65,25 +65,25 @@ jobs:
                     repo: context.repo.repo,
                     issue_number: issueNum
                   });
-                  
+
                   issue.data.labels.forEach(label => {
                     // Skip status labels - PRs have their own lifecycle
                     if (!label.name.startsWith('status:')) {
                       allLabels.add(label.name);
                     }
                   });
-                  
+
                   console.log(`Issue #${issueNum} has labels: ${issue.data.labels.map(l => l.name).join(', ')}`);
                 } catch (error) {
                   console.error(`Failed to fetch issue #${issueNum}: ${error.message}`);
                 }
               }
-              
+
               // Apply labels to PR
               if (allLabels.size > 0) {
                 const labelsArray = Array.from(allLabels);
                 console.log(`Applying labels to PR: ${labelsArray.join(', ')}`);
-                
+
                 await github.rest.issues.setLabels({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
@@ -97,25 +97,25 @@ jobs:
             if (context.eventName === 'issues') {
               const issue = context.payload.issue;
               const issueNumber = issue.number;
-              
+
               console.log(`Issue #${issueNumber} labels changed`);
-              
+
               // Find PRs that reference this issue
               const prs = await github.rest.pulls.list({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 state: 'open'
               });
-              
+
               for (const pr of prs.data) {
                 const linkedIssues = extractIssueNumbers(pr.body);
-                
+
                 if (linkedIssues.includes(issueNumber)) {
                   console.log(`PR #${pr.number} references this issue`);
-                  
+
                   // Get all labels from all linked issues
                   const allLabels = new Set();
-                  
+
                   for (const linkedIssueNum of linkedIssues) {
                     try {
                       const linkedIssue = await github.rest.issues.get({
@@ -123,7 +123,7 @@ jobs:
                         repo: context.repo.repo,
                         issue_number: linkedIssueNum
                       });
-                      
+
                       linkedIssue.data.labels.forEach(label => {
                         // Skip status labels - PRs have their own lifecycle
                         if (!label.name.startsWith('status:')) {
@@ -134,12 +134,12 @@ jobs:
                       console.error(`Failed to fetch issue #${linkedIssueNum}: ${error.message}`);
                     }
                   }
-                  
+
                   // Update PR labels
                   if (allLabels.size > 0) {
                     const labelsArray = Array.from(allLabels);
                     console.log(`Updating PR #${pr.number} labels: ${labelsArray.join(', ')}`);
-                    
+
                     await github.rest.issues.setLabels({
                       owner: context.repo.owner,
                       repo: context.repo.repo,

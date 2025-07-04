@@ -3,7 +3,7 @@
 /**
  * Manual sync script to update project fields based on issue labels
  * This does what the GitHub Action will do once it's on main branch
- * 
+ *
  * Usage: GITHUB_TOKEN=ghp_xxx node scripts/sync-labels-to-project.js
  */
 
@@ -20,7 +20,7 @@ const labelMappings = {
   'priority: high': { field: 'Priority', value: '🟠 High' },
   'priority: medium': { field: 'Priority', value: '🟡 Medium' },
   'priority: low': { field: 'Priority', value: '🟢 Low' },
-  
+
   // Area
   'area: components': { field: 'Area', value: '🧩 Components' },
   'area: demo': { field: 'Area', value: '🎨 Demo' },
@@ -28,12 +28,12 @@ const labelMappings = {
   'area: ci/cd': { field: 'Area', value: '🤖 CI/CD' },
   'area: testing': { field: 'Area', value: '🧪 Testing' },
   'area: docs': { field: 'Area', value: '📚 Docs' },
-  
+
   // Type
   'bug': { field: 'Type', value: '🐛 Bug' },
   'enhancement': { field: 'Type', value: '✨ Feature' },
   'documentation': { field: 'Type', value: '📚 Documentation' },
-  
+
   // Status
   'status: needs-triage': { field: 'Status', value: '📥 Needs Triage' },
   'status: triaging': { field: 'Status', value: '🔍 Triaging' },
@@ -46,14 +46,14 @@ const labelMappings = {
   'status: in-code-review': { field: 'Status', value: '👨‍💻 In Code Review' },
   'status: code-review-complete': { field: 'Status', value: '🎉 Code Review Complete' },
   'status: merged': { field: 'Status', value: '🚀 Merged' },
-  
+
   // Effort
   'effort: xs': { field: 'Effort', value: 'XS (< 1 hour)' },
   'effort: s': { field: 'Effort', value: 'S (1-4 hours)' },
   'effort: m': { field: 'Effort', value: 'M (1-2 days)' },
   'effort: l': { field: 'Effort', value: 'L (3-5 days)' },
   'effort: xl': { field: 'Effort', value: 'XL (1+ week)' },
-  
+
   // Components
   'component: date-filter': { field: 'Component', value: 'DateFilter' },
   'component: quick-filter-dropdown': { field: 'Component', value: 'QuickFilterDropdown' },
@@ -83,7 +83,7 @@ async function graphqlRequest(query, variables = {}) {
 
 async function main() {
   console.log('🔄 Syncing Labels to Project Fields\n');
-  
+
   // Get all issues with their labels
   const issuesQuery = `
     query($owner: String!, $repo: String!) {
@@ -103,10 +103,10 @@ async function main() {
       }
     }
   `;
-  
+
   const issuesData = await graphqlRequest(issuesQuery, { owner: OWNER, repo: REPO });
   const issues = issuesData.repository.issues.nodes;
-  
+
   // Get project info
   const projectQuery = `
     query($owner: String!, $repo: String!) {
@@ -139,17 +139,17 @@ async function main() {
       }
     }
   `;
-  
+
   const projectData = await graphqlRequest(projectQuery, { owner: OWNER, repo: REPO });
   const project = projectData.repository.projectsV2.nodes[0];
-  
+
   if (!project) {
     console.error('No project found!');
     return;
   }
-  
+
   console.log(`Found project: ${project.title}\n`);
-  
+
   // Create a map of issue number to project item ID
   const issueToItemMap = {};
   project.items.nodes.forEach(item => {
@@ -157,7 +157,7 @@ async function main() {
       issueToItemMap[item.content.number] = item.id;
     }
   });
-  
+
   // Get all field IDs
   const fieldsQuery = `
     query($projectId: ID!) {
@@ -183,14 +183,14 @@ async function main() {
       }
     }
   `;
-  
+
   const fieldsData = await graphqlRequest(fieldsQuery, { projectId: project.id });
   const fields = fieldsData.node.fields.nodes;
-  
+
   // Create field maps
   const fieldMap = {};
   const optionMap = {};
-  
+
   fields.forEach(field => {
     fieldMap[field.name] = field.id;
     if (field.options) {
@@ -200,31 +200,31 @@ async function main() {
       });
     }
   });
-  
+
   // Process each issue
   let updatedCount = 0;
-  
+
   for (const issue of issues) {
     const itemId = issueToItemMap[issue.number];
     if (!itemId) continue;
-    
+
     console.log(`\n#${issue.number}: ${issue.title}`);
-    
+
     const labels = issue.labels.nodes.map(l => l.name);
-    
+
     // Check each label
     for (const label of labels) {
       const mapping = labelMappings[label];
       if (!mapping) continue;
-      
+
       const fieldId = fieldMap[mapping.field];
       const optionId = optionMap[mapping.field]?.[mapping.value];
-      
+
       if (!fieldId || !optionId) {
         console.log(`  ⚠️  Cannot map ${label} - field or option not found`);
         continue;
       }
-      
+
       // Update the field
       const updateMutation = `
         mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
@@ -242,7 +242,7 @@ async function main() {
           }
         }
       `;
-      
+
       try {
         await graphqlRequest(updateMutation, {
           projectId: project.id,
@@ -257,7 +257,7 @@ async function main() {
       }
     }
   }
-  
+
   console.log('\n' + '═'.repeat(50));
   console.log(`✅ Sync Complete! Updated ${updatedCount} field values.`);
 }

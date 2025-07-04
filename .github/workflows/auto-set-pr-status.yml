@@ -42,9 +42,9 @@ jobs:
               issue_number: pr.number
             });
 
-            const prStatusLabels = labels.filter(l => 
-              l.name.startsWith('status: pr-') || 
-              l.name === 'status: in-code-review' || 
+            const prStatusLabels = labels.filter(l =>
+              l.name.startsWith('status: pr-') ||
+              l.name === 'status: in-code-review' ||
               l.name === 'status: code-review-complete' ||
               l.name === 'status: merged'
             );
@@ -114,7 +114,7 @@ jobs:
                 labels: ['status: code-review-complete']
               });
               console.log('✓ Added status: code-review-complete');
-              
+
               // Comment about deployment
               await github.rest.issues.createComment({
                 owner: context.repo.owner,

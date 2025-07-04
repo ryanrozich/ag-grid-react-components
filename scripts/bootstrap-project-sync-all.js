@@ -3,7 +3,7 @@
 /**
  * Bootstrap script to sync ALL project items (issues AND PRs, open AND closed)
  * This ensures complete synchronization of project fields to labels
- * 
+ *
  * Usage: node scripts/bootstrap-project-sync-all.js
  */
 
@@ -175,14 +175,14 @@ async function getProjectItems() {
 
 async function updateLabels(type, number, labelsToAdd, labelsToRemove) {
   const command = type === 'pr' ? 'pr' : 'issue';
-  
+
   // Validate number is an integer
   const issueNumber = parseInt(number, 10);
   if (isNaN(issueNumber) || issueNumber <= 0) {
     console.error(`Invalid ${type} number: ${number}`);
     return;
   }
-  
+
   // Remove labels
   for (const label of labelsToRemove) {
     try {
@@ -242,7 +242,7 @@ async function main() {
         // Determine if this is an issue or PR
         const isIssue = item.content.id.includes('I_');
         const type = isIssue ? 'issue' : 'pr';
-        
+
         if (isIssue) {
           issueCount++;
         } else {
@@ -290,8 +290,8 @@ async function main() {
         if (hasChanges) {
           await updateLabels(
             type,
-            number, 
-            Array.from(labelsToAdd), 
+            number,
+            Array.from(labelsToAdd),
             Array.from(labelsToRemove)
           );
           updatedItems++;
@@ -308,7 +308,7 @@ async function main() {
     console.log(`   - Pull Requests: ${prCount}`);
     console.log(`   Items updated: ${updatedItems}`);
     console.log(`   Already in sync: ${totalItems - updatedItems}`);
-    
+
     if (updatedItems > 0) {
       console.log('\n💡 The scheduled workflow will maintain sync going forward.');
       console.log('   It runs every 5 minutes to catch any project changes.');
