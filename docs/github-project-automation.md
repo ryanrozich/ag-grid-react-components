@@ -151,8 +151,42 @@ To improve this automation:
 3. Update both workflow and docs
 4. Submit PR with examples
 
+## Bidirectional Sync
+
+The automation also supports syncing project field changes back to issue labels:
+
+### Sync Process
+
+1. **Scheduled Sync**: Runs every 5 minutes to check for project field changes
+2. **Field Change Detection**: Compares project field values with issue labels
+3. **Label Updates**: Automatically adds/removes labels to match project fields
+4. **Manual Trigger**: Can be run manually via GitHub Actions UI
+
+### Sync Example
+
+If you change Priority from "Low" to "Medium" in the project:
+
+- Removes: `priority: low` label
+- Adds: `priority: medium` label
+
+### Configuration
+
+The bidirectional sync is defined in `.github/workflows/sync-project-to-labels.yml`:
+
+- Runs on schedule (every 5 minutes)
+- Can be triggered manually
+- Handles all field types (Priority, Area, Type, Component, Status)
+
+### Benefits
+
+- **Full Synchronization**: Changes in either direction stay in sync
+- **No Manual Updates**: Change priority in project, label updates automatically
+- **Conflict Resolution**: Removes conflicting labels (e.g., can't be both high and low priority)
+- **Audit Trail**: All changes visible in issue history
+
 ## Related Resources
 
 - [GitHub Projects V2 Documentation](https://docs.github.com/en/issues/planning-and-tracking-with-projects)
 - [GraphQL API Reference](https://docs.github.com/en/graphql)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
+- [Scheduled Workflows](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule)
