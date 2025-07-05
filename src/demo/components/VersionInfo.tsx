@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import ReactDOM from "react-dom";
 import styles from "./VersionInfo.module.css";
 import versionInfo from "../version-info.json";
 
@@ -7,16 +8,34 @@ export const VersionInfo: React.FC<{ className?: string }> = ({
 }) => {
   const [showDetails, setShowDetails] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [dropdownPosition, setDropdownPosition] = useState({
+    top: 0,
+    right: 0,
+  });
 
   const { version, git, deployment, buildTime, displayVersion, displayLabel } =
     versionInfo;
+
+  // Calculate dropdown position when showing
+  useEffect(() => {
+    if (showDetails && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY + 8, // 8px gap
+        right: window.innerWidth - rect.right + window.scrollX,
+      });
+    }
+  }, [showDetails]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
       ) {
         setShowDetails(false);
       }
@@ -65,8 +84,9 @@ export const VersionInfo: React.FC<{ className?: string }> = ({
   };
 
   return (
-    <div className={`${styles.versionInfo} ${className}`} ref={dropdownRef}>
+    <div className={`${styles.versionInfo} ${className}`}>
       <button
+        ref={buttonRef}
         onClick={() => setShowDetails(!showDetails)}
         className={styles.versionButton}
         aria-label="Show version details"
@@ -79,96 +99,109 @@ export const VersionInfo: React.FC<{ className?: string }> = ({
         )}
       </button>
 
-      {showDetails && (
-        <div className={styles.dropdown}>
-          <h3 className={styles.dropdownTitle}>Version Details</h3>
+      {showDetails &&
+        ReactDOM.createPortal(
+          <div
+            ref={dropdownRef}
+            className={styles.dropdown}
+            style={{
+              position: "fixed",
+              top: `${dropdownPosition.top}px`,
+              right: `${dropdownPosition.right}px`,
+              zIndex: 9999,
+            }}
+          >
+            <h3 className={styles.dropdownTitle}>Version Details</h3>
 
-          <div className={styles.detailsList}>
-            <div className={styles.detailRow}>
-              <span className={styles.detailLabel}>Package Version:</span>
-              <span className={`${styles.detailValue} ${styles.versionNumber}`}>
-                v{version}
-              </span>
-            </div>
+            <div className={styles.detailsList}>
+              <div className={styles.detailRow}>
+                <span className={styles.detailLabel}>Package Version:</span>
+                <span
+                  className={`${styles.detailValue} ${styles.versionNumber}`}
+                >
+                  v{version}
+                </span>
+              </div>
 
-            {git && (
-              <>
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>Branch:</span>
-                  <span
-                    className={`${styles.detailValue} ${styles.versionNumber}`}
-                  >
-                    {git.branch}
-                  </span>
-                </div>
-
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>Commit:</span>
-                  <a
-                    href={getGitHubUrl() || undefined}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`${styles.link} ${styles.versionNumber}`}
-                  >
-                    {git.shortHash}
-                    {git.isDirty && (
-                      <span style={{ color: "#fbbf24", marginLeft: "4px" }}>
-                        +dirty
-                      </span>
-                    )}
-                  </a>
-                </div>
-
-                {git.commitsSinceTag > 0 && (
+              {git && (
+                <>
                   <div className={styles.detailRow}>
-                    <span className={styles.detailLabel}>
-                      Since {git.latestTag}:
+                    <span className={styles.detailLabel}>Branch:</span>
+                    <span
+                      className={`${styles.detailValue} ${styles.versionNumber}`}
+                    >
+                      {git.branch}
                     </span>
+                  </div>
+
+                  <div className={styles.detailRow}>
+                    <span className={styles.detailLabel}>Commit:</span>
                     <a
-                      href={getChangesUrl() || undefined}
+                      href={getGitHubUrl() || undefined}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`${styles.link} ${styles.versionNumber}`}
+                    >
+                      {git.shortHash}
+                      {git.isDirty && (
+                        <span style={{ color: "#fbbf24", marginLeft: "4px" }}>
+                          +dirty
+                        </span>
+                      )}
+                    </a>
+                  </div>
+
+                  {git.commitsSinceTag > 0 && (
+                    <div className={styles.detailRow}>
+                      <span className={styles.detailLabel}>
+                        Since {git.latestTag}:
+                      </span>
+                      <a
+                        href={getChangesUrl() || undefined}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.link}
+                      >
+                        {git.commitsSinceTag} commits →
+                      </a>
+                    </div>
+                  )}
+
+                  <div className={styles.detailRow}>
+                    <span className={styles.detailLabel}>Commit Date:</span>
+                    <span className={styles.detailValue}>
+                      {formatDate(git.commitDate)}
+                    </span>
+                  </div>
+                </>
+              )}
+
+              <div className={styles.detailRow}>
+                <span className={styles.detailLabel}>Build Time:</span>
+                <span className={styles.detailValue}>
+                  {formatDate(buildTime)}
+                </span>
+              </div>
+
+              {deployment.isPR && (
+                <div className={styles.divider}>
+                  <div className={styles.detailRow}>
+                    <span style={{ color: "#a78bfa" }}>PR Preview</span>
+                    <a
+                      href={getGitHubUrl() || undefined}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.link}
                     >
-                      {git.commitsSinceTag} commits →
+                      View PR #{deployment.prNumber} →
                     </a>
                   </div>
-                )}
-
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>Commit Date:</span>
-                  <span className={styles.detailValue}>
-                    {formatDate(git.commitDate)}
-                  </span>
                 </div>
-              </>
-            )}
-
-            <div className={styles.detailRow}>
-              <span className={styles.detailLabel}>Build Time:</span>
-              <span className={styles.detailValue}>
-                {formatDate(buildTime)}
-              </span>
+              )}
             </div>
-
-            {deployment.isPR && (
-              <div className={styles.divider}>
-                <div className={styles.detailRow}>
-                  <span style={{ color: "#a78bfa" }}>PR Preview</span>
-                  <a
-                    href={getGitHubUrl() || undefined}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.link}
-                  >
-                    View PR #{deployment.prNumber} →
-                  </a>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };

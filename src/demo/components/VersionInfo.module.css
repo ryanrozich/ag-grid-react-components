@@ -53,10 +53,6 @@
 }
 
 .dropdown {
-  position: absolute;
-  right: 0;
-  top: 100%;
-  margin-top: 0.5rem;
   width: 20rem;
   background-color: rgb(31, 41, 55);
   border: 1px solid rgb(55, 65, 81);
@@ -65,7 +61,6 @@
     0 20px 25px -5px rgb(0, 0, 0, 0.1),
     0 10px 10px -5px rgb(0, 0, 0, 0.04);
   padding: 1rem;
-  z-index: 9999;
 }
 
 .dropdownTitle {
