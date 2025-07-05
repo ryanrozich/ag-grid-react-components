@@ -31,9 +31,17 @@ jobs:
         run: cd api && npm install
 
       - name: Build demo
-        run: npm run build:demo
         env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_REF: ${{ github.ref }}
+          DEPLOY_PATH: ag-grid-react-components
           VITE_BASE_PATH: /ag-grid-react-components/
+        run: |
+          # Generate version info
+          node scripts/generate-version-info.js
+
+          # Build demo
+          npm run build:demo
 
       - name: Install Wrangler
         run: npm install -g wrangler

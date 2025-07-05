@@ -54,6 +54,9 @@ scripts/run-tsx.js
 # Generated CSS files
 src/combined.css
 
+# Generated version info
+src/demo/version-info.json
+
 # Local development tracking
 TODO.md
 
