@@ -1,0 +1,104 @@
+name: Cleanup PR Deployment
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  cleanup:
+    name: Remove PR Preview Deployment
+    runs-on: ubuntu-latest
+    # Only run if this was from the same repository (not a fork)
+    if: github.event.pull_request.head.repo.full_name == github.repository
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Wrangler
+        run: npm install -g wrangler
+
+      - name: Remove R2 Objects
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          DEPLOY_PATH="ag-grid-react-components-pr-${PR_NUMBER}"
+
+          echo "🧹 Cleaning up deployment for PR #${PR_NUMBER}"
+          echo "Path: ${DEPLOY_PATH}"
+
+          # List objects first (for logging)
+          echo "📋 Listing objects to be deleted:"
+          wrangler r2 object list "rozich-demos" --prefix="${DEPLOY_PATH}/" --remote || true
+
+          # Delete all objects for this PR
+          echo "🗑️ Deleting R2 objects..."
+          wrangler r2 object delete "rozich-demos/${DEPLOY_PATH}/" --remote --recursive || true
+
+          echo "✅ R2 objects cleaned up"
+
+      - name: Remove KV Entry
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_KV_NAMESPACE_ID: ${{ secrets.CLOUDFLARE_KV_NAMESPACE_ID }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          DEPLOY_PATH="ag-grid-react-components-pr-${PR_NUMBER}"
+
+          echo "🗑️ Removing KV entry for ${DEPLOY_PATH}"
+
+          wrangler kv key delete "${DEPLOY_PATH}" \
+            --namespace-id="${CLOUDFLARE_KV_NAMESPACE_ID}" \
+            --remote || true
+
+          echo "✅ KV entry removed"
+
+      - name: Delete API Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          WORKER_NAME="ag-grid-demo-api-pr-${PR_NUMBER}"
+
+          echo "🗑️ Deleting API worker: ${WORKER_NAME}"
+
+          # Delete the worker
+          wrangler delete "${WORKER_NAME}" --remote || true
+
+          echo "✅ API worker deleted"
+
+      - name: Comment on PR
+        if: github.event.pull_request.merged == true
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+
+            const comment = `🧹 **PR Preview Cleaned Up**
+
+            The preview deployment for this PR has been removed:
+            - ✅ R2 objects deleted
+            - ✅ KV entry removed  
+            - ✅ API worker deleted
+
+            Thank you for your contribution! 🎉`;
+
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: comment
+            });
