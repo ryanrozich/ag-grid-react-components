@@ -46,6 +46,8 @@
     "check": "trunk check --no-fix && npm run typecheck",
     "quality": "trunk check --no-fix && npm run check:whitespace",
     "pre-commit": "trunk fmt && npm run fix:whitespace && trunk check --fix && npm run typecheck && npm run check:codeql",
+    "pre-push": "./scripts/pre-push.sh",
+    "pre-push:quick": "./scripts/pre-push-quick.sh",
     "check:codeql": "node scripts/check-codeql.js",
     "check:whitespace": "./scripts/check-whitespace.sh",
     "fix:whitespace": "./scripts/fix-whitespace.sh",
