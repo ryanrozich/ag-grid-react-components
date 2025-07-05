@@ -1,0 +1,226 @@
+name: Bot Commands
+
+on:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "Bot command to run"
+        required: true
+        type: choice
+        options:
+          - claim
+          - resume
+          - status
+          - checkpoint
+          - handoff
+      issue_number:
+        description: "Issue/PR number (optional)"
+        required: false
+        type: string
+      message:
+        description: "Command message (optional)"
+        required: false
+        type: string
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: write
+  actions: read
+
+jobs:
+  process-command:
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.issue.pull_request == null && contains(github.event.comment.body, '/bot')) ||
+      (github.event.issue.pull_request != null && contains(github.event.comment.body, '/bot'))
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Process Bot Command
+        # checkov:skip=CKV_GHA_2:Shell injection risk mitigated by environment variables
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          EVENT_NAME: ${{ github.event_name }}
+          WORKFLOW_COMMAND: ${{ github.event.inputs.command }}
+          WORKFLOW_ISSUE: ${{ github.event.inputs.issue_number }}
+          WORKFLOW_MESSAGE: ${{ github.event.inputs.message }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          # Extract command from comment or use workflow input
+          if [ "$EVENT_NAME" == "workflow_dispatch" ]; then
+            COMMAND="$WORKFLOW_COMMAND"
+            ISSUE_NUMBER="$WORKFLOW_ISSUE"
+            MESSAGE="$WORKFLOW_MESSAGE"
+          else
+            # Parse command from comment
+            COMMENT_BODY_SAFE=$(echo "$COMMENT_BODY" | tr '\n' ' ')
+            
+            # Extract command (first word after /bot)
+            COMMAND=$(echo "$COMMENT_BODY_SAFE" | grep -oP '(?<=/bot\s+)\w+' | head -1)
+            
+            # Extract message (everything after command)
+            MESSAGE=$(echo "$COMMENT_BODY_SAFE" | sed -n 's/.*\/bot\s\+\w\+\s*\(.*\)/\1/p')
+          fi
+
+          echo "Command: $COMMAND"
+          echo "Issue/PR: $ISSUE_NUMBER"
+          echo "Message: $MESSAGE"
+
+          # Add reaction to comment if from issue comment
+          if [ "${{ github.event_name }}" == "issue_comment" ]; then
+            gh api \
+              --method POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              /repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
+              -f content='eyes' || true
+          fi
+
+          # Execute appropriate bot script
+          case "$COMMAND" in
+            "claim")
+              if [ -n "$ISSUE_NUMBER" ]; then
+                node scripts/bot-workflow/bot-claim-issue.js "$ISSUE_NUMBER"
+              else
+                echo "❌ Issue number required for claim command"
+                exit 1
+              fi
+              ;;
+              
+            "resume")
+              if [ -n "$ISSUE_NUMBER" ]; then
+                node scripts/bot-workflow/bot-resume-work.js "$ISSUE_NUMBER"
+              else
+                node scripts/bot-workflow/bot-resume-work.js
+              fi
+              ;;
+              
+            "checkpoint")
+              # Need to be on the right branch first
+              if [ -n "$ISSUE_NUMBER" ]; then
+                # Find the branch for this PR
+                BRANCH=$(gh pr view "$ISSUE_NUMBER" --json headRefName -q .headRefName)
+                git checkout "$BRANCH"
+                git pull origin "$BRANCH"
+              fi
+              
+              if [ -n "$MESSAGE" ]; then
+                node scripts/bot-workflow/bot-checkpoint.js "$MESSAGE"
+              else
+                node scripts/bot-workflow/bot-checkpoint.js "Progress checkpoint"
+              fi
+              ;;
+              
+            "handoff")
+              # Need to be on the right branch first
+              if [ -n "$ISSUE_NUMBER" ]; then
+                # Find the branch for this PR
+                BRANCH=$(gh pr view "$ISSUE_NUMBER" --json headRefName -q .headRefName)
+                git checkout "$BRANCH"
+                git pull origin "$BRANCH"
+              fi
+              
+              if [ -n "$MESSAGE" ]; then
+                node scripts/bot-workflow/bot-handoff.js "$MESSAGE"
+              else
+                node scripts/bot-workflow/bot-handoff.js "Ready for human review"
+              fi
+              ;;
+              
+            "status")
+              # Get status of bot-managed work
+              if [ -n "$ISSUE_NUMBER" ]; then
+                # Check specific PR
+                PR_INFO=$(gh pr view "$ISSUE_NUMBER" --json number,title,labels,updatedAt)
+                echo "PR Status: $PR_INFO"
+                
+                # Check if bot-managed
+                if echo "$PR_INFO" | grep -q "bot-managed"; then
+                  # Get branch and check context
+                  BRANCH=$(gh pr view "$ISSUE_NUMBER" --json headRefName -q .headRefName)
+                  git checkout "$BRANCH"
+                  git pull origin "$BRANCH"
+                  
+                  if [ -f ".bot/context.json" ]; then
+                    echo "Bot Context:"
+                    cat .bot/context.json
+                  fi
+                fi
+              else
+                # List all bot-managed PRs
+                echo "Bot-managed PRs:"
+                gh pr list --label "bot-managed" --json number,title,updatedAt
+              fi
+              ;;
+              
+            *)
+              echo "❌ Unknown command: $COMMAND"
+              echo "Available commands: claim, resume, checkpoint, handoff, status"
+              exit 1
+              ;;
+          esac
+
+          # Add success reaction if from issue comment
+          if [ "${{ github.event_name }}" == "issue_comment" ]; then
+            gh api \
+              --method POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              /repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
+              -f content='+1' || true
+          fi
+
+  cleanup-stalled:
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 */6 * * *' # Run every 6 hours
+
+    steps:
+      - name: Check for stalled bot work
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Find bot-managed PRs
+          STALE_TIME=$((24 * 60 * 60 * 1000))  # 24 hours in milliseconds
+          NOW=$(date +%s000)
+
+          gh pr list --label "bot-managed" --json number,title,updatedAt | jq -r '.[] | 
+            select((($NOW - ((.updatedAt | fromdateiso8601) * 1000)) > $STALE_TIME)) | 
+            .number' | while read -r PR_NUM; do
+            
+            echo "Found stalled PR: #$PR_NUM"
+            
+            # Add stalled label
+            gh pr edit "$PR_NUM" --add-label "bot-stalled"
+            
+            # Add comment
+            gh pr comment "$PR_NUM" -b "⚠️ **Bot Work Stalled**
+            
+            This bot-managed PR has been inactive for over 24 hours.
+            
+            Options:
+            - Use \\\`/bot resume\\\` to continue bot work
+            - Use \\\`/bot handoff\\\` to prepare for human takeover
+            - Manually take over the work"
+          done
