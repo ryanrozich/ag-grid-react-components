@@ -1,0 +1,233 @@
+name: Sync Project Fields to Issue Labels
+
+on:
+  schedule:
+    # Run every 5 minutes
+    - cron: "*/5 * * * *"
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  issues: write
+  repository-projects: read
+
+jobs:
+  sync-to-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync Project Fields to Labels
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Define field to label mappings (reverse of label-to-field)
+            const fieldMappings = {
+              Priority: {
+                'Critical': 'priority: critical',
+                'High': 'priority: high',
+                'Medium': 'priority: medium',
+                'Low': 'priority: low',
+                '🔴 Critical': 'priority: critical',
+                '🟠 High': 'priority: high',
+                '🟡 Medium': 'priority: medium',
+                '🟢 Low': 'priority: low'
+              },
+              Area: {
+                'Components': 'area: components',
+                'Demo': 'area: demo',
+                'Build': 'area: build',
+                'CI/CD': 'area: ci/cd',
+                'Testing': 'area: testing',
+                'Docs': 'area: docs',
+                '🧩 Components': 'area: components',
+                '🎨 Demo': 'area: demo',
+                '🔨 Build': 'area: build',
+                '🤖 CI/CD': 'area: ci/cd',
+                '🧪 Testing': 'area: testing',
+                '📚 Docs': 'area: docs'
+              },
+              Type: {
+                'Bug': 'bug',
+                'Enhancement': 'enhancement',
+                'Documentation': 'documentation',
+                'Question': 'question',
+                'Good First Issue': 'good first issue',
+                'Help Wanted': 'help wanted',
+                '🐛 Bug': 'bug',
+                '✨ Feature': 'enhancement',
+                '✨ Enhancement': 'enhancement',
+                '📚 Documentation': 'documentation',
+                '❓ Question': 'question',
+                '👋 Good First Issue': 'good first issue',
+                '🆘 Help Wanted': 'help wanted'
+              },
+              Component: {
+                'DateFilter': 'component: date-filter',
+                'QuickFilterDropdown': 'component: quick-filter-dropdown',
+                'ActiveFilters': 'component: active-filters',
+                'RelativeDateFilter': 'component: relative-date-filter',
+                'Grid State Utils': 'component: grid-state-utils',
+                'Demo App': 'component: demo-app'
+              },
+              Status: {
+                // Issue statuses
+                'Needs Triage': 'status: needs-triage',
+                'Triaging': 'status: triaging',
+                'Backlog': 'status: backlog',
+                'In Progress': 'status: in-progress',
+                'In Product Review': 'status: in-product-review',
+                'Done': 'status: done',
+                '📥 Needs Triage': 'status: needs-triage',
+                '🔍 Triaging': 'status: triaging',
+                '📋 Backlog': 'status: backlog',
+                '🚧 In Progress': 'status: in-progress',
+                '👀 In Product Review': 'status: in-product-review',
+                '✅ Done': 'status: done',
+                // PR statuses
+                'PR In Progress': 'status: pr-in-progress',
+                'In Code Review': 'status: in-code-review',
+                'In Review': 'status: in-code-review', // Map old value
+                'Code Review Complete': 'status: code-review-complete',
+                'Merged': 'status: merged',
+                '🔨 PR In Progress': 'status: pr-in-progress',
+                '👨‍💻 In Code Review': 'status: in-code-review',
+                '🎉 Code Review Complete': 'status: code-review-complete',
+                '🚀 Merged': 'status: merged'
+              },
+              Effort: {
+                'XS (< 1 hour)': 'effort: xs',
+                'S (1-4 hours)': 'effort: s',
+                'M (1-2 days)': 'effort: m',
+                'L (3-5 days)': 'effort: l',
+                'XL (1+ week)': 'effort: xl'
+              }
+            };
+
+            // Query for all project items
+            const projectQuery = `
+              query($owner: String!, $repo: String!) {
+                repository(owner: $owner, name: $repo) {
+                  projectsV2(first: 10) {
+                    nodes {
+                      id
+                      title
+                      items(first: 100) {
+                        nodes {
+                          id
+                          content {
+                            ... on Issue {
+                              id
+                              number
+                              labels(first: 100) {
+                                nodes {
+                                  name
+                                }
+                              }
+                            }
+                            ... on PullRequest {
+                              id
+                              number
+                              labels(first: 100) {
+                                nodes {
+                                  name
+                                }
+                              }
+                            }
+                          }
+                          fieldValues(first: 20) {
+                            nodes {
+                              ... on ProjectV2ItemFieldSingleSelectValue {
+                                field {
+                                  ... on ProjectV2SingleSelectField {
+                                    name
+                                  }
+                                }
+                                name
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            const result = await github.graphql(projectQuery, {
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+
+            // Process each project
+            for (const project of result.repository.projectsV2.nodes) {
+              console.log(`Processing project: ${project.title}`);
+
+              for (const item of project.items.nodes) {
+                if (!item.content || !item.content.number) continue;
+
+                const number = item.content.number;
+                const isIssue = item.content.id.includes('I_');
+                const itemType = isIssue ? 'issue' : 'pr';
+                const currentLabels = item.content.labels.nodes.map(l => l.name);
+                const labelsToAdd = [];
+                const labelsToRemove = [];
+
+                // Check each field value
+                for (const fieldValue of item.fieldValues.nodes) {
+                  if (!fieldValue.field || !fieldValue.name) continue;
+
+                  const fieldName = fieldValue.field.name;
+                  const fieldMapping = fieldMappings[fieldName];
+
+                  if (!fieldMapping) continue;
+
+                  // Find the corresponding label for this field value
+                  const targetLabel = fieldMapping[fieldValue.name];
+                  if (!targetLabel) continue;
+
+                  // Find all labels in this category (e.g., all priority labels)
+                  const categoryLabels = Object.values(fieldMapping);
+
+                  // Remove other labels in this category
+                  for (const categoryLabel of categoryLabels) {
+                    if (categoryLabel !== targetLabel && currentLabels.includes(categoryLabel)) {
+                      labelsToRemove.push(categoryLabel);
+                    }
+                  }
+
+                  // Add the target label if not present
+                  if (!currentLabels.includes(targetLabel)) {
+                    labelsToAdd.push(targetLabel);
+                  }
+                }
+
+                // Apply label changes
+                if (labelsToAdd.length > 0 || labelsToRemove.length > 0) {
+                  console.log(`${itemType.toUpperCase()} #${number}: Adding [${labelsToAdd.join(', ')}], Removing [${labelsToRemove.join(', ')}]`);
+
+                  try {
+                    if (labelsToRemove.length > 0) {
+                      for (const label of labelsToRemove) {
+                        await github.rest.issues.removeLabel({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: number,
+                          name: label
+                        }).catch(e => console.log(`Failed to remove label ${label}: ${e.message}`));
+                      }
+                    }
+
+                    if (labelsToAdd.length > 0) {
+                      await github.rest.issues.addLabels({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        issue_number: issueNumber,
+                        labels: labelsToAdd
+                      });
+                    }
+                  } catch (error) {
+                    console.error(`Failed to update labels for ${itemType} #${number}:`, error.message);
+                  }
+                }
+              }
+            }

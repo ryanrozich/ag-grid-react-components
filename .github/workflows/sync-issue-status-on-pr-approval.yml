@@ -1,0 +1,103 @@
+name: Move Issue to Product Review on PR Approval
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  issues: write
+  pull-requests: read
+
+jobs:
+  update-linked-issues:
+    runs-on: ubuntu-latest
+    if: github.event.review.state == 'approved'
+    steps:
+      - name: Move Linked Issues to Product Review
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            console.log(`PR #${pr.number} was approved, checking for linked issues`);
+
+            // Helper function to extract issue numbers from PR body
+            function extractIssueNumbers(body) {
+              if (!body) return [];
+
+              // Match various linking patterns
+              const patterns = [
+                /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s*#(\d+)/gi,
+                /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s*https:\/\/github\.com\/[^\/]+\/[^\/]+\/issues\/(\d+)/gi
+              ];
+
+              const numbers = new Set();
+              for (const pattern of patterns) {
+                const matches = body.matchAll(pattern);
+                for (const match of matches) {
+                  numbers.add(parseInt(match[1]));
+                }
+              }
+
+              return Array.from(numbers);
+            }
+
+            const linkedIssues = extractIssueNumbers(pr.body);
+
+            if (linkedIssues.length === 0) {
+              console.log('No linked issues found');
+              return;
+            }
+
+            console.log(`Found linked issues: ${linkedIssues.join(', ')}`);
+
+            // Process each linked issue
+            for (const issueNum of linkedIssues) {
+              try {
+                // Get current labels
+                const { data: issue } = await github.rest.issues.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNum
+                });
+
+                const labels = issue.labels.map(l => l.name);
+
+                // Check if issue is in "in-progress" status
+                if (!labels.includes('status: in-progress')) {
+                  console.log(`Issue #${issueNum} is not in progress, skipping`);
+                  continue;
+                }
+
+                // Remove in-progress label
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issueNum,
+                    name: 'status: in-progress'
+                  });
+                } catch (e) {}
+
+                // Add in-product-review label
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNum,
+                  labels: ['status: in-product-review']
+                });
+
+                console.log(`✓ Moved issue #${issueNum} to product review`);
+
+                // Add a comment
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNum,
+                  body: `🎉 The implementation in PR #${pr.number} has been code reviewed and approved!\n\nThe feature is now deployed to the preview environment and ready for product review:\n${pr.html_url}`
+                });
+
+              } catch (error) {
+                console.error(`Failed to update issue #${issueNum}:`, error.message);
+              }
+            }

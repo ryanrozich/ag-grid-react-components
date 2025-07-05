@@ -443,7 +443,7 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
     return (
       <div
         ref={filterRef}
-        className={`ag-date-filter ${styles.dateFilter} ${
+        className={`ag-filter ag-date-filter ${styles.dateFilter} ${
           filterState.filterType === "inRange"
             ? styles.dateFilterRange
             : styles.dateFilterNormal

@@ -36,13 +36,13 @@
 }
 
 .dateModeOption:focus-visible {
-  outline: 2px solid var(--ag-material-primary-color, #2563eb);
+  outline: 2px solid var(--ag-accent-color, #2563eb);
   outline-offset: -2px;
 }
 
 .dateModeOption.selected {
-  background-color: var(--ag-material-primary-color, #2563eb);
-  color: var(--ag-primary-foreground-color, #fff);
+  background-color: var(--ag-accent-color, #2563eb);
+  color: #fff;
   font-weight: 600;
 }
 

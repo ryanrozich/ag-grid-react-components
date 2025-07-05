@@ -1,0 +1,7 @@
+# Checkov configuration
+skip-check:
+  - CKV_GHA_7 # Skip workflow_dispatch input check for test workflows
+
+# Specific file exclusions
+skip-path:
+  - .github/workflows/test-demo-deployment.yml:CKV_GHA_7
