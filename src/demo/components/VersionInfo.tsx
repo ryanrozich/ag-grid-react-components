@@ -105,7 +105,7 @@ export const VersionInfo: React.FC<{ className?: string }> = ({
                 <div className={styles.detailRow}>
                   <span className={styles.detailLabel}>Commit:</span>
                   <a
-                    href={getGitHubUrl()}
+                    href={getGitHubUrl() || undefined}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`${styles.link} ${styles.versionNumber}`}
@@ -125,7 +125,7 @@ export const VersionInfo: React.FC<{ className?: string }> = ({
                       Since {git.latestTag}:
                     </span>
                     <a
-                      href={getChangesUrl()}
+                      href={getChangesUrl() || undefined}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.link}
@@ -156,7 +156,7 @@ export const VersionInfo: React.FC<{ className?: string }> = ({
                 <div className={styles.detailRow}>
                   <span style={{ color: "#a78bfa" }}>PR Preview</span>
                   <a
-                    href={getGitHubUrl()}
+                    href={getGitHubUrl() || undefined}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={styles.link}

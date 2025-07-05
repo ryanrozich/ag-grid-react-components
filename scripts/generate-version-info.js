@@ -13,13 +13,13 @@ function getGitInfo() {
     // Get current commit hash
     const commitHash = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
     const shortHash = execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim();
-    
+
     // Get current branch
     const branch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
-    
+
     // Get commit date
     const commitDate = execSync('git log -1 --format=%cd --date=iso', { encoding: 'utf8' }).trim();
-    
+
     // Get latest tag
     let latestTag = 'v0.0.0';
     try {
@@ -27,7 +27,7 @@ function getGitInfo() {
     } catch (e) {
       // No tags found
     }
-    
+
     // Count commits since last tag
     let commitsSinceTag = 0;
     try {
@@ -37,10 +37,10 @@ function getGitInfo() {
     } catch (e) {
       // Error counting commits
     }
-    
+
     // Check if working directory is clean
     const isDirty = execSync('git status --porcelain', { encoding: 'utf8' }).trim() !== '';
-    
+
     return {
       commitHash,
       shortHash,
@@ -69,7 +69,7 @@ function getDeploymentContext() {
   const prNumber = process.env.GITHUB_PR_NUMBER || null;
   const isMainBranch = process.env.GITHUB_REF === 'refs/heads/main';
   const deployPath = process.env.DEPLOY_PATH || 'ag-grid-react-components';
-  
+
   return {
     isPR,
     prNumber,
@@ -83,31 +83,31 @@ function generateVersionInfo() {
   const packageVersion = getPackageVersion();
   const deploymentContext = getDeploymentContext();
   const buildTime = new Date().toISOString();
-  
+
   const versionInfo = {
     version: packageVersion,
     git: gitInfo,
     deployment: deploymentContext,
     buildTime,
     // Generate display strings
-    displayVersion: gitInfo && gitInfo.commitsSinceTag > 0 
-      ? `v${packageVersion}+${gitInfo.commitsSinceTag}` 
+    displayVersion: gitInfo && gitInfo.commitsSinceTag > 0
+      ? `v${packageVersion}+${gitInfo.commitsSinceTag}`
       : `v${packageVersion}`,
-    displayLabel: deploymentContext.isPR 
-      ? `PR #${deploymentContext.prNumber}` 
-      : gitInfo?.branch !== 'main' 
-        ? gitInfo?.branch 
-        : gitInfo?.commitsSinceTag > 0 
-          ? 'unreleased' 
+    displayLabel: deploymentContext.isPR
+      ? `PR #${deploymentContext.prNumber}`
+      : gitInfo?.branch !== 'main'
+        ? gitInfo?.branch
+        : gitInfo?.commitsSinceTag > 0
+          ? 'unreleased'
           : 'latest'
   };
-  
+
   // Write to file
   const outputPath = path.resolve(__dirname, '../src/demo/version-info.json');
   fs.writeFileSync(outputPath, JSON.stringify(versionInfo, null, 2) + '\n');
-  
+
   console.log('✅ Version info generated:', versionInfo.displayVersion, `(${versionInfo.displayLabel})`);
-  
+
   return versionInfo;
 }
 
