@@ -38,7 +38,6 @@ if [ -f "index.html" ]; then
     echo "Uploading index.html to test location..."
     wrangler r2 object put "rozich-demos/ag-grid-react-components-test/index.html" --file="index.html" --remote
     echo "✅ Test upload successful!"
-    
     echo ""
     echo "3. Cleaning up test file..."
     wrangler r2 object delete "rozich-demos/ag-grid-react-components-test/index.html" --remote

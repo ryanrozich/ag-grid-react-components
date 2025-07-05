@@ -5,12 +5,6 @@ on:
     branches:
       - main
   workflow_dispatch:
-    inputs:
-      deploy_path:
-        description: "Deploy path (e.g., ag-grid-react-components or ag-grid-react-components-test)"
-        required: false
-        default: "ag-grid-react-components"
-        type: string
 
 permissions:
   contents: read
@@ -33,11 +27,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install API dependencies
+        run: cd api && npm install
+
       - name: Build demo
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           GITHUB_REF: ${{ github.ref }}
-          DEPLOY_PATH: ${{ github.event.inputs.deploy_path || 'ag-grid-react-components' }}
+          DEPLOY_PATH: ag-grid-react-components
           VITE_BASE_PATH: /ag-grid-react-components/
         run: |
           # Generate version info
@@ -55,7 +52,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           # Determine deploy path
-          DEPLOY_PATH="${{ github.event.inputs.deploy_path || 'ag-grid-react-components' }}"
+          DEPLOY_PATH="ag-grid-react-components"
           echo "Deploying to path: $DEPLOY_PATH"
 
           # Upload demo assets to R2
@@ -79,8 +76,21 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_KV_NAMESPACE_ID: ${{ secrets.CLOUDFLARE_KV_NAMESPACE_ID }}
         run: |
-          # Skip KV update for now - wrangler syntax has changed
-          echo "Skipping KV metadata update - needs syntax update"
+          # Update KV metadata to register demo with router
+          DEPLOY_PATH="ag-grid-react-components"
+
+          wrangler kv key put "$DEPLOY_PATH" \
+            '{"name": "AG Grid React Components", "description": "Tree-shakeable React filter components for AG Grid", "updated": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' \
+            --namespace-id="$CLOUDFLARE_KV_NAMESPACE_ID" \
+            --remote
+
+      - name: Deploy API Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          cd api
+          npx wrangler deploy --env production
 
       - name: Purge Cloudflare cache
         env:

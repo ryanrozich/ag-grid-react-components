@@ -45,6 +45,13 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
+    proxy: {
+      // Proxy API calls to local wrangler dev server
+      "/api": {
+        target: "http://localhost:8787",
+        changeOrigin: true,
+      },
+    },
   },
   test: {
     globals: true,

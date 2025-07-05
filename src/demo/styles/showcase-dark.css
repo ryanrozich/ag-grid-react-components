@@ -26,112 +26,152 @@
   }
 }
 
-/* AG Grid Dark Theme Customization */
+/*
+ * AG Grid theme customization removed.
+ * We're using the modern Theming API instead of CSS overrides.
+ * Theme configuration is done in components-showcase-complete.tsx
+ */
+
+/* Legacy theme styles - kept for reference but not used
 .ag-theme-quartz-dark {
-  /* Background colors - matching our app theme */
-  --ag-background-color: rgb(17, 24, 39, 0.5); /* gray-900 with opacity */
-  --ag-foreground-color: #f3f4f6; /* gray-100 */
-  --ag-secondary-foreground-color: #9ca3af; /* gray-400 */
-  --ag-header-background-color: rgb(
-    31,
-    41,
-    55,
-    0.8
-  ); /* gray-800 with opacity */
+  /* Background colors - ultra dark to match page */
+--ag-background-color: rgb(10, 15, 25); /* Almost black with blue tint */
+--ag-foreground-color: #d1d5db; /* gray-300 - softer text */
+--ag-secondary-foreground-color: #9ca3af; /* gray-400 */
+--ag-header-background-color: rgb(30, 41, 59, 0.5); /* Semi-transparent slate */
+--ag-header-foreground-color: #e5e7eb; /* gray-200 */
+--ag-disabled-foreground-color: #6b7280; /* gray-500 */
+--ag-subheader-background-color: rgb(30, 41, 59, 0.5);
+--ag-subheader-toolbar-background-color: rgb(10, 15, 25);
+--ag-control-panel-background-color: rgb(10, 15, 25);
+--ag-side-bar-panel-background: rgb(10, 15, 25);
+--ag-odd-row-background-color: rgb(
+  20,
+  30,
+  45,
+  0.3
+); /* Very subtle blue striping */
 
-  --ag-header-foreground-color: #f9fafb; /* gray-50 */
-  --ag-disabled-foreground-color: #6b7280; /* gray-500 */
-  --ag-subheader-background-color: rgb(31, 41, 55, 0.8);
-  --ag-subheader-toolbar-background-color: rgb(17, 24, 39, 0.5);
-  --ag-control-panel-background-color: rgb(17, 24, 39, 0.5);
-  --ag-side-bar-panel-background: rgb(17, 24, 39, 0.5);
-  --ag-odd-row-background-color: rgb(
-    31,
-    41,
-    55,
-    0.3
-  ); /* gray-800 with opacity */
+--ag-modal-overlay-background-color: rgb(0, 0, 0, 0.7);
 
-  --ag-modal-overlay-background-color: rgb(0, 0, 0, 0.7);
+/* Borders - more subtle */
+--ag-border-color: rgb(55, 65, 81, 0.5); /* gray-700 with transparency */
+--ag-secondary-border-color: rgb(
+  31,
+  41,
+  55,
+  0.5
+); /* gray-800 with transparency */
 
-  /* Borders */
-  --ag-border-color: #374151; /* gray-700 */
-  --ag-secondary-border-color: #1f2937; /* gray-800 */
+/* Brand colors */
+--ag-accent-color: #6366f1; /* indigo-500 */
+--ag-primary-color: #6366f1;
+--ag-material-primary-color: #6366f1;
+--ag-material-accent-color: #6366f1;
 
-  /* Brand colors */
-  --ag-accent-color: #6366f1; /* indigo-500 */
-  --ag-primary-color: #6366f1;
-  --ag-material-primary-color: #6366f1;
-  --ag-material-accent-color: #6366f1;
+/* Row interaction colors */
+--ag-row-hover-color: rgb(
+  51,
+  65,
+  85,
+  0.5
+); /* slate-700 with opacity for subtle hover */
 
-  /* Row interaction colors */
-  --ag-row-hover-color: rgb(99, 102, 241, 0.1); /* indigo with opacity */
-  --ag-selected-row-background-color: rgb(99, 102, 241, 0.2);
-  --ag-range-selection-background-color: rgb(99, 102, 241, 0.15);
-  --ag-range-selection-border-color: #6366f1;
+--ag-selected-row-background-color: rgb(
+  99,
+  102,
+  241,
+  0.15
+); /* softer indigo selection */
 
-  /* Header styling */
-  --ag-header-height: 48px;
-  --ag-header-column-separator-color: #374151;
-  --ag-header-column-resize-handle-color: #6366f1;
+--ag-range-selection-background-color: rgb(99, 102, 241, 0.1);
+--ag-range-selection-border-color: rgb(99, 102, 241, 0.5);
 
-  /* Cell styling */
-  --ag-cell-horizontal-padding: 16px;
-  --ag-row-height: 48px;
-  --ag-list-item-height: 32px;
+/* Header styling */
+--ag-header-height: 48px;
+--ag-header-column-separator-color: rgb(
+  55,
+  65,
+  81,
+  0.3
+); /* very subtle separators */
 
-  /* Input styling */
-  --ag-input-background-color: #1f2937;
-  --ag-input-border-color: #374151;
-  --ag-input-focus-border-color: #6366f1;
-  --ag-input-disabled-background-color: #111827;
-  --ag-input-disabled-border-color: #1f2937;
-  --ag-checkbox-background-color: #1f2937;
-  --ag-checkbox-checked-color: #6366f1;
-  --ag-checkbox-indeterminate-color: #6366f1;
-  --ag-toggle-button-off-background-color: #1f2937;
-  --ag-toggle-button-on-background-color: #6366f1;
-  --ag-toggle-button-switch-background-color: #f3f4f6;
+--ag-header-column-resize-handle-color: rgb(99, 102, 241, 0.5);
 
-  /* Menu & popup styling */
-  --ag-menu-background-color: #1f2937;
-  --ag-menu-border-color: #374151;
-  --ag-menu-separator-color: #374151;
-  --ag-tooltip-background-color: #1f2937;
-  --ag-tooltip-border-color: #374151;
-  --ag-card-shadow:
-    0 10px 15px -3px rgb(0, 0, 0, 0.3), 0 4px 6px -2px rgb(0, 0, 0, 0.2);
+/* Cell styling */
+--ag-cell-horizontal-padding: 16px;
+--ag-row-height: 48px;
+--ag-list-item-height: 32px;
 
-  /* Status bar */
-  --ag-status-bar-background-color: #111827;
-  --ag-status-bar-border-color: #374151;
+/* Input styling */
+--ag-input-background-color: #1f2937;
+--ag-input-border-color: #374151;
+--ag-input-focus-border-color: #6366f1;
+--ag-input-disabled-background-color: #111827;
+--ag-input-disabled-border-color: #1f2937;
+--ag-checkbox-background-color: #1f2937;
+--ag-checkbox-checked-color: #6366f1;
+--ag-checkbox-indeterminate-color: #6366f1;
+--ag-toggle-button-off-background-color: #1f2937;
+--ag-toggle-button-on-background-color: #6366f1;
+--ag-toggle-button-switch-background-color: #f3f4f6;
 
-  /* Tabs */
-  --ag-tab-min-width: 150px;
-  --ag-tab-selected-background: #1f2937;
-  --ag-tab-selected-underline-color: #6366f1;
-  --ag-tab-selected-underline-width: 2px;
+/* Menu & popup styling */
+--ag-menu-background-color: #1f2937;
+--ag-menu-border-color: #374151;
+--ag-menu-separator-color: #374151;
+--ag-tooltip-background-color: #1f2937;
+--ag-tooltip-border-color: #374151;
+--ag-card-shadow:
+  0 10px 15px -3px rgb(0, 0, 0, 0.3), 0 4px 6px -2px rgb(0, 0, 0, 0.2);
 
-  /* Icons */
-  --ag-icon-font-color: #9ca3af;
-  --ag-icon-font-color-secondary: #6b7280;
+/* Status bar */
+--ag-status-bar-background-color: #111827;
+--ag-status-bar-border-color: #374151;
 
-  /* Font */
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-}
+/* Tabs */
+--ag-tab-min-width: 150px;
+--ag-tab-selected-background: #1f2937;
+--ag-tab-selected-underline-color: #6366f1;
+--ag-tab-selected-underline-width: 2px;
+
+/* Icons */
+--ag-icon-font-color: #9ca3af;
+--ag-icon-font-color-secondary: #6b7280;
+
+/* Font */
+font-family:
+  -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
 
 /* Additional customizations */
 .ag-theme-quartz-dark {
   border: none;
   border-radius: 0;
-  background: transparent;
+  background-color: rgb(10, 15, 25) !important;
 }
 
 .ag-theme-quartz-dark .ag-root-wrapper {
   border-radius: 0;
   border: none;
   height: 100%;
+  background-color: rgb(10, 15, 25) !important;
+}
+
+/* Force dark background on all key elements */
+.ag-theme-quartz-dark .ag-root,
+.ag-theme-quartz-dark .ag-body-viewport,
+.ag-theme-quartz-dark .ag-center-cols-viewport,
+.ag-theme-quartz-dark .ag-center-cols-container {
+  background-color: rgb(10, 15, 25) !important;
+}
+
+/* Ensure rows have the dark background */
+.ag-theme-quartz-dark .ag-row {
+  background-color: rgb(10, 15, 25) !important;
+}
+
+.ag-theme-quartz-dark .ag-row-odd {
+  background-color: rgb(20, 30, 45, 0.5) !important;
 }
 
 .ag-theme-quartz-dark .ag-header {
@@ -467,34 +507,4 @@
 
 *::-webkit-scrollbar-thumb:hover {
   background-color: #6b7280;
-}
-
-/* Ensure the grid fills its container */
-.ag-theme-quartz-dark .ag-root {
-  height: 100%;
-}
-
-.ag-theme-quartz-dark .ag-body-viewport {
-  background-color: transparent;
-}
-
-/* Column resize handle */
-.ag-theme-quartz-dark .ag-header-cell-resize {
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.ag-theme-quartz-dark .ag-header-cell:hover .ag-header-cell-resize {
-  opacity: 1;
-}
-
-/* Cell focus styling */
-.ag-theme-quartz-dark .ag-cell-focus,
-.ag-theme-quartz-dark .ag-cell-no-focus {
-  border: none !important;
-}
-
-.ag-theme-quartz-dark .ag-cell-focus {
-  outline: 2px solid rgb(99, 102, 241, 0.4) !important;
-  outline-offset: -2px;
 }

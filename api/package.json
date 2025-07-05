@@ -1,0 +1,17 @@
+{
+  "name": "ag-grid-demo-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Demo API for AG Grid React Components",
+  "main": "index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^9.3.0"
+  }
+}

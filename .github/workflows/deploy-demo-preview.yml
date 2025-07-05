@@ -33,6 +33,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install API dependencies
+        run: cd api && npm install
+
       - name: Build demo
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
@@ -44,7 +47,8 @@ jobs:
           node scripts/generate-version-info.js
 
           # Build demo
-          npm run build:demo
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          VITE_BASE_PATH="/ag-grid-react-components-pr-${PR_NUMBER}/" npm run build:demo
 
       - name: Install Wrangler
         run: npm install -g wrangler
@@ -64,14 +68,73 @@ jobs:
             wrangler r2 object put "rozich-demos/ag-grid-react-components-pr-${PR_NUMBER}/$file_path" --file="$file" --remote
           done
 
+      - name: Update demo metadata
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_KV_NAMESPACE_ID: ${{ secrets.CLOUDFLARE_KV_NAMESPACE_ID }}
+        run: |
+          # Register PR preview with demo router
+          PR_NUMBER=${{ github.event.pull_request.number }}
+
+          wrangler kv key put "ag-grid-react-components-pr-${PR_NUMBER}" \
+            '{"name": "AG Grid React Components (PR #'${PR_NUMBER}')", "description": "Preview for pull request #'${PR_NUMBER}'", "updated": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'", "isPR": true}' \
+            --namespace-id="$CLOUDFLARE_KV_NAMESPACE_ID" \
+            --remote
+
+      - name: Deploy API Worker Preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          cd api
+          PR_NUMBER=${{ github.event.pull_request.number }}
+
+          # Create a custom wrangler config for this PR
+          cat > wrangler-pr.toml << EOF
+          name = "ag-grid-demo-api-pr-${PR_NUMBER}"
+          main = "index.js"
+          compatibility_date = "2024-01-01"
+
+          [[routes]]
+          pattern = "demo.rozich.net/ag-grid-react-components-pr-${PR_NUMBER}/api/*"
+          zone_name = "rozich.net"
+
+          [vars]
+          ENVIRONMENT = "preview"
+          EOF
+
+          # Deploy using the PR-specific config
+          npx wrangler deploy --config wrangler-pr.toml
+
+      - name: Wait for deployment propagation
+        run: sleep 30
+
+      - name: Test PR deployment
+        id: test-deployment
+        continue-on-error: true
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          DEMO_URL="https://demo.rozich.net/ag-grid-react-components-pr-${PR_NUMBER}/"
+
+          # Install Playwright if not already installed
+          npx playwright install --with-deps chromium
+
+          # Run deployment tests
+          DEMO_URL="$DEMO_URL" npx playwright test tests/e2e/demo-deployment.spec.ts --reporter=list
       - name: Comment on PR
         uses: actions/github-script@v7
         with:
           script: |
             const prNumber = context.payload.pull_request.number;
+            const testsPassed = '${{ steps.test-deployment.outcome }}' === 'success';
+
             const comment = `🚀 **Demo Preview Ready!**
 
             Preview URL: https://demo.rozich.net/ag-grid-react-components-pr-${prNumber}/
+            API URL: https://demo.rozich.net/ag-grid-react-components-pr-${prNumber}/api/
+
+            ${testsPassed ? '✅ Deployment tests passed' : '⚠️ Deployment tests failed - please check the workflow logs'}
 
             This preview will be available for testing until the PR is merged or closed.`;
 
