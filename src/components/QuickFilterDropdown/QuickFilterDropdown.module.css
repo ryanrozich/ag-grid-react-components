@@ -151,6 +151,26 @@
   color: #374151;
 }
 
+/* System preset styling */
+.optionSystem {
+  background-color: #fef3c7;
+  position: relative;
+}
+
+.optionSystem:hover {
+  background-color: #fde68a;
+}
+
+.optionSystem::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: #f59e0b;
+}
+
 .option:hover {
   background-color: #f3f4f6;
 }
@@ -212,6 +232,14 @@
   line-height: 1.25;
 }
 
+.optionTags {
+  display: block;
+  font-size: 0.7rem;
+  color: #9ca3af;
+  margin-top: 0.125rem;
+  font-style: italic;
+}
+
 .optionSelected .optionDescription {
   color: #3b82f6;
 }
@@ -221,6 +249,16 @@
   height: 1px;
   background-color: #e5e7eb;
   margin: 0.25rem 0;
+}
+
+/* Group label for preset sections */
+.groupLabel {
+  padding: 0.5rem 1rem 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #6b7280;
+  letter-spacing: 0.05em;
 }
 
 /* Empty state */
@@ -378,8 +416,24 @@
     color: #60a5fa;
   }
 
+  .optionSystem {
+    background-color: #451a03;
+  }
+
+  .optionSystem:hover {
+    background-color: #78350f;
+  }
+
+  .optionSystem::before {
+    background-color: #f59e0b;
+  }
+
   .divider {
     background-color: #374151;
+  }
+
+  .groupLabel {
+    color: #9ca3af;
   }
 
   .emptyState,

@@ -25,6 +25,13 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
   api,
   columnId,
   options,
+  systemPresets = [],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  enablePresetManagement = false,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onPresetSave,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onPresetDelete,
   placeholder = "Select filter",
   className,
   onFilterChange,
@@ -62,6 +69,18 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
     return false; // For now, default to false for 'auto' mode
   }, [usePortal]);
 
+  // Combine system presets and user options
+  const allOptions = useMemo(() => {
+    // Mark system presets
+    const markedSystemPresets = systemPresets.map((preset) => ({
+      ...preset,
+      isSystemPreset: true,
+    }));
+
+    // Combine with user options
+    return [...markedSystemPresets, ...options];
+  }, [systemPresets, options]);
+
   // Get the currently active filter from AG Grid
   useEffect(() => {
     // Skip if API is not available or invalid
@@ -70,12 +89,12 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
     }
 
     try {
-      const activeOption = getActiveFilterOption(api, columnId, options);
+      const activeOption = getActiveFilterOption(api, columnId, allOptions);
       setState((prev) => ({ ...prev, selectedOption: activeOption }));
     } catch (error) {
       console.warn("[QuickFilterDropdown] Error getting active filter:", error);
     }
-  }, [api, columnId, options]);
+  }, [api, columnId, allOptions]);
 
   // Calculate dropdown position (only used when portal is enabled)
   const calculateDropdownPosition = useCallback(() => {
@@ -104,15 +123,16 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
 
   // Filter options based on search query
   const filteredOptions = useMemo(() => {
-    if (!state.searchQuery) return options;
+    if (!state.searchQuery) return allOptions;
 
     const query = state.searchQuery.toLowerCase();
-    return options.filter(
+    return allOptions.filter(
       (option) =>
         option.label.toLowerCase().includes(query) ||
-        option.description?.toLowerCase().includes(query),
+        option.description?.toLowerCase().includes(query) ||
+        option.tags?.some((tag) => tag.toLowerCase().includes(query)),
     );
-  }, [options, state.searchQuery]);
+  }, [allOptions, state.searchQuery]);
 
   // Handle option selection
   const handleSelectOption = useCallback(
@@ -305,6 +325,172 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
         .join("")}` as keyof typeof styles
     ];
 
+  // Render the dropdown content
+  const renderDropdownContent = () => (
+    <>
+      {allOptions.length > 10 && (
+        <div className={styles.searchContainer}>
+          <input
+            ref={searchInputRef}
+            type="text"
+            className={styles.searchInput}
+            placeholder="Search filters..."
+            value={state.searchQuery}
+            onChange={(e) =>
+              setState((prev) => ({
+                ...prev,
+                searchQuery: e.target.value,
+                highlightedIndex: 0,
+              }))
+            }
+            onKeyDown={handleKeyDown}
+            aria-label="Search filters"
+            data-testid="quick-filter-search"
+          />
+        </div>
+      )}
+
+      <div className={styles.optionsList}>
+        {filteredOptions.length === 0 ? (
+          <div className={styles.emptyState}>No matching filters</div>
+        ) : (
+          <>
+            {/* Render system presets first */}
+            {(() => {
+              const systemOptions = filteredOptions.filter(
+                (opt) => opt.isSystemPreset,
+              );
+              const userOptions = filteredOptions.filter(
+                (opt) => !opt.isSystemPreset,
+              );
+
+              return (
+                <>
+                  {systemOptions.length > 0 && (
+                    <>
+                      {systemPresets.length > 0 && (
+                        <div className={styles.groupLabel}>System Presets</div>
+                      )}
+                      {systemOptions.map((option, index) => {
+                        const isSelected =
+                          option.id === state.selectedOption?.id;
+                        const isHighlighted = index === state.highlightedIndex;
+
+                        return (
+                          <button
+                            key={option.id || index}
+                            ref={(el) => {
+                              optionRefs.current[index] = el;
+                            }}
+                            type="button"
+                            className={`${styles.option} ${styles.optionSystem} ${
+                              isSelected ? styles.optionSelected : ""
+                            } ${isHighlighted ? styles.optionHighlighted : ""}`}
+                            onClick={() => handleSelectOption(option)}
+                            onMouseEnter={() =>
+                              setState((prev) => ({
+                                ...prev,
+                                highlightedIndex: index,
+                              }))
+                            }
+                            role="option"
+                            aria-selected={isSelected}
+                            data-testid={`quick-filter-option-${option.id || index}`}
+                          >
+                            <div className={styles.optionContent}>
+                              <span className={styles.optionLabel}>
+                                {option.label}
+                              </span>
+                              {showDescriptions && option.description && (
+                                <span className={styles.optionDescription}>
+                                  {option.description}
+                                </span>
+                              )}
+                            </div>
+                            {isSelected && (
+                              <span className={styles.optionCheckmark}>
+                                <CheckIcon className={styles.checkIcon} />
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </>
+                  )}
+
+                  {/* Divider between system and user presets */}
+                  {systemOptions.length > 0 && userOptions.length > 0 && (
+                    <div className={styles.divider} />
+                  )}
+
+                  {/* Render user presets */}
+                  {userOptions.length > 0 && (
+                    <>
+                      {systemPresets.length > 0 && (
+                        <div className={styles.groupLabel}>User Presets</div>
+                      )}
+                      {userOptions.map((option, index) => {
+                        const adjustedIndex = systemOptions.length + index;
+                        const isSelected =
+                          option.id === state.selectedOption?.id;
+                        const isHighlighted =
+                          adjustedIndex === state.highlightedIndex;
+
+                        return (
+                          <button
+                            key={option.id || adjustedIndex}
+                            ref={(el) => {
+                              optionRefs.current[adjustedIndex] = el;
+                            }}
+                            type="button"
+                            className={`${styles.option} ${
+                              isSelected ? styles.optionSelected : ""
+                            } ${isHighlighted ? styles.optionHighlighted : ""}`}
+                            onClick={() => handleSelectOption(option)}
+                            onMouseEnter={() =>
+                              setState((prev) => ({
+                                ...prev,
+                                highlightedIndex: adjustedIndex,
+                              }))
+                            }
+                            role="option"
+                            aria-selected={isSelected}
+                            data-testid={`quick-filter-option-${option.id || adjustedIndex}`}
+                          >
+                            <div className={styles.optionContent}>
+                              <span className={styles.optionLabel}>
+                                {option.label}
+                              </span>
+                              {showDescriptions && option.description && (
+                                <span className={styles.optionDescription}>
+                                  {option.description}
+                                </span>
+                              )}
+                              {option.tags && option.tags.length > 0 && (
+                                <span className={styles.optionTags}>
+                                  {option.tags.join(", ")}
+                                </span>
+                              )}
+                            </div>
+                            {isSelected && (
+                              <span className={styles.optionCheckmark}>
+                                <CheckIcon className={styles.checkIcon} />
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </>
+                  )}
+                </>
+              );
+            })()}
+          </>
+        )}
+      </div>
+    </>
+  );
+
   return (
     <div
       ref={containerRef}
@@ -369,77 +555,7 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
             role="listbox"
             aria-label={ariaLabel}
           >
-            {options.length > 10 && (
-              <div className={styles.searchContainer}>
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  className={styles.searchInput}
-                  placeholder="Search filters..."
-                  value={state.searchQuery}
-                  onChange={(e) =>
-                    setState((prev) => ({
-                      ...prev,
-                      searchQuery: e.target.value,
-                      highlightedIndex: 0,
-                    }))
-                  }
-                  onKeyDown={handleKeyDown}
-                  aria-label="Search filters"
-                  data-testid="quick-filter-search"
-                />
-              </div>
-            )}
-
-            <div className={styles.optionsList}>
-              {filteredOptions.length === 0 ? (
-                <div className={styles.emptyState}>No matching filters</div>
-              ) : (
-                filteredOptions.map((option, index) => {
-                  const isSelected = option.id === state.selectedOption?.id;
-                  const isHighlighted = index === state.highlightedIndex;
-
-                  return (
-                    <button
-                      key={option.id || index}
-                      ref={(el) => {
-                        optionRefs.current[index] = el;
-                      }}
-                      type="button"
-                      className={`${styles.option} ${
-                        isSelected ? styles.optionSelected : ""
-                      } ${isHighlighted ? styles.optionHighlighted : ""}`}
-                      onClick={() => handleSelectOption(option)}
-                      onMouseEnter={() =>
-                        setState((prev) => ({
-                          ...prev,
-                          highlightedIndex: index,
-                        }))
-                      }
-                      role="option"
-                      aria-selected={isSelected}
-                      data-testid={`quick-filter-option-${option.id || index}`}
-                    >
-                      <div className={styles.optionContent}>
-                        <span className={styles.optionLabel}>
-                          {option.label}
-                        </span>
-                        {showDescriptions && option.description && (
-                          <span className={styles.optionDescription}>
-                            {option.description}
-                          </span>
-                        )}
-                      </div>
-                      {isSelected && (
-                        <span className={styles.optionCheckmark}>
-                          <CheckIcon className={styles.checkIcon} />
-                        </span>
-                      )}
-                    </button>
-                  );
-                })
-              )}
-            </div>
+            {renderDropdownContent()}
           </div>,
           document.body,
         )}
@@ -455,75 +571,7 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
           role="listbox"
           aria-label={ariaLabel}
         >
-          {options.length > 10 && (
-            <div className={styles.searchContainer}>
-              <input
-                ref={searchInputRef}
-                type="text"
-                className={styles.searchInput}
-                placeholder="Search filters..."
-                value={state.searchQuery}
-                onChange={(e) =>
-                  setState((prev) => ({
-                    ...prev,
-                    searchQuery: e.target.value,
-                    highlightedIndex: 0,
-                  }))
-                }
-                onKeyDown={handleKeyDown}
-                aria-label="Search filters"
-                data-testid="quick-filter-search"
-              />
-            </div>
-          )}
-
-          <div className={styles.optionsList}>
-            {filteredOptions.length === 0 ? (
-              <div className={styles.emptyState}>No matching filters</div>
-            ) : (
-              filteredOptions.map((option, index) => {
-                const isSelected = option.id === state.selectedOption?.id;
-                const isHighlighted = index === state.highlightedIndex;
-
-                return (
-                  <button
-                    key={option.id || index}
-                    ref={(el) => {
-                      optionRefs.current[index] = el;
-                    }}
-                    type="button"
-                    className={`${styles.option} ${
-                      isSelected ? styles.optionSelected : ""
-                    } ${isHighlighted ? styles.optionHighlighted : ""}`}
-                    onClick={() => handleSelectOption(option)}
-                    onMouseEnter={() =>
-                      setState((prev) => ({
-                        ...prev,
-                        highlightedIndex: index,
-                      }))
-                    }
-                    role="option"
-                    aria-selected={isSelected}
-                    data-testid={`quick-filter-option-${option.id || index}`}
-                  >
-                    <div className={styles.optionContent}>
-                      <span className={styles.optionLabel}>{option.label}</span>
-                      {showDescriptions && option.description && (
-                        <span className={styles.optionDescription}>
-                          {option.description}
-                        </span>
-                      )}
-                    </div>
-                    {isSelected && (
-                      <span className={styles.optionCheckmark}>
-                        <CheckIcon className={styles.checkIcon} />
-                      </span>
-                    )}
-                  </button>
-                );
-              })
-            )}
-          </div>
+          {renderDropdownContent()}
         </div>
       )}
     </div>
