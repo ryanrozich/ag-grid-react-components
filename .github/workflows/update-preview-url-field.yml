@@ -1,0 +1,224 @@
+name: Update Preview URL Field
+
+on:
+  workflow_run:
+    workflows: ["Smart Demo Preview Deployment"]
+    types: [completed]
+  pull_request:
+    types: [closed]
+
+permissions:
+  pull-requests: read
+  repository-projects: write
+
+jobs:
+  update-preview-url:
+    name: Update Preview URL in Project
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Get PR number from workflow run
+        id: get-pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Get the workflow run details
+            const workflowRun = context.payload.workflow_run;
+
+            // Get PR number from the workflow run
+            const pullRequests = workflowRun.pull_requests;
+            if (!pullRequests || pullRequests.length === 0) {
+              console.log('No PR associated with this workflow run');
+              return;
+            }
+
+            const prNumber = pullRequests[0].number;
+            core.setOutput('pr-number', prNumber);
+            console.log(`Found PR #${prNumber}`);
+
+      - name: Update Preview URL in Project
+        if: steps.get-pr.outputs.pr-number
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = ${{ steps.get-pr.outputs.pr-number }};
+            const previewUrl = `https://demo.rozich.net/ag-grid-react-components-pr-${prNumber}/`;
+
+            console.log(`Updating Preview URL for PR #${prNumber}: ${previewUrl}`);
+
+            // GraphQL query to find the PR in the project and get field info
+            const projectQuery = `
+              query($owner: String!, $repo: String!, $number: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $number) {
+                    projectItems(first: 10) {
+                      nodes {
+                        id
+                        project {
+                          id
+                          title
+                          fields(first: 20) {
+                            nodes {
+                              ... on ProjectV2Field {
+                                id
+                                name
+                                dataType
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            try {
+              const projectData = await github.graphql(projectQuery, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                number: prNumber
+              });
+
+              const projectItems = projectData.repository.pullRequest?.projectItems?.nodes || [];
+              if (projectItems.length === 0) {
+                console.log('PR not found in any project');
+                return;
+              }
+
+              // Update each project item
+              for (const projectItem of projectItems) {
+                const project = projectItem.project;
+                console.log(`Updating project "${project.title}"`);
+
+                // Find the Preview URL field
+                const previewUrlField = project.fields.nodes.find(f => 
+                  f.name === 'Preview URL' && f.dataType === 'TEXT'
+                );
+                
+                if (!previewUrlField) {
+                  console.log('Preview URL field not found in project');
+                  continue;
+                }
+
+                // Update the field
+                const updateMutation = `
+                  mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
+                    updateProjectV2ItemFieldValue(input: {
+                      projectId: $projectId
+                      itemId: $itemId
+                      fieldId: $fieldId
+                      value: $value
+                    }) {
+                      projectV2Item {
+                        id
+                      }
+                    }
+                  }
+                `;
+
+                await github.graphql(updateMutation, {
+                  projectId: project.id,
+                  itemId: projectItem.id,
+                  fieldId: previewUrlField.id,
+                  value: { text: previewUrl }
+                });
+                
+                console.log(`✅ Updated Preview URL field to: ${previewUrl}`);
+              }
+            } catch (error) {
+              console.error('Failed to update Preview URL:', error.message);
+              // Don't fail the workflow for this
+            }
+
+  clear-preview-url-on-close:
+    name: Clear Preview URL on PR Close/Merge
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && (github.event.action == 'closed' || github.event.action == 'merged')
+
+    steps:
+      - name: Clear Preview URL in Project
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = context.payload.pull_request.number;
+
+            console.log(`Clearing Preview URL for closed/merged PR #${prNumber}`);
+
+            // GraphQL query to find the PR in the project
+            const projectQuery = `
+              query($owner: String!, $repo: String!, $number: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $number) {
+                    projectItems(first: 10) {
+                      nodes {
+                        id
+                        project {
+                          id
+                          title
+                          fields(first: 20) {
+                            nodes {
+                              ... on ProjectV2Field {
+                                id
+                                name
+                                dataType
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            try {
+              const projectData = await github.graphql(projectQuery, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                number: prNumber
+              });
+
+              const projectItems = projectData.repository.pullRequest?.projectItems?.nodes || [];
+              
+              for (const projectItem of projectItems) {
+                const project = projectItem.project;
+                const previewUrlField = project.fields.nodes.find(f => 
+                  f.name === 'Preview URL' && f.dataType === 'TEXT'
+                );
+                
+                if (!previewUrlField) continue;
+
+                // Clear the field
+                const updateMutation = `
+                  mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
+                    updateProjectV2ItemFieldValue(input: {
+                      projectId: $projectId
+                      itemId: $itemId
+                      fieldId: $fieldId
+                      value: $value
+                    }) {
+                      projectV2Item {
+                        id
+                      }
+                    }
+                  }
+                `;
+
+                await github.graphql(updateMutation, {
+                  projectId: project.id,
+                  itemId: projectItem.id,
+                  fieldId: previewUrlField.id,
+                  value: { text: "" }
+                });
+                
+                console.log('✅ Cleared Preview URL field');
+              }
+            } catch (error) {
+              console.error('Failed to clear Preview URL:', error.message);
+            }
