@@ -61,7 +61,10 @@ jobs:
             }
 
             // Check if it's from a fork
-            if (pr.head.repo.full_name !== context.repo.full_name) {
+            const prRepoFullName = pr.head.repo?.full_name || '';
+            const currentRepoFullName = `${context.repo.owner}/${context.repo.repo}`;
+
+            if (prRepoFullName !== currentRepoFullName) {
               core.setOutput('should-deploy', 'false');
               core.setOutput('reason', 'PRs from forks cannot be auto-deployed');
               return;
@@ -255,9 +258,10 @@ jobs:
             const reason = '${{ needs.check-preview-needed.outputs.reason }}';
             const prNumber = context.payload.pull_request.number;
 
-            // Only comment if this is a new PR or if skip-preview was just added
+            // Only comment if this is a new PR
             const eventAction = context.payload.action;
-            if (eventAction !== 'opened' && eventAction !== 'labeled') {
+            if (eventAction !== 'opened') {
+              console.log(`Skipping comment - action is ${eventAction}, not 'opened'`);
               return;
             }
 
