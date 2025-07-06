@@ -1,0 +1,130 @@
+name: Manual Preview Control
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  pull-requests: write
+  contents: read
+  issues: write
+
+jobs:
+  handle-preview-command:
+    if: |
+      github.event.issue.pull_request && 
+      (contains(github.event.comment.body, '/preview') || contains(github.event.comment.body, '/skip-preview'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check commenter permissions
+        id: check-permissions
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const commenter = context.payload.comment.user.login;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            try {
+              const { data: permissionLevel } = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner,
+                repo,
+                username: commenter
+              });
+              
+              if (['admin', 'write'].includes(permissionLevel.permission)) {
+                core.setOutput('has-permission', 'true');
+              } else {
+                core.setOutput('has-permission', 'false');
+              }
+            } catch (e) {
+              core.setOutput('has-permission', 'false');
+            }
+
+      - name: Handle preview command
+        if: steps.check-permissions.outputs.has-permission == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = context.payload.comment.body.toLowerCase();
+            const issueNumber = context.issue.number;
+
+            // React to the comment
+            await github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: 'rocket'
+            });
+
+            if (comment.includes('/preview')) {
+              // Add deploy-preview label
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ['deploy-preview']
+              });
+              
+              // Remove skip-preview if present
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  name: 'skip-preview'
+                });
+              } catch (e) {}
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: '🚀 Preview deployment triggered! The preview will be ready in a few minutes.'
+              });
+              
+            } else if (comment.includes('/skip-preview')) {
+              // Add skip-preview label
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ['skip-preview']
+              });
+              
+              // Remove deploy-preview if present
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  name: 'deploy-preview'
+                });
+              } catch (e) {}
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: '⏭️ Preview deployment skipped. Use `/preview` to deploy if needed later.'
+              });
+            }
+
+      - name: Handle no permission
+        if: steps.check-permissions.outputs.has-permission == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: '-1'
+            });
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '❌ Sorry, you need write permissions to control preview deployments.'
+            });

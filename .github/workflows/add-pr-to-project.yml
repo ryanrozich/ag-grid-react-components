@@ -31,25 +31,12 @@ jobs:
               }
             `;
 
-            // First, get the project ID
-            const projectQuery = `
-              query($owner: String!, $number: Int!) {
-                user(login: $owner) {
-                  projectV2(number: $number) {
-                    id
-                  }
-                }
-              }
-            `;
+            // Get the project ID directly using its node ID
+            // This is the AG Grid React Components Roadmap project
+            // You can find this ID by querying the project or from the project URL
+            const projectId = 'PVT_kwHOBMT9Es4Aqh-F'; // AG Grid React Components Roadmap
 
             try {
-              // Get project ID (Project #1)
-              const projectData = await github.graphql(projectQuery, {
-                owner: context.repo.owner,
-                number: 1
-              });
-
-              const projectId = projectData.user.projectV2.id;
               console.log(`Found project ID: ${projectId}`);
 
               // Add PR to project

@@ -114,10 +114,12 @@ jobs:
             console.log('Field updates to apply:', fieldUpdates);
 
             // GraphQL to find the project and update fields
+            // Note: PRs are accessed via pullRequest, not issue in GraphQL
+            const isPR = context.eventName === 'pull_request';
             const projectQuery = `
-              query($owner: String!, $repo: String!, $issue: Int!) {
+              query($owner: String!, $repo: String!, $number: Int!) {
                 repository(owner: $owner, name: $repo) {
-                  issue(number: $issue) {
+                  ${isPR ? 'pullRequest' : 'issue'}(number: $number) {
                     projectItems(first: 10) {
                       nodes {
                         id
@@ -151,10 +153,11 @@ jobs:
             const projectData = await github.graphql(projectQuery, {
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue: issueNumber
+              number: issueNumber
             });
 
-            const projectItems = projectData.repository.issue.projectItems.nodes;
+            const issueOrPR = isPR ? projectData.repository.pullRequest : projectData.repository.issue;
+            const projectItems = issueOrPR?.projectItems?.nodes || [];
             if (projectItems.length === 0) {
               console.log('Issue not found in any project');
               return;

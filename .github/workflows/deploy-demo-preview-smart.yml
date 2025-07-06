@@ -1,26 +1,84 @@
-name: Deploy Demo Preview
-# DEPRECATED: This workflow is being replaced by deploy-demo-preview-smart.yml
-# which provides more intelligent deployment decisions
+name: Smart Demo Preview Deployment
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, labeled]
     paths:
-      - "src/**"
+      # Component source code
+      - "src/components/**"
+      - "src/utils/**"
+      - "src/index.ts"
+
+      # Demo application
+      - "src/demo/**"
       - "public/**"
+
+      # Configuration that affects the demo
       - "package.json"
       - "vite.config.demo.ts"
-      - ".github/workflows/deploy-demo-preview.yml"
+      - "tsconfig.json"
+
+      # API changes
+      - "api/**"
+
+      # This workflow
+      - ".github/workflows/deploy-demo-preview-smart.yml"
 
 permissions:
   pull-requests: write
   contents: read
+  issues: write
 
 jobs:
+  check-preview-needed:
+    name: Check if Preview Needed
+    runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ steps.check.outputs.should-deploy }}
+      reason: ${{ steps.check.outputs.reason }}
+
+    steps:
+      - name: Check deployment criteria
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const labels = pr.labels.map(l => l.name);
+
+            // Force deployment if labeled
+            if (labels.includes('deploy-preview')) {
+              core.setOutput('should-deploy', 'true');
+              core.setOutput('reason', 'Manual override via deploy-preview label');
+              return;
+            }
+
+            // Skip if labeled
+            if (labels.includes('skip-preview')) {
+              core.setOutput('should-deploy', 'false');
+              core.setOutput('reason', 'Skipped via skip-preview label');
+              return;
+            }
+
+            // Check if it's from a fork
+            const prRepoFullName = pr.head.repo?.full_name || '';
+            const currentRepoFullName = `${context.repo.owner}/${context.repo.repo}`;
+
+            if (prRepoFullName !== currentRepoFullName) {
+              core.setOutput('should-deploy', 'false');
+              core.setOutput('reason', 'PRs from forks cannot be auto-deployed');
+              return;
+            }
+
+            // Default: deploy based on path filters (already handled by workflow paths)
+            core.setOutput('should-deploy', 'true');
+            core.setOutput('reason', 'Contains changes to demo-relevant files');
+
   deploy-preview:
     name: Deploy PR Preview
+    needs: check-preview-needed
+    if: needs.check-preview-needed.outputs.should-deploy == 'true'
     runs-on: ubuntu-latest
-    if: github.event.pull_request.head.repo.full_name == github.repository
 
     steps:
       - name: Checkout code
@@ -124,6 +182,22 @@ jobs:
 
           # Run deployment tests
           DEMO_URL="$DEMO_URL" npx playwright test tests/e2e/demo-deployment.spec.ts --reporter=list
+
+      - name: Add preview label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                labels: ['has-preview']
+              });
+            } catch (e) {
+              console.log('Could not add label:', e.message);
+            }
+
       - name: Comment on PR
         uses: actions/github-script@v7
         with:
@@ -140,7 +214,66 @@ jobs:
 
             This preview will be available for testing until the PR is merged or closed.`;
 
-            github.rest.issues.createComment({
+            // Check if we already commented
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber
+            });
+
+            const botComment = comments.data.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('Demo Preview Ready!')
+            );
+
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: comment
+              });
+            }
+
+  skip-notification:
+    name: Notify Skip Reason
+    needs: check-preview-needed
+    if: needs.check-preview-needed.outputs.should-deploy == 'false'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Comment skip reason
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const reason = '${{ needs.check-preview-needed.outputs.reason }}';
+            const prNumber = context.payload.pull_request.number;
+
+            // Only comment if this is a new PR
+            const eventAction = context.payload.action;
+            if (eventAction !== 'opened') {
+              console.log(`Skipping comment - action is ${eventAction}, not 'opened'`);
+              return;
+            }
+
+            const comment = `ℹ️ **Demo Preview Skipped**
+
+            ${reason}
+
+            To deploy a preview for this PR, you can:
+            - Add the \`deploy-preview\` label to force deployment
+            - Make changes to demo-relevant files (components, demo app, etc.)`;
+
+            await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
