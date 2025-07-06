@@ -1,6 +1,6 @@
-name: Deploy Demo Preview
-# DEPRECATED: This workflow is being replaced by deploy-demo-preview-smart.yml
-# which provides more intelligent deployment decisions
+name: Deploy Demo Preview (Disabled)
+# DISABLED: This workflow has been replaced by deploy-demo-preview-smart.yml
+# To re-enable, remove the if: false condition from the deploy-preview job
 
 on:
   pull_request:
@@ -20,7 +20,8 @@ jobs:
   deploy-preview:
     name: Deploy PR Preview
     runs-on: ubuntu-latest
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    # DISABLED: This workflow is replaced by smart preview deployment
+    if: false
 
     steps:
       - name: Checkout code
