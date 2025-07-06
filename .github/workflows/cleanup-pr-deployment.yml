@@ -91,7 +91,7 @@ jobs:
 
             The preview deployment for this PR has been removed:
             - ✅ R2 objects deleted
-            - ✅ KV entry removed  
+            - ✅ KV entry removed
             - ✅ API worker deleted
 
             Thank you for your contribution! 🎉`;
