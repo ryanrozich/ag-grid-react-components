@@ -33,7 +33,10 @@ jobs:
             --remote || true
 
           # Delete the API worker
-          npx wrangler delete "ag-grid-demo-api-pr-${PR_NUMBER}" || true
+          npx wrangler delete "ag-grid-demo-api-pr-${PR_NUMBER}" --force || true
+
+          # Note: R2 bucket cleanup would require additional setup
+          # Files in R2 can be cleaned up manually or with lifecycle rules
 
           echo "✅ Preview deployment cleaned up"
 
