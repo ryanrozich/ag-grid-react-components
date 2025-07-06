@@ -244,6 +244,100 @@ jobs:
               });
             }
 
+      - name: Update Preview URL in Project
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const previewUrl = `https://demo.rozich.net/ag-grid-react-components-pr-${prNumber}/`;
+
+            console.log(`Updating Preview URL for PR #${prNumber}: ${previewUrl}`);
+
+            // GraphQL query to find the PR in the project and get field info
+            const projectQuery = `
+              query($owner: String!, $repo: String!, $number: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $number) {
+                    projectItems(first: 10) {
+                      nodes {
+                        id
+                        project {
+                          id
+                          title
+                          fields(first: 20) {
+                            nodes {
+                              ... on ProjectV2Field {
+                                id
+                                name
+                                dataType
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            try {
+              const projectData = await github.graphql(projectQuery, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                number: prNumber
+              });
+
+              const projectItems = projectData.repository.pullRequest?.projectItems?.nodes || [];
+              if (projectItems.length === 0) {
+                console.log('PR not found in any project');
+                return;
+              }
+
+              // Update each project item
+              for (const projectItem of projectItems) {
+                const project = projectItem.project;
+                console.log(`Updating project "${project.title}"`);
+
+                // Find the Preview URL field
+                const previewUrlField = project.fields.nodes.find(f => 
+                  f.name === 'Preview URL' && f.dataType === 'TEXT'
+                );
+                
+                if (!previewUrlField) {
+                  console.log('Preview URL field not found in project');
+                  continue;
+                }
+
+                // Update the field
+                const updateMutation = `
+                  mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
+                    updateProjectV2ItemFieldValue(input: {
+                      projectId: $projectId
+                      itemId: $itemId
+                      fieldId: $fieldId
+                      value: $value
+                    }) {
+                      projectV2Item {
+                        id
+                      }
+                    }
+                  }
+                `;
+
+                await github.graphql(updateMutation, {
+                  projectId: project.id,
+                  itemId: projectItem.id,
+                  fieldId: previewUrlField.id,
+                  value: { text: previewUrl }
+                });
+                
+                console.log(`✅ Updated Preview URL field to: ${previewUrl}`);
+              }
+            } catch (error) {
+              console.error('Failed to update Preview URL:', error.message);
+              // Don't fail the workflow for this
+            }
   skip-notification:
     name: Notify Skip Reason
     needs: check-preview-needed
