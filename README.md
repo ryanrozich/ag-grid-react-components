@@ -49,6 +49,21 @@ Comprehensive grid state persistence with URL synchronization:
 - **Selective Persistence**: Choose which state to include
 - **Date Serialization**: Properly handles Date objects
 
+### 💾 Filter Presets (New!)
+
+Save, load, and share filter configurations with the new preset system:
+
+- **User Presets**: Save personal filter combinations in localStorage
+- **System Presets**: Pre-configured filters provided by developers
+- **Import/Export**: Share presets via JSON files
+- **Shareable URLs**: Generate links for specific filter configurations
+- **QuickFilterDropdown Integration**: Built-in preset support
+- **Storage Management**: Automatic compression and quota handling
+- **Cross-Tab Sync**: Presets update across browser tabs
+- **Version Migration**: Automatic updates when filter models change
+
+📖 **[Filter Presets Documentation →](./docs/filter-presets/)**
+
 ## 📦 Installation
 
 Choose your installation based on your needs:
@@ -100,7 +115,7 @@ const columnDefs = [
 ];
 ```
 
-### With React DatePicker (65KB)
+### React DatePicker Integration
 
 ```tsx
 import { createDateFilter, reactDatePickerAdapter } from "ag-grid-react-components";
@@ -153,6 +168,71 @@ function App() {
 }
 ```
 
+### Filter Presets Example
+
+```tsx
+import { QuickFilterDropdown, useFilterPresets } from "ag-grid-react-components";
+
+function App() {
+  const [gridApi, setGridApi] = useState(null);
+
+  return (
+    <div>
+      {/* QuickFilterDropdown with preset support */}
+      <QuickFilterDropdown
+        api={gridApi}
+        columnId="date"
+        enablePresets={{
+          systemPresets: [
+            {
+              id: "recent",
+              name: "Recent Activity",
+              gridState: {
+                filterModel: {
+                  date: { type: "after", mode: "relative", expressionFrom: "Today-7d" },
+                },
+              },
+            },
+            {
+              id: "high-priority",
+              name: "High Priority",
+              gridState: {
+                filterModel: {
+                  priority: { type: "equals", filter: "high" },
+                  status: { type: "notEqual", filter: "completed" },
+                },
+              },
+            },
+          ],
+          allowUserPresets: true,
+          defaultPresetId: "recent",
+        }}
+      />
+
+      <AgGridReact columnDefs={columnDefs} onGridReady={onGridReady} rowData={rowData} />
+    </div>
+  );
+}
+
+// Or use the hook directly for custom UI
+function CustomPresetUI({ gridApi }) {
+  const { presets, savePreset, loadPreset } = useFilterPresets({ gridApi });
+
+  return (
+    <div>
+      <select onChange={(e) => loadPreset(e.target.value)}>
+        {presets.map((preset) => (
+          <option key={preset.id} value={preset.id}>
+            {preset.name}
+          </option>
+        ))}
+      </select>
+      <button onClick={() => savePreset({ name: "My Filters" })}>Save Current Filters</button>
+    </div>
+  );
+}
+```
+
 ## 🌟 Bundle Sizes
 
 | Use Case                 | Bundle Size |
@@ -174,10 +254,9 @@ function App() {
 
 - 📅 React DatePicker integration (+40KB when used)
 - 🗜️ LZ-String URL compression (+20KB when used)
+- 💾 Filter Presets with localStorage/IndexedDB support
 - 🎨 Pre-built styles (optional)
 - 🔌 Full TypeScript support
-
-````
 
 #### Portal Rendering
 
@@ -197,7 +276,7 @@ The dropdown supports three rendering modes via the `usePortal` prop:
     usePortal="always" // Prevents clipping in scrollable container
   />
 </div>
-````
+```
 
 ## 📚 API Documentation
 
@@ -286,7 +365,73 @@ const cleanup = setupGridStatePersistence(gridApi, {
 });
 ```
 
-##### Manual State Management
+### Filter Presets
+
+```typescript
+// Using with QuickFilterDropdown
+<QuickFilterDropdown
+  api={gridApi}
+  columnId="date"
+  enablePresets={{
+    // System-defined presets
+    systemPresets: [
+      {
+        id: 'recent',
+        name: 'Recent Activity',
+        gridState: { filterModel: {...} }
+      }
+    ],
+
+    // User preset settings
+    allowUserPresets: true,
+    maxUserPresets: 20,
+    defaultPresetId: 'recent',
+
+    // Callbacks
+    onPresetSaved: (preset) => console.log('Saved:', preset),
+    onPresetLoaded: (preset) => console.log('Loaded:', preset)
+  }}
+/>
+
+// Using the hook directly
+const {
+  presets,          // All presets (system + user)
+  userPresets,      // User presets only
+  systemPresets,    // System presets only
+  activePreset,     // Currently active preset
+
+  savePreset,       // Save current filters as preset
+  loadPreset,       // Load a preset by ID
+  deletePreset,     // Delete a user preset
+  updatePreset,     // Update existing preset
+
+  exportPresets,    // Export to JSON
+  importPresets,    // Import from JSON
+  getShareableUrl,  // Generate shareable URL
+
+  canSavePreset,    // Check if can save more
+  isLoading,        // Loading state
+  error            // Error state
+} = useFilterPresets({
+  gridApi,
+  storageKey: 'my-app-presets',
+  systemPresets: [...],
+  autoSave: true,
+  autoSaveDelay: 2000
+});
+
+// Example: Save current filters
+await savePreset({
+  name: 'Q4 Analysis',
+  description: 'Filters for Q4 report',
+  tags: ['quarterly', 'report']
+});
+
+// Example: Generate shareable URL
+const shareUrl = getShareableUrl(preset.id);
+```
+
+#### Manual State Management
 
 ```tsx
 import { captureGridState, applyGridState } from "ag-grid-react-components";
