@@ -10,6 +10,7 @@ on:
 permissions:
   pull-requests: read
   repository-projects: write
+  issues: write
 
 jobs:
   update-preview-url:
@@ -140,14 +141,31 @@ jobs:
     if: github.event_name == 'pull_request' && (github.event.action == 'closed' || github.event.action == 'merged')
 
     steps:
-      - name: Clear Preview URL in Project
+      - name: Clear Preview URL in Project and Remove Label
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prNumber = context.payload.pull_request.number;
 
-            console.log(`Clearing Preview URL for closed/merged PR #${prNumber}`);
+            console.log(`Clearing Preview URL and removing has-preview label for closed/merged PR #${prNumber}`);
+
+            // First, remove the has-preview label
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                name: 'has-preview'
+              });
+              console.log('✅ Removed has-preview label');
+            } catch (error) {
+              if (error.status === 404) {
+                console.log('has-preview label not found on PR');
+              } else {
+                console.error('Failed to remove label:', error.message);
+              }
+            }
 
             // GraphQL query to find the PR in the project
             const projectQuery = `
