@@ -15,6 +15,7 @@ import { VERSION_DISPLAY, IS_PRERELEASE } from "./version";
 import VersionInfo from "./components/VersionInfo";
 import heroScreenshot from "./assets/screenshots/hero-screenshot.png";
 import { ServerSideDemo } from "./components/ServerSideDemo";
+import FilterPresetsShowcase from "./FilterPresetsShowcase";
 import {
   darkTheme,
   getColumnDefs,
@@ -300,9 +301,9 @@ export const ComponentsShowcaseComplete: React.FC<
   const cleanupRef = React.useRef<(() => void) | null>(null);
 
   // State for demo tabs
-  const [activeDemoTab, setActiveDemoTab] = useState<"client" | "server">(
-    "client",
-  );
+  const [activeDemoTab, setActiveDemoTab] = useState<
+    "client" | "server" | "presets"
+  >("client");
 
   // Clean up grid API when switching tabs
   useEffect(() => {
@@ -1116,6 +1117,7 @@ const columnDefs = [{
       { id: "relativedatefilter", label: "DateFilter", indent: true },
       { id: "quickfilterdropdown", label: "QuickFilterDropdown", indent: true },
       { id: "activefilters", label: "ActiveFilters", indent: true },
+      { id: "filterpresets", label: "Filter Presets", indent: true },
       { id: "urlstate", label: "URL State Persistence", indent: true },
 
       // Demo Guide Section
@@ -3257,6 +3259,292 @@ function FilterableGrid() {
 }`}
                             language="tsx"
                           />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Filter Presets Section */}
+                {activeDocSection === "filterpresets" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="filter-presets">
+                        Filter Presets
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        Save, load, and share filter configurations with the
+                        powerful Filter Presets feature. Enable your users to
+                        create custom filter views, share them with teammates,
+                        and restore their favorite configurations instantly.
+                      </p>
+
+                      <div className="bg-indigo-900/20 border border-indigo-600/30 rounded-lg p-4 mb-6">
+                        <p className="text-indigo-400 font-semibold mb-2">
+                          🎉 New Feature
+                        </p>
+                        <p className="text-gray-300">
+                          Filter Presets is a new feature that integrates
+                          seamlessly with QuickFilterDropdown and other
+                          components. Check out the{" "}
+                          <Link
+                            to="/demo"
+                            onClick={() => setActiveDemoTab("presets")}
+                            className="text-indigo-400 hover:text-indigo-300"
+                          >
+                            interactive showcase
+                          </Link>{" "}
+                          to see it in action!
+                        </p>
+                      </div>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="preset-features">
+                            Key Features
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <ul className="space-y-3 text-gray-300">
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Save Filter States:</strong> Users can
+                                  save their current filter configuration with a
+                                  custom name
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>System Presets:</strong> Provide
+                                  pre-configured filters for common use cases
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>User Presets:</strong> Allow users to
+                                  create and manage their own presets
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>URL Sharing:</strong> Share filter
+                                  configurations via URL with automatic
+                                  compression
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Import/Export:</strong> Transfer
+                                  presets between users or systems
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Cross-Tab Sync:</strong> Automatically
+                                  sync presets across browser tabs
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Custom UI:</strong> Fully customizable
+                                  UI components or bring your own
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-quick-start">
+                            Quick Start
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`// Enable presets with QuickFilterDropdown
+import { QuickFilterDropdown } from 'ag-grid-react-components';
+
+const MyGrid = () => {
+  const systemPresets = [
+    {
+      id: 'recent',
+      name: 'Recent Orders',
+      gridState: {
+        filters: {
+          date: { 
+            type: 'after', 
+            mode: 'relative', 
+            expressionFrom: 'Today-7d' 
+          }
+        }
+      }
+    }
+  ];
+
+  return (
+    <QuickFilterDropdown
+      api={gridApi}
+      columnId="date"
+      enablePresets={{
+        systemPresets,
+        allowUserPresets: true,
+        allowSharing: true,
+        allowExport: true
+      }}
+    />
+  );
+};`}
+                            language="tsx"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-api">
+                            Programmatic API
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            Use the useFilterPresets hook for full programmatic
+                            control:
+                          </p>
+                          <CodeBlock
+                            code={`import { useFilterPresets } from 'ag-grid-react-components';
+
+const MyComponent = () => {
+  const { 
+    presets, 
+    savePreset, 
+    loadPreset, 
+    deletePreset,
+    setDefaultPreset,
+    exportPresets,
+    importPresets,
+    sharePreset
+  } = useFilterPresets({
+    storageKey: 'myApp.filterPresets',
+    maxPresets: 20,
+    enableCompression: true
+  });
+
+  // Save current state
+  const handleSave = async () => {
+    const preset = await savePreset({
+      name: 'My Filter',
+      description: 'Q4 Analysis',
+      isDefault: true
+    });
+  };
+
+  // Share via URL
+  const handleShare = async (presetId) => {
+    const shareUrl = await sharePreset(presetId);
+    navigator.clipboard.writeText(shareUrl);
+  };
+};`}
+                            language="tsx"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-storage">
+                            Storage & Performance
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Storage Configuration
+                            </h4>
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b border-gray-700">
+                                  <th className="text-left py-2 text-gray-300">
+                                    Option
+                                  </th>
+                                  <th className="text-left py-2 text-gray-300">
+                                    Default
+                                  </th>
+                                  <th className="text-left py-2 text-gray-300">
+                                    Description
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="text-gray-400">
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">maxStorageSize</td>
+                                  <td className="py-3">5MB</td>
+                                  <td className="py-3">
+                                    Maximum storage per domain
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">compressionEnabled</td>
+                                  <td className="py-3">true</td>
+                                  <td className="py-3">
+                                    Enable LZ compression
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">compressionThreshold</td>
+                                  <td className="py-3">1KB</td>
+                                  <td className="py-3">
+                                    Compress if larger than
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">autoCleanup</td>
+                                  <td className="py-3">true</td>
+                                  <td className="py-3">Remove old presets</td>
+                                </tr>
+                                <tr>
+                                  <td className="py-3">maxAge</td>
+                                  <td className="py-3">90 days</td>
+                                  <td className="py-3">Preset expiration</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-examples">
+                            See It In Action
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              Explore the Filter Presets feature with
+                              interactive examples:
+                            </p>
+                            <div className="flex gap-4">
+                              <Link
+                                to="/demo"
+                                onClick={() => {
+                                  navigate("/demo");
+                                  setTimeout(
+                                    () => setActiveDemoTab("presets"),
+                                    100,
+                                  );
+                                }}
+                                className="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+                              >
+                                View Showcase
+                                <svg
+                                  className="w-4 h-4 ml-2"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M9 5l7 7-7 7"
+                                  />
+                                </svg>
+                              </Link>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -6553,6 +6841,19 @@ const handleFilterSelect = async (option) => {
                     API
                   </span>
                 </button>
+                <button
+                  onClick={() => setActiveDemoTab("presets")}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeDemoTab === "presets"
+                      ? "border-indigo-500 text-white"
+                      : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
+                  }`}
+                >
+                  Filter Presets
+                  <span className="ml-2 px-2 py-0.5 text-xs bg-green-600 text-white rounded-full">
+                    NEW
+                  </span>
+                </button>
               </nav>
             </div>
           </div>
@@ -6656,6 +6957,13 @@ const handleFilterSelect = async (option) => {
           {activeDemoTab === "server" && (
             <div className="flex-1 flex flex-col">
               <ServerSideDemo />
+            </div>
+          )}
+
+          {/* Filter Presets Showcase */}
+          {activeDemoTab === "presets" && (
+            <div className="flex-1 flex flex-col">
+              <FilterPresetsShowcase />
             </div>
           )}
         </div>
