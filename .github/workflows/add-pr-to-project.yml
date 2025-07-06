@@ -1,0 +1,75 @@
+name: Add PR to Project
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: read
+  repository-projects: write
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add PR to Project
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            console.log(`Adding PR #${pr.number} to project`);
+
+            // GraphQL to add PR to project
+            const addToProjectMutation = `
+              mutation($projectId: ID!, $contentId: ID!) {
+                addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+                  item {
+                    id
+                  }
+                }
+              }
+            `;
+
+            // First, get the project ID
+            const projectQuery = `
+              query($owner: String!, $number: Int!) {
+                user(login: $owner) {
+                  projectV2(number: $number) {
+                    id
+                  }
+                }
+              }
+            `;
+
+            try {
+              // Get project ID (Project #1)
+              const projectData = await github.graphql(projectQuery, {
+                owner: context.repo.owner,
+                number: 1
+              });
+
+              const projectId = projectData.user.projectV2.id;
+              console.log(`Found project ID: ${projectId}`);
+
+              // Add PR to project
+              const result = await github.graphql(addToProjectMutation, {
+                projectId: projectId,
+                contentId: pr.node_id
+              });
+
+              console.log(`✅ Successfully added PR #${pr.number} to project`);
+
+              // The auto-set-pr-status workflow will handle setting the initial status label
+              // The sync-labels-to-project workflow will then sync that label to the project field
+
+            } catch (error) {
+              console.error('Failed to add PR to project:', error.message);
+              
+              // If it fails because it's already in the project, that's fine
+              if (error.message.includes('already exists')) {
+                console.log('PR already in project');
+              } else {
+                throw error;
+              }
+            }

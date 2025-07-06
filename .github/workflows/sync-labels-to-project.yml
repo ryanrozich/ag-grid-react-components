@@ -3,11 +3,14 @@ name: Sync Issue Labels to Project Fields
 on:
   issues:
     types: [opened, labeled, unlabeled]
+  pull_request:
+    types: [opened, labeled, unlabeled]
   project_card:
     types: [created, moved]
 
 permissions:
   issues: read
+  pull-requests: read
   repository-projects: write
 
 jobs:
@@ -19,9 +22,16 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const issueNumber = context.issue?.number || context.payload.issue?.number;
+            // Get issue/PR number from different event contexts
+            let issueNumber;
+            if (context.eventName === 'pull_request') {
+              issueNumber = context.payload.pull_request?.number;
+            } else {
+              issueNumber = context.issue?.number || context.payload.issue?.number;
+            }
+
             if (!issueNumber) {
-              console.log('No issue number found');
+              console.log('No issue/PR number found');
               return;
             }
 
