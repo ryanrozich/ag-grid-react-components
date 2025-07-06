@@ -5,7 +5,7 @@
  * This removes R2 objects, KV entries, and API workers for PRs that have been merged
  */
 
-const { execSync } = require("child_process");
+import { execSync } from "child_process";
 
 // Check required environment variables
 const requiredEnvVars = [
@@ -46,7 +46,7 @@ try {
     { encoding: "utf8" }
   );
   const kvKeys = JSON.parse(kvListOutput);
-  
+
   // Filter for PR deployment keys
   prDeployments = kvKeys
     .map((key) => key.name)
@@ -55,7 +55,7 @@ try {
       const prNumber = parseInt(name.match(/pr-(\d+)$/)[1]);
       return { name, prNumber };
     });
-    
+
   console.log(`Found ${prDeployments.length} PR deployments in KV store\n`);
 } catch (error) {
   console.error("❌ Failed to list KV keys:", error.message);
