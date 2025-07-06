@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import type { Preset, GridState, ShareableUrlData } from "./types";
 
 // Mock implementation - will be replaced with actual implementation

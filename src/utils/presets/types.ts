@@ -2,7 +2,7 @@ import type {
   FilterModel,
   SortModelItem,
   ColumnState,
-} from "@ag-grid-community/core";
+} from "ag-grid-community";
 
 /**
  * Base preset interface
