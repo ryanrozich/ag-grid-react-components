@@ -59,6 +59,7 @@
     "fresh": "npm run clean && npm install && npm run build",
     "run-tsx": "node ./scripts/run-tsx.js",
     "bundle-size": "npm run build && echo '📦 Bundle Size:' && du -sh dist/* | sort -h",
+    "cleanup:pr-deployments": "node scripts/cleanup-merged-pr-deployments.js",
     "// Project Management": "GitHub issues and project sync",
     "bootstrap:project": "./scripts/bootstrap-all.sh",
     "sync:labels": "node scripts/add-missing-labels.js",
