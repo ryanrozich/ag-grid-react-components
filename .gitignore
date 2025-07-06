@@ -1,3 +1,9 @@
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+
 # Logs
 logs
 *.log
@@ -27,6 +33,8 @@ dist-ssr
 # Testing
 coverage
 .vitest-cache
+playwright-report/
+test-results/
 
 # Deployment
 dist-demo
@@ -97,3 +105,14 @@ TEST_COVERAGE_*.md
 
 # GitHub identity management docs
 GITHUB_IDENTITY_MANAGEMENT.md
+# Bot orchestration framework (moved to MADF)
+scripts/bot-workflow/
+scripts/*madf*
+scripts/sync-agent-status-to-project.js
+MULTI_AGENT_FRAMEWORK_*.md
+MADF_*.md
+COALESCE_LABS_*.md
+*COORDINATOR*.md
+*BOT_*.md
+.bot/
+migration/
