@@ -38,4 +38,10 @@ export const logger = {
       console.debug(...args);
     }
   },
+
+  info: (...args: unknown[]) => {
+    if (isDevelopment) {
+      console.info(...args);
+    }
+  },
 };
