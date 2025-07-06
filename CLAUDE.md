@@ -53,13 +53,24 @@ You MUST run:
 npm run pre-commit    # This runs format, lint, typecheck, and tests
 ```
 
-### 5. E2E Testing for UI Changes
+### 5. Before Pushing to GitHub
+
+You MUST run:
+
+```bash
+npm run pre-push     # This runs ALL tests including E2E (locally only)
+```
+
+**Important**: E2E tests are temporarily disabled in CI for performance reasons. You MUST run them locally before pushing.
+
+### 6. E2E Testing for UI Changes
 
 You MUST:
 
-1. Run `npm run test:e2e` before declaring any UI bug fixed
+1. Run `npm run test:e2e` locally before declaring any UI bug fixed
 2. Create a new Playwright test for any bug you fix
 3. Never say a UI issue is resolved without passing e2e tests
+4. Always run `npm run pre-push` before pushing changes that affect UI
 
 ## Component Structure
 
