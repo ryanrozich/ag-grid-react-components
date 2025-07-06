@@ -41,6 +41,7 @@ jobs:
 
       - name: Check whitespace
         run: npm run check:whitespace
+        continue-on-error: true # Non-blocking since auto-fix workflow will handle it
 
   test:
     name: Tests
