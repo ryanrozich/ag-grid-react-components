@@ -17,6 +17,9 @@ import {
   applyQuickFilter,
   getActiveFilterOption,
 } from "./utils/filterModelBuilder";
+import { SavePresetDialog } from "../FilterPresets/SavePresetDialog";
+import { usePresets } from "../FilterPresets/hooks/usePresets";
+import type { FilterPreset } from "../FilterPresets/types";
 
 /**
  * A reusable dropdown component for applying quick filters to AG Grid columns
@@ -33,6 +36,7 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
   triggerContent,
   ariaLabel = "Quick filter options",
   usePortal = "never",
+  enablePresets,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -51,6 +55,21 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
     top: number;
     left: number;
   } | null>(null);
+
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [activePresetId, setActivePresetId] = useState<string | null>(null);
+
+  // Initialize presets hook (must be called unconditionally for React hooks rules)
+  const presets = usePresets(
+    enablePresets
+      ? {
+          storage: enablePresets.storage,
+          systemPresets: enablePresets.systemPresets,
+          onPresetChange: enablePresets.onPresetChange,
+          maxPresets: enablePresets.maxPresets,
+        }
+      : undefined,
+  );
 
   // Detect if we should use portal based on parent overflow
   const shouldUsePortal = useMemo(() => {
@@ -72,10 +91,24 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
     try {
       const activeOption = getActiveFilterOption(api, columnId, options);
       setState((prev) => ({ ...prev, selectedOption: activeOption }));
+
+      // Check if current filter matches any preset
+      if (enablePresets && presets) {
+        const currentFilterModel = api.getFilterModel();
+        const matchingPreset = [
+          ...(enablePresets.systemPresets || []),
+          ...(presets?.presets || []),
+        ].find(
+          (preset) =>
+            JSON.stringify(preset.filterModel) ===
+            JSON.stringify(currentFilterModel),
+        );
+        setActivePresetId(matchingPreset?.id || null);
+      }
     } catch (error) {
       console.warn("[QuickFilterDropdown] Error getting active filter:", error);
     }
-  }, [api, columnId, options]);
+  }, [api, columnId, options, enablePresets, presets]);
 
   // Calculate dropdown position (only used when portal is enabled)
   const calculateDropdownPosition = useCallback(() => {
@@ -133,13 +166,71 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
           highlightedIndex: -1,
         }));
         setDropdownPosition(null);
+        setActivePresetId(null); // Clear preset selection when regular option is selected
+        enablePresets?.onPresetChange?.(null);
         onFilterChange?.(option);
         triggerRef.current?.focus();
       } catch (error) {
         console.error("[QuickFilterDropdown] Error applying filter:", error);
       }
     },
-    [api, columnId, onFilterChange],
+    [api, columnId, onFilterChange, enablePresets],
+  );
+
+  // Handle preset selection
+  const handlePresetSelect = useCallback(
+    async (preset: FilterPreset | null) => {
+      if (!api || typeof api.setFilterModel !== "function") {
+        console.warn("[QuickFilterDropdown] API is invalid or destroyed");
+        return;
+      }
+
+      try {
+        if (preset) {
+          await api.setFilterModel(preset.filterModel);
+          api.onFilterChanged();
+          setActivePresetId(preset.id);
+          setState((prev) => ({
+            ...prev,
+            selectedOption: null, // Clear regular option selection
+            isOpen: false,
+            searchQuery: "",
+            highlightedIndex: -1,
+          }));
+          setDropdownPosition(null);
+          enablePresets?.onPresetChange?.(preset);
+          onFilterChange?.(null);
+        }
+        triggerRef.current?.focus();
+      } catch (error) {
+        console.error("[QuickFilterDropdown] Error applying preset:", error);
+      }
+    },
+    [api, enablePresets, onFilterChange],
+  );
+
+  // Handle save preset
+  const handleSavePreset = useCallback(
+    (preset: Partial<FilterPreset>) => {
+      if (!api || !presets) return;
+
+      const currentFilterModel = api.getFilterModel();
+      const newPreset: FilterPreset = {
+        id: `user-${Date.now()}`,
+        name: preset.name || "Untitled",
+        description: preset.description,
+        tags: preset.tags,
+        filterModel: currentFilterModel,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      presets?.addPreset(newPreset);
+      setShowSaveDialog(false);
+      setActivePresetId(newPreset.id);
+      enablePresets?.onPresetChange?.(newPreset);
+    },
+    [api, presets, enablePresets],
   );
 
   // Handle click outside
@@ -305,6 +396,156 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
         .join("")}` as keyof typeof styles
     ];
 
+  // Render dropdown content (reused for both portal and non-portal)
+  const renderDropdownContent = () => (
+    <>
+      {options.length > 10 && (
+        <div className={styles.searchContainer}>
+          <input
+            ref={searchInputRef}
+            type="text"
+            className={styles.searchInput}
+            placeholder="Search filters..."
+            value={state.searchQuery}
+            onChange={(e) =>
+              setState((prev) => ({
+                ...prev,
+                searchQuery: e.target.value,
+                highlightedIndex: 0,
+              }))
+            }
+            onKeyDown={handleKeyDown}
+            aria-label="Search filters"
+            data-testid="quick-filter-search"
+          />
+        </div>
+      )}
+
+      {/* Preset Section */}
+      {enablePresets && presets && (
+        <div className={styles.presetSection}>
+          <div className={styles.sectionHeader}>
+            <h3 className={styles.sectionTitle}>Filter Presets</h3>
+            {enablePresets.allowSave && (
+              <button
+                type="button"
+                className={styles.saveButton}
+                onClick={() => setShowSaveDialog(true)}
+                aria-label="Save current filter as preset"
+              >
+                Save
+              </button>
+            )}
+          </div>
+
+          {enablePresets.renderPresetSelector ? (
+            enablePresets.renderPresetSelector({
+              presets: [
+                ...(enablePresets.systemPresets || []),
+                ...(presets?.presets || []),
+              ],
+              activePresetId: activePresetId || undefined,
+              onPresetSelect: handlePresetSelect,
+            })
+          ) : (
+            <div className={styles.presetList}>
+              {[
+                ...(enablePresets.systemPresets || []),
+                ...(presets?.presets || []),
+              ].map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  className={`${styles.presetItem} ${
+                    preset.id === activePresetId ? styles.presetItemActive : ""
+                  }`}
+                  onClick={() => handlePresetSelect(preset)}
+                  aria-selected={preset.id === activePresetId}
+                >
+                  <span className={styles.presetName}>{preset.name}</span>
+                  {preset.isSystem && (
+                    <span className={styles.systemBadge}>System</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {enablePresets.allowManage && (
+            <button
+              type="button"
+              className={styles.manageLink}
+              onClick={() => {
+                setState((prev) => ({ ...prev, isOpen: false }));
+                enablePresets.onManageClick?.();
+              }}
+              aria-label="Manage presets"
+            >
+              Manage presets
+            </button>
+          )}
+
+          <div className={styles.divider} />
+        </div>
+      )}
+
+      {/* Quick Filters Section */}
+      {options.length > 0 && (
+        <div className={styles.sectionHeader}>
+          <h3 className={styles.sectionTitle}>Quick Filters</h3>
+        </div>
+      )}
+
+      <div className={styles.optionsList}>
+        {filteredOptions.length === 0 ? (
+          <div className={styles.emptyState}>No matching filters</div>
+        ) : (
+          filteredOptions.map((option, index) => {
+            const isSelected = option.id === state.selectedOption?.id;
+            const isHighlighted = index === state.highlightedIndex;
+
+            return (
+              <button
+                key={option.id || index}
+                ref={(el) => {
+                  optionRefs.current[index] = el;
+                }}
+                type="button"
+                className={`${styles.option} ${
+                  isSelected ? styles.optionSelected : ""
+                } ${isHighlighted ? styles.optionHighlighted : ""}`}
+                onClick={() => handleSelectOption(option)}
+                onMouseEnter={() =>
+                  setState((prev) => ({
+                    ...prev,
+                    highlightedIndex: index,
+                  }))
+                }
+                role="option"
+                aria-selected={isSelected}
+                data-testid={`quick-filter-option-${option.id || index}`}
+              >
+                <div className={styles.optionContent}>
+                  <span className={styles.optionLabel}>{option.label}</span>
+                  {showDescriptions && option.description && (
+                    <span className={styles.optionDescription}>
+                      {option.description}
+                    </span>
+                  )}
+                </div>
+                {isSelected && (
+                  <span className={styles.optionCheckmark}>
+                    <CheckIcon className={styles.checkIcon} />
+                  </span>
+                )}
+              </button>
+            );
+          })
+        )}
+      </div>
+    </>
+  );
+
   return (
     <div
       ref={containerRef}
@@ -369,77 +610,7 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
             role="listbox"
             aria-label={ariaLabel}
           >
-            {options.length > 10 && (
-              <div className={styles.searchContainer}>
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  className={styles.searchInput}
-                  placeholder="Search filters..."
-                  value={state.searchQuery}
-                  onChange={(e) =>
-                    setState((prev) => ({
-                      ...prev,
-                      searchQuery: e.target.value,
-                      highlightedIndex: 0,
-                    }))
-                  }
-                  onKeyDown={handleKeyDown}
-                  aria-label="Search filters"
-                  data-testid="quick-filter-search"
-                />
-              </div>
-            )}
-
-            <div className={styles.optionsList}>
-              {filteredOptions.length === 0 ? (
-                <div className={styles.emptyState}>No matching filters</div>
-              ) : (
-                filteredOptions.map((option, index) => {
-                  const isSelected = option.id === state.selectedOption?.id;
-                  const isHighlighted = index === state.highlightedIndex;
-
-                  return (
-                    <button
-                      key={option.id || index}
-                      ref={(el) => {
-                        optionRefs.current[index] = el;
-                      }}
-                      type="button"
-                      className={`${styles.option} ${
-                        isSelected ? styles.optionSelected : ""
-                      } ${isHighlighted ? styles.optionHighlighted : ""}`}
-                      onClick={() => handleSelectOption(option)}
-                      onMouseEnter={() =>
-                        setState((prev) => ({
-                          ...prev,
-                          highlightedIndex: index,
-                        }))
-                      }
-                      role="option"
-                      aria-selected={isSelected}
-                      data-testid={`quick-filter-option-${option.id || index}`}
-                    >
-                      <div className={styles.optionContent}>
-                        <span className={styles.optionLabel}>
-                          {option.label}
-                        </span>
-                        {showDescriptions && option.description && (
-                          <span className={styles.optionDescription}>
-                            {option.description}
-                          </span>
-                        )}
-                      </div>
-                      {isSelected && (
-                        <span className={styles.optionCheckmark}>
-                          <CheckIcon className={styles.checkIcon} />
-                        </span>
-                      )}
-                    </button>
-                  );
-                })
-              )}
-            </div>
+            {renderDropdownContent()}
           </div>,
           document.body,
         )}
@@ -455,76 +626,23 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
           role="listbox"
           aria-label={ariaLabel}
         >
-          {options.length > 10 && (
-            <div className={styles.searchContainer}>
-              <input
-                ref={searchInputRef}
-                type="text"
-                className={styles.searchInput}
-                placeholder="Search filters..."
-                value={state.searchQuery}
-                onChange={(e) =>
-                  setState((prev) => ({
-                    ...prev,
-                    searchQuery: e.target.value,
-                    highlightedIndex: 0,
-                  }))
-                }
-                onKeyDown={handleKeyDown}
-                aria-label="Search filters"
-                data-testid="quick-filter-search"
-              />
-            </div>
-          )}
-
-          <div className={styles.optionsList}>
-            {filteredOptions.length === 0 ? (
-              <div className={styles.emptyState}>No matching filters</div>
-            ) : (
-              filteredOptions.map((option, index) => {
-                const isSelected = option.id === state.selectedOption?.id;
-                const isHighlighted = index === state.highlightedIndex;
-
-                return (
-                  <button
-                    key={option.id || index}
-                    ref={(el) => {
-                      optionRefs.current[index] = el;
-                    }}
-                    type="button"
-                    className={`${styles.option} ${
-                      isSelected ? styles.optionSelected : ""
-                    } ${isHighlighted ? styles.optionHighlighted : ""}`}
-                    onClick={() => handleSelectOption(option)}
-                    onMouseEnter={() =>
-                      setState((prev) => ({
-                        ...prev,
-                        highlightedIndex: index,
-                      }))
-                    }
-                    role="option"
-                    aria-selected={isSelected}
-                    data-testid={`quick-filter-option-${option.id || index}`}
-                  >
-                    <div className={styles.optionContent}>
-                      <span className={styles.optionLabel}>{option.label}</span>
-                      {showDescriptions && option.description && (
-                        <span className={styles.optionDescription}>
-                          {option.description}
-                        </span>
-                      )}
-                    </div>
-                    {isSelected && (
-                      <span className={styles.optionCheckmark}>
-                        <CheckIcon className={styles.checkIcon} />
-                      </span>
-                    )}
-                  </button>
-                );
-              })
-            )}
-          </div>
+          {renderDropdownContent()}
         </div>
+      )}
+
+      {/* Save Preset Dialog */}
+      {enablePresets && showSaveDialog && (
+        <SavePresetDialog
+          isOpen={showSaveDialog}
+          onClose={() => setShowSaveDialog(false)}
+          onSave={handleSavePreset}
+          existingNames={[
+            ...(enablePresets.systemPresets || []),
+            ...(presets?.presets || []),
+          ].map((p) => p.name)}
+          currentFilterModel={api.getFilterModel()}
+          storageInfo={presets?.storageInfo || undefined}
+        />
       )}
     </div>
   );
@@ -564,4 +682,8 @@ const CheckIcon: React.FC<{ className?: string }> = ({ className }) => (
 
 // Export additional utilities
 export { DATE_FILTER_PRESETS } from "./utils/filterModelBuilder";
-export type { QuickFilterOption, QuickFilterDropdownProps } from "./types";
+export type {
+  QuickFilterOption,
+  QuickFilterDropdownProps,
+  EnablePresetsConfig,
+} from "./types";

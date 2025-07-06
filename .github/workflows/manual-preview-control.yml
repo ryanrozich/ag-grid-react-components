@@ -12,7 +12,7 @@ permissions:
 jobs:
   handle-preview-command:
     if: |
-      github.event.issue.pull_request && 
+      github.event.issue.pull_request &&
       (contains(github.event.comment.body, '/preview') || contains(github.event.comment.body, '/skip-preview'))
     runs-on: ubuntu-latest
     steps:
@@ -31,7 +31,7 @@ jobs:
                 repo,
                 username: commenter
               });
-              
+
               if (['admin', 'write'].includes(permissionLevel.permission)) {
                 core.setOutput('has-permission', 'true');
               } else {
@@ -65,7 +65,7 @@ jobs:
                 issue_number: issueNumber,
                 labels: ['deploy-preview']
               });
-              
+
               // Remove skip-preview if present
               try {
                 await github.rest.issues.removeLabel({
@@ -75,14 +75,14 @@ jobs:
                   name: 'skip-preview'
                 });
               } catch (e) {}
-              
+
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issueNumber,
                 body: '🚀 Preview deployment triggered! The preview will be ready in a few minutes.'
               });
-              
+
             } else if (comment.includes('/skip-preview')) {
               // Add skip-preview label
               await github.rest.issues.addLabels({
@@ -91,7 +91,7 @@ jobs:
                 issue_number: issueNumber,
                 labels: ['skip-preview']
               });
-              
+
               // Remove deploy-preview if present
               try {
                 await github.rest.issues.removeLabel({
@@ -101,7 +101,7 @@ jobs:
                   name: 'deploy-preview'
                 });
               } catch (e) {}
-              
+
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,

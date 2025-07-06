@@ -1,5 +1,10 @@
 import type { GridApi, FilterModel } from "ag-grid-community";
 import type { ReactNode } from "react";
+import type {
+  FilterPreset,
+  PresetStorage,
+  PresetSelectorProps,
+} from "../FilterPresets/types";
 
 /**
  * Represents a single quick filter option
@@ -17,6 +22,28 @@ export interface QuickFilterOption {
   filterModel: FilterModel | null;
   /** Optional custom filter builder function */
   buildFilterModel?: (api: GridApi, columnId: string) => FilterModel | null;
+}
+
+/**
+ * Configuration for filter preset functionality
+ */
+export interface EnablePresetsConfig {
+  /** Storage adapter for persisting presets */
+  storage: PresetStorage;
+  /** System-defined presets that cannot be modified */
+  systemPresets?: FilterPreset[];
+  /** Callback when a preset is selected */
+  onPresetChange?: (preset: FilterPreset | null) => void;
+  /** Whether to allow saving new presets */
+  allowSave?: boolean;
+  /** Whether to show manage presets link */
+  allowManage?: boolean;
+  /** Callback when manage presets is clicked */
+  onManageClick?: () => void;
+  /** Custom preset selector renderer */
+  renderPresetSelector?: (props: PresetSelectorProps) => ReactNode;
+  /** Maximum number of presets allowed */
+  maxPresets?: number;
 }
 
 /**
@@ -51,6 +78,8 @@ export interface QuickFilterDropdownProps {
    * @default 'never'
    */
   usePortal?: "auto" | "always" | "never";
+  /** Enable filter preset functionality */
+  enablePresets?: EnablePresetsConfig;
 }
 
 /**

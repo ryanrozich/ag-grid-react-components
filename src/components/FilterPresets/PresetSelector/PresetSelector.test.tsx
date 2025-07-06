@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { PresetSelector } from "./index";
 import type { FilterPreset, PresetSelectorProps } from "../types";
@@ -253,7 +253,6 @@ describe("PresetSelector", () => {
       render(<PresetSelector {...defaultProps} />);
 
       await user.click(screen.getByRole("button"));
-      const listbox = screen.getByRole("listbox");
 
       await user.keyboard("{ArrowDown}");
       expect(

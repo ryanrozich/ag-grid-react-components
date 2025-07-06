@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
-import type { FilterModelV33 } from "../interfaces";
+
+// Type for AG Grid v33+ filter models
+export type FilterModelV33 = Record<string, unknown>;
 
 export interface FilterPreset {
   id: string;
@@ -109,6 +111,7 @@ export interface UsePresetsReturn {
   isLoading: boolean;
   error: Error | null;
   selectPreset: (presetId: string | null) => void;
+  addPreset: (preset: Partial<FilterPreset>) => Promise<void>;
   savePreset: (preset: Partial<FilterPreset>) => Promise<void>;
   updatePreset: (id: string, updates: Partial<FilterPreset>) => Promise<void>;
   deletePresets: (ids: string[]) => Promise<void>;

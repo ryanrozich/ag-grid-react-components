@@ -151,7 +151,9 @@ export function PresetSelector({
             return (
               <li
                 key={preset.id}
-                ref={(el) => (optionRefs.current[index] = el)}
+                ref={(el) => {
+                  optionRefs.current[index] = el;
+                }}
                 role="option"
                 id={`preset-option-${preset.id}`}
                 aria-selected={isActive}

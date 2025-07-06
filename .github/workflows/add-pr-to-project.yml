@@ -52,7 +52,7 @@ jobs:
 
             } catch (error) {
               console.error('Failed to add PR to project:', error.message);
-              
+
               // If it fails because it's already in the project, that's fine
               if (error.message.includes('already exists')) {
                 console.log('PR already in project');

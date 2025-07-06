@@ -96,10 +96,10 @@ jobs:
                 console.log(`Updating project "${project.title}"`);
 
                 // Find the Preview URL field
-                const previewUrlField = project.fields.nodes.find(f => 
+                const previewUrlField = project.fields.nodes.find(f =>
                   f.name === 'Preview URL' && f.dataType === 'TEXT'
                 );
-                
+
                 if (!previewUrlField) {
                   console.log('Preview URL field not found in project');
                   continue;
@@ -127,7 +127,7 @@ jobs:
                   fieldId: previewUrlField.id,
                   value: { text: previewUrl }
                 });
-                
+
                 console.log(`✅ Updated Preview URL field to: ${previewUrl}`);
               }
             } catch (error) {
@@ -203,13 +203,13 @@ jobs:
               });
 
               const projectItems = projectData.repository.pullRequest?.projectItems?.nodes || [];
-              
+
               for (const projectItem of projectItems) {
                 const project = projectItem.project;
-                const previewUrlField = project.fields.nodes.find(f => 
+                const previewUrlField = project.fields.nodes.find(f =>
                   f.name === 'Preview URL' && f.dataType === 'TEXT'
                 );
-                
+
                 if (!previewUrlField) continue;
 
                 // Clear the field
@@ -234,7 +234,7 @@ jobs:
                   fieldId: previewUrlField.id,
                   value: { text: "" }
                 });
-                
+
                 console.log('✅ Cleared Preview URL field');
               }
             } catch (error) {
