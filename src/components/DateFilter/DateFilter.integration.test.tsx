@@ -439,6 +439,11 @@ describe("DateFilter Integration Tests", () => {
           });
         });
 
+        // Wait for state to settle after model is set
+        await waitFor(() => {
+          expect(doesFilterPassCallback).toBeDefined();
+        });
+
         const differentNode = { data: { date: new Date("2023-01-16") } };
         expect(doesFilterPassCallback({ node: differentNode })).toBe(true);
 
