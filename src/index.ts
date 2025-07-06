@@ -60,6 +60,49 @@ export {
 // AG Grid Workarounds
 export { applyFilterModelWithWorkaround } from "./components/QuickFilterDropdown/utils/agGridWorkaround";
 
+// Filter Preset Sharing
+export { ShareButton } from "./components/FilterPresets/ShareButton";
+export { usePresetFromUrl } from "./hooks/usePresetFromUrl";
+export {
+  exportPresets,
+  importPresets,
+  validateImportData,
+  generateExportFilename,
+  createExportBlob,
+  readImportFile,
+} from "./utils/presetSharing/importExport";
+export {
+  createShareableUrl,
+  extractPresetFromUrl,
+  serializeToUrl,
+  parseFromUrl,
+} from "./utils/presetSharing";
+export {
+  compress,
+  decompress,
+  isCompressed,
+  getCompressionRatio,
+} from "./utils/presetSharing/compression";
+
+// Preset Sharing Types
+export type {
+  FilterPreset,
+  PresetExportFormat,
+  ImportMode,
+  ImportResult,
+  ImportError,
+  ShareOptions,
+  ShareMode,
+  SerializedUrl,
+  ExtractResult,
+  ValidationResult,
+} from "./utils/presetSharing/types";
+export type { ShareButtonProps } from "./components/FilterPresets/ShareButton";
+export type {
+  UsePresetFromUrlOptions,
+  UsePresetFromUrlResult,
+} from "./hooks/usePresetFromUrl";
+
 // Import CSS
 import "./styles.css";
 

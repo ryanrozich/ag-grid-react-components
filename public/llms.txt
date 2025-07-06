@@ -12,6 +12,7 @@ This project provides advanced date filtering components for AG Grid React appli
 |----------|-------------|
 | Just DateFilter (native) | 25KB |
 | With React DatePicker | 65KB |
+| With Preset Sharing | 35KB |
 | All components | 85KB |
 
 ## Modular Architecture
@@ -187,6 +188,75 @@ setupGridStatePersistence(params.api, {
   includeColumns: true,
   includeSort: true
 });
+```
+
+### Filter Preset Sharing
+Save and share filter configurations as presets with your team.
+
+**Features:**
+- **URL Sharing**: Share presets via compressed URLs
+- **Export/Import**: Download presets as JSON files
+- **Two Modes**: Embedded (full data) or Reference (ID only)
+- **Compression**: >50% size reduction with LZ-String
+- **ShareButton Component**: Ready-to-use sharing UI
+- **Auto-load from URL**: Automatically apply shared presets
+
+**Basic Usage:**
+```typescript
+import { ShareButton, usePresetFromUrl, exportPresets, importPresets } from 'ag-grid-react-components';
+
+// Save current filters as preset
+const preset = {
+  id: `preset-${Date.now()}`,
+  name: "My Filters",
+  gridState: gridApi.getFilterModel(),
+  createdAt: new Date().toISOString()
+};
+
+// Share button UI
+<ShareButton
+  preset={preset}
+  onCopy={() => console.log('Copied!')}
+/>
+
+// Auto-load from URL
+const { preset, presetId, error } = usePresetFromUrl({
+  loadPresetById: async (id) => {
+    // Load from backend or localStorage
+    return await fetchPreset(id);
+  }
+});
+
+// Export to file
+const data = exportPresets(presets);
+const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+
+// Import from file
+const result = importPresets(data, existingPresets, 'merge');
+// Modes: 'replace', 'merge', 'add'
+```
+
+**URL Formats:**
+```
+// Embedded mode (compressed data)
+https://app.com?preset=N4IgZgpgLghgbgUwHZQKYQPYFMCeEB0IA5gMYD2A...
+
+// Reference mode (ID only)
+https://app.com?presetId=preset-123
+```
+
+**Preset Structure:**
+```typescript
+interface FilterPreset {
+  id: string;
+  name: string;
+  description?: string;
+  gridState: any; // AG Grid filter model
+  createdAt: string;
+  updatedAt?: string;
+  tags?: string[];
+  author?: string;
+}
 ```
 
 ## Date Expression Syntax

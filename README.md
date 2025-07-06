@@ -38,6 +38,17 @@ A component that displays active filters as removable pills:
 - **Filter Types**: Handles date, text, and set filters
 - **Customizable**: Style with CSS classes
 
+### 💾 Filter Preset Sharing
+
+Save and share filter configurations with others:
+
+- **URL Sharing**: Share presets via compressed URLs
+- **Export/Import**: Download presets as JSON files
+- **Compression**: Achieves >50% size reduction with LZ-String
+- **Two Modes**: Embedded (full data) or Reference (ID only)
+- **ShareButton Component**: Ready-to-use UI for sharing
+- **Auto-load from URL**: Automatically apply shared presets
+
 ### 🔗 URL State Persistence
 
 Comprehensive grid state persistence with URL synchronization:
@@ -153,12 +164,76 @@ function App() {
 }
 ```
 
+### Filter Preset Sharing (10KB)
+
+Share filter configurations with your team:
+
+```tsx
+import { ShareButton, usePresetFromUrl, importPresets, exportPresets } from "ag-grid-react-components";
+
+function App() {
+  const [gridApi, setGridApi] = useState(null);
+  const [savedPresets, setSavedPresets] = useState([]);
+
+  // Auto-load preset from URL
+  const { preset, presetId, error } = usePresetFromUrl({
+    loadPresetById: async (id) => {
+      // Load preset from your backend or localStorage
+      return savedPresets.find((p) => p.id === id);
+    },
+  });
+
+  // Save current filters as a preset
+  const savePreset = () => {
+    const preset = {
+      id: `preset-${Date.now()}`,
+      name: "My Filters",
+      gridState: gridApi.getFilterModel(),
+      createdAt: new Date().toISOString(),
+    };
+    setSavedPresets([...savedPresets, preset]);
+  };
+
+  // Export presets to file
+  const handleExport = () => {
+    const exportData = exportPresets(savedPresets);
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `filter-presets-${new Date().toISOString().split("T")[0]}.json`;
+    a.click();
+  };
+
+  // Import presets from file
+  const handleImport = async (file) => {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    const result = importPresets(data, savedPresets, "merge");
+    setSavedPresets([...savedPresets, ...result.imported]);
+  };
+
+  return (
+    <div>
+      {/* Share button for current preset */}
+      <ShareButton preset={preset} onCopy={() => console.log("Preset URL copied!")} />
+
+      {/* Apply preset from URL */}
+      {preset && <button onClick={() => gridApi.setFilterModel(preset.gridState)}>Apply Shared Preset</button>}
+
+      <AgGridReact columnDefs={columnDefs} onGridReady={onGridReady} rowData={rowData} />
+    </div>
+  );
+}
+```
+
 ## 🌟 Bundle Sizes
 
 | Use Case                 | Bundle Size |
 | ------------------------ | ----------- |
 | Just DateFilter (native) | **25KB**    |
 | With React DatePicker    | **65KB**    |
+| With Preset Sharing      | **35KB**    |
 | All components           | **85KB**    |
 
 ## 🎯 Key Features
@@ -172,6 +247,7 @@ function App() {
 
 ### Optional Features (loaded on demand)
 
+- 💾 Filter Preset Sharing (+10KB when used)
 - 📅 React DatePicker integration (+40KB when used)
 - 🗜️ LZ-String URL compression (+20KB when used)
 - 🎨 Pre-built styles (optional)
@@ -395,6 +471,99 @@ const setupServerStatePersistence = (gridApi) => {
     },
   });
 };
+```
+
+### Filter Preset Sharing
+
+```typescript
+// ShareButton Component
+interface ShareButtonProps {
+  preset: FilterPreset;
+  baseUrl?: string;
+  onCopy?: () => void;
+  renderTrigger?: (props: TriggerProps) => React.ReactNode;
+}
+
+<ShareButton
+  preset={currentPreset}
+  baseUrl="https://app.example.com"
+  onCopy={() => console.log('Copied!')}
+/>
+
+// usePresetFromUrl Hook
+interface UsePresetFromUrlOptions {
+  loadPresetById?: (id: string) => Promise<FilterPreset>;
+  autoLoad?: boolean;
+}
+
+const { preset, presetId, loading, error, loadPreset, clearPreset } = usePresetFromUrl({
+  loadPresetById: async (id) => fetchPresetFromAPI(id),
+  autoLoad: true
+});
+
+// Import/Export Functions
+import { exportPresets, importPresets } from "ag-grid-react-components";
+
+// Export presets
+const exportData = exportPresets(savedPresets);
+// Returns: { version: "1.0.0", exportDate: string, source: string, presets: FilterPreset[] }
+
+// Import presets with different modes
+const result = importPresets(data, existingPresets, 'merge');
+// Modes: 'replace' | 'merge' | 'add'
+// Returns: { imported: FilterPreset[], skipped: FilterPreset[], errors: ImportError[] }
+
+// URL Serialization
+import { createShareableUrl, extractPresetFromUrl } from "ag-grid-react-components";
+
+// Create shareable URL
+const shareResult = createShareableUrl(preset, {
+  mode: 'embedded', // or 'reference'
+  baseUrl: 'https://app.example.com',
+  compress: true
+});
+// Returns: { url: string, compressed: boolean, originalSize: number, finalSize: number }
+
+// Extract preset from current URL
+const extractResult = extractPresetFromUrl();
+// Returns: { preset?: FilterPreset, presetId?: string, compressed: boolean, error?: string }
+```
+
+#### Preset Format
+
+```typescript
+interface FilterPreset {
+  id: string;
+  name: string;
+  description?: string;
+  gridState: any; // AG Grid filter model
+  createdAt: string;
+  updatedAt?: string;
+  tags?: string[];
+  author?: string;
+}
+```
+
+#### Sharing Modes
+
+- **Embedded Mode**: Entire preset data is compressed and included in the URL
+  - Best for: Sharing via email, chat, or when no backend is available
+  - URL length: ~200-500 characters for typical presets
+- **Reference Mode**: Only the preset ID is included in the URL
+  - Best for: When you have a backend to store presets
+  - URL length: ~50 characters
+  - Requires: `loadPresetById` function in `usePresetFromUrl`
+
+#### Compression Details
+
+The sharing system uses LZ-String compression to achieve >50% size reduction:
+
+```typescript
+// Compression utilities are also exported
+import { compress, decompress } from "ag-grid-react-components";
+
+const compressed = compress(JSON.stringify(data)); // Returns compressed string
+const original = JSON.parse(decompress(compressed)); // Returns original data
 ```
 
 ## 📅 Advanced DateFilter Features
