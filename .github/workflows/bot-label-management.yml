@@ -1,0 +1,204 @@
+name: Bot Label Management
+
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled]
+  pull_request:
+    types: [opened, edited, labeled, unlabeled]
+  issue_comment:
+    types: [created]
+  schedule:
+    # Check for stale bot work every 6 hours
+    - cron: "0 */6 * * *"
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  manage-bot-labels:
+    name: Manage Bot Labels
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check bot commands
+        if: github.event_name == 'issue_comment'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = context.payload.comment.body;
+            const issue = context.payload.issue;
+
+            // Check for bot commands
+            if (comment.includes('/bot claim')) {
+              // Remove agent:todo, add agent:wip
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                name: 'agent:todo'
+              }).catch(() => {});
+              
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: ['agent:wip']
+              });
+              
+              console.log(`Updated labels for bot claim on issue #${issue.number}`);
+            }
+
+            if (comment.includes('/bot handoff')) {
+              // Remove agent:wip, add agent:needs-review and needs-human-review
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                name: 'agent:wip'
+              }).catch(() => {});
+              
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: ['agent:needs-review', 'needs-human-review']
+              });
+              
+              console.log(`Updated labels for bot handoff on issue #${issue.number}`);
+            }
+
+      - name: Auto-transition labels
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const labels = pr.labels.map(l => l.name);
+
+            // If PR is created by bot and has agent:wip, transition to agent:needs-review
+            if (labels.includes('agent:wip') && pr.state === 'open') {
+              // Check if PR is ready for review (not draft)
+              if (!pr.draft) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  name: 'agent:wip'
+                }).catch(() => {});
+                
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  labels: ['agent:needs-review']
+                });
+                
+                console.log(`Transitioned PR #${pr.number} to needs-review`);
+              }
+            }
+
+            // If PR is merged and has agent labels, mark as done
+            if (pr.merged && labels.some(l => l.startsWith('agent:'))) {
+              // Remove other agent labels
+              for (const label of labels) {
+                if (label.startsWith('agent:') && label !== 'agent:done') {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: pr.number,
+                    name: label
+                  }).catch(() => {});
+                }
+              }
+              
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: ['agent:done']
+              });
+              
+              console.log(`Marked PR #${pr.number} as done`);
+            }
+
+      - name: Check for stale bot work
+        if: github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Find issues with agent:wip that haven't been updated in 24h
+            const oneDayAgo = new Date();
+            oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'agent:wip',
+              state: 'open',
+              per_page: 100
+            });
+
+            for (const issue of issues.data) {
+              const lastUpdate = new Date(issue.updated_at);
+              
+              if (lastUpdate < oneDayAgo) {
+                // Add stale label
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  labels: ['bot:stale']
+                });
+                
+                // Add warning comment
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: `⚠️ **Bot Work Stale**\n\nThis issue has been marked as \`bot:stale\` because there has been no activity for over 24 hours.\n\nActions:\n- Resume work: \`node scripts/bot-workflow/core/bot-resume-work.js ${issue.number}\`\n- Check status: \`gh issue view ${issue.number}\`\n- Hand off to human: \`/bot handoff\``
+                });
+                
+                console.log(`Marked issue #${issue.number} as stale`);
+              }
+            }
+
+      - name: Validate label consistency
+        if: github.event_name == 'issues' || github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const item = context.payload.issue || context.payload.pull_request;
+            const labels = item.labels.map(l => l.name);
+
+            // Check for conflicting agent states
+            const agentStates = labels.filter(l => l.startsWith('agent:'));
+
+            if (agentStates.length > 1) {
+              console.log(`⚠️ Multiple agent states found on #${item.number}: ${agentStates.join(', ')}`);
+              
+              // Keep only the most recent/relevant state
+              const validStates = ['agent:done', 'agent:needs-review', 'agent:failed', 'agent:wip', 'agent:todo'];
+              let keepState = null;
+              
+              for (const state of validStates) {
+                if (agentStates.includes(state)) {
+                  keepState = state;
+                  break;
+                }
+              }
+              
+              // Remove other states
+              for (const state of agentStates) {
+                if (state !== keepState) {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: item.number,
+                    name: state
+                  }).catch(() => {});
+                }
+              }
+              
+              console.log(`Cleaned up labels, keeping: ${keepState}`);
+            }

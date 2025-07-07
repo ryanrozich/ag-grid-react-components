@@ -16,6 +16,25 @@ export { QuickFilterDropdown, DATE_FILTER_PRESETS };
 import ActiveFilters from "./components/ActiveFilters";
 export { ActiveFilters };
 
+// Filter Presets Components
+export { PresetSelector } from "./components/FilterPresets/PresetSelector";
+export { SavePresetDialog } from "./components/FilterPresets/SavePresetDialog";
+export { PresetManager } from "./components/FilterPresets/PresetManager";
+export { usePresets } from "./components/FilterPresets/hooks/usePresets";
+
+// Filter Preset Types
+export type {
+  FilterPreset,
+  PresetStorage,
+  StorageInfo,
+  PresetSelectorProps,
+  SavePresetDialogProps,
+  PresetManagerProps,
+  PresetItemProps,
+  UsePresetsOptions,
+  UsePresetsReturn,
+} from "./components/FilterPresets/types";
+
 // Export all types from central location
 export * from "./types";
 
@@ -31,6 +50,7 @@ export type {
 export type {
   QuickFilterOption,
   QuickFilterDropdownProps,
+  EnablePresetsConfig,
 } from "./components/QuickFilterDropdown";
 
 // Date Expression Utilities
@@ -57,8 +77,87 @@ export {
   type GridStateOptions,
 } from "./utils/gridStateUtils";
 
+// Preset Storage Engine
+export {
+  PresetStorageEngine,
+  LocalStorageAdapter,
+} from "./utils/presetStorage";
+export type {
+  StorageAdapter,
+  PresetStorageOptions,
+  PresetValidationError,
+  PresetStorageState,
+} from "./utils/presetStorage";
+
+// Preset System exports
+export {
+  PresetManager,
+  resolveTemplate,
+  resolveTemplateInGridState,
+  DEFAULT_SYSTEM_PRESETS,
+  DATE_SYSTEM_PRESETS,
+  createSystemPreset,
+  combineSystemPresets,
+} from "./utils/presetSystem";
+
+// Preset System types
+export type {
+  BasePreset,
+  SystemPreset,
+  UserPreset,
+  FilterPreset,
+  TemplateVariables,
+  PresetSystemOptions,
+  PresetSystemEvents,
+  PresetSystem,
+  TemplateOptions,
+} from "./utils/presetSystem";
+
 // AG Grid Workarounds
 export { applyFilterModelWithWorkaround } from "./components/QuickFilterDropdown/utils/agGridWorkaround";
+
+// Filter Preset Sharing
+export { ShareButton } from "./components/FilterPresets/ShareButton";
+export { usePresetFromUrl } from "./hooks/usePresetFromUrl";
+export {
+  exportPresets,
+  importPresets,
+  validateImportData,
+  generateExportFilename,
+  createExportBlob,
+  readImportFile,
+} from "./utils/presetSharing/importExport";
+export {
+  createShareableUrl,
+  extractPresetFromUrl,
+  serializeToUrl,
+  parseFromUrl,
+} from "./utils/presetSharing";
+export {
+  compress,
+  decompress,
+  isCompressed,
+  getCompressionRatio,
+} from "./utils/presetSharing/compression";
+
+// Preset Sharing Types
+export type {
+  FilterPreset,
+  PresetExportFormat,
+  ImportMode,
+  ImportResult,
+  ImportError,
+  ShareOptions,
+  ShareMode,
+  SerializedUrl,
+  ExtractResult,
+  ValidationResult,
+} from "./utils/presetSharing/types";
+export type { ShareButtonProps } from "./components/FilterPresets/ShareButton";
+export type {
+  UsePresetFromUrlOptions,
+  UsePresetFromUrlResult,
+} from "./hooks/usePresetFromUrl";
 
 // Import CSS
 import "./styles.css";

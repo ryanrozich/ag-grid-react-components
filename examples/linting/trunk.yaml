@@ -1,0 +1,203 @@
+# Trunk Configuration Example
+#
+# This configuration sets up comprehensive linting for TypeScript/React projects.
+# CUSTOMIZE: Adjust linters, rules, and thresholds for your needs.
+
+version: 0.1
+cli:
+  version: 1.17.2 # CUSTOMIZE: Update to latest
+
+# Plugins to extend Trunk functionality
+plugins:
+  sources:
+    - id: trunk
+      ref: v1.2.6
+      uri: https://github.com/trunk-io/plugins
+
+# Code quality tools
+lint:
+  # File ignores - CUSTOMIZE for your project
+  ignore:
+    - node_modules/**
+    - dist/**
+    - coverage/**
+    - '*.min.js'
+    - '*.d.ts'
+    - .next/**
+    - .vercel/**
+    - playwright-report/**
+    - test-results/**
+
+  # Enabled linters and formatters
+  enabled:
+    # JavaScript/TypeScript
+    - eslint@8.57.0:
+        packages:
+          - eslint-plugin-react@7.33.2
+          - eslint-plugin-react-hooks@4.6.0
+          - eslint-plugin-jsx-a11y@6.8.0
+          - '@typescript-eslint/parser@6.21.0'
+          - '@typescript-eslint/eslint-plugin@6.21.0'
+
+    # Code formatting
+    - prettier@3.2.5:
+        packages:
+          - prettier-plugin-organize-imports@3.2.4
+
+    # TypeScript checking
+    - tsc@5.3.3
+
+    # CSS/SCSS (if needed)
+    - stylelint@16.2.1:
+        packages:
+          - stylelint-config-standard@36.0.0
+          - stylelint-config-prettier@9.0.5
+
+    # Markdown
+    - markdownlint@0.39.0
+
+    # YAML
+    - yamllint@1.35.1
+
+    # JSON
+    - jsonlint@1.6.3
+
+    # Security scanning
+    - trivy@0.49.1
+    - semgrep@1.60.1
+
+    # Git hooks
+    - git-diff-check
+    - gitleaks@8.18.2
+
+    # Shell scripts (if any)
+    - shellcheck@0.10.0
+    - shfmt@3.8.0
+
+  # Linter configurations
+  definitions:
+    - name: eslint
+      files:
+        - '*.js'
+        - '*.jsx'
+        - '*.ts'
+        - '*.tsx'
+      run_when:
+        - cli
+        - ci
+        - vscode
+        - pre-commit
+
+    - name: prettier
+      files:
+        - '*.js'
+        - '*.jsx'
+        - '*.ts'
+        - '*.tsx'
+        - '*.json'
+        - '*.md'
+        - '*.yml'
+        - '*.yaml'
+        - '*.css'
+        - '*.scss'
+
+    - name: tsc
+      files:
+        - '*.ts'
+        - '*.tsx'
+      commands:
+        - check: tsc --noEmit
+      run_when:
+        - cli
+        - ci
+
+# Formatting rules
+format:
+  enabled:
+    - prettier
+    - shfmt
+
+# Actions to run
+actions:
+  # Format on save in supported editors
+  - id: trunk-fmt-pre-commit
+    run: trunk fmt --all --filter={files}
+    triggers:
+      - git-pre-commit
+
+  # Check on pre-push
+  - id: trunk-check-pre-push
+    run: trunk check --all --filter={files}
+    triggers:
+      - git-pre-push
+
+# Runtimes for tools
+runtimes:
+  enabled:
+    - node@20.11.0 # CUSTOMIZE: Your Node version
+    - python@3.11.7
+
+# Tool-specific settings
+tools:
+  # ESLint configuration
+  eslint:
+    config: .eslintrc.js
+
+  # Prettier configuration
+  prettier:
+    config: .prettierrc
+
+  # TypeScript configuration
+  tsc:
+    config: tsconfig.json
+
+# CI/CD settings
+ci:
+  # Automatically fix issues in CI
+  autofix: true
+
+  # Fail CI on issues
+  fail_on_issues: true
+
+  # Performance thresholds
+  thresholds:
+    # Maximum time for linting (seconds)
+    timeout: 300
+
+    # Maximum memory usage (MB)
+    max_memory: 2048
+
+# Issue management
+issues:
+  # Automatically create GitHub issues for problems
+  create_github_issues: false
+
+  # Issue labels
+  labels:
+    - 'trunk'
+    - 'code-quality'
+
+# Notifications
+notifications:
+  # Slack notifications (if configured)
+  slack:
+    enabled: false
+    webhook_url: ${SLACK_WEBHOOK_URL}
+
+  # Email notifications
+  email:
+    enabled: false
+
+# Custom commands
+commands:
+  - name: check-all
+    run: trunk check --all
+    description: 'Check all files in the project'
+
+  - name: fmt-all
+    run: trunk fmt --all
+    description: 'Format all files in the project'
+
+  - name: upgrade-tools
+    run: trunk upgrade --all
+    description: 'Upgrade all tools to latest versions'

@@ -1,0 +1,376 @@
+name: Deploy Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, labeled]
+    paths:
+      # Component source code
+      - "src/components/**"
+      - "src/utils/**"
+      - "src/index.ts"
+
+      # Demo application
+      - "src/demo/**"
+      - "public/**"
+
+      # Configuration that affects the demo
+      - "package.json"
+      - "vite.config.demo.ts"
+      - "tsconfig.json"
+
+      # API changes
+      - "api/**"
+
+      # This workflow
+      - ".github/workflows/deploy-preview.yml"
+
+permissions:
+  pull-requests: write
+  contents: read
+  issues: write
+
+jobs:
+  check-preview-needed:
+    name: Check if Preview Needed
+    runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ steps.check.outputs.should-deploy }}
+      reason: ${{ steps.check.outputs.reason }}
+
+    steps:
+      - name: Check deployment criteria
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const labels = pr.labels.map(l => l.name);
+
+            // Force deployment if labeled
+            if (labels.includes('deploy-preview')) {
+              core.setOutput('should-deploy', 'true');
+              core.setOutput('reason', 'Manual override via deploy-preview label');
+              return;
+            }
+
+            // Skip if labeled
+            if (labels.includes('skip-preview')) {
+              core.setOutput('should-deploy', 'false');
+              core.setOutput('reason', 'Skipped via skip-preview label');
+              return;
+            }
+
+            // Check if it's from a fork
+            const prRepoFullName = pr.head.repo?.full_name || '';
+            const currentRepoFullName = `${context.repo.owner}/${context.repo.repo}`;
+
+            if (prRepoFullName !== currentRepoFullName) {
+              core.setOutput('should-deploy', 'false');
+              core.setOutput('reason', 'PRs from forks cannot be auto-deployed');
+              return;
+            }
+
+            // Default: deploy based on path filters (already handled by workflow paths)
+            core.setOutput('should-deploy', 'true');
+            core.setOutput('reason', 'Contains changes to demo-relevant files');
+
+  deploy-preview:
+    name: Deploy PR Preview
+    needs: check-preview-needed
+    if: needs.check-preview-needed.outputs.should-deploy == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install API dependencies
+        run: cd api && npm install
+
+      - name: Build demo
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          DEPLOY_PATH: ag-grid-react-components-pr-${{ github.event.pull_request.number }}
+        run: |
+          # Generate version info
+          node scripts/build/generate-version-info.js
+
+          # Build demo
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          VITE_BASE_PATH="/ag-grid-react-components-pr-${PR_NUMBER}/" npm run build:demo
+
+      - name: Install Wrangler
+        run: npm install -g wrangler
+
+      - name: Deploy to PR Preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          echo "Deploying PR #${PR_NUMBER} preview..."
+
+          cd dist-demo
+          find . -type f | while read -r file; do
+            file_path="${file#./}"
+            echo "Uploading: $file_path"
+            wrangler r2 object put "rozich-demos/ag-grid-react-components-pr-${PR_NUMBER}/$file_path" --file="$file" --remote
+          done
+
+      - name: Update demo metadata
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_KV_NAMESPACE_ID: ${{ secrets.CLOUDFLARE_KV_NAMESPACE_ID }}
+        run: |
+          # Register PR preview with demo router
+          PR_NUMBER=${{ github.event.pull_request.number }}
+
+          wrangler kv key put "ag-grid-react-components-pr-${PR_NUMBER}" \
+            '{"name": "AG Grid React Components (PR #'${PR_NUMBER}')", "description": "Preview for pull request #'${PR_NUMBER}'", "updated": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'", "isPR": true}' \
+            --namespace-id="$CLOUDFLARE_KV_NAMESPACE_ID" \
+            --remote
+
+      - name: Deploy API Worker Preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          cd api
+          PR_NUMBER=${{ github.event.pull_request.number }}
+
+          # Create a custom wrangler config for this PR
+          cat > wrangler-pr.toml << EOF
+          name = "ag-grid-demo-api-pr-${PR_NUMBER}"
+          main = "index.js"
+          compatibility_date = "2024-01-01"
+
+          [[routes]]
+          pattern = "demo.rozich.net/ag-grid-react-components-pr-${PR_NUMBER}/api/*"
+          zone_name = "rozich.net"
+
+          [vars]
+          ENVIRONMENT = "preview"
+          EOF
+
+          # Deploy using the PR-specific config
+          npx wrangler deploy --config wrangler-pr.toml
+
+      - name: Wait for deployment propagation
+        run: sleep 30
+
+      - name: Test PR deployment
+        id: test-deployment
+        continue-on-error: true
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          DEMO_URL="https://demo.rozich.net/ag-grid-react-components-pr-${PR_NUMBER}/"
+
+          # Install Playwright if not already installed
+          npx playwright install --with-deps chromium
+
+          # Run deployment tests
+          DEMO_URL="$DEMO_URL" npx playwright test tests/e2e/demo-deployment.spec.ts --reporter=list
+
+      - name: Add preview label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                labels: ['has-preview']
+              });
+            } catch (e) {
+              console.log('Could not add label:', e.message);
+            }
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const testsPassed = '${{ steps.test-deployment.outcome }}' === 'success';
+
+            const comment = `🚀 **Demo Preview Ready!**
+
+            Preview URL: https://demo.rozich.net/ag-grid-react-components-pr-${prNumber}/
+            API URL: https://demo.rozich.net/ag-grid-react-components-pr-${prNumber}/api/
+
+            ${testsPassed ? '✅ Deployment tests passed' : '⚠️ Deployment tests failed - please check the workflow logs'}
+
+            This preview will be available for testing until the PR is merged or closed.`;
+
+            // Check if we already commented
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber
+            });
+
+            const botComment = comments.data.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('Demo Preview Ready!')
+            );
+
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: comment
+              });
+            }
+
+      - name: Update Preview URL in Project
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const previewUrl = `https://demo.rozich.net/ag-grid-react-components-pr-${prNumber}/`;
+
+            console.log(`Updating Preview URL for PR #${prNumber}: ${previewUrl}`);
+
+            // GraphQL query to find the PR in the project and get field info
+            const projectQuery = `
+              query($owner: String!, $repo: String!, $number: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $number) {
+                    projectItems(first: 10) {
+                      nodes {
+                        id
+                        project {
+                          id
+                          title
+                          fields(first: 20) {
+                            nodes {
+                              ... on ProjectV2Field {
+                                id
+                                name
+                                dataType
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            try {
+              const projectData = await github.graphql(projectQuery, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                number: prNumber
+              });
+
+              const projectItems = projectData.repository.pullRequest?.projectItems?.nodes || [];
+              if (projectItems.length === 0) {
+                console.log('PR not found in any project');
+                return;
+              }
+
+              // Update each project item
+              for (const projectItem of projectItems) {
+                const project = projectItem.project;
+                console.log(`Updating project "${project.title}"`);
+
+                // Find the Preview URL field
+                const previewUrlField = project.fields.nodes.find(f => 
+                  f.name === 'Preview URL' && f.dataType === 'TEXT'
+                );
+                
+                if (!previewUrlField) {
+                  console.log('Preview URL field not found in project');
+                  continue;
+                }
+
+                // Update the field
+                const updateMutation = `
+                  mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
+                    updateProjectV2ItemFieldValue(input: {
+                      projectId: $projectId
+                      itemId: $itemId
+                      fieldId: $fieldId
+                      value: $value
+                    }) {
+                      projectV2Item {
+                        id
+                      }
+                    }
+                  }
+                `;
+
+                await github.graphql(updateMutation, {
+                  projectId: project.id,
+                  itemId: projectItem.id,
+                  fieldId: previewUrlField.id,
+                  value: { text: previewUrl }
+                });
+                
+                console.log(`✅ Updated Preview URL field to: ${previewUrl}`);
+              }
+            } catch (error) {
+              console.error('Failed to update Preview URL:', error.message);
+              // Don't fail the workflow for this
+            }
+
+  skip-notification:
+    name: Notify Skip Reason
+    needs: check-preview-needed
+    if: needs.check-preview-needed.outputs.should-deploy == 'false'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Comment skip reason
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const reason = '${{ needs.check-preview-needed.outputs.reason }}';
+            const prNumber = context.payload.pull_request.number;
+
+            // Only comment if this is a new PR
+            const eventAction = context.payload.action;
+            if (eventAction !== 'opened') {
+              console.log(`Skipping comment - action is ${eventAction}, not 'opened'`);
+              return;
+            }
+
+            const comment = `ℹ️ **Demo Preview Skipped**
+
+            ${reason}
+
+            To deploy a preview for this PR, you can:
+            - Add the \`deploy-preview\` label to force deployment
+            - Make changes to demo-relevant files (components, demo app, etc.)`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: comment
+            });

@@ -7,6 +7,8 @@ import {
   QuickFilterDropdown,
   ActiveFilters,
   setupGridStatePersistence,
+  ShareButton,
+  usePresetFromUrl,
 } from "../index";
 import { generateData } from "./data/generator";
 import { CodeBlock } from "./components/CodeBlock";
@@ -15,6 +17,7 @@ import { VERSION_DISPLAY, IS_PRERELEASE } from "./version";
 import VersionInfo from "./components/VersionInfo";
 import heroScreenshot from "./assets/screenshots/hero-screenshot.png";
 import { ServerSideDemo } from "./components/ServerSideDemo";
+import FilterPresetsShowcase from "./FilterPresetsShowcase";
 import {
   darkTheme,
   getColumnDefs,
@@ -296,13 +299,38 @@ export const ComponentsShowcaseComplete: React.FC<
     budgetRemaining: 0,
   });
 
+  // Preset sharing state
+  const [savedPresets, _setSavedPresets] = useState<any[]>(() => {
+    const stored = localStorage.getItem("demo-filter-presets");
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  // Save presets to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("demo-filter-presets", JSON.stringify(savedPresets));
+  }, [savedPresets]);
+
+  // Auto-load preset from URL
+  const { preset: urlPreset } = usePresetFromUrl({
+    loadPresetById: async (id) => {
+      return savedPresets.find((p) => p.id === id);
+    },
+  });
+
+  // Apply URL preset when loaded
+  useEffect(() => {
+    if (urlPreset && gridApi) {
+      gridApi.setFilterModel(urlPreset.gridState);
+    }
+  }, [urlPreset, gridApi]);
+
   // Store cleanup function reference
   const cleanupRef = React.useRef<(() => void) | null>(null);
 
   // State for demo tabs
-  const [activeDemoTab, setActiveDemoTab] = useState<"client" | "server">(
-    "client",
-  );
+  const [activeDemoTab, setActiveDemoTab] = useState<
+    "client" | "server" | "presets"
+  >("client");
 
   // Clean up grid API when switching tabs
   useEffect(() => {
@@ -1116,6 +1144,7 @@ const columnDefs = [{
       { id: "relativedatefilter", label: "DateFilter", indent: true },
       { id: "quickfilterdropdown", label: "QuickFilterDropdown", indent: true },
       { id: "activefilters", label: "ActiveFilters", indent: true },
+      { id: "filterpresets", label: "Filter Presets", indent: true },
       { id: "urlstate", label: "URL State Persistence", indent: true },
 
       // Demo Guide Section
@@ -3257,6 +3286,292 @@ function FilterableGrid() {
 }`}
                             language="tsx"
                           />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Filter Presets Section */}
+                {activeDocSection === "filterpresets" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="filter-presets">
+                        Filter Presets
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        Save, load, and share filter configurations with the
+                        powerful Filter Presets feature. Enable your users to
+                        create custom filter views, share them with teammates,
+                        and restore their favorite configurations instantly.
+                      </p>
+
+                      <div className="bg-indigo-900/20 border border-indigo-600/30 rounded-lg p-4 mb-6">
+                        <p className="text-indigo-400 font-semibold mb-2">
+                          🎉 New Feature
+                        </p>
+                        <p className="text-gray-300">
+                          Filter Presets is a new feature that integrates
+                          seamlessly with QuickFilterDropdown and other
+                          components. Check out the{" "}
+                          <Link
+                            to="/demo"
+                            onClick={() => setActiveDemoTab("presets")}
+                            className="text-indigo-400 hover:text-indigo-300"
+                          >
+                            interactive showcase
+                          </Link>{" "}
+                          to see it in action!
+                        </p>
+                      </div>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="preset-features">
+                            Key Features
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <ul className="space-y-3 text-gray-300">
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Save Filter States:</strong> Users can
+                                  save their current filter configuration with a
+                                  custom name
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>System Presets:</strong> Provide
+                                  pre-configured filters for common use cases
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>User Presets:</strong> Allow users to
+                                  create and manage their own presets
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>URL Sharing:</strong> Share filter
+                                  configurations via URL with automatic
+                                  compression
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Import/Export:</strong> Transfer
+                                  presets between users or systems
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Cross-Tab Sync:</strong> Automatically
+                                  sync presets across browser tabs
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Custom UI:</strong> Fully customizable
+                                  UI components or bring your own
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-quick-start">
+                            Quick Start
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`// Enable presets with QuickFilterDropdown
+import { QuickFilterDropdown } from 'ag-grid-react-components';
+
+const MyGrid = () => {
+  const systemPresets = [
+    {
+      id: 'recent',
+      name: 'Recent Orders',
+      gridState: {
+        filters: {
+          date: { 
+            type: 'after', 
+            mode: 'relative', 
+            expressionFrom: 'Today-7d' 
+          }
+        }
+      }
+    }
+  ];
+
+  return (
+    <QuickFilterDropdown
+      api={gridApi}
+      columnId="date"
+      enablePresets={{
+        systemPresets,
+        allowUserPresets: true,
+        allowSharing: true,
+        allowExport: true
+      }}
+    />
+  );
+};`}
+                            language="tsx"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-api">
+                            Programmatic API
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            Use the useFilterPresets hook for full programmatic
+                            control:
+                          </p>
+                          <CodeBlock
+                            code={`import { useFilterPresets } from 'ag-grid-react-components';
+
+const MyComponent = () => {
+  const { 
+    presets, 
+    savePreset, 
+    loadPreset, 
+    deletePreset,
+    setDefaultPreset,
+    exportPresets,
+    importPresets,
+    sharePreset
+  } = useFilterPresets({
+    storageKey: 'myApp.filterPresets',
+    maxPresets: 20,
+    enableCompression: true
+  });
+
+  // Save current state
+  const handleSave = async () => {
+    const preset = await savePreset({
+      name: 'My Filter',
+      description: 'Q4 Analysis',
+      isDefault: true
+    });
+  };
+
+  // Share via URL
+  const handleShare = async (presetId) => {
+    const shareUrl = await sharePreset(presetId);
+    navigator.clipboard.writeText(shareUrl);
+  };
+};`}
+                            language="tsx"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-storage">
+                            Storage & Performance
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Storage Configuration
+                            </h4>
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b border-gray-700">
+                                  <th className="text-left py-2 text-gray-300">
+                                    Option
+                                  </th>
+                                  <th className="text-left py-2 text-gray-300">
+                                    Default
+                                  </th>
+                                  <th className="text-left py-2 text-gray-300">
+                                    Description
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="text-gray-400">
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">maxStorageSize</td>
+                                  <td className="py-3">5MB</td>
+                                  <td className="py-3">
+                                    Maximum storage per domain
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">compressionEnabled</td>
+                                  <td className="py-3">true</td>
+                                  <td className="py-3">
+                                    Enable LZ compression
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">compressionThreshold</td>
+                                  <td className="py-3">1KB</td>
+                                  <td className="py-3">
+                                    Compress if larger than
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">autoCleanup</td>
+                                  <td className="py-3">true</td>
+                                  <td className="py-3">Remove old presets</td>
+                                </tr>
+                                <tr>
+                                  <td className="py-3">maxAge</td>
+                                  <td className="py-3">90 days</td>
+                                  <td className="py-3">Preset expiration</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-examples">
+                            See It In Action
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              Explore the Filter Presets feature with
+                              interactive examples:
+                            </p>
+                            <div className="flex gap-4">
+                              <Link
+                                to="/demo"
+                                onClick={() => {
+                                  navigate("/demo");
+                                  setTimeout(
+                                    () => setActiveDemoTab("presets"),
+                                    100,
+                                  );
+                                }}
+                                className="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+                              >
+                                View Showcase
+                                <svg
+                                  className="w-4 h-4 ml-2"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M9 5l7 7-7 7"
+                                  />
+                                </svg>
+                              </Link>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -6139,6 +6454,248 @@ const customFilters = [
                             showLineNumbers
                           />
                         </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="filter-presets-example">
+                            Filter Presets Example
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            Enable users to save and manage their frequently
+                            used filter configurations:
+                          </p>
+                          <CodeBlock
+                            code={`import React, { useState, useCallback } from 'react';
+import { AgGridReact } from 'ag-grid-react';
+import {
+  QuickFilterDropdown,
+  DATE_FILTER_PRESETS
+} from 'ag-grid-react-components';
+
+function GridWithPresets() {
+  const [gridApi, setGridApi] = useState(null);
+
+  // Local storage adapter for saving presets
+  const presetStorage = {
+    load: async () => {
+      const saved = localStorage.getItem('filter-presets');
+      return saved ? JSON.parse(saved) : [];
+    },
+    save: async (presets) => {
+      localStorage.setItem('filter-presets', JSON.stringify(presets));
+    },
+    remove: async (id) => {
+      const presets = await presetStorage.load();
+      const filtered = presets.filter(p => p.id !== id);
+      await presetStorage.save(filtered);
+    },
+    getStorageInfo: async () => {
+      const data = localStorage.getItem('filter-presets') || '';
+      return {
+        used: new Blob([data]).size,
+        available: 5 * 1024 * 1024, // 5MB limit
+        quota: 5 * 1024 * 1024
+      };
+    }
+  };
+
+  // System presets that are always available
+  const systemPresets = [
+    {
+      id: 'recent-items',
+      name: 'Recent Items',
+      description: 'Items from the last 7 days',
+      filterModel: {
+        date: {
+          mode: 'relative',
+          type: 'after',
+          expressionFrom: 'Today-7d'
+        }
+      },
+      isSystem: true
+    },
+    {
+      id: 'this-month',
+      name: 'This Month',
+      description: 'All items from current month',
+      filterModel: {
+        date: {
+          mode: 'relative',
+          type: 'inRange',
+          expressionFrom: 'StartOfMonth',
+          expressionTo: 'EndOfMonth'
+        }
+      },
+      isSystem: true
+    }
+  ];
+
+  const handlePresetChange = useCallback((preset) => {
+    console.log('Preset selected:', preset);
+  }, []);
+
+  const handleManagePresets = useCallback(() => {
+    // Open your preset management UI
+    console.log('Opening preset manager...');
+  }, []);
+
+  return (
+    <div>
+      {gridApi && (
+        <div className="mb-4">
+          <QuickFilterDropdown
+            api={gridApi}
+            columnId="date"
+            options={DATE_FILTER_PRESETS}
+            placeholder="Quick date filters"
+            enablePresets={{
+              storage: presetStorage,
+              systemPresets: systemPresets,
+              onPresetChange: handlePresetChange,
+              allowSave: true,
+              allowManage: true,
+              onManageClick: handleManagePresets,
+              maxPresets: 20
+            }}
+          />
+        </div>
+      )}
+
+      <div style={{ height: 400, width: '100%' }}>
+        <AgGridReact
+          rowData={rowData}
+          columnDefs={columnDefs}
+          onGridReady={(params) => setGridApi(params.api)}
+        />
+      </div>
+    </div>
+  );
+}`}
+                            language="tsx"
+                            showLineNumbers
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-manager-example">
+                            Preset Manager Component
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            Use the PresetManager component for a full
+                            management interface:
+                          </p>
+                          <CodeBlock
+                            code={`import { PresetManager, usePresets } from 'ag-grid-react-components';
+
+function PresetManagementUI() {
+  const presets = usePresets({
+    storage: presetStorage,
+    systemPresets: systemPresets
+  });
+
+  return (
+    <PresetManager
+      presets={[...systemPresets, ...presets.presets]}
+      activePresetId={presets.activePresetId}
+      onSetDefault={presets.setDefaultPreset}
+      onEdit={(preset) => {
+        // Open edit dialog for preset
+        console.log('Editing preset:', preset);
+      }}
+      onDelete={presets.deletePresets}
+      onExport={presets.exportPresets}
+      onImport={presets.importPresets}
+      renderPresetItem={(props) => (
+        // Custom preset item rendering
+        <div className="custom-preset-item">
+          <h4>{props.preset.name}</h4>
+          {props.preset.description && <p>{props.preset.description}</p>}
+          <div className="preset-actions">
+            {!props.preset.isSystem && (
+              <>
+                <button onClick={() => props.onSetDefault()}>
+                  {props.preset.isDefault ? '★' : '☆'}
+                </button>
+                <button onClick={() => props.onEdit()}>Edit</button>
+                <button onClick={() => props.onDelete()}>Delete</button>
+              </>
+            )}
+            <button onClick={() => props.onExport()}>Export</button>
+          </div>
+        </div>
+      )}
+    />
+  );
+}`}
+                            language="tsx"
+                            showLineNumbers
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="save-preset-dialog-example"
+                          >
+                            Save Preset Dialog
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            Let users save their current filter state as a
+                            reusable preset:
+                          </p>
+                          <CodeBlock
+                            code={`import { SavePresetDialog, usePresets } from 'ag-grid-react-components';
+
+function FilterToolbar({ gridApi }) {
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const presets = usePresets({ storage: presetStorage });
+
+  const handleSavePreset = useCallback((name, description, tags) => {
+    const currentFilterModel = gridApi.getFilterModel();
+    const newPreset = {
+      id: \`user-\${Date.now()}\`,
+      name,
+      description,
+      tags,
+      filterModel: currentFilterModel,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    presets.addPreset(newPreset);
+    setShowSaveDialog(false);
+  }, [gridApi, presets]);
+
+  return (
+    <>
+      <button onClick={() => setShowSaveDialog(true)}>
+        Save Current Filters
+      </button>
+
+      <SavePresetDialog
+        isOpen={showSaveDialog}
+        onClose={() => setShowSaveDialog(false)}
+        onSave={handleSavePreset}
+        existingNames={presets.presets.map(p => p.name)}
+        currentFilterModel={gridApi?.getFilterModel()}
+        storageInfo={presets.storageInfo}
+        renderContent={(form, actions) => (
+          // Custom dialog content
+          <div className="custom-save-dialog">
+            <h2>Save Filter Preset</h2>
+            {form}
+            <div className="dialog-actions">
+              {actions}
+            </div>
+          </div>
+        )}
+      />
+    </>
+  );
+}`}
+                            language="tsx"
+                            showLineNumbers
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -6553,6 +7110,19 @@ const handleFilterSelect = async (option) => {
                     API
                   </span>
                 </button>
+                <button
+                  onClick={() => setActiveDemoTab("presets")}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeDemoTab === "presets"
+                      ? "border-indigo-500 text-white"
+                      : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
+                  }`}
+                >
+                  Filter Presets
+                  <span className="ml-2 px-2 py-0.5 text-xs bg-green-600 text-white rounded-full">
+                    NEW
+                  </span>
+                </button>
               </nav>
             </div>
           </div>
@@ -6592,6 +7162,20 @@ const handleFilterSelect = async (option) => {
                       className="min-w-[140px]"
                       usePortal="always"
                     />
+                    {/* Share Button for filter presets */}
+                    {Object.keys(filterModel).length > 0 && (
+                      <ShareButton
+                        preset={{
+                          id: `preset-${Date.now()}`,
+                          name: "Current Filters",
+                          gridState: filterModel,
+                          createdAt: new Date().toISOString(),
+                        }}
+                        onCopy={() => {
+                          console.log("Filter preset URL copied!");
+                        }}
+                      />
+                    )}
                   </>
                 )}
               </DemoToolbar>
@@ -6656,6 +7240,13 @@ const handleFilterSelect = async (option) => {
           {activeDemoTab === "server" && (
             <div className="flex-1 flex flex-col">
               <ServerSideDemo />
+            </div>
+          )}
+
+          {/* Filter Presets Showcase */}
+          {activeDemoTab === "presets" && (
+            <div className="flex-1 flex flex-col">
+              <FilterPresetsShowcase />
             </div>
           )}
         </div>

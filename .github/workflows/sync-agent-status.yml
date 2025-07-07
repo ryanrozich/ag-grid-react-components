@@ -1,0 +1,37 @@
+name: Sync Agent Status to Project
+
+on:
+  issues:
+    types: [labeled, unlabeled, opened, closed, reopened]
+  pull_request:
+    types: [labeled, unlabeled, opened, closed, reopened]
+  workflow_dispatch:
+
+jobs:
+  sync-agent-status:
+    runs-on: ubuntu-latest
+    # Only run if agent labels are involved
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.label && startsWith(github.event.label.name, 'agent:')) ||
+      contains(github.event.issue.labels.*.name, 'agent:todo') ||
+      contains(github.event.issue.labels.*.name, 'agent:wip') ||
+      contains(github.event.issue.labels.*.name, 'agent:needs-review') ||
+      contains(github.event.issue.labels.*.name, 'agent:done') ||
+      contains(github.event.issue.labels.*.name, 'agent:error')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Sync agent status to project
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🔄 Syncing agent status for issue/PR #${{ github.event.issue.number || github.event.pull_request.number }}"
+          node scripts/sync-agent-status-to-project.js
