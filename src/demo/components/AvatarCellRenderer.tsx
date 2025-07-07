@@ -28,13 +28,12 @@ const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  if (!value) return null;
-
   // Check if this assignee should have a photo
-  const hasPhoto = ASSIGNEES_WITH_PHOTOS.has(value);
+  const hasPhoto = value ? ASSIGNEES_WITH_PHOTOS.has(value) : false;
 
   // Get initials from the name
   const initials = useMemo(() => {
+    if (!value) return "";
     const parts = value.trim().split(" ");
     if (parts.length >= 2) {
       return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
@@ -44,6 +43,7 @@ const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
 
   // Generate a color based on the name (deterministic)
   const backgroundColor = useMemo(() => {
+    if (!value) return "94a3b8"; // default gray color
     let hash = 0;
     for (let i = 0; i < value.length; i++) {
       hash = value.charCodeAt(i) + ((hash << 5) - hash);
@@ -69,6 +69,7 @@ const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
 
   // Use different avatar services for variety
   const avatarUrl = useMemo(() => {
+    if (!value) return "";
     if (!hasPhoto) {
       // Use UI Avatars for initials-based avatars (30% of users)
       return `https://ui-avatars.com/api/?name=${encodeURIComponent(value)}&background=${backgroundColor}&color=fff&size=32&bold=true&format=svg`;
@@ -84,7 +85,7 @@ const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
 
   // Debug logging
   React.useEffect(() => {
-    if (hasPhoto) {
+    if (hasPhoto && value) {
       console.log(`Avatar for ${value}:`, {
         url: avatarUrl,
         seed: value.toLowerCase().replace(/\s+/g, ""),
@@ -93,6 +94,8 @@ const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
       });
     }
   }, [value, avatarUrl, hasPhoto, imageError, imageLoaded]);
+
+  if (!value) return null;
 
   return (
     <div className={styles.avatarContainer}>
