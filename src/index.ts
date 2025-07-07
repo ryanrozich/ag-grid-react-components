@@ -57,6 +57,19 @@ export {
   type GridStateOptions,
 } from "./utils/gridStateUtils";
 
+// Preset Storage Engine
+export {
+  PresetStorageEngine,
+  LocalStorageAdapter,
+} from "./utils/presetStorage";
+export type {
+  FilterPreset,
+  StorageAdapter,
+  PresetStorageOptions,
+  PresetValidationError,
+  PresetStorageState,
+} from "./utils/presetStorage";
+
 // AG Grid Workarounds
 export { applyFilterModelWithWorkaround } from "./components/QuickFilterDropdown/utils/agGridWorkaround";
 
