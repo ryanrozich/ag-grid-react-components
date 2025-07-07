@@ -110,7 +110,7 @@ jobs:
 
       - name: Notify bot of CI failures
         if: |
-          steps.pr-details.outputs.is_bot_pr == 'true' && 
+          steps.pr-details.outputs.is_bot_pr == 'true' &&
           steps.ci-status.outputs.has_failures == 'true' &&
           steps.ci-status.outputs.all_complete == 'true'
         uses: actions/github-script@v7
@@ -126,8 +126,8 @@ jobs:
               issue_number: prNumber
             });
 
-            const recentBotComments = comments.data.filter(c => 
-              c.user.type === 'Bot' && 
+            const recentBotComments = comments.data.filter(c =>
+              c.user.type === 'Bot' &&
               c.body.includes('CI Failure Detected') &&
               (new Date() - new Date(c.created_at)) < 3600000 // Within last hour
             );
@@ -135,28 +135,28 @@ jobs:
             if (recentBotComments.length === 0) {
               // Post notification comment
               const comment = `🚨 **CI Failure Detected**
-              
+
               ${failedCount} CI check(s) have failed on this PR.
-              
+
               **Bot Actions Available:**
               1. Attempt automatic fixes: \`node scripts/bot-workflow/utils/bot-fix-ci.js ${prNumber}\`
               2. Analyze failures: \`gh pr checks ${prNumber}\`
               3. Request human help: \`/bot handoff "CI failures need manual intervention"\`
-              
+
               The bot can attempt to fix common issues like:
               - Formatting errors
               - Linting issues
               - Whitespace problems
-              
+
               For test failures or type errors, human intervention may be required.`;
-              
+
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: prNumber,
                 body: comment
               });
-              
+
               // Add label to indicate CI issues
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
@@ -168,7 +168,7 @@ jobs:
 
       - name: Auto-trigger bot CI fix
         if: |
-          steps.pr-details.outputs.is_bot_pr == 'true' && 
+          steps.pr-details.outputs.is_bot_pr == 'true' &&
           steps.ci-status.outputs.has_failures == 'true' &&
           steps.ci-status.outputs.all_complete == 'true' &&
           github.event_name == 'workflow_run'
@@ -189,18 +189,18 @@ jobs:
             if (!hasAutoFixed) {
               // Add comment to trigger bot fix
               const comment = `🤖 **Auto-triggering CI fix**
-              
+
               /bot fix-ci
-              
+
               The bot will attempt to automatically fix CI failures.`;
-              
+
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: prNumber,
                 body: comment
               });
-              
+
               // Add label to prevent multiple attempts
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
@@ -212,7 +212,7 @@ jobs:
 
       - name: Celebrate CI success
         if: |
-          steps.pr-details.outputs.is_bot_pr == 'true' && 
+          steps.pr-details.outputs.is_bot_pr == 'true' &&
           steps.ci-status.outputs.has_failures == 'false' &&
           steps.ci-status.outputs.all_complete == 'true'
         uses: actions/github-script@v7
@@ -244,16 +244,16 @@ jobs:
             if (needsReview) {
               // Add success comment
               const comment = `✅ **All CI Checks Passed!**
-              
+
               This PR is ready for human review.
-              
+
               - All tests are passing
               - Code quality checks passed
               - No type errors
               - Build successful
-              
+
               @${context.repo.owner} - This bot PR is ready for your review.`;
-              
+
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,

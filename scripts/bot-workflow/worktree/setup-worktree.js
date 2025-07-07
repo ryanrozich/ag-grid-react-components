@@ -26,7 +26,7 @@ if (!issueNumber) {
 }
 
 // Generate branch name
-const safeBranchName = description 
+const safeBranchName = description
   ? `feature/${issueNumber}-${description.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
   : `feature/issue-${issueNumber}`;
 
@@ -79,7 +79,7 @@ try {
   if (!fs.existsSync(botStateDir)) {
     console.log(`🤖 Initializing bot state directory...`);
     fs.mkdirSync(botStateDir);
-    
+
     // Create initial context file
     const context = {
       issue: parseInt(issueNumber),
@@ -88,12 +88,12 @@ try {
       createdAt: new Date().toISOString(),
       status: 'initialized'
     };
-    
+
     fs.writeFileSync(
       path.join(botStateDir, 'context.json'),
       JSON.stringify(context, null, 2)
     );
-    
+
     // Create initial memory file
     fs.writeFileSync(
       path.join(botStateDir, 'memory.md'),
@@ -120,7 +120,7 @@ try {
     worktree: worktreePath,
     botStateDir: botStateDir
   };
-  
+
   console.log(`\n🔧 Automation output:`);
   console.log(JSON.stringify(result, null, 2));
 

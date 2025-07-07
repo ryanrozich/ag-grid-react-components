@@ -32,10 +32,10 @@ console.log(`${'═'.repeat(50)}\n`);
 function analyzeFeature(description) {
   // This is a simple heuristic-based breakdown
   // In production, this would use AI or more sophisticated analysis
-  
+
   const tasks = [];
   const lowerDesc = description.toLowerCase();
-  
+
   // Common patterns for feature breakdown
   if (lowerDesc.includes('component') || lowerDesc.includes('ui')) {
     tasks.push({
@@ -45,7 +45,7 @@ function analyzeFeature(description) {
       area: 'components',
       description: `Implement the user interface component with proper React patterns, TypeScript types, and accessibility.`
     });
-    
+
     tasks.push({
       type: 'tests',
       title: `Add tests for ${description}`,
@@ -100,7 +100,7 @@ function analyzeFeature(description) {
  */
 async function createTrackingIssue(feature, tasks) {
   console.log(`📋 Creating tracking issue...`);
-  
+
   const trackingBody = `# 🎯 Feature: ${feature}
 
 This is a tracking issue for implementing the feature. The work has been broken down into the following tasks:
@@ -128,7 +128,7 @@ Each sub-task will be handled by a worker bot. This tracking issue will be updat
       `gh issue create --title "Feature: ${feature}" --body "${trackingBody.replace(/"/g, '\\"')}" --label "enhancement" --label "priority: high" --label "area: components"`,
       { encoding: 'utf8' }
     );
-    
+
     const match = result.match(/\/issues\/(\d+)/);
     return match ? parseInt(match[1]) : null;
   } catch (error) {
@@ -142,10 +142,10 @@ Each sub-task will be handled by a worker bot. This tracking issue will be updat
  */
 async function createTaskIssues(tasks, trackingIssue) {
   const createdIssues = [];
-  
+
   for (const [index, task] of tasks.entries()) {
     console.log(`\n📝 Creating issue ${index + 1}/${tasks.length}: ${task.title}`);
-    
+
     const issueBody = `## 📋 Task Description
 
 ${task.description}
@@ -180,12 +180,12 @@ This task is part of the feature tracked in #${trackingIssue}.
         'agent:todo',
         'enhancement'
       ];
-      
+
       const result = execSync(
         `gh issue create --title "${task.title}" --body "${issueBody.replace(/"/g, '\\"')}" ${labels.map(l => `--label "${l}"`).join(' ')}`,
         { encoding: 'utf8' }
       );
-      
+
       const match = result.match(/\/issues\/(\d+)/);
       if (match) {
         const issueNumber = parseInt(match[1]);
@@ -199,7 +199,7 @@ This task is part of the feature tracked in #${trackingIssue}.
       console.error(`   ❌ Failed to create issue: ${error.message}`);
     }
   }
-  
+
   return createdIssues;
 }
 
@@ -208,7 +208,7 @@ This task is part of the feature tracked in #${trackingIssue}.
  */
 async function updateTrackingIssue(trackingIssue, createdIssues) {
   console.log(`\n🔄 Updating tracking issue #${trackingIssue}...`);
-  
+
   const updateBody = `## 📊 Task Issues Created
 
 ${createdIssues.map((issue, i) => `${i + 1}. [ ] #${issue.number} - ${issue.task.title}`).join('\n')}
@@ -239,7 +239,7 @@ async function coordinateFeature() {
     // Step 1: Analyze and break down the feature
     console.log(`🧠 Analyzing feature requirements...`);
     const tasks = analyzeFeature(featureDescription);
-    
+
     console.log(`\n📊 Identified ${tasks.length} tasks:`);
     tasks.forEach((task, i) => {
       console.log(`   ${i + 1}. ${task.title} (${task.priority})`);
@@ -254,7 +254,7 @@ async function coordinateFeature() {
 
     // Step 3: Create individual task issues
     const createdIssues = await createTaskIssues(tasks, trackingIssue);
-    
+
     // Step 4: Update tracking issue with links
     await updateTrackingIssue(trackingIssue, createdIssues);
 
@@ -265,7 +265,7 @@ async function coordinateFeature() {
     console.log(`📝 Task Issues: ${createdIssues.map(i => `#${i.number}`).join(', ')}`);
     console.log(`\n🤖 Bot Instructions:`);
     console.log(`   Bots can now claim issues with: node scripts/bot-workflow/core/bot-claim-issue.js <issue-number>`);
-    
+
     // Output for automation
     const result = {
       success: true,
@@ -278,7 +278,7 @@ async function coordinateFeature() {
         priority: i.task.priority
       }))
     };
-    
+
     console.log(`\n🔧 Automation output:`);
     console.log(JSON.stringify(result, null, 2));
 

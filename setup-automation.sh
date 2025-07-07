@@ -85,7 +85,7 @@ echo -e "${GREEN}📋 Copying workflow templates...${NC}"
 for workflow in "$SCRIPT_DIR"/templates/workflows/*.yml; do
   filename=$(basename "$workflow")
   target=".github/workflows/${filename//-template/}"
-  
+
   if [ -f "$target" ]; then
     echo -e "${YELLOW}⚠️  $target already exists, skipping${NC}"
   else
@@ -156,7 +156,7 @@ create_label() {
   local name=$1
   local desc=$2
   local color=$3
-  
+
   if gh label list | grep -q "^$name"; then
     echo "  ⚠️  Label '$name' already exists"
   else

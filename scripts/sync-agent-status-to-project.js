@@ -56,10 +56,10 @@ async function syncAgentStatus() {
 
     // Find the Agent Status field
     let agentStatusField = project.fields.nodes.find(field => field.name === FIELD_NAME);
-    
+
     if (!agentStatusField) {
       console.log(`📝 Creating "${FIELD_NAME}" field...`);
-      
+
       // Create the field with options
       const createFieldResult = JSON.parse(
         execSync(`gh api graphql -f query='
@@ -90,7 +90,7 @@ async function syncAgentStatus() {
           }
         '`, { encoding: 'utf8' })
       );
-      
+
       agentStatusField = createFieldResult.data.createProjectV2Field.projectV2Field;
       console.log(`✅ Created "${FIELD_NAME}" field\n`);
     }
@@ -106,7 +106,7 @@ async function syncAgentStatus() {
     for (const issue of issues) {
       // Find agent label
       const agentLabel = issue.labels.find(label => label.name.startsWith('agent:'));
-      
+
       if (!agentLabel) {
         continue; // No agent label, skip
       }
@@ -126,10 +126,10 @@ async function syncAgentStatus() {
 
       // Check if issue is in the project
       const projectItem = issue.projectItems?.find(item => item.project.number === PROJECT_NUMBER);
-      
+
       if (!projectItem) {
         console.log(`➕ Adding issue #${issue.number} to project...`);
-        
+
         // Add to project first
         const addResult = JSON.parse(
           execSync(`gh api graphql -f query='
@@ -145,9 +145,9 @@ async function syncAgentStatus() {
             }
           '`, { encoding: 'utf8' })
         );
-        
+
         const itemId = addResult.data.addProjectV2ItemById.item.id;
-        
+
         // Update the field
         execSync(`gh api graphql -f query='
           mutation {
@@ -163,7 +163,7 @@ async function syncAgentStatus() {
             }
           }
         '`);
-        
+
         console.log(`✅ Issue #${issue.number}: Added to project with status "${statusValue}"`);
         updatedCount++;
       } else {
@@ -182,7 +182,7 @@ async function syncAgentStatus() {
             }
           }
         '`);
-        
+
         console.log(`✅ Issue #${issue.number}: Updated agent status to "${statusValue}"`);
         updatedCount++;
       }

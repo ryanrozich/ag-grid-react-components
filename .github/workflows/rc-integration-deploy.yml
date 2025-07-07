@@ -50,7 +50,7 @@ jobs:
               state: 'open'
             });
 
-            const milestone = milestones.data.find(m => 
+            const milestone = milestones.data.find(m =>
               m.number == ${{ github.event.inputs.milestone }}
             );
 
@@ -68,8 +68,8 @@ jobs:
               per_page: 100
             });
 
-            const milestonePRs = prs.data.filter(pr => 
-              pr.merged_at && 
+            const milestonePRs = prs.data.filter(pr =>
+              pr.merged_at &&
               pr.milestone?.number == milestone.number
             );
 

@@ -38,7 +38,7 @@ const botLabels = [
     color: '6EE7B7',
     description: 'Bot work completed and merged'
   },
-  
+
   // Bot metadata
   {
     name: 'bot-created',
@@ -55,7 +55,7 @@ const botLabels = [
     color: '6B7280',
     description: 'Bot saved checkpoint'
   },
-  
+
   // Coordinator labels
   {
     name: 'coordinator:tracking',
@@ -67,7 +67,7 @@ const botLabels = [
     color: 'A78BFA',
     description: 'Planned by coordinator'
   },
-  
+
   // Performance labels
   {
     name: 'bot:stale',
@@ -90,9 +90,9 @@ async function createOrUpdateLabel(label) {
     const existingLabels = JSON.parse(
       execSync('gh label list --json name,color,description --limit 1000', { encoding: 'utf8' })
     );
-    
+
     const existing = existingLabels.find(l => l.name === label.name);
-    
+
     if (existing) {
       // Update if different
       if (existing.color !== label.color || existing.description !== label.description) {
@@ -122,21 +122,21 @@ async function createOrUpdateLabel(label) {
  */
 function setupAliases() {
   console.log(`\n🔗 Setting up label aliases...`);
-  
+
   // Map old labels to new ones if needed
   const aliases = {
     'bot-work': 'agent:todo',
     'bot-in-progress': 'agent:wip',
     'bot-review': 'agent:needs-review'
   };
-  
+
   Object.entries(aliases).forEach(([oldLabel, newLabel]) => {
     try {
       // Find issues with old label
       const issues = JSON.parse(
         execSync(`gh issue list --label "${oldLabel}" --json number --limit 100`, { encoding: 'utf8' })
       );
-      
+
       if (issues.length > 0) {
         console.log(`   Migrating ${issues.length} issues from ${oldLabel} to ${newLabel}`);
         issues.forEach(issue => {
@@ -246,7 +246,7 @@ async function setupBotLabels() {
     console.log(`\n🏷️  Available bot states:`);
     console.log(`   - agent:todo → agent:wip → agent:needs-review → agent:done`);
     console.log(`   - agent:failed + needs-human-review (for errors)`);
-    
+
     console.log(`\n📝 Next steps:`);
     console.log(`   1. Update bot scripts to use new labels`);
     console.log(`   2. Configure automation rules`);

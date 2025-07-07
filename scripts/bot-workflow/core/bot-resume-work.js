@@ -28,13 +28,13 @@ console.log(`🤖 Bot resuming work...`);
 async function findWorkToResume() {
   if (identifier) {
     console.log(`🔍 Looking for PR/Issue #${identifier}...`);
-    
+
     // Try as PR first
     try {
       const prInfo = JSON.parse(
         execSync(`gh pr view ${identifier} --json number,headRefName,state`, { encoding: 'utf8' })
       );
-      
+
       if (prInfo.state === 'OPEN') {
         return {
           type: 'pr',
@@ -51,7 +51,7 @@ async function findWorkToResume() {
       const issueInfo = JSON.parse(
         execSync(`gh issue view ${identifier} --json number,state,labels`, { encoding: 'utf8' })
       );
-      
+
       if (issueInfo.state === 'OPEN') {
         // Find associated branch/worktree
         const hasAgentWIP = issueInfo.labels.some(label => label.name === 'agent:wip');
@@ -62,7 +62,7 @@ async function findWorkToResume() {
             .split('\n')
             .map(b => b.trim())
             .filter(b => b.includes(branchPattern));
-          
+
           if (branches.length > 0) {
             const branch = branches[0].replace(/^remotes\/origin\//, '');
             return {
@@ -78,17 +78,17 @@ async function findWorkToResume() {
     }
   } else {
     console.log(`🔍 Finding most recent bot work...`);
-    
+
     // Find open PRs with bot labels
     try {
       const prs = JSON.parse(
         execSync(`gh pr list --json number,headRefName,labels --limit 10`, { encoding: 'utf8' })
       );
-      
-      const botPRs = prs.filter(pr => 
+
+      const botPRs = prs.filter(pr =>
         pr.labels.some(label => label.name.startsWith('agent:'))
       );
-      
+
       if (botPRs.length > 0) {
         return {
           type: 'pr',
@@ -100,14 +100,14 @@ async function findWorkToResume() {
       console.error('Could not list PRs:', e.message);
     }
   }
-  
+
   return null;
 }
 
 async function resumeWork() {
   try {
     const work = await findWorkToResume();
-    
+
     if (!work) {
       throw new Error('No work found to resume. Specify a PR or issue number.');
     }
@@ -116,15 +116,15 @@ async function resumeWork() {
 
     // Check if worktree exists
     const worktreePath = path.join(BOT_WORKSPACE_DIR, work.branch);
-    
+
     if (!fs.existsSync(worktreePath)) {
       console.log(`⚠️  Worktree not found at ${worktreePath}`);
       console.log(`🌳 Setting up worktree...`);
-      
+
       // Extract issue number from branch or use PR number
       const issueMatch = work.branch.match(/feature\/(\d+)-/);
       const issueNumber = issueMatch ? issueMatch[1] : work.number;
-      
+
       execSync(
         `node ${path.join(__dirname, '../worktree/setup-worktree.js')} ${issueNumber}`,
         { stdio: 'inherit' }
@@ -146,7 +146,7 @@ async function resumeWork() {
     if (work.type === 'pr' && !context.pr) {
       context.pr = work.number;
     }
-    
+
     fs.writeFileSync(contextPath, JSON.stringify(context, null, 2));
 
     // Show current status

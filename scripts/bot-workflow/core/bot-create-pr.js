@@ -29,7 +29,7 @@ try {
 
   // Get the current branch
   const currentBranch = execSync('git branch --show-current', { encoding: 'utf8' }).trim();
-  
+
   // Push to origin if not already pushed
   console.log(`📤 Pushing to origin...`);
   try {
@@ -42,7 +42,7 @@ try {
   const args = process.argv.slice(2);
   let title = '';
   let body = '';
-  
+
   // Simple argument parsing
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--title' && args[i + 1]) {
@@ -70,7 +70,7 @@ try {
   // Create the PR
   console.log(`📝 Creating PR for issue #${context.issue}...`);
   const prCommand = `gh pr create --title "${title}" --body "${body}" --base main`;
-  
+
   let prUrl = '';
   try {
     const output = execSync(prCommand, { encoding: 'utf8' });
@@ -96,11 +96,11 @@ try {
     // Remove agent:wip label from issue
     execSync(`gh issue edit ${context.issue} --remove-label "agent:wip"`, { stdio: 'inherit' });
     console.log(`✅ Removed 'agent:wip' label from issue #${context.issue}`);
-    
+
     // Add both agent and status labels to issue
     execSync(`gh issue edit ${context.issue} --add-label "agent:needs-review" --add-label "status: in-code-review"`, { stdio: 'inherit' });
     console.log(`✅ Added 'agent:needs-review' and 'status: in-code-review' labels to issue #${context.issue}`);
-    
+
     // Also add labels to the PR
     if (context.pr) {
       console.log(`🏷️  Adding labels to PR #${context.pr}...`);

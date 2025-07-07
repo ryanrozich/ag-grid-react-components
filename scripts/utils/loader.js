@@ -32,7 +32,7 @@ export function getFormat(url, context, nextGetFormat) {
   if (['.ts', '.tsx', '.mts'].some(ext => url.endsWith(ext))) {
     return { format: 'module' };
   }
-  
+
   // Let Node.js handle all other modules
   return nextGetFormat(url, context);
 }

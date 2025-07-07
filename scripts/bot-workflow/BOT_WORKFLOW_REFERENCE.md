@@ -82,7 +82,7 @@ node scripts/bot-workflow/coordinator/auto-bot-orchestrator.js
 
 ### Agent Labels (Bot Workflow)
 - `agent:todo` → Bot can claim this issue
-- `agent:wip` → Bot is actively working  
+- `agent:wip` → Bot is actively working
 - `agent:needs-review` → PR created, awaiting review
 - `agent:done` → Work completed and merged
 - `agent:error` → Bot encountered issues (needs human help)

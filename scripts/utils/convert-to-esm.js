@@ -28,52 +28,52 @@ console.log(`Found ${scriptFiles.length} scripts to convert to ESM\n`);
 scriptFiles.forEach(filePath => {
   let content = fs.readFileSync(filePath, 'utf8');
   const originalContent = content;
-  
+
   // Skip if already ESM
   if (content.includes('import ') && content.includes(' from ')) {
     console.log(`✓ ${filePath} - already ESM`);
     return;
   }
-  
+
   // Convert require statements to import
   content = content.replace(
     /const\s+{\s*([^}]+)\s*}\s*=\s*require\(['"]([^'"]+)['"]\);?/g,
     'import { $1 } from \'$2\';'
   );
-  
+
   content = content.replace(
     /const\s+(\w+)\s*=\s*require\(['"]([^'"]+)['"]\);?/g,
     'import $1 from \'$2\';'
   );
-  
+
   // Fix path and fs imports (they need specific syntax)
   content = content.replace(
     /import path from 'path';/g,
     'import path from \'path\';'
   );
-  
+
   content = content.replace(
     /import fs from 'fs';/g,
     'import fs from \'fs\';'
   );
-  
+
   // Update ensure-project-root import
   content = content.replace(
     /from\s+['"]([^'"]*\/)?ensure-project-root\.cjs['"]/g,
     'from \'$1ensure-project-root.mjs\''
   );
-  
+
   // Convert module.exports to export
   content = content.replace(
     /module\.exports\s*=\s*{([^}]+)}/g,
     'export {$1}'
   );
-  
+
   content = content.replace(
     /module\.exports\s*=\s*(\w+);?/g,
     'export default $1;'
   );
-  
+
   // Add file extension to local imports
   content = content.replace(
     /from\s+['"](\.\.?\/[^'"]+)(?<!\.m?js)['"]/g,
@@ -86,7 +86,7 @@ scriptFiles.forEach(filePath => {
       return `from '${importPath}.js'`;
     }
   );
-  
+
   // Handle __dirname usage
   if (content.includes('__dirname')) {
     // Add import for fileURLToPath if not present
@@ -95,12 +95,12 @@ scriptFiles.forEach(filePath => {
       if (importInsertPoint) {
         const lastImport = importInsertPoint[importInsertPoint.length - 1];
         const insertPos = content.lastIndexOf(lastImport) + lastImport.length;
-        content = content.slice(0, insertPos) + 
+        content = content.slice(0, insertPos) +
           `import { fileURLToPath } from 'url';\n` +
           content.slice(insertPos);
       }
     }
-    
+
     // Add __dirname definition after imports
     const importsEnd = content.lastIndexOf('import');
     if (importsEnd !== -1) {
@@ -112,7 +112,7 @@ scriptFiles.forEach(filePath => {
       }
     }
   }
-  
+
   // Only write if content changed
   if (content !== originalContent) {
     fs.writeFileSync(filePath, content);

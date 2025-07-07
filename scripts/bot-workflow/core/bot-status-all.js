@@ -33,7 +33,7 @@ async function getWorkStatus() {
       execSync(`gh issue list --json number,title,labels,updatedAt --limit 50`, { encoding: 'utf8' })
     );
 
-    const agentIssues = issues.filter(issue => 
+    const agentIssues = issues.filter(issue =>
       issue.labels.some(label => label.name.startsWith('agent:'))
     );
 
@@ -43,7 +43,7 @@ async function getWorkStatus() {
       execSync(`gh pr list --json number,title,labels,updatedAt,isDraft,headRefName --limit 50`, { encoding: 'utf8' })
     );
 
-    const agentPRs = prs.filter(pr => 
+    const agentPRs = prs.filter(pr =>
       pr.labels.some(label => label.name.startsWith('agent:'))
     );
 
@@ -53,18 +53,18 @@ async function getWorkStatus() {
     if (fs.existsSync(BOT_WORKSPACE_DIR)) {
       // Check both root and feature subdirectory
       const checkDirs = [BOT_WORKSPACE_DIR, path.join(BOT_WORKSPACE_DIR, 'feature')];
-      
+
       for (const checkDir of checkDirs) {
         if (!fs.existsSync(checkDir)) continue;
-        
+
         const dirs = fs.readdirSync(checkDir);
         for (const dir of dirs) {
           const worktreePath = path.join(checkDir, dir);
           const stat = fs.statSync(worktreePath);
-          
+
           if (stat.isDirectory()) {
             const botStateDir = path.join(worktreePath, '.bot');
-            
+
             if (fs.existsSync(botStateDir)) {
               try {
                 const contextPath = path.join(botStateDir, 'context.json');
@@ -147,10 +147,10 @@ function formatTime(dateString) {
   const date = new Date(dateString);
   const now = Date.now();
   const diff = now - date;
-  
+
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const days = Math.floor(hours / 24);
-  
+
   if (days > 0) {
     return `${days}d ago`;
   } else if (hours > 0) {
@@ -167,16 +167,16 @@ async function displayStatus() {
   if (status.active.length > 0) {
     console.log(`🟢 Active Work (${status.active.length})`);
     console.log(`─────────────────────────────`);
-    
+
     for (const work of status.active) {
       console.log(`\n#${work.number}: ${work.title}`);
       console.log(`  Status: ${work.labels.filter(l => l.startsWith('agent:')).join(', ')}`);
       console.log(`  Updated: ${formatTime(work.updatedAt)}`);
-      
+
       if (work.pr) {
         console.log(`  PR: #${work.pr}${work.prDraft ? ' (draft)' : ''}`);
       }
-      
+
       if (work.worktree) {
         console.log(`  Worktree: ${work.worktree}`);
         if (work.checkpoints > 0) {
@@ -190,12 +190,12 @@ async function displayStatus() {
   if (status.stale.length > 0) {
     console.log(`\n\n🟡 Stale Work (>24h) (${status.stale.length})`);
     console.log(`─────────────────────────────`);
-    
+
     for (const work of status.stale) {
       console.log(`\n#${work.number}: ${work.title}`);
       console.log(`  ⚠️  Last update: ${formatTime(work.updatedAt)}`);
       console.log(`  Status: ${work.labels.filter(l => l.startsWith('agent:')).join(', ')}`);
-      
+
       if (work.pr) {
         console.log(`  PR: #${work.pr}${work.prDraft ? ' (draft)' : ''}`);
       }
@@ -207,7 +207,7 @@ async function displayStatus() {
   if (recentCompleted.length > 0) {
     console.log(`\n\n✅ Recently Completed (${recentCompleted.length})`);
     console.log(`─────────────────────────────`);
-    
+
     for (const work of recentCompleted) {
       console.log(`\n#${work.number}: ${work.title}`);
       console.log(`  Completed: ${formatTime(work.updatedAt)}`);
@@ -220,7 +220,7 @@ async function displayStatus() {
   console.log(`Active: ${status.active.length}`);
   console.log(`Stale: ${status.stale.length}`);
   console.log(`Completed: ${status.completed.length}`);
-  
+
   // Worktree summary
   try {
     const worktreeList = execSync('git worktree list', { encoding: 'utf8' });

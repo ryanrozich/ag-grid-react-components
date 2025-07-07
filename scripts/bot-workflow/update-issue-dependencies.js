@@ -44,44 +44,44 @@ async function updateDependencies() {
       const issue = JSON.parse(
         execSync(`gh issue view ${issueNum} --json body`, { encoding: 'utf8' })
       );
-      
+
       let body = issue.body || '';
-      
+
       // Add dependency section if not exists
       if (!body.includes('## Dependencies')) {
         body += '\n\n## Dependencies\n\n';
-        
+
         if (deps.depends.length > 0) {
           body += `**Depends on:** ${deps.depends.map(n => `#${n}`).join(', ')}\n`;
         }
-        
+
         if (deps.blocking.length > 0) {
           body += `**Blocking:** ${deps.blocking.map(n => `#${n}`).join(', ')}\n`;
         }
-        
+
         if (deps.contract) {
           body += `**Contract:** \`${deps.contract}\`\n`;
         }
-        
+
         body += '\n## Integration Notes\n\n';
         body += '- This issue is part of parallel development\n';
         body += '- Check contract file for interface definitions\n';
         body += '- Coordinate with dependent issues before major changes\n';
-        
+
         // Update issue
-        execSync(`gh issue edit ${issueNum} --body "${body.replace(/"/g, '\\"')}"`, 
+        execSync(`gh issue edit ${issueNum} --body "${body.replace(/"/g, '\\"')}"`,
           { stdio: 'inherit' });
-        
+
         console.log(`✅ Updated issue #${issueNum} with dependencies`);
       } else {
         console.log(`⏭️  Issue #${issueNum} already has dependencies`);
       }
-      
+
     } catch (error) {
       console.error(`❌ Error updating issue #${issueNum}:`, error.message);
     }
   }
-  
+
   console.log('\n✅ Dependency update complete!');
 }
 

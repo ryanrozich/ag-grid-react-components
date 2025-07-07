@@ -51,11 +51,11 @@ execSync(`tmux send-keys -t bot-army:dashboard '${dashboardCmd}' Enter`);
 // Create a pane for each bot
 issueNumbers.forEach((issueNumber, index) => {
   console.log(`🤖 Setting up bot for issue #${issueNumber}...`);
-  
+
   // Create new window for this bot
   const windowName = `bot-${issueNumber}`;
   execSync(`tmux new-window -t bot-army -n ${windowName}`);
-  
+
   // Create the bot instruction file
   const botInstructions = `# Bot Instructions for Issue #${issueNumber}
 
@@ -117,14 +117,14 @@ Start by reading the issue details and creating the necessary file structure.
 
   const instructionFile = join(rootDir, `.bot/instructions-${issueNumber}.md`);
   fs.writeFileSync(instructionFile, botInstructions);
-  
+
   // Send commands to claim the issue
   const claimCmd = `cd ${rootDir} && node scripts/bot-workflow/core/bot-claim-issue.js ${issueNumber}`;
   execSync(`tmux send-keys -t bot-army:${windowName} '${claimCmd}' Enter`);
-  
+
   // Wait a moment for the claim to process
   execSync('sleep 2');
-  
+
   // Add instruction to open the instructions file
   const openInstructionsCmd = `echo "\\n📋 Bot instructions saved to: ${instructionFile}\\n" && cat ${instructionFile}`;
   execSync(`tmux send-keys -t bot-army:${windowName} '${openInstructionsCmd}' Enter`);

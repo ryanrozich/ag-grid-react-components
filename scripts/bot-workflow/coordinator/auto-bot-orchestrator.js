@@ -96,7 +96,7 @@ async function orchestrate() {
   // Get issue numbers
   const issueList = await prompt('Enter issue numbers separated by spaces (e.g., 47 48 49): ');
   const issueNumbers = issueList.split(' ').map(n => parseInt(n)).filter(n => !isNaN(n));
-  
+
   if (issueNumbers.length === 0) {
     console.error('❌ No valid issue numbers provided');
     process.exit(1);
@@ -107,7 +107,7 @@ async function orchestrate() {
   console.log('1. Basic - Create claim scripts only');
   console.log('2. Tmux - Launch tmux session with all bots');
   console.log('3. Full - Create VS Code workspace with all worktrees');
-  
+
   const choice = await prompt('\nSelect option (1-3): ');
 
   // Ensure .bot directory exists
@@ -137,12 +137,12 @@ async function orchestrate() {
     case '3':
       // VS Code workspace
       console.log('\n🎨 Creating VS Code workspace...');
-      
+
       // First claim all issues
       for (const num of issueNumbers) {
         console.log(`📋 Claiming issue #${num}...`);
         try {
-          execSync(`cd "${rootDir}" && node scripts/bot-workflow/core/bot-claim-issue.js ${num}`, 
+          execSync(`cd "${rootDir}" && node scripts/bot-workflow/core/bot-claim-issue.js ${num}`,
             { stdio: 'inherit' });
           await new Promise(resolve => setTimeout(resolve, 2000)); // Wait between claims
         } catch (error) {
@@ -158,10 +158,10 @@ async function orchestrate() {
       // Add worktrees to workspace
       issueNumbers.forEach(num => {
         const worktreePath = execSync(
-          `find ~/ag-grid-worktrees -name "*-${num}-*" -type d | head -1`, 
+          `find ~/ag-grid-worktrees -name "*-${num}-*" -type d | head -1`,
           { encoding: 'utf8' }
         ).trim();
-        
+
         if (worktreePath) {
           folders.push({
             path: worktreePath,
@@ -217,7 +217,7 @@ async function createDashboard() {
     <script>
         // Auto-refresh every 10 seconds
         setInterval(() => location.reload(), 10000);
-        
+
         // Fetch bot status (you'd implement this API endpoint)
         fetch('/api/bot-status')
             .then(r => r.json())

@@ -43,7 +43,7 @@ console.log(`📦 Current version: ${currentVersion}`);
  */
 function getNextVersion(current, type, preid) {
   let next;
-  
+
   switch (type) {
     case 'major':
       next = semver.inc(current, 'major');
@@ -71,7 +71,7 @@ function getNextVersion(current, type, preid) {
     default:
       throw new Error(`Invalid release type: ${type}`);
   }
-  
+
   return next;
 }
 
@@ -85,13 +85,13 @@ function checkWorkingDirectory() {
       console.warn(`⚠️  Warning: You have uncommitted changes:`);
       console.warn(status);
       console.warn(`\nConsider committing or stashing these changes first.`);
-      
+
       // Ask for confirmation
       const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
       });
-      
+
       return new Promise((resolve) => {
         rl.question('Continue anyway? (y/N) ', (answer) => {
           rl.close();
@@ -116,7 +116,7 @@ function getRecentCommits() {
       `git log ${lastTag}..HEAD --oneline --no-merges`,
       { encoding: 'utf8' }
     );
-    
+
     return commits.trim().split('\n').filter(Boolean);
   } catch (error) {
     return [];
@@ -137,7 +137,7 @@ async function bumpVersion() {
 
     // Calculate next version
     const nextVersion = getNextVersion(currentVersion, releaseType, preid);
-    
+
     if (!nextVersion || !semver.valid(nextVersion)) {
       throw new Error(`Invalid next version: ${nextVersion}`);
     }
@@ -158,7 +158,7 @@ async function bumpVersion() {
 
     // Version validation
     console.log(`\n🔍 Validating version bump...`);
-    
+
     // Check if version already exists
     try {
       execSync(`git rev-parse v${nextVersion}`, { stdio: 'ignore' });
@@ -189,25 +189,25 @@ async function bumpVersion() {
       'README.md',
       'docs/getting-started.md'
     ];
-    
+
     filesToUpdate.forEach(file => {
       const filePath = path.join(process.cwd(), file);
       if (fs.existsSync(filePath)) {
         console.log(`📝 Updating ${file}...`);
         let content = fs.readFileSync(filePath, 'utf8');
-        
+
         // Update version patterns
         content = content.replace(
           new RegExp(`${currentVersion.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g'),
           nextVersion
         );
-        
+
         // Update version badges
         content = content.replace(
           /version-[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?/g,
           `version-${nextVersion}`
         );
-        
+
         fs.writeFileSync(filePath, content);
       }
     });
@@ -227,7 +227,7 @@ async function bumpVersion() {
     console.log(`3. Create and push tag:`);
     console.log(`   git tag -a v${nextVersion} -m "Version ${nextVersion}"`);
     console.log(`   git push origin main --tags`);
-    
+
     if (releaseType === 'rc') {
       console.log(`4. Trigger RC workflow:`);
       console.log(`   gh workflow run release-candidate.yml -f version=${nextVersion}`);

@@ -176,7 +176,7 @@ bot-workflow/
 ### Bot States
 - `agent:todo` - Ready for bot work
 - `agent:wip` - Bot actively working
-- `agent:needs-review` - Ready for human review  
+- `agent:needs-review` - Ready for human review
 - `agent:failed` - Bot encountered error
 - `agent:done` - Work completed
 
@@ -190,8 +190,8 @@ bot-workflow/
 
 ### Bot Development Lifecycle
 ```
-Issue Created → agent:todo → Bot Claims → agent:wip → 
-Bot Works → Creates PR → agent:needs-review → 
+Issue Created → agent:todo → Bot Claims → agent:wip →
+Bot Works → Creates PR → agent:needs-review →
 Human Reviews → Merged → agent:done
 ```
 

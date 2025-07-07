@@ -73,7 +73,7 @@ async function claimIssue() {
     const issueDetails = JSON.parse(
       execSync(`gh issue view ${issueNumber} --json title`, { encoding: 'utf8' })
     );
-    
+
     // Create safe branch description from title
     const description = issueDetails.title
       .toLowerCase()
@@ -89,13 +89,13 @@ async function claimIssue() {
         `node ${path.join(__dirname, '../worktree/setup-worktree.js')} ${issueNumber} "${description}"`,
         { encoding: 'utf8', stdio: 'pipe' }
       );
-      
+
       // Parse the last JSON output from setup-worktree
       // Look for JSON that starts with { and ends with } on its own line
       const lines = setupResult.split('\n');
       let jsonStr = '';
       let inJson = false;
-      
+
       for (let i = lines.length - 1; i >= 0; i--) {
         const line = lines[i].trim();
         if (line === '}' && !inJson) {
@@ -108,11 +108,11 @@ async function claimIssue() {
           }
         }
       }
-      
+
       if (jsonStr) {
         worktreeInfo = JSON.parse(jsonStr);
       }
-      
+
       // If we couldn't parse JSON but the worktree exists, consider it successful
       if (!worktreeInfo) {
         // Check if worktree was created by looking for the directory
@@ -140,7 +140,7 @@ async function claimIssue() {
         throw new Error(`Failed to set up worktree: ${error.message}`);
       }
     }
-    
+
     if (!worktreeInfo || !worktreeInfo.success) {
       throw new Error('Failed to set up worktree - no worktree information returned');
     }
@@ -149,13 +149,13 @@ async function claimIssue() {
     const botStateDir = worktreeInfo.botStateDir;
     const contextPath = path.join(botStateDir, 'context.json');
     const context = JSON.parse(fs.readFileSync(contextPath, 'utf8'));
-    
+
     // Enhance context with issue information
     context.issue = parseInt(issueNumber);
     context.issueTitle = issueDetails.title;
     context.claimedAt = claimTime;
     context.status = 'claimed';
-    
+
     fs.writeFileSync(contextPath, JSON.stringify(context, null, 2));
 
     // Update memory log
@@ -185,14 +185,14 @@ async function claimIssue() {
 
   } catch (error) {
     console.error(`\n❌ Error claiming issue:`, error.message);
-    
+
     // Try to update issue with error status
     try {
       execSync(`gh issue comment ${issueNumber} --body "❌ **Failed to claim issue**\n\nError: ${error.message}\n\nThe bot was unable to claim this issue. Human intervention may be required."`);
     } catch (e) {
       // Ignore errors in error reporting
     }
-    
+
     process.exit(1);
   }
 }

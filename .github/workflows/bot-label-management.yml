@@ -38,14 +38,14 @@ jobs:
                 issue_number: issue.number,
                 name: 'agent:todo'
               }).catch(() => {});
-              
+
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number,
                 labels: ['agent:wip']
               });
-              
+
               console.log(`Updated labels for bot claim on issue #${issue.number}`);
             }
 
@@ -57,14 +57,14 @@ jobs:
                 issue_number: issue.number,
                 name: 'agent:wip'
               }).catch(() => {});
-              
+
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number,
                 labels: ['agent:needs-review', 'needs-human-review']
               });
-              
+
               console.log(`Updated labels for bot handoff on issue #${issue.number}`);
             }
 
@@ -86,14 +86,14 @@ jobs:
                   issue_number: pr.number,
                   name: 'agent:wip'
                 }).catch(() => {});
-                
+
                 await github.rest.issues.addLabels({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: pr.number,
                   labels: ['agent:needs-review']
                 });
-                
+
                 console.log(`Transitioned PR #${pr.number} to needs-review`);
               }
             }
@@ -111,14 +111,14 @@ jobs:
                   }).catch(() => {});
                 }
               }
-              
+
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: pr.number,
                 labels: ['agent:done']
               });
-              
+
               console.log(`Marked PR #${pr.number} as done`);
             }
 
@@ -141,7 +141,7 @@ jobs:
 
             for (const issue of issues.data) {
               const lastUpdate = new Date(issue.updated_at);
-              
+
               if (lastUpdate < oneDayAgo) {
                 // Add stale label
                 await github.rest.issues.addLabels({
@@ -150,7 +150,7 @@ jobs:
                   issue_number: issue.number,
                   labels: ['bot:stale']
                 });
-                
+
                 // Add warning comment
                 await github.rest.issues.createComment({
                   owner: context.repo.owner,
@@ -158,7 +158,7 @@ jobs:
                   issue_number: issue.number,
                   body: `⚠️ **Bot Work Stale**\n\nThis issue has been marked as \`bot:stale\` because there has been no activity for over 24 hours.\n\nActions:\n- Resume work: \`node scripts/bot-workflow/core/bot-resume-work.js ${issue.number}\`\n- Check status: \`gh issue view ${issue.number}\`\n- Hand off to human: \`/bot handoff\``
                 });
-                
+
                 console.log(`Marked issue #${issue.number} as stale`);
               }
             }
@@ -176,18 +176,18 @@ jobs:
 
             if (agentStates.length > 1) {
               console.log(`⚠️ Multiple agent states found on #${item.number}: ${agentStates.join(', ')}`);
-              
+
               // Keep only the most recent/relevant state
               const validStates = ['agent:done', 'agent:needs-review', 'agent:failed', 'agent:wip', 'agent:todo'];
               let keepState = null;
-              
+
               for (const state of validStates) {
                 if (agentStates.includes(state)) {
                   keepState = state;
                   break;
                 }
               }
-              
+
               // Remove other states
               for (const state of agentStates) {
                 if (state !== keepState) {
@@ -199,6 +199,6 @@ jobs:
                   }).catch(() => {});
                 }
               }
-              
+
               console.log(`Cleaned up labels, keeping: ${keepState}`);
             }

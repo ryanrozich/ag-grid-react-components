@@ -37,7 +37,7 @@ function getCommits(fromRef, toRef) {
   try {
     const range = fromRef ? `${fromRef}..${toRef}` : toRef;
     const format = '%H|%s|%b|%an|%ae';
-    
+
     const output = execSync(
       `git log ${range} --format="${format}" --no-merges`,
       { encoding: 'utf8' }
@@ -63,7 +63,7 @@ function getCommits(fromRef, toRef) {
 function getMergedPRs(fromRef, toRef) {
   try {
     const range = fromRef ? `${fromRef}..${toRef}` : toRef;
-    
+
     // Get merge commits
     const mergeCommits = execSync(
       `git log ${range} --format="%H %s" --grep="Merge pull request" --grep="(#"`,
@@ -72,7 +72,7 @@ function getMergedPRs(fromRef, toRef) {
 
     const prs = [];
     const prPattern = /#(\d+)/g;
-    
+
     mergeCommits.split('\n').forEach(line => {
       const matches = line.matchAll(prPattern);
       for (const match of matches) {
@@ -91,7 +91,7 @@ function getMergedPRs(fromRef, toRef) {
  */
 async function getPRDetails(prNumbers) {
   const details = [];
-  
+
   for (const prNumber of prNumbers) {
     try {
       const pr = JSON.parse(
@@ -104,7 +104,7 @@ async function getPRDetails(prNumbers) {
       console.warn(`Could not fetch details for PR #${prNumber}`);
     }
   }
-  
+
   return details;
 }
 
@@ -154,21 +154,21 @@ function categorizeCommits(commits) {
  */
 async function getMilestoneDetails(milestoneNumber) {
   if (!milestoneNumber) return null;
-  
+
   try {
     const milestone = JSON.parse(
       execSync(`gh api repos/{owner}/{repo}/milestones/${milestoneNumber}`, {
         encoding: 'utf8'
       })
     );
-    
+
     // Get issues in milestone
     const issues = JSON.parse(
       execSync(`gh issue list --milestone "${milestone.title}" --state all --json number,title,state,labels --limit 100`, {
         encoding: 'utf8'
       })
     );
-    
+
     return { milestone, issues };
   } catch (error) {
     console.warn(`Could not fetch milestone details`);
@@ -182,26 +182,26 @@ async function getMilestoneDetails(milestoneNumber) {
 function formatCommit(commit, prDetails = []) {
   const { hash, subject, authorName } = commit;
   const shortHash = hash.substring(0, 7);
-  
+
   // Check if this commit is associated with a PR
-  const pr = prDetails.find(pr => 
-    subject.includes(`#${pr.number}`) || 
+  const pr = prDetails.find(pr =>
+    subject.includes(`#${pr.number}`) ||
     subject.includes(`(#${pr.number})`)
   );
-  
+
   let entry = `- ${subject}`;
-  
+
   if (pr) {
     entry += ` ([#${pr.number}](../../pull/${pr.number}))`;
   }
-  
+
   entry += ` (${shortHash})`;
-  
+
   // Add author if not a bot
   if (!authorName.includes('bot')) {
     entry += ` - @${authorName}`;
   }
-  
+
   return entry;
 }
 
@@ -236,10 +236,10 @@ async function generateChangelog() {
   }
 
   // Date
-  changelog += `_${new Date().toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  changelog += `_${new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   })}_\n\n`;
 
   // Milestone summary if available
@@ -247,17 +247,17 @@ async function generateChangelog() {
     const { milestone, issues } = milestoneDetails;
     const completed = issues.filter(i => i.state === 'CLOSED').length;
     const total = issues.length;
-    
+
     changelog += `### 📊 Milestone: ${milestone.title}\n\n`;
     changelog += `Progress: ${completed}/${total} issues completed\n\n`;
   }
 
   // Breaking changes (if any)
-  const breakingChanges = commits.filter(c => 
+  const breakingChanges = commits.filter(c =>
     c.body.toLowerCase().includes('breaking change') ||
     c.subject.includes('!')
   );
-  
+
   if (breakingChanges.length > 0) {
     changelog += `### ⚠️ Breaking Changes\n\n`;
     breakingChanges.forEach(commit => {
@@ -300,7 +300,7 @@ async function generateChangelog() {
     ...categories.tests,
     ...categories.chore
   ];
-  
+
   if (otherChanges.length > 0 && otherChanges.length <= 10) {
     changelog += `### 🔧 Other Changes\n\n`;
     otherChanges.forEach(commit => {
@@ -316,7 +316,7 @@ async function generateChangelog() {
       contributors.add(commit.authorName);
     }
   });
-  
+
   if (contributors.size > 0) {
     changelog += `### 👥 Contributors\n\n`;
     changelog += `Thanks to: ${Array.from(contributors).join(', ')}\n\n`;
@@ -327,7 +327,7 @@ async function generateChangelog() {
   changelog += `- ${commits.length} commits\n`;
   changelog += `- ${prDetails.length} pull requests\n`;
   changelog += `- ${contributors.size} contributors\n`;
-  
+
   if (categories.features.length > 0) {
     changelog += `- ${categories.features.length} new features\n`;
   }
@@ -342,7 +342,7 @@ async function generateChangelog() {
 generateChangelog()
   .then(changelog => {
     console.log(changelog);
-    
+
     // Also save to file if requested
     if (args.output) {
       fs.writeFileSync(args.output, changelog);

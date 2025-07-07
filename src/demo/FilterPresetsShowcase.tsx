@@ -143,10 +143,10 @@ const FilterPresetsShowcase: React.FC = () => {
         name: 'Recent Orders',
         gridState: {
           filters: {
-            date: { 
-              type: 'after', 
-              mode: 'relative', 
-              expressionFrom: 'Today-7d' 
+            date: {
+              type: 'after',
+              mode: 'relative',
+              expressionFrom: 'Today-7d'
             }
           }
         }
@@ -167,10 +167,10 @@ const FilterPresetsShowcase: React.FC = () => {
                   language="typescript"
                   code={`
 // Use the useFilterPresets hook for programmatic control
-const { 
-  presets, 
-  savePreset, 
-  loadPreset, 
+const {
+  presets,
+  savePreset,
+  loadPreset,
   deletePreset,
   setDefaultPreset,
   exportPresets,

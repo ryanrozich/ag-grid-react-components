@@ -23,16 +23,16 @@ const scriptsToUpdate = [
   'scripts/bot-workflow/coordinator/monitor-progress.js',
   'scripts/bot-workflow/worktree/setup-worktree.js',
   'scripts/bot-workflow/worktree/cleanup-worktree.js',
-  
+
   // Release scripts
   'scripts/release/generate-changelog.js',
   'scripts/release/bump-version.js',
   'scripts/release/prepare-release.js',
-  
+
   // Automation scripts
   'scripts/automation/monitoring/health-check.js',
   'scripts/automation/monitoring/workflow-performance.js',
-  
+
   // Quality scripts (CommonJS)
   'scripts/quality/check-fonts.js',
   'scripts/quality/check-codeql.js',
@@ -48,27 +48,27 @@ scriptsToUpdate.forEach(scriptPath => {
     console.log(`⚠️  Skipping ${scriptPath} - file not found`);
     return;
   }
-  
+
   let content = fs.readFileSync(scriptPath, 'utf8');
   const scriptName = path.basename(scriptPath);
-  
+
   // Skip if already has the import
   if (content.includes('ensureProjectRoot')) {
     console.log(`✓ ${scriptPath} - already has project root validation`);
     return;
   }
-  
+
   // Determine if ES module or CommonJS
   const isESM = content.includes('import ') && content.includes('from ');
-  
+
   // Calculate relative path for import
   const relativePath = path.relative(path.dirname(scriptPath), 'scripts/utils');
-  const importPath = isESM 
+  const importPath = isESM
     ? `import { ensureProjectRoot } from '${relativePath}/ensure-project-root.mjs';`
     : `const { ensureProjectRoot } = require('${relativePath}/ensure-project-root.cjs');`;
-  
+
   const ensureStatement = `\n// Ensure we're in the project root\nensureProjectRoot('${scriptName}');\n`;
-  
+
   if (isESM) {
     // For ES modules, add after last import
     const lastImportMatch = content.match(/import[^;]+;[^\n]*\n/g);
@@ -86,7 +86,7 @@ scriptsToUpdate.forEach(scriptPath => {
       content = content.slice(0, insertPos) + '\n' + importPath + ensureStatement + content.slice(insertPos);
     }
   }
-  
+
   fs.writeFileSync(scriptPath, content);
   console.log(`✅ Updated ${scriptPath}`);
 });

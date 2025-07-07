@@ -77,21 +77,21 @@ jobs:
           # Prefer AWS CLI if R2 credentials are available (more efficient for bulk operations)
           if [ -n "$CLOUDFLARE_R2_ACCESS_KEY_ID" ] && [ -n "$CLOUDFLARE_R2_SECRET_ACCESS_KEY" ]; then
             echo "Using AWS CLI for R2 cleanup..."
-            
+
             # Configure AWS CLI for R2
             export AWS_ACCESS_KEY_ID="${CLOUDFLARE_R2_ACCESS_KEY_ID}"
             export AWS_SECRET_ACCESS_KEY="${CLOUDFLARE_R2_SECRET_ACCESS_KEY}"
             export AWS_DEFAULT_REGION="auto"
-            
+
             # Install AWS CLI
             pip install awscli
-            
+
             # List objects first (for logging)
             echo "📋 Listing objects to be deleted:"
             aws s3 ls "s3://rozich-demos/${DEPLOY_PATH}/" \
               --endpoint-url="https://$CLOUDFLARE_ACCOUNT_ID.r2.cloudflarestorage.com" \
               --recursive || echo "No objects found"
-            
+
             # Delete R2 objects
             echo "🗑️ Deleting R2 objects..."
             aws s3 rm "s3://rozich-demos/${DEPLOY_PATH}/" \
@@ -99,7 +99,7 @@ jobs:
               --recursive || echo "No R2 objects to delete"
           else
             echo "Using Wrangler for R2 cleanup..."
-            
+
             # List objects first (for logging)
             echo "📋 Listing objects to be deleted:"
             wrangler r2 object list "rozich-demos" --prefix="${DEPLOY_PATH}/" --remote || true
@@ -183,13 +183,13 @@ jobs:
               });
 
               const projectItems = projectData.repository.pullRequest?.projectItems?.nodes || [];
-              
+
               for (const projectItem of projectItems) {
                 const project = projectItem.project;
-                const previewUrlField = project.fields.nodes.find(f => 
+                const previewUrlField = project.fields.nodes.find(f =>
                   f.name === 'Preview URL' && f.dataType === 'TEXT'
                 );
-                
+
                 if (previewUrlField) {
                   const updateMutation = `
                     mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
@@ -212,7 +212,7 @@ jobs:
                     fieldId: previewUrlField.id,
                     value: { text: "" }
                   });
-                  
+
                   console.log(`✅ Cleared Preview URL field`);
                 }
               }

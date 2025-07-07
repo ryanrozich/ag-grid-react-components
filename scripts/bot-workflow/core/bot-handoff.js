@@ -50,14 +50,14 @@ try {
 
   // Create or update PR if needed
   let prNumber = context.pr;
-  
+
   if (!prNumber) {
     console.log(`📝 Creating pull request...`);
     const prResult = execSync(
       `gh pr create --title "WIP: Issue #${context.issue}" --body "🤖 Bot-created PR for issue #${context.issue}\n\n**Status**: Needs human review\n**Reason**: ${reason}" --draft`,
       { encoding: 'utf8' }
     );
-    
+
     // Extract PR number from output
     const prMatch = prResult.match(/\/pull\/(\d+)/);
     if (prMatch) {
@@ -69,7 +69,7 @@ try {
 
   // Generate handoff summary
   console.log(`📋 Generating handoff summary...`);
-  
+
   const handoffTime = new Date().toISOString();
   const commitCount = execSync('git rev-list --count HEAD', { encoding: 'utf8' }).trim();
   const filesChanged = execSync('git diff --name-only origin/main...HEAD', { encoding: 'utf8' })
@@ -144,7 +144,7 @@ node scripts/bot-workflow/core/bot-resume-work.js ${prNumber || context.issue}
   // Update PR description with handoff info
   if (prNumber) {
     console.log(`🔄 Updating PR #${prNumber}...`);
-    
+
     const prBody = `🤖 Bot-created PR for issue #${context.issue}
 
 ## 🤝 Handoff Required
@@ -169,10 +169,10 @@ See \`.bot/HANDOFF.md\` for complete handoff documentation.
 *This PR was created by an automated bot and requires human intervention.*`;
 
     execSync(`gh pr edit ${prNumber} --body "${prBody.replace(/"/g, '\\"')}"`, { stdio: 'inherit' });
-    
+
     // Add labels
     execSync(`gh pr edit ${prNumber} --add-label "needs-human-review"`, { stdio: 'inherit' });
-    
+
     // Add comment
     execSync(`gh pr comment ${prNumber} --body "🤝 **Handoff to Human Developer**\n\n**Reason**: ${reason}\n\n@${process.env.GITHUB_REPOSITORY_OWNER || 'owner'} - This PR needs your attention.\n\nSee \`.bot/HANDOFF.md\` for detailed handoff information."`, { stdio: 'inherit' });
   }
@@ -180,7 +180,7 @@ See \`.bot/HANDOFF.md\` for complete handoff documentation.
   // Update issue
   console.log(`🔄 Updating issue #${context.issue}...`);
   execSync(`gh issue comment ${context.issue} --body "🤝 **Bot Handoff**\n\n**Reason**: ${reason}\n**PR**: #${prNumber || 'Not created'}\n**Time**: ${handoffTime}\n\nThe bot has prepared a handoff for human review. See the PR for details."`, { stdio: 'inherit' });
-  
+
   // Update issue labels
   execSync(`gh issue edit ${context.issue} --add-label "agent:needs-review" --remove-label "agent:wip"`, { stdio: 'inherit' });
 

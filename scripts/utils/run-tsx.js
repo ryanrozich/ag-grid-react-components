@@ -42,7 +42,7 @@ const nodeArgs = [
 ];
 
 // Run the file with the custom loader
-const nodeProcess = spawn('node', nodeArgs, { 
+const nodeProcess = spawn('node', nodeArgs, {
   stdio: 'inherit',
   shell: true
 });

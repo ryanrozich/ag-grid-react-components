@@ -31,7 +31,7 @@ async function checkReleaseReadiness(milestone) {
     // 1. Check all issues are closed
     console.log('📋 Checking issues...');
     const openIssues = JSON.parse(
-      execSync(`gh issue list --milestone "${milestone}" --state open --json number,title`, 
+      execSync(`gh issue list --milestone "${milestone}" --state open --json number,title`,
         { encoding: 'utf8' })
     );
     checks.allIssuesClosed = openIssues.length === 0;
@@ -42,9 +42,9 @@ async function checkReleaseReadiness(milestone) {
     const openPRs = JSON.parse(
       execSync(`gh pr list --state open --json number,title,labels`, { encoding: 'utf8' })
     );
-    
+
     // Filter for PRs related to this milestone
-    const milestonePRs = openPRs.filter(pr => 
+    const milestonePRs = openPRs.filter(pr =>
       pr.labels.some(label => label.name.includes('agent:'))
     );
     checks.allPRsMerged = milestonePRs.length === 0;
@@ -53,9 +53,9 @@ async function checkReleaseReadiness(milestone) {
     // 3. Check tests pass
     console.log('\n🧪 Checking tests...');
     try {
-      execSync('npm run test:unit -- --reporter=json', { 
+      execSync('npm run test:unit -- --reporter=json', {
         cwd: rootDir,
-        stdio: 'pipe' 
+        stdio: 'pipe'
       });
       checks.testsPass = true;
       console.log('   ✅ All unit tests pass');
@@ -66,9 +66,9 @@ async function checkReleaseReadiness(milestone) {
     // 4. Check TypeScript
     console.log('\n📝 Checking TypeScript...');
     try {
-      execSync('npm run typecheck', { 
+      execSync('npm run typecheck', {
         cwd: rootDir,
-        stdio: 'pipe' 
+        stdio: 'pipe'
       });
       checks.noTypeErrors = true;
       console.log('   ✅ No TypeScript errors');
@@ -83,7 +83,7 @@ async function checkReleaseReadiness(milestone) {
       'docs/FILTER_PRESETS_API.md',
       'llms.txt'
     ];
-    
+
     let docsComplete = true;
     for (const doc of docFiles) {
       const exists = fs.existsSync(path.join(rootDir, doc));
@@ -170,13 +170,13 @@ async function checkReleaseReadiness(milestone) {
     if (percentage >= 80) {
       console.log('\n📝 Release Notes Preview:');
       console.log('───────────────────────');
-      
+
       const mergedPRs = JSON.parse(
-        execSync(`gh pr list --state merged --limit 20 --json number,title,mergedAt`, 
+        execSync(`gh pr list --state merged --limit 20 --json number,title,mergedAt`,
           { encoding: 'utf8' })
       );
-      
-      const featurePRs = mergedPRs.filter(pr => 
+
+      const featurePRs = mergedPRs.filter(pr =>
         pr.title.toLowerCase().includes('filter preset') ||
         pr.title.includes('#47') || pr.title.includes('#48') ||
         pr.title.includes('#49') || pr.title.includes('#50') ||

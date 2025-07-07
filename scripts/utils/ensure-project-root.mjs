@@ -15,11 +15,11 @@ import { fileURLToPath } from 'url';
  */
 export function findProjectRoot(startDir = process.cwd()) {
   let currentDir = startDir;
-  
+
   // Traverse up the directory tree
   while (currentDir !== path.parse(currentDir).root) {
     const packageJsonPath = path.join(currentDir, 'package.json');
-    
+
     if (fs.existsSync(packageJsonPath)) {
       // Verify it's our project by checking the package name
       try {
@@ -31,10 +31,10 @@ export function findProjectRoot(startDir = process.cwd()) {
         // Invalid package.json, continue searching
       }
     }
-    
+
     currentDir = path.dirname(currentDir);
   }
-  
+
   return null;
 }
 
@@ -46,18 +46,18 @@ export function findProjectRoot(startDir = process.cwd()) {
 export function ensureProjectRoot(scriptName = 'Script') {
   const currentDir = process.cwd();
   const projectRoot = findProjectRoot(currentDir);
-  
+
   if (!projectRoot) {
     console.error(`❌ Error: Could not find project root (no package.json with name 'ag-grid-react-components' found)`);
     console.error(`   ${scriptName} must be run from within the project directory`);
     process.exit(1);
   }
-  
+
   if (currentDir !== projectRoot) {
     console.log(`📁 Changing to project root: ${projectRoot}`);
     process.chdir(projectRoot);
   }
-  
+
   return projectRoot;
 }
 

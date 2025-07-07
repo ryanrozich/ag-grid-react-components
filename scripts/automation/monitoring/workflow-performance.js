@@ -29,15 +29,15 @@ function getWorkflowRuns(workflow, daysBack) {
     const since = date.toISOString();
 
     let query = `gh run list --json databaseId,name,status,conclusion,createdAt,updatedAt,event`;
-    
+
     if (workflow) {
       query += ` --workflow="${workflow}"`;
     }
-    
+
     query += ` --limit 100`;
 
     const runs = JSON.parse(execSync(query, { encoding: 'utf8' }));
-    
+
     // Filter by date
     return runs.filter(run => new Date(run.createdAt) >= date);
   } catch (error) {
@@ -60,14 +60,14 @@ function calculateDuration(run) {
  */
 function groupByWorkflow(runs) {
   const grouped = {};
-  
+
   runs.forEach(run => {
     if (!grouped[run.name]) {
       grouped[run.name] = [];
     }
     grouped[run.name].push(run);
   });
-  
+
   return grouped;
 }
 
@@ -81,7 +81,7 @@ function calculateStats(runs) {
   const successful = runs.filter(r => r.conclusion === 'success');
   const failed = runs.filter(r => r.conclusion === 'failure');
   const cancelled = runs.filter(r => r.conclusion === 'cancelled');
-  
+
   // Calculate percentiles
   durations.sort((a, b) => a - b);
   const p50 = durations[Math.floor(durations.length * 0.5)];
@@ -125,7 +125,7 @@ function formatDuration(minutes) {
 async function generateReport() {
   // Get workflow runs
   const runs = getWorkflowRuns(workflowName, days);
-  
+
   if (runs.length === 0) {
     console.log(`No workflow runs found in the last ${days} days`);
     return;
@@ -141,7 +141,7 @@ async function generateReport() {
   // Overall summary
   console.log(`📈 Overall Summary`);
   console.log(`${'-'.repeat(50)}`);
-  
+
   const allStats = calculateStats(runs);
   console.log(`Total Runs: ${allStats.total}`);
   console.log(`Success Rate: ${allStats.successRate}%`);
@@ -152,17 +152,17 @@ async function generateReport() {
   // Per-workflow breakdown
   console.log(`📊 Workflow Breakdown`);
   console.log(`${'-'.repeat(50)}`);
-  
+
   workflows.forEach(workflow => {
     const workflowRuns = grouped[workflow];
     const stats = calculateStats(workflowRuns);
-    
+
     console.log(`\n${workflow}:`);
     console.log(`  Runs: ${stats.total} (${stats.successful} ✅, ${stats.failed} ❌, ${stats.cancelled} ⚠️)`);
     console.log(`  Success Rate: ${stats.successRate}%`);
     console.log(`  Duration: avg ${formatDuration(stats.avgDuration)}, p50 ${formatDuration(stats.p50Duration)}, p90 ${formatDuration(stats.p90Duration)}`);
     console.log(`  Range: ${formatDuration(stats.minDuration)} - ${formatDuration(stats.maxDuration)}`);
-    
+
     // Event breakdown
     const events = Object.entries(stats.byEvent)
       .sort(([,a], [,b]) => b - a)
@@ -204,10 +204,10 @@ async function generateReport() {
   // Cost estimation
   console.log(`\n💰 Cost Estimation`);
   console.log(`${'-'.repeat(50)}`);
-  
+
   const totalMinutes = runs.reduce((acc, run) => acc + calculateDuration(run), 0);
   const estimatedCost = (totalMinutes * 0.008).toFixed(2); // $0.008 per minute for Linux
-  
+
   console.log(`Total Runtime: ${formatDuration(totalMinutes)}`);
   console.log(`Estimated Cost: $${estimatedCost} (Linux runners)`);
   console.log(`Average Cost per Run: $${(estimatedCost / runs.length).toFixed(3)}`);

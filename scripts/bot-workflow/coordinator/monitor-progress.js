@@ -94,10 +94,10 @@ async function getTaskStatus(issueNumber) {
 
     // Check for PR
     let pr = null;
-    const prComments = issue.comments.filter(c => 
+    const prComments = issue.comments.filter(c =>
       c.body.includes('pull request') || c.body.includes('/pull/')
     );
-    
+
     if (prComments.length > 0) {
       const prMatch = prComments[0].body.match(/\/pull\/(\d+)/);
       if (prMatch) {
@@ -247,10 +247,10 @@ function generateInsights(statuses) {
   console.log(`\n💡 Insights & Actions\n`);
 
   // Stale tasks
-  const stale = statuses.filter(s => 
+  const stale = statuses.filter(s =>
     s && s.status === 'in-progress' && s.idleHours > 24
   );
-  
+
   if (stale.length > 0) {
     console.log(`🔸 Stale Tasks (need attention):`);
     stale.forEach(task => {
@@ -299,7 +299,7 @@ async function monitorProgress() {
   try {
     // Get tasks to monitor
     const tasks = await getBotTasks(trackingIssue);
-    
+
     if (tasks.length === 0) {
       console.log('No bot tasks found to monitor.');
       return;

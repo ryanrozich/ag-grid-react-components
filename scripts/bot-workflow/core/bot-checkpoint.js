@@ -56,7 +56,7 @@ try {
     gitDiffStaged: gitDiffStaged,
     context: context
   };
-  
+
   fs.writeFileSync(statePath, JSON.stringify(checkpointData, null, 2));
   console.log(`📄 Saved state to ${path.basename(statePath)}`);
 
@@ -66,7 +66,7 @@ try {
   // Update memory log
   const memoryPath = path.join(botStateDir, 'memory.md');
   const memoryEntry = `\n## ${checkpointTime}\n- **Checkpoint**: ${message}\n`;
-  
+
   // Add file changes summary if any
   if (gitStatus) {
     const changes = gitStatus.split('\n').filter(Boolean);
@@ -75,7 +75,7 @@ try {
       memoryEntry + `  - ${change}\n`;
     });
   }
-  
+
   fs.appendFileSync(memoryPath, memoryEntry);
 
   // Stage all changes
@@ -87,7 +87,7 @@ try {
   // Commit with checkpoint message
   const commitMessage = `checkpoint: ${message}\n\nBot checkpoint #${context.checkpoints} for issue #${context.issue}`;
   console.log(`💬 Committing changes...`);
-  
+
   try {
     execSync(`git commit -m "${commitMessage}"`, { stdio: 'inherit' });
     console.log(`✅ Changes committed`);
@@ -107,7 +107,7 @@ try {
     try {
       // Push changes
       execSync(`git push origin ${context.branch}`, { stdio: 'inherit' });
-      
+
       // Add checkpoint comment to PR
       execSync(`gh pr comment ${context.pr} --body "🔄 **Checkpoint**: ${message}\n\n- Checkpoint #${context.checkpoints}\n- Time: ${checkpointTime}\n- Commits: $(git rev-list --count HEAD)"`, { stdio: 'inherit' });
     } catch (e) {

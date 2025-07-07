@@ -34,17 +34,17 @@ function checkBotAvailability(bot) {
   // - Current bot workload
   // - Bot capabilities vs issue requirements
   // - Bot resource usage
-  
+
   // For now, we'll simulate by checking if bot has active work
   try {
     const activePRs = JSON.parse(
       execSync(`gh pr list --json number,labels --search "author:${bot}"`, { encoding: 'utf8' })
     );
-    
-    const activeWork = activePRs.filter(pr => 
+
+    const activeWork = activePRs.filter(pr =>
       pr.labels.some(l => l.name === 'agent:wip')
     );
-    
+
     return {
       available: activeWork.length === 0,
       currentWork: activeWork.length
@@ -63,10 +63,10 @@ async function triggerBotClaim(issue, bot) {
   // 1. Send message to bot queue
   // 2. Trigger bot Lambda/container
   // 3. Monitor bot progress
-  
+
   // For now, we'll simulate by adding a comment
   console.log(`📢 Triggering bot claim...`);
-  
+
   const triggerComment = `🤖 **Bot Assignment**
 
 Bot \`${bot}\` has been assigned to work on this issue.
@@ -87,7 +87,7 @@ The bot will:
       `gh issue comment ${issue} --body "${triggerComment.replace(/"/g, '\\"')}"`,
       { stdio: 'inherit' }
     );
-    
+
     console.log(`✅ Bot claim triggered`);
     return true;
   } catch (error) {
@@ -105,7 +105,7 @@ function setupMonitoring(issue, bot) {
   // - Timeout monitoring
   // - Error detection
   // - Performance metrics
-  
+
   const monitoringConfig = {
     issue: issue,
     bot: bot,
@@ -113,16 +113,16 @@ function setupMonitoring(issue, bot) {
     timeout: 3600000, // 1 hour
     checkpoints: []
   };
-  
+
   // Save monitoring config
   const monitoringDir = path.join(process.cwd(), '.bot-monitoring');
   if (!fs.existsSync(monitoringDir)) {
     fs.mkdirSync(monitoringDir, { recursive: true });
   }
-  
+
   const configPath = path.join(monitoringDir, `issue-${issue}.json`);
   fs.writeFileSync(configPath, JSON.stringify(monitoringConfig, null, 2));
-  
+
   console.log(`📊 Monitoring configured at: ${configPath}`);
   return monitoringConfig;
 }
@@ -156,7 +156,7 @@ async function assignBot() {
     // Check bot availability
     console.log(`\n🔍 Checking bot availability...`);
     const availability = checkBotAvailability(assignedBot);
-    
+
     if (!availability.available) {
       console.log(`⚠️  Bot ${assignedBot} has ${availability.currentWork} active tasks`);
       console.log(`   Proceeding anyway...`);
@@ -167,7 +167,7 @@ async function assignBot() {
     // Trigger bot claim
     console.log(`\n🚀 Assigning bot to issue...`);
     const triggered = await triggerBotClaim(issueNumber, assignedBot);
-    
+
     if (!triggered) {
       throw new Error('Failed to trigger bot claim');
     }

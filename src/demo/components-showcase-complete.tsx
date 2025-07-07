@@ -3402,10 +3402,10 @@ const MyGrid = () => {
       name: 'Recent Orders',
       gridState: {
         filters: {
-          date: { 
-            type: 'after', 
-            mode: 'relative', 
-            expressionFrom: 'Today-7d' 
+          date: {
+            type: 'after',
+            mode: 'relative',
+            expressionFrom: 'Today-7d'
           }
         }
       }
@@ -3441,10 +3441,10 @@ const MyGrid = () => {
                             code={`import { useFilterPresets } from 'ag-grid-react-components';
 
 const MyComponent = () => {
-  const { 
-    presets, 
-    savePreset, 
-    loadPreset, 
+  const {
+    presets,
+    savePreset,
+    loadPreset,
     deletePreset,
     setDefaultPreset,
     exportPresets,

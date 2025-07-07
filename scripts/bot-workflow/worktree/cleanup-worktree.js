@@ -41,19 +41,19 @@ try {
     const botStateDir = path.join(worktreePath, '.bot');
     if (fs.existsSync(botStateDir)) {
       console.log(`💾 Saving bot state before cleanup...`);
-      
+
       // Read final state
       const contextPath = path.join(botStateDir, 'context.json');
       if (fs.existsSync(contextPath)) {
         const context = JSON.parse(fs.readFileSync(contextPath, 'utf8'));
         context.cleanedUpAt = new Date().toISOString();
-        
+
         // Save to main repo's cleanup log
         const cleanupLogDir = path.join(process.cwd(), '.bot-cleanup-logs');
         if (!fs.existsSync(cleanupLogDir)) {
           fs.mkdirSync(cleanupLogDir, { recursive: true });
         }
-        
+
         const logFile = path.join(cleanupLogDir, `${branchName.replace(/\//g, '-')}.json`);
         fs.writeFileSync(logFile, JSON.stringify(context, null, 2));
         console.log(`📋 Saved cleanup log to ${logFile}`);
@@ -80,7 +80,7 @@ try {
 
   if (branchMerged) {
     console.log(`🔀 Branch ${branchName} has been merged`);
-    
+
     // Delete local branch
     console.log(`🗑️  Deleting local branch...`);
     try {
@@ -113,7 +113,7 @@ try {
     worktree: worktreePath,
     branchDeleted: branchMerged
   };
-  
+
   console.log(`\n🔧 Automation output:`);
   console.log(JSON.stringify(result, null, 2));
 

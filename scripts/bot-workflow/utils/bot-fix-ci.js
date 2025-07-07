@@ -28,7 +28,7 @@ async function getCIStatus(pr) {
     const checks = JSON.parse(
       execSync(`gh pr checks ${pr} --json name,state,conclusion`, { encoding: 'utf8' })
     );
-    
+
     return checks;
   } catch (error) {
     console.error('Failed to get CI status:', error.message);
@@ -41,14 +41,14 @@ async function getCIStatus(pr) {
  */
 async function fixFormatting() {
   console.log(`🎨 Attempting to fix formatting...`);
-  
+
   try {
     // Run format fix
     execSync('npm run format:fix', { stdio: 'inherit' });
-    
+
     // Check if there are changes
     const changes = execSync('git diff --name-only', { encoding: 'utf8' });
-    
+
     if (changes) {
       console.log(`✅ Fixed formatting in ${changes.split('\n').filter(Boolean).length} files`);
       return true;
@@ -67,14 +67,14 @@ async function fixFormatting() {
  */
 async function fixLinting() {
   console.log(`🔍 Attempting to fix linting issues...`);
-  
+
   try {
     // Run lint fix
     execSync('npm run lint:fix', { stdio: 'inherit' });
-    
+
     // Check if there are changes
     const changes = execSync('git diff --name-only', { encoding: 'utf8' });
-    
+
     if (changes) {
       console.log(`✅ Fixed linting in ${changes.split('\n').filter(Boolean).length} files`);
       return true;
@@ -93,14 +93,14 @@ async function fixLinting() {
  */
 async function fixWhitespace() {
   console.log(`📐 Attempting to fix whitespace...`);
-  
+
   try {
     // Run whitespace fix
     execSync('npm run fix:whitespace', { stdio: 'inherit' });
-    
+
     // Check if there are changes
     const changes = execSync('git diff --name-only', { encoding: 'utf8' });
-    
+
     if (changes) {
       console.log(`✅ Fixed whitespace issues`);
       return true;
@@ -119,11 +119,11 @@ async function fixWhitespace() {
  */
 async function analyzeTestFailures() {
   console.log(`🧪 Analyzing test failures...`);
-  
+
   try {
     // Run tests and capture output
     const testOutput = execSync('npm run test:unit 2>&1', { encoding: 'utf8' }).toString();
-    
+
     // Parse common test failure patterns
     const failurePatterns = {
       typeError: /TypeError: Cannot read property/g,
@@ -131,12 +131,12 @@ async function analyzeTestFailures() {
       assertionError: /AssertionError/g,
       timeoutError: /Timeout/g
     };
-    
+
     const analysis = {
       failures: [],
       suggestions: []
     };
-    
+
     Object.entries(failurePatterns).forEach(([type, pattern]) => {
       const matches = testOutput.match(pattern);
       if (matches) {
@@ -146,16 +146,16 @@ async function analyzeTestFailures() {
         });
       }
     });
-    
+
     // Generate suggestions
     if (analysis.failures.some(f => f.type === 'importError')) {
       analysis.suggestions.push('Check import paths and install missing dependencies');
     }
-    
+
     if (analysis.failures.some(f => f.type === 'typeError')) {
       analysis.suggestions.push('Add null checks and validate data types');
     }
-    
+
     return analysis;
   } catch (error) {
     // Tests failed, which is expected
@@ -171,30 +171,30 @@ async function analyzeTestFailures() {
  */
 async function fixTypeErrors() {
   console.log(`📝 Checking for type errors...`);
-  
+
   try {
     // Run typecheck and capture output
     const output = execSync('npm run typecheck 2>&1', { encoding: 'utf8' }).toString();
-    
+
     // Look for common type errors
     if (output.includes('is not assignable to type')) {
       console.log(`⚠️  Type errors detected - manual intervention required`);
       return false;
     }
-    
+
     console.log(`✅ No type errors found`);
     return true;
   } catch (error) {
     // Type errors exist
     const output = error.stdout?.toString() || error.message;
-    
+
     // Extract error count
     const errorMatch = output.match(/Found (\d+) error/);
     const errorCount = errorMatch ? parseInt(errorMatch[1]) : 'unknown';
-    
+
     console.log(`❌ Found ${errorCount} type errors`);
     console.log(`   These require manual fixing`);
-    
+
     return false;
   }
 }
@@ -207,19 +207,19 @@ async function fixCI() {
     // Get current CI status
     console.log(`\n📊 Checking CI status...`);
     const checks = await getCIStatus(prNumber);
-    
+
     const failedChecks = checks.filter(c => c.conclusion === 'failure');
-    
+
     if (failedChecks.length === 0) {
       console.log(`✅ All CI checks are passing!`);
       return;
     }
-    
+
     console.log(`\n❌ Found ${failedChecks.length} failing checks:`);
     failedChecks.forEach(check => {
       console.log(`   - ${check.name}`);
     });
-    
+
     // Track what was fixed
     const fixes = {
       formatting: false,
@@ -228,26 +228,26 @@ async function fixCI() {
       tests: false,
       types: false
     };
-    
+
     // Attempt fixes based on failed checks
     console.log(`\n🔧 Attempting automatic fixes...\n`);
-    
+
     if (failedChecks.some(c => c.name.toLowerCase().includes('format'))) {
       fixes.formatting = await fixFormatting();
     }
-    
+
     if (failedChecks.some(c => c.name.toLowerCase().includes('lint'))) {
       fixes.linting = await fixLinting();
     }
-    
+
     if (failedChecks.some(c => c.name.toLowerCase().includes('whitespace'))) {
       fixes.whitespace = await fixWhitespace();
     }
-    
+
     if (failedChecks.some(c => c.name.toLowerCase().includes('type'))) {
       fixes.types = await fixTypeErrors();
     }
-    
+
     if (failedChecks.some(c => c.name.toLowerCase().includes('test'))) {
       const testAnalysis = await analyzeTestFailures();
       console.log(`\n📋 Test failure analysis:`);
@@ -259,22 +259,22 @@ async function fixCI() {
         console.log(`   - ${s}`);
       });
     }
-    
+
     // Check if any fixes were made
     const changesApplied = Object.values(fixes).some(f => f === true);
-    
+
     if (changesApplied) {
       console.log(`\n✅ Applied automatic fixes!`);
-      
+
       // Commit and push changes
       console.log(`\n📤 Committing and pushing fixes...`);
       execSync('git add -A', { stdio: 'inherit' });
       execSync(`git commit -m "bot: fix CI failures\n\nAutomatically fixed:\n${Object.entries(fixes).filter(([_, v]) => v).map(([k, _]) => `- ${k}`).join('\n')}"`, { stdio: 'inherit' });
-      
+
       // Get branch name
       const branch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
       execSync(`git push origin ${branch}`, { stdio: 'inherit' });
-      
+
       // Add comment to PR
       const comment = `🤖 **CI Fix Applied**
 
@@ -284,10 +284,10 @@ ${Object.entries(fixes).filter(([_, v]) => v).map(([k, _]) => `- ✅ ${k}`).join
 The fixes have been committed and pushed. CI should re-run automatically.`;
 
       execSync(`gh pr comment ${prNumber} --body "${comment.replace(/"/g, '\\"')}"`, { stdio: 'inherit' });
-      
+
     } else {
       console.log(`\n⚠️  No automatic fixes could be applied`);
-      
+
       // Add comment about manual intervention needed
       const comment = `🤖 **CI Fix Attempt**
 
@@ -303,7 +303,7 @@ Please review the CI logs and fix the issues manually.`;
 
       execSync(`gh pr comment ${prNumber} --body "${comment.replace(/"/g, '\\"')}"`, { stdio: 'inherit' });
     }
-    
+
     // Update bot state
     const botStateDir = path.join(process.cwd(), '.bot');
     if (fs.existsSync(botStateDir)) {
