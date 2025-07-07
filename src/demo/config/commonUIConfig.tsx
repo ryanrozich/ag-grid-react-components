@@ -110,11 +110,36 @@ export const StatsCard: React.FC<{
   const value = card.getValue(stats);
   const formattedValue = card.formatValue ? card.formatValue(value) : value;
 
+  // Map color classes to avoid dynamic Tailwind classes
+  const colorStyles = {
+    indigo: {
+      background: "bg-indigo-500/10",
+      text: "text-indigo-400",
+    },
+    green: {
+      background: "bg-green-500/10",
+      text: "text-green-400",
+    },
+    blue: {
+      background: "bg-blue-500/10",
+      text: "text-blue-400",
+    },
+    amber: {
+      background: "bg-amber-500/10",
+      text: "text-amber-400",
+    },
+  };
+
+  const styles = colorStyles[card.colorClass as keyof typeof colorStyles] || {
+    background: "bg-gray-500/10",
+    text: "text-gray-400",
+  };
+
   return (
     <div className="px-6 py-5">
       <div className="flex items-center gap-4">
-        <div className={`p-2.5 bg-${card.colorClass}-500/10 rounded-lg`}>
-          <span className={`text-${card.colorClass}-400`}>{card.icon}</span>
+        <div className={`p-2.5 ${styles.background} rounded-lg`}>
+          <span className={styles.text}>{card.icon}</span>
         </div>
         <div>
           <p className="text-xs text-gray-500 uppercase tracking-wider">
