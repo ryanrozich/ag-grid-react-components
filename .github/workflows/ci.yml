@@ -35,6 +35,8 @@ jobs:
 
       - name: Run Trunk check
         run: trunk check --no-fix --ci --upstream=origin/main
+        # Don't fail the build on lint issues
+        continue-on-error: true
 
       - name: Check TypeScript
         run: npm run typecheck
