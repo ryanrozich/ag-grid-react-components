@@ -182,5 +182,8 @@
   },
   "overrides": {
     "prismjs": "^1.30.0"
+  },
+  "dependencies": {
+    "ag-grid-react-components": "^0.1.0"
   }
 }

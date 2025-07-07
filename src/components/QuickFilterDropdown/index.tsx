@@ -121,7 +121,7 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
     } catch (error) {
       console.warn("[QuickFilterDropdown] Error getting active filter:", error);
     }
-  }, [api, columnId, allOptions]);
+  }, [api, columnId, allOptions, enablePresets, presets]);
 
   // Calculate dropdown position (only used when portal is enabled)
   const calculateDropdownPosition = useCallback(() => {
