@@ -49,6 +49,17 @@ Comprehensive grid state persistence with URL synchronization:
 - **Selective Persistence**: Choose which state to include
 - **Date Serialization**: Properly handles Date objects
 
+### 💾 Filter Preset Management
+
+Save and manage frequently used filter configurations:
+
+- **Save Presets**: Users can save current filter state as named presets
+- **System Presets**: Provide built-in presets that cannot be modified
+- **Import/Export**: Share presets between users or systems
+- **Storage Adapters**: Use localStorage, IndexedDB, or custom storage
+- **Preset Manager**: Full UI for managing, editing, and organizing presets
+- **QuickFilterDropdown Integration**: Seamlessly integrated with dropdown
+
 ## 📦 Installation
 
 Choose your installation based on your needs:
@@ -82,7 +93,7 @@ npm install ag-grid-react-components react-datepicker lz-string
 
 ## 🔧 Usage
 
-### Minimal Setup (25KB)
+### Basic Setup (25KB)
 
 ```tsx
 import { AgGridReact } from "ag-grid-react";
@@ -249,6 +260,72 @@ const QuickFilterDropdown = createQuickFilterDropdown();
   placeholder="Select filter"
   showDescriptions={true}
   usePortal="never" | "always" | "auto"
+
+  // Optional: Enable filter presets
+  enablePresets={{
+    storage: presetStorage,
+    systemPresets: systemPresets,
+    onPresetChange: handlePresetChange,
+    allowSave: true,
+    allowManage: true,
+    onManageClick: handleManageClick,
+    maxPresets: 20
+  }}
+/>
+```
+
+### Filter Presets
+
+```typescript
+// Storage adapter interface
+interface PresetStorage {
+  load: () => Promise<FilterPreset[]>;
+  save: (presets: FilterPreset[]) => Promise<void>;
+  remove: (id: string) => Promise<void>;
+  getStorageInfo?: () => Promise<StorageInfo>;
+}
+
+// Use the preset hook
+const presets = usePresets({
+  storage: localStorageAdapter,
+  systemPresets: [
+    {
+      id: 'recent',
+      name: 'Recent Items',
+      filterModel: { /* ... */ },
+      isSystem: true
+    }
+  ],
+  onPresetChange: (preset) => console.log('Preset changed:', preset),
+  maxPresets: 50
+});
+
+// Save preset dialog
+<SavePresetDialog
+  isOpen={showDialog}
+  onClose={() => setShowDialog(false)}
+  onSave={(name, description, tags) => {
+    presets.addPreset({
+      name,
+      description,
+      tags,
+      filterModel: gridApi.getFilterModel()
+    });
+  }}
+  existingNames={presets.presets.map(p => p.name)}
+  currentFilterModel={gridApi.getFilterModel()}
+  storageInfo={presets.storageInfo}
+/>
+
+// Preset manager component
+<PresetManager
+  presets={presets.presets}
+  activePresetId={presets.activePresetId}
+  onSetDefault={presets.setDefaultPreset}
+  onEdit={handleEditPreset}
+  onDelete={presets.deletePresets}
+  onExport={presets.exportPresets}
+  onImport={presets.importPresets}
 />
 ```
 

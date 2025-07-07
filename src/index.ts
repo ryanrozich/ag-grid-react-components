@@ -16,6 +16,25 @@ export { QuickFilterDropdown, DATE_FILTER_PRESETS };
 import ActiveFilters from "./components/ActiveFilters";
 export { ActiveFilters };
 
+// Filter Presets Components
+export { PresetSelector } from "./components/FilterPresets/PresetSelector";
+export { SavePresetDialog } from "./components/FilterPresets/SavePresetDialog";
+export { PresetManager } from "./components/FilterPresets/PresetManager";
+export { usePresets } from "./components/FilterPresets/hooks/usePresets";
+
+// Filter Preset Types
+export type {
+  FilterPreset,
+  PresetStorage,
+  StorageInfo,
+  PresetSelectorProps,
+  SavePresetDialogProps,
+  PresetManagerProps,
+  PresetItemProps,
+  UsePresetsOptions,
+  UsePresetsReturn,
+} from "./components/FilterPresets/types";
+
 // Export all types from central location
 export * from "./types";
 
@@ -31,6 +50,7 @@ export type {
 export type {
   QuickFilterOption,
   QuickFilterDropdownProps,
+  EnablePresetsConfig,
 } from "./components/QuickFilterDropdown";
 
 // Date Expression Utilities

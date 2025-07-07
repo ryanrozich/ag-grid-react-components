@@ -126,6 +126,78 @@ const ActiveFilters = createActiveFilters();
 />
 ```
 
+### Filter Presets
+Save and manage frequently used filter configurations.
+
+**Features:**
+- Save current filter state as named presets
+- System presets that cannot be modified
+- Import/Export presets between users
+- Storage adapters for localStorage, IndexedDB, etc.
+- Full preset management UI
+- Integration with QuickFilterDropdown
+
+**Core Components:**
+
+1. **usePresets Hook:**
+```typescript
+const presets = usePresets({
+  storage: localStorageAdapter,
+  systemPresets: [
+    { id: 'recent', name: 'Recent Items', filterModel: {...}, isSystem: true }
+  ],
+  onPresetChange: (preset) => console.log('Selected:', preset),
+  maxPresets: 50
+});
+```
+
+2. **SavePresetDialog:**
+```typescript
+<SavePresetDialog
+  isOpen={showDialog}
+  onClose={() => setShowDialog(false)}
+  onSave={(name, description, tags) => {
+    presets.addPreset({
+      name,
+      description,
+      tags,
+      filterModel: gridApi.getFilterModel()
+    });
+  }}
+  existingNames={presets.presets.map(p => p.name)}
+  storageInfo={presets.storageInfo}
+/>
+```
+
+3. **PresetManager:**
+```typescript
+<PresetManager
+  presets={presets.presets}
+  activePresetId={presets.activePresetId}
+  onSetDefault={presets.setDefaultPreset}
+  onEdit={handleEdit}
+  onDelete={presets.deletePresets}
+  onExport={presets.exportPresets}
+  onImport={presets.importPresets}
+/>
+```
+
+4. **QuickFilterDropdown Integration:**
+```typescript
+<QuickFilterDropdown
+  api={gridApi}
+  columnId="date"
+  options={filterOptions}
+  enablePresets={{
+    storage: localStorageAdapter,
+    systemPresets: systemPresets,
+    allowSave: true,
+    allowManage: true,
+    maxPresets: 20
+  }}
+/>
+```
+
 ### URL State Persistence
 Comprehensive grid state persistence with URL synchronization and compression.
 

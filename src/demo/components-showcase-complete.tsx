@@ -6139,6 +6139,248 @@ const customFilters = [
                             showLineNumbers
                           />
                         </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="filter-presets-example">
+                            Filter Presets Example
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            Enable users to save and manage their frequently
+                            used filter configurations:
+                          </p>
+                          <CodeBlock
+                            code={`import React, { useState, useCallback } from 'react';
+import { AgGridReact } from 'ag-grid-react';
+import {
+  QuickFilterDropdown,
+  DATE_FILTER_PRESETS
+} from 'ag-grid-react-components';
+
+function GridWithPresets() {
+  const [gridApi, setGridApi] = useState(null);
+
+  // Local storage adapter for saving presets
+  const presetStorage = {
+    load: async () => {
+      const saved = localStorage.getItem('filter-presets');
+      return saved ? JSON.parse(saved) : [];
+    },
+    save: async (presets) => {
+      localStorage.setItem('filter-presets', JSON.stringify(presets));
+    },
+    remove: async (id) => {
+      const presets = await presetStorage.load();
+      const filtered = presets.filter(p => p.id !== id);
+      await presetStorage.save(filtered);
+    },
+    getStorageInfo: async () => {
+      const data = localStorage.getItem('filter-presets') || '';
+      return {
+        used: new Blob([data]).size,
+        available: 5 * 1024 * 1024, // 5MB limit
+        quota: 5 * 1024 * 1024
+      };
+    }
+  };
+
+  // System presets that are always available
+  const systemPresets = [
+    {
+      id: 'recent-items',
+      name: 'Recent Items',
+      description: 'Items from the last 7 days',
+      filterModel: {
+        date: {
+          mode: 'relative',
+          type: 'after',
+          expressionFrom: 'Today-7d'
+        }
+      },
+      isSystem: true
+    },
+    {
+      id: 'this-month',
+      name: 'This Month',
+      description: 'All items from current month',
+      filterModel: {
+        date: {
+          mode: 'relative',
+          type: 'inRange',
+          expressionFrom: 'StartOfMonth',
+          expressionTo: 'EndOfMonth'
+        }
+      },
+      isSystem: true
+    }
+  ];
+
+  const handlePresetChange = useCallback((preset) => {
+    console.log('Preset selected:', preset);
+  }, []);
+
+  const handleManagePresets = useCallback(() => {
+    // Open your preset management UI
+    console.log('Opening preset manager...');
+  }, []);
+
+  return (
+    <div>
+      {gridApi && (
+        <div className="mb-4">
+          <QuickFilterDropdown
+            api={gridApi}
+            columnId="date"
+            options={DATE_FILTER_PRESETS}
+            placeholder="Quick date filters"
+            enablePresets={{
+              storage: presetStorage,
+              systemPresets: systemPresets,
+              onPresetChange: handlePresetChange,
+              allowSave: true,
+              allowManage: true,
+              onManageClick: handleManagePresets,
+              maxPresets: 20
+            }}
+          />
+        </div>
+      )}
+
+      <div style={{ height: 400, width: '100%' }}>
+        <AgGridReact
+          rowData={rowData}
+          columnDefs={columnDefs}
+          onGridReady={(params) => setGridApi(params.api)}
+        />
+      </div>
+    </div>
+  );
+}`}
+                            language="tsx"
+                            showLineNumbers
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-manager-example">
+                            Preset Manager Component
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            Use the PresetManager component for a full
+                            management interface:
+                          </p>
+                          <CodeBlock
+                            code={`import { PresetManager, usePresets } from 'ag-grid-react-components';
+
+function PresetManagementUI() {
+  const presets = usePresets({
+    storage: presetStorage,
+    systemPresets: systemPresets
+  });
+
+  return (
+    <PresetManager
+      presets={[...systemPresets, ...presets.presets]}
+      activePresetId={presets.activePresetId}
+      onSetDefault={presets.setDefaultPreset}
+      onEdit={(preset) => {
+        // Open edit dialog for preset
+        console.log('Editing preset:', preset);
+      }}
+      onDelete={presets.deletePresets}
+      onExport={presets.exportPresets}
+      onImport={presets.importPresets}
+      renderPresetItem={(props) => (
+        // Custom preset item rendering
+        <div className="custom-preset-item">
+          <h4>{props.preset.name}</h4>
+          {props.preset.description && <p>{props.preset.description}</p>}
+          <div className="preset-actions">
+            {!props.preset.isSystem && (
+              <>
+                <button onClick={() => props.onSetDefault()}>
+                  {props.preset.isDefault ? '★' : '☆'}
+                </button>
+                <button onClick={() => props.onEdit()}>Edit</button>
+                <button onClick={() => props.onDelete()}>Delete</button>
+              </>
+            )}
+            <button onClick={() => props.onExport()}>Export</button>
+          </div>
+        </div>
+      )}
+    />
+  );
+}`}
+                            language="tsx"
+                            showLineNumbers
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="save-preset-dialog-example"
+                          >
+                            Save Preset Dialog
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            Let users save their current filter state as a
+                            reusable preset:
+                          </p>
+                          <CodeBlock
+                            code={`import { SavePresetDialog, usePresets } from 'ag-grid-react-components';
+
+function FilterToolbar({ gridApi }) {
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const presets = usePresets({ storage: presetStorage });
+
+  const handleSavePreset = useCallback((name, description, tags) => {
+    const currentFilterModel = gridApi.getFilterModel();
+    const newPreset = {
+      id: \`user-\${Date.now()}\`,
+      name,
+      description,
+      tags,
+      filterModel: currentFilterModel,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    presets.addPreset(newPreset);
+    setShowSaveDialog(false);
+  }, [gridApi, presets]);
+
+  return (
+    <>
+      <button onClick={() => setShowSaveDialog(true)}>
+        Save Current Filters
+      </button>
+
+      <SavePresetDialog
+        isOpen={showSaveDialog}
+        onClose={() => setShowSaveDialog(false)}
+        onSave={handleSavePreset}
+        existingNames={presets.presets.map(p => p.name)}
+        currentFilterModel={gridApi?.getFilterModel()}
+        storageInfo={presets.storageInfo}
+        renderContent={(form, actions) => (
+          // Custom dialog content
+          <div className="custom-save-dialog">
+            <h2>Save Filter Preset</h2>
+            {form}
+            <div className="dialog-actions">
+              {actions}
+            </div>
+          </div>
+        )}
+      />
+    </>
+  );
+}`}
+                            language="tsx"
+                            showLineNumbers
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
