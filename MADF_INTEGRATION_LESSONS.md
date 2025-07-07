@@ -101,3 +101,31 @@ This document captures lessons learned while integrating 6 parallel PRs for the 
 - Bot work files should be in .gitignore or cleaned before PR creation
 - Each agent workspace can have isolated bot state
 - Integration branch should not include agent-specific metadata
+
+### PR #56: System/User Presets (Merged Fourth)
+
+1. **Integration Result**: Multiple file conflicts in index.ts and QuickFilterDropdown
+2. **Conflict Types**: Export conflicts and component feature conflicts
+3. **Resolution Strategy**: Combined exports from both branches, used incoming version for UI changes
+4. **Test Status**: All 50 tests passing for preset system
+5. **Lesson**: Feature branches that modify core components need coordination
+
+**New MADF Considerations**:
+
+- Central files like index.ts need special handling during parallel development
+- UI components with multiple feature additions need a merge strategy
+- Consider feature flags or composition patterns to reduce conflicts
+- System presets vs user presets architecture worked well for separation
+
+### PR #54: Demo Showcase (Merged Fifth)
+
+1. **Integration Result**: Clean merge with auto-merge handling
+2. **Files Added**: 10 new demo files including examples and styles
+3. **Conflict Resolution**: Auto-merge handled the demo file changes correctly
+4. **Lesson**: Demo/example files are naturally isolated and merge well
+
+**New MADF Considerations**:
+
+- Demo and example code naturally avoids conflicts
+- Separate example files per feature is a good pattern
+- CSS modules help avoid style conflicts
