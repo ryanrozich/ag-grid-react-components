@@ -1,0 +1,209 @@
+name: RC Integration & Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      milestone:
+        description: "Milestone number to integrate"
+        required: true
+        type: string
+      rc_version:
+        description: "RC version (e.g., 0.2.0-rc.1)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  deployments: write
+
+jobs:
+  create-integration-pr:
+    name: Create Integration PR
+    runs-on: ubuntu-latest
+    outputs:
+      pr-number: ${{ steps.create-pr.outputs.pr-number }}
+      preview-url: ${{ steps.create-pr.outputs.preview-url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Find milestone PRs
+        id: find-prs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Get milestone
+            const milestones = await github.rest.issues.listMilestones({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open'
+            });
+
+            const milestone = milestones.data.find(m => 
+              m.number == ${{ github.event.inputs.milestone }}
+            );
+
+            if (!milestone) {
+              throw new Error(`Milestone #${{ github.event.inputs.milestone }} not found`);
+            }
+
+            // Get all merged PRs for this milestone
+            const prs = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'closed',
+              sort: 'updated',
+              direction: 'desc',
+              per_page: 100
+            });
+
+            const milestonePRs = prs.data.filter(pr => 
+              pr.merged_at && 
+              pr.milestone?.number == milestone.number
+            );
+
+            console.log(`Found ${milestonePRs.length} merged PRs for milestone ${milestone.title}`);
+            
+            const prList = milestonePRs.map(pr => ({
+              number: pr.number,
+              title: pr.title,
+              branch: pr.head.ref
+            }));
+
+            core.setOutput('pr-list', JSON.stringify(prList));
+            core.setOutput('milestone-title', milestone.title);
+
+      - name: Create integration branch
+        run: |
+          BRANCH_NAME="rc/${{ github.event.inputs.rc_version }}"
+          git checkout -b "$BRANCH_NAME"
+          
+          echo "Created integration branch: $BRANCH_NAME"
+
+      - name: Generate integration summary
+        id: summary
+        run: |
+          cat > INTEGRATION_SUMMARY.md << 'EOF'
+          # Release Candidate ${{ github.event.inputs.rc_version }}
+
+          ## Integrated Features
+          
+          This RC includes all features from milestone: ${{ steps.find-prs.outputs.milestone-title }}
+
+          ### Merged PRs
+          EOF
+
+          # Add PR list from the output
+          echo '${{ steps.find-prs.outputs.pr-list }}' | jq -r '.[] | "- #\(.number): \(.title)"' >> INTEGRATION_SUMMARY.md
+
+          cat >> INTEGRATION_SUMMARY.md << 'EOF'
+
+          ## Testing Checklist
+
+          - [ ] All unit tests passing
+          - [ ] All E2E tests passing
+          - [ ] Demo application working
+          - [ ] No console errors
+          - [ ] Bundle size acceptable
+          - [ ] TypeScript types correct
+          - [ ] Documentation accurate
+
+          ## Release Notes
+
+          _To be generated before final release_
+
+          EOF
+
+      - name: Update version for RC
+        run: |
+          npm version ${{ github.event.inputs.rc_version }} --no-git-tag-version
+          git add package.json package-lock.json
+
+      - name: Commit changes
+        run: |
+          git add .
+          git commit -m "chore: prepare release candidate ${{ github.event.inputs.rc_version }}
+
+          Integrates all features from milestone #${{ github.event.inputs.milestone }}"
+
+      - name: Push branch
+        run: |
+          git push origin "rc/${{ github.event.inputs.rc_version }}"
+
+      - name: Create Pull Request
+        id: create-pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Release Candidate: v${{ github.event.inputs.rc_version }}`,
+              head: `rc/${{ github.event.inputs.rc_version }}`,
+              base: 'main',
+              body: `# Release Candidate v${{ github.event.inputs.rc_version }}
+
+              This PR integrates all features from milestone #${{ github.event.inputs.milestone }}: **${{ steps.find-prs.outputs.milestone-title }}**
+
+              ## Automated Testing
+              - 🤖 CI tests will run automatically
+              - 🚀 Preview deployment will be created
+              - 📦 RC package can be published to npm
+
+              ## Manual Testing Required
+              Please test the preview deployment when ready and verify all integrated features work correctly.
+
+              ## Checklist
+              - [ ] All tests passing
+              - [ ] Preview deployment working
+              - [ ] Bundle size acceptable
+              - [ ] Ready for RC release
+
+              ---
+              *This PR was automatically created by the RC Integration workflow.*`,
+              draft: false
+            });
+
+            console.log(`Created PR #${pr.data.number}`);
+            core.setOutput('pr-number', pr.data.number);
+
+            // Add labels
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.data.number,
+              labels: ['release-candidate', 'deploy-preview', 'priority: high']
+            });
+
+            // Link to milestone
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.data.number,
+              milestone: ${{ github.event.inputs.milestone }}
+            });
+
+      - name: Summary
+        run: |
+          echo "## 🎉 RC Integration Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**RC Version**: ${{ github.event.inputs.rc_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Milestone**: #${{ github.event.inputs.milestone }} - ${{ steps.find-prs.outputs.milestone-title }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Pull Request**: #${{ steps.create-pr.outputs.pr-number }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Wait for CI tests to complete" >> $GITHUB_STEP_SUMMARY
+          echo "2. Preview deployment will be created automatically" >> $GITHUB_STEP_SUMMARY
+          echo "3. Test all integrated features" >> $GITHUB_STEP_SUMMARY
+          echo "4. If approved, run the Release Candidate workflow" >> $GITHUB_STEP_SUMMARY
