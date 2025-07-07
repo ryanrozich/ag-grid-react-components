@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { StatsCard, statsCards } from "./commonUIConfig";
@@ -20,7 +19,6 @@ describe("StatsCard", () => {
       expect(iconContainer).toBeTruthy();
 
       // Verify the background class is applied based on the color
-      const expectedBgClass = `bg-${card.colorClass}-500/10`;
       const hasBackgroundClass =
         iconContainer?.className.includes("bg-indigo-500/10") ||
         iconContainer?.className.includes("bg-green-500/10") ||
@@ -31,7 +29,6 @@ describe("StatsCard", () => {
 
       // Verify the text color is applied
       const iconSpan = iconContainer?.querySelector("span");
-      const expectedTextClass = `text-${card.colorClass}-400`;
       const hasTextClass =
         iconSpan?.className.includes("text-indigo-400") ||
         iconSpan?.className.includes("text-green-400") ||

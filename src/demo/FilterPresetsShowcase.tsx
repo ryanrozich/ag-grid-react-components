@@ -9,7 +9,6 @@ import AdvancedPresetExample from "./examples/AdvancedPresetExample";
 import CustomUIExample from "./examples/CustomUIExample";
 import RealWorldExamples from "./examples/RealWorldExamples";
 import { AnchorHeading } from "./components/AnchorHeading";
-import { DocumentationPanel } from "./components/DocumentationPanel";
 import { CodeBlock } from "./components/CodeBlock";
 
 const FilterPresetsShowcase: React.FC = () => {
@@ -18,7 +17,9 @@ const FilterPresetsShowcase: React.FC = () => {
   return (
     <div className={styles["showcase-container"]}>
       <div className={styles["showcase-header"]}>
-        <AnchorHeading level={1}>Filter Presets Showcase</AnchorHeading>
+        <AnchorHeading level={1} id="filter-presets-showcase">
+          Filter Presets Showcase
+        </AnchorHeading>
         <p className={styles["showcase-description"]}>
           Save, load, and share filter configurations with the powerful Filter
           Presets feature. This showcase demonstrates various preset
@@ -27,7 +28,9 @@ const FilterPresetsShowcase: React.FC = () => {
       </div>
 
       <div className={styles["showcase-benefits"]}>
-        <AnchorHeading level={2}>Overview & Benefits</AnchorHeading>
+        <AnchorHeading level={2} id="overview-benefits">
+          Overview & Benefits
+        </AnchorHeading>
         <div className={styles["benefits-grid"]}>
           <div className={styles["benefit-card"]}>
             <h3>💾 Persistent Filters</h3>
@@ -59,7 +62,9 @@ const FilterPresetsShowcase: React.FC = () => {
 
         <TabPanel>
           <div className={styles["tab-content"]}>
-            <AnchorHeading level={2}>Basic Preset Usage</AnchorHeading>
+            <AnchorHeading level={2} id="basic-preset-usage">
+              Basic Preset Usage
+            </AnchorHeading>
             <p>
               Get started with filter presets using system-defined and
               user-created presets. This example shows the fundamental features
@@ -71,7 +76,9 @@ const FilterPresetsShowcase: React.FC = () => {
 
         <TabPanel>
           <div className={styles["tab-content"]}>
-            <AnchorHeading level={2}>Advanced Features</AnchorHeading>
+            <AnchorHeading level={2} id="advanced-features">
+              Advanced Features
+            </AnchorHeading>
             <p>
               Explore advanced capabilities including multi-grid
               synchronization, URL sharing, import/export workflows, and
@@ -83,7 +90,9 @@ const FilterPresetsShowcase: React.FC = () => {
 
         <TabPanel>
           <div className={styles["tab-content"]}>
-            <AnchorHeading level={2}>Custom UI Integration</AnchorHeading>
+            <AnchorHeading level={2} id="custom-ui-integration">
+              Custom UI Integration
+            </AnchorHeading>
             <p>
               Customize the preset UI to match your application's design system.
               Replace default components with your own implementations.
@@ -94,7 +103,9 @@ const FilterPresetsShowcase: React.FC = () => {
 
         <TabPanel>
           <div className={styles["tab-content"]}>
-            <AnchorHeading level={2}>Real-World Examples</AnchorHeading>
+            <AnchorHeading level={2} id="real-world-examples">
+              Real-World Examples
+            </AnchorHeading>
             <p>
               See filter presets in action with practical examples including
               sales dashboards, task management, and data analytics platforms.
@@ -105,18 +116,23 @@ const FilterPresetsShowcase: React.FC = () => {
 
         <TabPanel>
           <div className={styles["tab-content"]}>
-            <AnchorHeading level={2}>API Playground</AnchorHeading>
+            <AnchorHeading level={2} id="api-playground">
+              API Playground
+            </AnchorHeading>
             <p>
               Experiment with the Filter Presets API directly. Try different
               configurations and see the results in real-time.
             </p>
             <div className={styles["api-playground"]}>
-              <DocumentationPanel
-                title="Filter Presets API"
-                description="Interactive API documentation and playground"
-              >
-                <AnchorHeading level={3}>Quick Start</AnchorHeading>
-                <CodeBlock language="typescript">{`
+              <div className={styles["documentation-section"]}>
+                <h3>Filter Presets API</h3>
+                <p>Interactive API documentation and playground</p>
+                <AnchorHeading level={3} id="quick-start">
+                  Quick Start
+                </AnchorHeading>
+                <CodeBlock
+                  language="typescript"
+                  code={`
 // Enable presets with basic configuration
 <QuickFilterDropdown
   columns={columns}
@@ -141,10 +157,15 @@ const FilterPresetsShowcase: React.FC = () => {
     allowExport: true
   }}
 />
-                `}</CodeBlock>
+                `}
+                />
 
-                <AnchorHeading level={3}>Programmatic Control</AnchorHeading>
-                <CodeBlock language="typescript">{`
+                <AnchorHeading level={3} id="programmatic-control">
+                  Programmatic Control
+                </AnchorHeading>
+                <CodeBlock
+                  language="typescript"
+                  code={`
 // Use the useFilterPresets hook for programmatic control
 const { 
   presets, 
@@ -173,10 +194,15 @@ const handleSave = async () => {
 const handleLoad = (presetId: string) => {
   loadPreset(presetId);
 };
-                `}</CodeBlock>
+                `}
+                />
 
-                <AnchorHeading level={3}>Storage Configuration</AnchorHeading>
-                <CodeBlock language="typescript">{`
+                <AnchorHeading level={3} id="storage-configuration">
+                  Storage Configuration
+                </AnchorHeading>
+                <CodeBlock
+                  language="typescript"
+                  code={`
 // Configure storage options
 const storageConfig = {
   maxStorageSize: 5 * 1024 * 1024, // 5MB
@@ -186,10 +212,15 @@ const storageConfig = {
   cleanupInterval: 24 * 60 * 60 * 1000, // Daily
   maxAge: 90 * 24 * 60 * 60 * 1000 // 90 days
 };
-                `}</CodeBlock>
+                `}
+                />
 
-                <AnchorHeading level={3}>Custom Renderers</AnchorHeading>
-                <CodeBlock language="typescript">{`
+                <AnchorHeading level={3} id="custom-renderers">
+                  Custom Renderers
+                </AnchorHeading>
+                <CodeBlock
+                  language="typescript"
+                  code={`
 // Provide custom UI components
 <QuickFilterDropdown
   enablePresets={{
@@ -218,10 +249,15 @@ const storageConfig = {
     )
   }}
 />
-                `}</CodeBlock>
+                `}
+                />
 
-                <AnchorHeading level={3}>Event Handlers</AnchorHeading>
-                <CodeBlock language="typescript">{`
+                <AnchorHeading level={3} id="event-handlers">
+                  Event Handlers
+                </AnchorHeading>
+                <CodeBlock
+                  language="typescript"
+                  code={`
 // Listen to preset events
 <QuickFilterDropdown
   enablePresets={{
@@ -245,7 +281,8 @@ const storageConfig = {
     }
   }}
 />
-                `}</CodeBlock>
+                `}
+                />
 
                 <div className={styles["playground-controls"]}>
                   <h4>Try It Live</h4>
@@ -281,14 +318,16 @@ const storageConfig = {
                     Apply Configuration
                   </button>
                 </div>
-              </DocumentationPanel>
+              </div>
             </div>
           </div>
         </TabPanel>
       </Tabs>
 
       <div className={styles["showcase-footer"]}>
-        <AnchorHeading level={2}>Performance Metrics</AnchorHeading>
+        <AnchorHeading level={2} id="performance-metrics">
+          Performance Metrics
+        </AnchorHeading>
         <div className={styles["metrics-grid"]}>
           <div className={styles["metric-card"]}>
             <h4>Storage Efficiency</h4>

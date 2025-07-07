@@ -263,11 +263,12 @@ const AdvancedPresetExample: React.FC = () => {
             </div>
 
             <div style={{ margin: "1rem 0" }}>
-              <ActiveFilters
-                api={gridApi1}
-                filterColumns={columnDefs}
-                dateFilterMode="both"
-              />
+              {gridApi1 && (
+                <ActiveFilters
+                  api={gridApi1}
+                  filterModel={gridApi1.getFilterModel()}
+                />
+              )}
             </div>
           </div>
 
@@ -290,11 +291,12 @@ const AdvancedPresetExample: React.FC = () => {
             </div>
 
             <div style={{ margin: "1rem 0" }}>
-              <ActiveFilters
-                api={gridApi2}
-                filterColumns={columnDefs}
-                dateFilterMode="both"
-              />
+              {gridApi2 && (
+                <ActiveFilters
+                  api={gridApi2}
+                  filterModel={gridApi2.getFilterModel()}
+                />
+              )}
             </div>
           </div>
         </TabPanel>

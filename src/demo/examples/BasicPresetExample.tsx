@@ -275,11 +275,12 @@ const BasicPresetExample: React.FC = () => {
         )}
 
         <div className={styles.activeFiltersContainer}>
-          <ActiveFilters
-            api={gridApi}
-            filterColumns={columnDefs}
-            dateFilterMode="both"
-          />
+          {gridApi && (
+            <ActiveFilters
+              api={gridApi}
+              filterModel={gridApi.getFilterModel()}
+            />
+          )}
         </div>
       </div>
 

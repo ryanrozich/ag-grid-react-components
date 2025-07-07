@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ShareButton } from "./index";
 import type { FilterPreset } from "../../../utils/presetSharing/types";
@@ -13,7 +13,7 @@ Object.assign(navigator, {
 
 // Mock the URL serialization
 vi.mock("../../../utils/presetSharing", () => ({
-  createShareableUrl: vi.fn((preset, options) => ({
+  createShareableUrl: vi.fn((_preset, options) => ({
     url:
       options.mode === "embedded"
         ? "https://example.com?preset=compressed123"

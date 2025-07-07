@@ -4,7 +4,7 @@ import { ColDef } from "ag-grid-community";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import ActiveFilters from "../../components/ActiveFilters";
-import QuickFilterDropdown from "../../components/QuickFilterDropdown";
+import { QuickFilterDropdown } from "../../components/QuickFilterDropdown";
 import styles from "./Examples.module.css";
 import "./RealWorld.css";
 
@@ -40,7 +40,8 @@ const SalesDashboard: React.FC = () => {
 
   const quarterlyPresets = [
     {
-      option: "Q1 2024",
+      id: "q1-2024",
+      label: "Q1 2024",
       filterModel: {
         orderDate: {
           type: "inRange",
@@ -52,7 +53,8 @@ const SalesDashboard: React.FC = () => {
       },
     },
     {
-      option: "Q2 2024",
+      id: "q2-2024",
+      label: "Q2 2024",
       filterModel: {
         orderDate: {
           type: "inRange",
@@ -64,7 +66,8 @@ const SalesDashboard: React.FC = () => {
       },
     },
     {
-      option: "Q3 2024",
+      id: "q3-2024",
+      label: "Q3 2024",
       filterModel: {
         orderDate: {
           type: "inRange",
@@ -76,7 +79,8 @@ const SalesDashboard: React.FC = () => {
       },
     },
     {
-      option: "Q4 2024",
+      id: "q4-2024",
+      label: "Q4 2024",
       filterModel: {
         orderDate: {
           type: "inRange",
@@ -91,28 +95,26 @@ const SalesDashboard: React.FC = () => {
 
   const regionPresets = [
     {
-      option: "North America",
+      id: "north-america",
+      label: "North America",
       filterModel: { region: { type: "equals", filter: "North America" } },
     },
     {
-      option: "Europe",
+      id: "europe",
+      label: "Europe",
       filterModel: { region: { type: "equals", filter: "Europe" } },
     },
     {
-      option: "Asia Pacific",
+      id: "asia-pacific",
+      label: "Asia Pacific",
       filterModel: { region: { type: "equals", filter: "Asia Pacific" } },
     },
     {
-      option: "Latin America",
+      id: "latin-america",
+      label: "Latin America",
       filterModel: { region: { type: "equals", filter: "Latin America" } },
     },
   ];
-
-  useEffect(() => {
-    if (gridApi) {
-      updateKPIs();
-    }
-  }, [gridApi, updateKPIs]);
 
   const updateKPIs = useCallback(() => {
     if (!gridApi) return;
@@ -137,6 +139,12 @@ const SalesDashboard: React.FC = () => {
     });
   }, [gridApi]);
 
+  useEffect(() => {
+    if (gridApi) {
+      updateKPIs();
+    }
+  }, [gridApi, updateKPIs]);
+
   const onGridReady = (params: any) => {
     setGridApi(params.api);
   };
@@ -155,7 +163,9 @@ const SalesDashboard: React.FC = () => {
             options={quarterlyPresets}
             api={gridApi}
             placeholder="Select Quarter"
-            onChange={(option) => setSelectedQuarter(option.option)}
+            onFilterChange={(option: any) =>
+              setSelectedQuarter(option?.value || "")
+            }
           />
           <QuickFilterDropdown
             columnId="region"
@@ -195,11 +205,9 @@ const SalesDashboard: React.FC = () => {
         </div>
       </div>
 
-      <ActiveFilters
-        api={gridApi}
-        filterColumns={columnDefs}
-        dateFilterMode="both"
-      />
+      {gridApi && (
+        <ActiveFilters api={gridApi} filterModel={gridApi.getFilterModel()} />
+      )}
 
       <div
         className="ag-theme-alpine"
@@ -287,11 +295,13 @@ const TaskManager: React.FC = () => {
 
   const taskPresets = [
     {
-      option: "My Tasks",
+      id: "my-tasks",
+      label: "My Tasks",
       filterModel: { assignee: { type: "equals", filter: "Current User" } },
     },
     {
-      option: "Overdue",
+      id: "overdue",
+      label: "Overdue",
       filterModel: {
         dueDate: {
           type: "before",
@@ -303,15 +313,18 @@ const TaskManager: React.FC = () => {
       },
     },
     {
-      option: "High Priority",
+      id: "high-priority",
+      label: "High Priority",
       filterModel: { priority: { type: "equals", filter: "High" } },
     },
     {
-      option: "In Progress",
+      id: "in-progress",
+      label: "In Progress",
       filterModel: { status: { type: "equals", filter: "In Progress" } },
     },
     {
-      option: "Due This Week",
+      id: "due-this-week",
+      label: "Due This Week",
       filterModel: {
         dueDate: {
           type: "inRange",
@@ -407,11 +420,9 @@ const TaskManager: React.FC = () => {
         </div>
       </div>
 
-      <ActiveFilters
-        api={gridApi}
-        filterColumns={columnDefs}
-        dateFilterMode="both"
-      />
+      {gridApi && (
+        <ActiveFilters api={gridApi} filterModel={gridApi.getFilterModel()} />
+      )}
 
       {viewMode === "list" ? (
         <div
@@ -551,7 +562,8 @@ const AnalyticsPlatform: React.FC = () => {
 
   const analyticsPresets = [
     {
-      option: "Last 7 Days",
+      id: "last-7-days",
+      label: "Last 7 Days",
       filterModel: {
         date: {
           type: "after",
@@ -562,7 +574,8 @@ const AnalyticsPlatform: React.FC = () => {
       },
     },
     {
-      option: "Last 30 Days",
+      id: "last-30-days",
+      label: "Last 30 Days",
       filterModel: {
         date: {
           type: "after",
@@ -573,7 +586,8 @@ const AnalyticsPlatform: React.FC = () => {
       },
     },
     {
-      option: "High Converting",
+      id: "high-converting",
+      label: "High Converting",
       filterModel: {
         conversionRate: {
           filterType: "number",
@@ -583,13 +597,15 @@ const AnalyticsPlatform: React.FC = () => {
       },
     },
     {
-      option: "Mobile Traffic",
+      id: "mobile-traffic",
+      label: "Mobile Traffic",
       filterModel: {
         device: { type: "equals", filter: "Mobile" },
       },
     },
     {
-      option: "Paid Campaigns",
+      id: "paid-campaigns",
+      label: "Paid Campaigns",
       filterModel: {
         source: { type: "contains", filter: "paid" },
       },
@@ -684,11 +700,9 @@ const AnalyticsPlatform: React.FC = () => {
         </div>
       </div>
 
-      <ActiveFilters
-        api={gridApi}
-        filterColumns={columnDefs}
-        dateFilterMode="both"
-      />
+      {gridApi && (
+        <ActiveFilters api={gridApi} filterModel={gridApi.getFilterModel()} />
+      )}
 
       <div
         className="ag-theme-alpine"
@@ -729,7 +743,7 @@ function generateSalesData(count: number) {
   ];
   const statuses = ["Pending", "In Progress", "Completed", "Cancelled"];
 
-  return Array.from({ length: count }, (_) => ({
+  return Array.from({ length: count }, (_, i) => ({
     orderId: `ORD-${String(i + 1).padStart(5, "0")}`,
     customerName: `Customer ${i + 1}`,
     product: products[Math.floor(Math.random() * products.length)],
@@ -764,7 +778,7 @@ function generateTasksData(count: number) {
     "testing",
   ];
 
-  return Array.from({ length: count }, (_) => ({
+  return Array.from({ length: count }, (_, i) => ({
     taskId: `T-${String(i + 1).padStart(4, "0")}`,
     title: `Task ${i + 1}: ${["Implement feature", "Fix bug", "Update documentation", "Write tests"][Math.floor(Math.random() * 4)]}`,
     assignee: assignees[Math.floor(Math.random() * assignees.length)],
@@ -807,7 +821,7 @@ function generateAnalyticsData(count: number) {
     "Australia",
   ];
 
-  return Array.from({ length: count }, (_) => ({
+  return Array.from({ length: count }, () => ({
     date: new Date(
       Date.now() - Math.floor(Math.random() * 90) * 24 * 60 * 60 * 1000,
     ),

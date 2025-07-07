@@ -5,7 +5,7 @@ import {
   validateImportData,
   generateExportFilename,
 } from "./importExport";
-import type { FilterPreset, PresetExportFormat, ImportMode } from "./types";
+import type { FilterPreset, PresetExportFormat } from "./types";
 
 describe("importExport", () => {
   const mockPresets: FilterPreset[] = [

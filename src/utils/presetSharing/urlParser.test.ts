@@ -206,7 +206,7 @@ describe("urlParser", () => {
       expect(result.preset).toEqual(mockPresetData);
 
       // Restore
-      window.location = originalLocation;
+      window.location = originalLocation as any;
     });
 
     it("should return empty result when no URL and no window.location", () => {

@@ -544,7 +544,7 @@ const CustomUIExample: React.FC = () => {
           <CustomPresetSelector
             presets={presets}
             onSelect={handlePresetSelect}
-            currentPresetId={currentPresetId}
+            currentPresetId={currentPresetId || undefined}
           />
 
           <button
@@ -563,11 +563,12 @@ const CustomUIExample: React.FC = () => {
         </div>
 
         <div className={styles.activeFiltersContainer}>
-          <ActiveFilters
-            api={gridApi}
-            filterColumns={columnDefs}
-            dateFilterMode="both"
-          />
+          {gridApi && (
+            <ActiveFilters
+              api={gridApi}
+              filterModel={gridApi.getFilterModel()}
+            />
+          )}
         </div>
       </div>
 

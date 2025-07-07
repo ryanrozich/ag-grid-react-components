@@ -215,7 +215,7 @@ describe("urlSerializer", () => {
       );
 
       // Restore
-      window.location = originalLocation;
+      window.location = originalLocation as any;
     });
 
     it("should handle very large presets with compression", () => {
@@ -263,7 +263,7 @@ describe("urlSerializer", () => {
         compress: true,
       };
 
-      const result = createShareableUrl(mockPreset, options);
+      createShareableUrl(mockPreset, options);
 
       expect(consoleSpy).toHaveBeenCalledWith(
         expect.stringContaining(
