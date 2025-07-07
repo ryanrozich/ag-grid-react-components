@@ -83,12 +83,35 @@ export {
   LocalStorageAdapter,
 } from "./utils/presetStorage";
 export type {
-  FilterPreset,
   StorageAdapter,
   PresetStorageOptions,
   PresetValidationError,
   PresetStorageState,
 } from "./utils/presetStorage";
+
+// Preset System exports
+export {
+  PresetManager,
+  resolveTemplate,
+  resolveTemplateInGridState,
+  DEFAULT_SYSTEM_PRESETS,
+  DATE_SYSTEM_PRESETS,
+  createSystemPreset,
+  combineSystemPresets,
+} from "./utils/presetSystem";
+
+// Preset System types
+export type {
+  BasePreset,
+  SystemPreset,
+  UserPreset,
+  FilterPreset,
+  TemplateVariables,
+  PresetSystemOptions,
+  PresetSystemEvents,
+  PresetSystem,
+  TemplateOptions,
+} from "./utils/presetSystem";
 
 // AG Grid Workarounds
 export { applyFilterModelWithWorkaround } from "./components/QuickFilterDropdown/utils/agGridWorkaround";

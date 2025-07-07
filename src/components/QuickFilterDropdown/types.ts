@@ -22,6 +22,10 @@ export interface QuickFilterOption {
   filterModel: FilterModel | null;
   /** Optional custom filter builder function */
   buildFilterModel?: (api: GridApi, columnId: string) => FilterModel | null;
+  /** Whether this is a system preset (read-only) */
+  isSystemPreset?: boolean;
+  /** Optional tags for organization (user presets only) */
+  tags?: string[];
 }
 
 /**
@@ -56,6 +60,14 @@ export interface QuickFilterDropdownProps {
   columnId: string;
   /** Array of filter options to display */
   options: QuickFilterOption[];
+  /** System presets (read-only) */
+  systemPresets?: QuickFilterOption[];
+  /** Whether to enable preset management (save/edit/delete) */
+  enablePresetManagement?: boolean;
+  /** Callback when a preset is saved */
+  onPresetSave?: (preset: QuickFilterOption) => void;
+  /** Callback when a preset is deleted */
+  onPresetDelete?: (presetId: string) => void;
   /** Placeholder text for the dropdown trigger */
   placeholder?: string;
   /** Additional CSS class for the container */

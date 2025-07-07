@@ -102,7 +102,7 @@ npm install ag-grid-react-components react-datepicker lz-string
 - React 18 or later
 - date-fns v4 or later
 
-## 🔧 Usage
+## 🔧 Basic Usage
 
 ### Basic Setup (25KB)
 
@@ -284,7 +284,7 @@ The dropdown supports three rendering modes via the `usePortal` prop:
     usePortal="always" // Prevents clipping in scrollable container
   />
 </div>
-````
+```
 
 ## 📚 API Documentation
 
@@ -743,6 +743,168 @@ The Relative Date Filter supports powerful expressions for dynamic date filterin
 
 📖 [Full Documentation →](./docs/DATE_EXPRESSIONS.md)
 
+## 🎯 Preset System
+
+The preset system provides a two-tier architecture for managing and applying predefined filter configurations:
+
+### System Presets
+
+Read-only presets defined by developers for common filtering patterns:
+
+```tsx
+import { PresetManager, DEFAULT_SYSTEM_PRESETS } from "ag-grid-react-components";
+
+// Initialize preset manager with system presets
+const presetManager = new PresetManager();
+presetManager.registerSystemPresets(DEFAULT_SYSTEM_PRESETS);
+```
+
+### User Presets
+
+Full CRUD support for user-defined presets with tags and default selection:
+
+```tsx
+// Save current filters as a user preset
+const preset = presetManager.saveUserPreset({
+  name: "My Custom View",
+  description: "Filters for my workflow",
+  gridState: { filters: api.getFilterModel() },
+  tags: ["custom", "workflow"],
+});
+
+// Set as default preset (auto-loads on page refresh)
+presetManager.setDefaultPreset(preset.id);
+
+// Update an existing preset
+presetManager.updateUserPreset(preset.id, {
+  name: "Updated View Name",
+});
+
+// Delete a preset
+presetManager.deleteUserPreset(preset.id);
+```
+
+### Template Variables
+
+Dynamic values that resolve at runtime:
+
+```tsx
+// Available template variables:
+// {{today}} - Current date at midnight
+// {{yesterday}} - Yesterday at midnight
+// {{tomorrow}} - Tomorrow at midnight
+// {{last7Days}} - 7 days ago
+// {{last30Days}} - 30 days ago
+// {{last90Days}} - 90 days ago
+// {{startOfWeek}} - Start of current week
+// {{endOfWeek}} - End of current week
+// {{startOfMonth}} - Start of current month
+// {{endOfMonth}} - End of current month
+// {{startOfQuarter}} - Start of current quarter
+// {{endOfQuarter}} - End of current quarter
+// {{startOfYear}} - Start of current year
+// {{endOfYear}} - End of current year
+// {{currentUser}} - Current user (requires context)
+
+// Example preset with templates
+const systemPreset = {
+  id: "recent-changes",
+  name: "Recent Changes",
+  gridState: {
+    filters: {
+      updatedAt: {
+        filterType: "date",
+        type: "after",
+        filter: "{{last7Days}}",
+      },
+    },
+  },
+};
+```
+
+### Integration with QuickFilterDropdown
+
+```tsx
+const [presetManager] = useState(() => new PresetManager());
+
+// Convert presets to dropdown options
+const presetOptions = presetManager.getAllPresets().user.map((preset) => ({
+  id: preset.id,
+  label: preset.name,
+  description: preset.description,
+  filterModel: preset.gridState.filters,
+  tags: preset.tags,
+}));
+
+const systemPresetOptions = presetManager.getAllPresets().system.map((preset) => ({
+  id: preset.id,
+  label: preset.name,
+  description: preset.description,
+  filterModel: preset.gridState.filters,
+  isSystemPreset: true,
+}));
+
+<QuickFilterDropdown
+  api={gridApi}
+  columnId="_all" // Use "_all" for grid-wide presets
+  options={presetOptions}
+  systemPresets={systemPresetOptions}
+  enablePresetManagement={true}
+  onPresetSave={(preset) => {
+    presetManager.saveUserPreset(preset);
+  }}
+  onPresetDelete={(presetId) => {
+    presetManager.deleteUserPreset(presetId);
+  }}
+/>;
+```
+
+### Preset Storage
+
+User presets are automatically persisted to localStorage and synchronized across browser tabs:
+
+```tsx
+// Listen for preset changes
+const unsubscribe = presetManager.onPresetsChange((presets) => {
+  console.log("System presets:", presets.system);
+  console.log("User presets:", presets.user);
+  console.log("Active preset ID:", presets.activeId);
+});
+
+// Listen for default preset changes
+const unsubscribeDefault = presetManager.onDefaultChange((preset) => {
+  if (preset) {
+    // Apply default preset on load
+    const resolvedState = resolveTemplateInGridState(preset.gridState);
+    api.setFilterModel(resolvedState.filters);
+  }
+});
+```
+
+### Creating Custom System Presets
+
+```tsx
+import { createSystemPreset, combineSystemPresets } from "ag-grid-react-components";
+
+// Create domain-specific presets
+const mySystemPresets = [
+  createSystemPreset({
+    id: "critical-issues",
+    name: "Critical Issues",
+    description: "High priority items needing attention",
+    gridState: {
+      filters: {
+        priority: { filterType: "text", type: "equals", filter: "critical" },
+        status: { filterType: "text", type: "notEqual", filter: "resolved" },
+      },
+    },
+  }),
+];
+
+// Combine with default presets
+const allSystemPresets = combineSystemPresets(DEFAULT_SYSTEM_PRESETS, mySystemPresets);
+```
+
 ## 🎨 Customization
 
 See the [comprehensive Styling Guide](./docs/STYLING_GUIDE.md) for detailed customization options.
@@ -858,3 +1020,4 @@ When creating issues, our automation will sync labels to project fields for bett
 
 - **[GitHub Project Automation](./docs/github-project-automation.md)** - How issue labels sync to project fields
 - **[CLAUDE.md](./CLAUDE.md)** - Instructions for AI assistants working with this codebase
+````
