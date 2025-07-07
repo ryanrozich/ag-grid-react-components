@@ -508,3 +508,23 @@ font-family:
 *::-webkit-scrollbar-thumb:hover {
   background-color: #6b7280;
 }
+
+/* Fix for issue #6: Grand total row overlapping with filter dropdowns */
+/* Ensure AG Grid filter popups appear above grand total row */
+.ag-theme-quartz-dark .ag-popup {
+  z-index: 10 !important;
+}
+
+.ag-theme-quartz-dark .ag-menu {
+  z-index: 10 !important;
+}
+
+/* Specifically target the filter wrapper when it's open */
+.ag-theme-quartz-dark .ag-filter-wrapper {
+  z-index: 10 !important;
+}
+
+/* Ensure the popup child elements also have proper z-index */
+.ag-theme-quartz-dark .ag-popup-child {
+  z-index: 10 !important;
+}

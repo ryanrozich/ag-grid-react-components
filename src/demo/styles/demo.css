@@ -270,3 +270,23 @@ code {
   color: #0891b2 !important;
   font-weight: 700;
 }
+
+/* Fix for issue #6: Grand total row overlapping with filter dropdowns */
+/* Ensure AG Grid filter popups appear above grand total row */
+.ag-theme-quartz .ag-popup {
+  z-index: 10 !important;
+}
+
+.ag-theme-quartz .ag-menu {
+  z-index: 10 !important;
+}
+
+/* Specifically target the filter wrapper when it's open */
+.ag-theme-quartz .ag-filter-wrapper {
+  z-index: 10 !important;
+}
+
+/* Ensure the popup child elements also have proper z-index */
+.ag-theme-quartz .ag-popup-child {
+  z-index: 10 !important;
+}
