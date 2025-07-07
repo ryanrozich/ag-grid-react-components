@@ -74,7 +74,7 @@ jobs:
             );
 
             console.log(`Found ${milestonePRs.length} merged PRs for milestone ${milestone.title}`);
-            
+
             const prList = milestonePRs.map(pr => ({
               number: pr.number,
               title: pr.title,
@@ -88,7 +88,7 @@ jobs:
         run: |
           BRANCH_NAME="rc/${{ github.event.inputs.rc_version }}"
           git checkout -b "$BRANCH_NAME"
-          
+
           echo "Created integration branch: $BRANCH_NAME"
 
       - name: Generate integration summary
@@ -98,7 +98,7 @@ jobs:
           # Release Candidate ${{ github.event.inputs.rc_version }}
 
           ## Integrated Features
-          
+
           This RC includes all features from milestone: ${{ steps.find-prs.outputs.milestone-title }}
 
           ### Merged PRs

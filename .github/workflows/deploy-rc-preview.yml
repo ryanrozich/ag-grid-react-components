@@ -51,7 +51,7 @@ jobs:
           BRANCH="${{ github.event.inputs.branch }}"
           SHORT_SHA=$(git rev-parse --short HEAD)
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          
+
           cat > src/demo/version-info.json << EOF
           {
             "version": "RC-Preview",
@@ -69,7 +69,7 @@ jobs:
         run: |
           echo "📦 Building RC preview..."
           npm run build:demo
-          
+
           # Verify build
           if [ ! -d "dist-demo" ]; then
             echo "❌ Demo build failed"
@@ -94,13 +94,13 @@ jobs:
         run: |
           # Extract URL from deployment output
           PREVIEW_URL=$(echo "${{ steps.deployment.outputs.deployment-url }}" | grep -oE 'https://[^ ]+' | head -1)
-          
+
           # Fallback URL construction
           if [ -z "$PREVIEW_URL" ]; then
             BRANCH_SLUG=$(echo "${{ github.event.inputs.branch }}" | sed 's/[^a-zA-Z0-9-]/-/g' | tr '[:upper:]' '[:lower:]')
             PREVIEW_URL="https://rc-${BRANCH_SLUG}.ag-grid-react-components.pages.dev"
           fi
-          
+
           echo "preview-url=$PREVIEW_URL" >> $GITHUB_OUTPUT
           echo "branch-slug=$BRANCH_SLUG" >> $GITHUB_OUTPUT
 

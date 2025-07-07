@@ -1091,4 +1091,7 @@ When creating issues, our automation will sync labels to project fields for bett
 
 - **[GitHub Project Automation](./docs/github-project-automation.md)** - How issue labels sync to project fields
 - **[CLAUDE.md](./CLAUDE.md)** - Instructions for AI assistants working with this codebase
-````
+
+```
+
+```

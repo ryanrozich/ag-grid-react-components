@@ -4,7 +4,7 @@ import { ColDef } from "ag-grid-community";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import ActiveFilters from "../../components/ActiveFilters/ActiveFilters";
-import { generateRowData } from "../data/generator";
+import { generateData } from "../data/generator";
 import styles from "./Examples.module.css";
 
 interface FilterPreset {
@@ -23,8 +23,8 @@ const AdvancedPresetExample: React.FC = () => {
   // Multiple grid instances
   const [gridApi1, setGridApi1] = useState<any>(null);
   const [gridApi2, setGridApi2] = useState<any>(null);
-  const [rowData1] = useState(() => generateRowData(50));
-  const [rowData2] = useState(() => generateRowData(50));
+  const [rowData1] = useState(() => generateData(50));
+  const [rowData2] = useState(() => generateData(50));
 
   // Preset management
   const [sharedPresets, setSharedPresets] = useState<FilterPreset[]>([]);

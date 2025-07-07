@@ -1,0 +1,160 @@
+# Test info
+
+- Name: Server-Side Demo Fixed >> should switch to server-side tab without critical errors
+- Location: /Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/tests/e2e/server-side-demo-fixed.spec.ts:8:3
+
+# Error details
+
+```
+Error: page.click: Test timeout of 30000ms exceeded.
+Call log:
+  - waiting for locator('button:has-text("Server-Side Data")')
+
+    at /Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/tests/e2e/server-side-demo-fixed.spec.ts:28:16
+```
+
+# Page snapshot
+
+```yaml
+- text: "[plugin:vite:import-analysis] Failed to resolve import \"../../components/ActiveFilters/ActiveFilters\" from \"src/demo/examples/RealWorldExamples.tsx\". Does the file exist? /Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/src/demo/examples/RealWorldExamples.tsx:6:26 20 | import { Tab, Tabs, TabList, TabPanel } from \"react-tabs\"; 21 | import \"react-tabs/style/react-tabs.css\"; 22 | import ActiveFilters from \"../../components/ActiveFilters/ActiveFilters\"; | ^ 23 | import QuickFilterDropdown from \"../../components/QuickFilterDropdown/QuickFilterDropdown\"; 24 | import styles from \"./Examples.module.css\"; at TransformPluginContext._formatLog (file:///Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:42499:41) at TransformPluginContext.error (file:///Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:42496:16) at normalizeUrl (file:///Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:40475:23) at process.processTicksAndRejections (node:internal/process/task_queues:105:5) at async file:///Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:40594:37 at async Promise.all (index 7) at async TransformPluginContext.transform (file:///Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:40521:7) at async EnvironmentPluginContainer.transform (file:///Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:42294:18) at async loadAndTransform (file:///Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:35735:27) at async viteTransformMiddleware (file:///Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:37250:24 Click outside, press Esc key, or fix the code to dismiss. You can also disable this overlay by setting"
+- code: server.hmr.overlay
+- text: to
+- code: "false"
+- text: in
+- code: vite.config.ts
+- text: .
+```
+
+# Test source
+
+```ts
+   1 | import { test, expect } from "@playwright/test";
+   2 |
+   3 | test.describe("Server-Side Demo Fixed", () => {
+   4 |   test.beforeEach(async ({ page }) => {
+   5 |     await page.goto("http://localhost:5173/demo");
+   6 |   });
+   7 |
+   8 |   test("should switch to server-side tab without critical errors", async ({
+   9 |     page,
+   10 |   }) => {
+   11 |     // Start monitoring console errors
+   12 |     const criticalErrors: string[] = [];
+   13 |     page.on("console", (msg) => {
+   14 |       if (msg.type() === "error") {
+   15 |         const text = msg.text();
+   16 |         // Ignore AG Grid license warnings
+   17 |         if (
+   18 |           !text.includes("AG Grid Enterprise License") &&
+   19 |           !text.includes("License Key Not Found") &&
+   20 |           !text.includes("***")
+   21 |         ) {
+   22 |           criticalErrors.push(text);
+   23 |         }
+   24 |       }
+   25 |     });
+   26 |
+   27 |     // Click on server-side tab
+>  28 |     await page.click('button:has-text("Server-Side Data")');
+      |                ^ Error: page.click: Test timeout of 30000ms exceeded.
+   29 |
+   30 |     // Wait for the server-side demo to load
+   31 |     await page.waitForLoadState("networkidle");
+   32 |     await page.waitForTimeout(1000); // Give time for any errors to surface
+   33 |
+   34 |     // Check that no critical console errors occurred
+   35 |     expect(criticalErrors).toHaveLength(0);
+   36 |   });
+   37 |
+   38 |   test("should render server-side demo components", async ({ page }) => {
+   39 |     // Switch to server-side tab
+   40 |     await page.click('button:has-text("Server-Side Data")');
+   41 |
+   42 |     // Check that the banner is visible
+   43 |     await expect(page.locator('text="Server-Side Row Model Demo"')).toBeVisible(
+   44 |       { timeout: 10000 },
+   45 |     );
+   46 |
+   47 |     // Check that the API status is shown
+   48 |     await expect(page.locator('text="API Status:"')).toBeVisible();
+   49 |
+   50 |     // Check that stats are displayed
+   51 |     await expect(page.locator('text="Total Tasks"')).toBeVisible();
+   52 |     await expect(page.locator('text="Total Budget"')).toBeVisible();
+   53 |   });
+   54 |
+   55 |   test("should display the AG Grid with server-side data", async ({ page }) => {
+   56 |     // Switch to server-side tab
+   57 |     await page.click('button:has-text("Server-Side Data")');
+   58 |
+   59 |     // Wait for the grid to be visible
+   60 |     const grid = page.locator(".ag-root-wrapper");
+   61 |     await expect(grid).toBeVisible({ timeout: 10000 });
+   62 |
+   63 |     // Check that headers are visible
+   64 |     await expect(page.locator(".ag-header-row")).toBeVisible();
+   65 |
+   66 |     // Check for specific server-side headers
+   67 |     await expect(
+   68 |       page.locator('.ag-header-cell-text:has-text("Task ID")'),
+   69 |     ).toBeVisible();
+   70 |     await expect(
+   71 |       page.locator('.ag-header-cell-text:has-text("Title")'),
+   72 |     ).toBeVisible();
+   73 |
+   74 |     // Wait for data rows to appear
+   75 |     await page.waitForSelector(".ag-row", { timeout: 10000 });
+   76 |
+   77 |     // Verify data is loaded
+   78 |     const rows = await page.locator(".ag-row").count();
+   79 |     expect(rows).toBeGreaterThan(0);
+   80 |   });
+   81 |
+   82 |   test("should not have incompatible status bar components", async ({
+   83 |     page,
+   84 |   }) => {
+   85 |     // Monitor for specific AG Grid warnings
+   86 |     let hasIncompatibleComponents = false;
+   87 |     page.on("console", (msg) => {
+   88 |       if (msg.type() === "warning") {
+   89 |         const text = msg.text();
+   90 |         if (
+   91 |           text.includes("agTotalAndFilteredRowCountComponent") ||
+   92 |           text.includes(
+   93 |             "agTotalRowCountComponent should only be used with the client side",
+   94 |           ) ||
+   95 |           text.includes(
+   96 |             "agFilteredRowCountComponent should only be used with the client side",
+   97 |           )
+   98 |         ) {
+   99 |           hasIncompatibleComponents = true;
+  100 |         }
+  101 |       }
+  102 |     });
+  103 |
+  104 |     // Switch to server-side tab
+  105 |     await page.click('button:has-text("Server-Side Data")');
+  106 |
+  107 |     // Wait for the grid to render
+  108 |     await page.waitForSelector(".ag-root-wrapper", { timeout: 10000 });
+  109 |     await page.waitForTimeout(1000);
+  110 |
+  111 |     // Verify no incompatible components were used
+  112 |     expect(hasIncompatibleComponents).toBe(false);
+  113 |   });
+  114 |
+  115 |   test("should handle search functionality in server-side mode", async ({
+  116 |     page,
+  117 |   }) => {
+  118 |     // Switch to server-side tab
+  119 |     await page.click('button:has-text("Server-Side Data")');
+  120 |
+  121 |     // Wait for search input
+  122 |     const searchInput = page.locator(
+  123 |       'input[placeholder="Search all columns..."]',
+  124 |     );
+  125 |     await expect(searchInput).toBeVisible({ timeout: 10000 });
+  126 |
+  127 |     // Type a search term
+  128 |     await searchInput.fill("bug");
+```

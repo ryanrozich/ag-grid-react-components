@@ -91,7 +91,6 @@ export type {
 
 // Preset System exports
 export {
-  PresetManager,
   resolveTemplate,
   resolveTemplateInGridState,
   DEFAULT_SYSTEM_PRESETS,
@@ -136,21 +135,17 @@ export {
 export {
   compress,
   decompress,
-  isCompressed,
   getCompressionRatio,
 } from "./utils/presetSharing/compression";
 
 // Preset Sharing Types
 export type {
-  FilterPreset,
   PresetExportFormat,
   ImportMode,
   ImportResult,
-  ImportError,
   ShareOptions,
-  ShareMode,
   SerializedUrl,
-  ExtractResult,
+  ParsedUrl,
   ValidationResult,
 } from "./utils/presetSharing/types";
 export type { ShareButtonProps } from "./components/FilterPresets/ShareButton";

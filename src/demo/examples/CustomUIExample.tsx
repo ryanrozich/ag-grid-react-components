@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { ColDef } from "ag-grid-community";
 import ActiveFilters from "../../components/ActiveFilters/ActiveFilters";
-import { generateRowData } from "../data/generator";
+import { generateData } from "../data/generator";
 import styles from "./Examples.module.css";
 import "./CustomUI.css";
 
@@ -382,7 +382,7 @@ const CustomPresetManager: React.FC<CustomPresetManagerProps> = ({
 
 const CustomUIExample: React.FC = () => {
   const [gridApi, setGridApi] = useState<any>(null);
-  const [rowData] = useState(() => generateRowData(50));
+  const [rowData] = useState(() => generateData(50));
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showManager, setShowManager] = useState(false);
   const [currentPresetId, setCurrentPresetId] = useState<string | null>(null);

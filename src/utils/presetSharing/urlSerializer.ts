@@ -24,7 +24,7 @@ export function serializeToUrl(
 
   // Embedded mode: include full preset data
   // Strip internal fields that start with _ or temp
-  const cleanPreset = stripInternalFields(preset);
+  const cleanPreset = stripInternalFields(preset as Record<string, unknown>);
 
   const jsonString = JSON.stringify(cleanPreset);
   const originalSize = jsonString.length;

@@ -29,12 +29,6 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
   columnId,
   options,
   systemPresets = [],
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  enablePresetManagement = false,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onPresetSave,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onPresetDelete,
   placeholder = "Select filter",
   className,
   onFilterChange,
@@ -197,37 +191,37 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
     [api, columnId, onFilterChange, enablePresets],
   );
 
-  // Handle preset selection
-  const handlePresetSelect = useCallback(
-    async (preset: FilterPreset | null) => {
-      if (!api || typeof api.setFilterModel !== "function") {
-        console.warn("[QuickFilterDropdown] API is invalid or destroyed");
-        return;
-      }
+  // Handle preset selection - currently unused but may be needed for future preset integration
+  // const handlePresetSelect = useCallback(
+  //   async (preset: FilterPreset | null) => {
+  //     if (!api || typeof api.setFilterModel !== "function") {
+  //       console.warn("[QuickFilterDropdown] API is invalid or destroyed");
+  //       return;
+  //     }
 
-      try {
-        if (preset) {
-          await api.setFilterModel(preset.filterModel);
-          api.onFilterChanged();
-          setActivePresetId(preset.id);
-          setState((prev) => ({
-            ...prev,
-            selectedOption: null, // Clear regular option selection
-            isOpen: false,
-            searchQuery: "",
-            highlightedIndex: -1,
-          }));
-          setDropdownPosition(null);
-          enablePresets?.onPresetChange?.(preset);
-          onFilterChange?.(null);
-        }
-        triggerRef.current?.focus();
-      } catch (error) {
-        console.error("[QuickFilterDropdown] Error applying preset:", error);
-      }
-    },
-    [api, enablePresets, onFilterChange],
-  );
+  //     try {
+  //       if (preset) {
+  //         await api.setFilterModel(preset.filterModel);
+  //         api.onFilterChanged();
+  //         setActivePresetId(preset.id);
+  //         setState((prev) => ({
+  //           ...prev,
+  //           selectedOption: null, // Clear regular option selection
+  //           isOpen: false,
+  //           searchQuery: "",
+  //           highlightedIndex: -1,
+  //         }));
+  //         setDropdownPosition(null);
+  //         enablePresets?.onPresetChange?.(preset);
+  //         onFilterChange?.(null);
+  //       }
+  //       triggerRef.current?.focus();
+  //     } catch (error) {
+  //       console.error("[QuickFilterDropdown] Error applying preset:", error);
+  //     }
+  //   },
+  //   [api, enablePresets, onFilterChange],
+  // );
 
   // Handle save preset
   const handleSavePreset = useCallback(

@@ -8,9 +8,9 @@ import BasicPresetExample from "./examples/BasicPresetExample";
 import AdvancedPresetExample from "./examples/AdvancedPresetExample";
 import CustomUIExample from "./examples/CustomUIExample";
 import RealWorldExamples from "./examples/RealWorldExamples";
-import AnchorHeading from "./components/AnchorHeading";
-import DocumentationPanel from "./components/DocumentationPanel";
-import CodeBlock from "./components/CodeBlock";
+import { AnchorHeading } from "./components/AnchorHeading";
+import { DocumentationPanel } from "./components/DocumentationPanel";
+import { CodeBlock } from "./components/CodeBlock";
 
 const FilterPresetsShowcase: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState(0);

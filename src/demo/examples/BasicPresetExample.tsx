@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { ColDef } from "ag-grid-community";
 import ActiveFilters from "../../components/ActiveFilters/ActiveFilters";
-import { generateRowData } from "../data/generator";
+import { generateData } from "../data/generator";
 import "../styles/demo.css";
 import styles from "./Examples.module.css";
 
@@ -19,7 +19,7 @@ interface FilterPreset {
 
 const BasicPresetExample: React.FC = () => {
   const [gridApi, setGridApi] = useState<any>(null);
-  const [rowData] = useState(() => generateRowData(100));
+  const [rowData] = useState(() => generateData(100));
   const [currentPresetId, setCurrentPresetId] = useState<string | null>(null);
 
   // System-defined presets
