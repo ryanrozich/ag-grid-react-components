@@ -17,6 +17,19 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+.env.*
+
+# Security and credentials
+*credentials*
+*CREDENTIALS*
+*secret*
+*SECRET*
+*token*
+*TOKEN*
+*apikey*
+*APIKEY*
+private.txt
+PRIVATE.txt
 
 # Editor directories and files
 .vscode/*
