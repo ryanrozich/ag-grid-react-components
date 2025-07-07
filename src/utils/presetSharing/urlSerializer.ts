@@ -24,7 +24,9 @@ export function serializeToUrl(
 
   // Embedded mode: include full preset data
   // Strip internal fields that start with _ or temp
-  const cleanPreset = stripInternalFields(preset as Record<string, unknown>);
+  const cleanPreset = stripInternalFields(
+    preset as unknown as Record<string, unknown>,
+  );
 
   const jsonString = JSON.stringify(cleanPreset);
   const originalSize = jsonString.length;
@@ -132,7 +134,7 @@ function stripInternalFields(preset: Record<string, unknown>): FilterPreset {
     }
   });
 
-  return cleaned as FilterPreset;
+  return cleaned as unknown as FilterPreset;
 }
 
 /**

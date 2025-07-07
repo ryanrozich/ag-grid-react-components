@@ -24,7 +24,6 @@ export { usePresets } from "./components/FilterPresets/hooks/usePresets";
 
 // Filter Preset Types
 export type {
-  FilterPreset,
   PresetStorage,
   StorageInfo,
   PresetSelectorProps,

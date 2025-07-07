@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { ColDef } from "ag-grid-community";
-import ActiveFilters from "../../components/ActiveFilters/ActiveFilters";
+import ActiveFilters from "../../components/ActiveFilters";
 import { generateData } from "../data/generator";
 import "../styles/demo.css";
 import styles from "./Examples.module.css";

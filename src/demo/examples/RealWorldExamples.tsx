@@ -3,8 +3,8 @@ import { AgGridReact } from "ag-grid-react";
 import { ColDef } from "ag-grid-community";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
-import ActiveFilters from "../../components/ActiveFilters/ActiveFilters";
-import QuickFilterDropdown from "../../components/QuickFilterDropdown/QuickFilterDropdown";
+import ActiveFilters from "../../components/ActiveFilters";
+import QuickFilterDropdown from "../../components/QuickFilterDropdown";
 import styles from "./Examples.module.css";
 import "./RealWorld.css";
 

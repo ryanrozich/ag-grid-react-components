@@ -3,7 +3,7 @@ import { AgGridReact } from "ag-grid-react";
 import { ColDef } from "ag-grid-community";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
-import ActiveFilters from "../../components/ActiveFilters/ActiveFilters";
+import ActiveFilters from "../../components/ActiveFilters";
 import { generateData } from "../data/generator";
 import styles from "./Examples.module.css";
 

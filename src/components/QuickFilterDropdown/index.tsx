@@ -58,7 +58,7 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
   } | null>(null);
 
   const [showSaveDialog, setShowSaveDialog] = useState(false);
-  const [activePresetId, setActivePresetId] = useState<string | null>(null);
+  const [_activePresetId, setActivePresetId] = useState<string | null>(null);
 
   // Initialize presets hook (must be called unconditionally for React hooks rules)
   const presets = usePresets(
