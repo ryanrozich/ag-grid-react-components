@@ -7,6 +7,8 @@ import {
   QuickFilterDropdown,
   ActiveFilters,
   setupGridStatePersistence,
+  ShareButton,
+  usePresetFromUrl,
 } from "../index";
 import { generateData } from "./data/generator";
 import { CodeBlock } from "./components/CodeBlock";
@@ -295,6 +297,31 @@ export const ComponentsShowcaseComplete: React.FC<
     avgProgress: 0,
     budgetRemaining: 0,
   });
+
+  // Preset sharing state
+  const [savedPresets, _setSavedPresets] = useState<any[]>(() => {
+    const stored = localStorage.getItem("demo-filter-presets");
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  // Save presets to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("demo-filter-presets", JSON.stringify(savedPresets));
+  }, [savedPresets]);
+
+  // Auto-load preset from URL
+  const { preset: urlPreset } = usePresetFromUrl({
+    loadPresetById: async (id) => {
+      return savedPresets.find((p) => p.id === id);
+    },
+  });
+
+  // Apply URL preset when loaded
+  useEffect(() => {
+    if (urlPreset && gridApi) {
+      gridApi.setFilterModel(urlPreset.gridState);
+    }
+  }, [urlPreset, gridApi]);
 
   // Store cleanup function reference
   const cleanupRef = React.useRef<(() => void) | null>(null);
@@ -6834,6 +6861,20 @@ const handleFilterSelect = async (option) => {
                       className="min-w-[140px]"
                       usePortal="always"
                     />
+                    {/* Share Button for filter presets */}
+                    {Object.keys(filterModel).length > 0 && (
+                      <ShareButton
+                        preset={{
+                          id: `preset-${Date.now()}`,
+                          name: "Current Filters",
+                          gridState: filterModel,
+                          createdAt: new Date().toISOString(),
+                        }}
+                        onCopy={() => {
+                          console.log("Filter preset URL copied!");
+                        }}
+                      />
+                    )}
                   </>
                 )}
               </DemoToolbar>
