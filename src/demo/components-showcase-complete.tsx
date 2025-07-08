@@ -66,16 +66,18 @@ const Navigation: React.FC<{
         </div>
         <div className="flex items-center gap-4">
           <VersionInfo className="hidden md:block" />
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                clipRule="evenodd"
-              />
+          <a
+            href="https://www.npmjs.com/package/ag-grid-react-components"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 256 256">
+              <path d="M0 256V0h256v256z" />
+              <path d="M128 128v128h128V0H128z" fill="#C12127" />
             </svg>
-            MIT License
-          </div>
+            NPM
+          </a>
           <a
             href="https://github.com/ryanrozich/ag-grid-react-components"
             target="_blank"
@@ -615,9 +617,9 @@ export const ComponentsShowcaseComplete: React.FC<
               </div>
               <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
                 <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
-                  <div className="space-y-8">
+                  <div className="flex flex-col lg:flex-row gap-8 items-start">
                     {/* Hero Component Showcase */}
-                    <div className="relative overflow-hidden rounded-2xl max-w-4xl">
+                    <div className="relative overflow-hidden rounded-2xl flex-1">
                       {/* Gradient background */}
                       <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-purple-600/10 to-pink-600/10 blur-2xl" />
 
@@ -670,84 +672,142 @@ export const ComponentsShowcaseComplete: React.FC<
                       </div>
                     </div>
 
-                    {/* Developer Experience Points */}
-                    <div className="mt-8 space-y-4">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center">
-                          <svg
-                            className="w-5 h-5 text-green-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
+                    {/* Developer Experience Cards */}
+                    <div className="lg:w-96 space-y-6">
+                      {/* Start in minutes */}
+                      <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 bg-indigo-600/20 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-6 h-6 text-indigo-400"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"
+                              />
+                            </svg>
+                          </div>
+                          <h3 className="text-lg font-semibold text-white">
+                            Start in minutes
+                          </h3>
                         </div>
-                        <div>
-                          <h4 className="text-white font-medium">
-                            Simple npm install
-                          </h4>
-                          <p className="text-gray-400 text-sm mt-1">
-                            npm install ag-grid-react-components
-                          </p>
-                        </div>
+                        <ul className="space-y-2 text-sm text-gray-300">
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            Single npm install
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            Works with AG Grid Community & Enterprise
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            TypeScript support out of the box
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            Minimal bundle: starts at 25KB
+                          </li>
+                        </ul>
                       </div>
 
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center">
-                          <svg
-                            className="w-5 h-5 text-green-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
+                      {/* Style it your way */}
+                      <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 bg-purple-600/20 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-6 h-6 text-purple-400"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                              />
+                            </svg>
+                          </div>
+                          <h3 className="text-lg font-semibold text-white">
+                            Style it your way
+                          </h3>
                         </div>
-                        <div>
-                          <h4 className="text-white font-medium">
-                            Clean, intuitive APIs
-                          </h4>
-                          <p className="text-gray-400 text-sm mt-1">
-                            Thoughtful defaults with full customization
-                          </p>
-                        </div>
+                        <ul className="space-y-2 text-sm text-gray-300">
+                          <li className="flex items-start">
+                            <span className="text-purple-400 mr-2">→</span>
+                            Headless by default
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-purple-400 mr-2">→</span>
+                            CSS modules for scoped styles
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-purple-400 mr-2">→</span>
+                            Override any style with className
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-purple-400 mr-2">→</span>
+                            Works with Tailwind, CSS-in-JS, etc.
+                          </li>
+                        </ul>
                       </div>
 
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center">
-                          <svg
-                            className="w-5 h-5 text-green-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
+                      {/* Configure everything */}
+                      <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 bg-green-600/20 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-6 h-6 text-green-400"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                            </svg>
+                          </div>
+                          <h3 className="text-lg font-semibold text-white">
+                            Configure everything
+                          </h3>
                         </div>
-                        <div>
-                          <h4 className="text-white font-medium">
-                            Zero dependencies
-                          </h4>
-                          <p className="text-gray-400 text-sm mt-1">
-                            Tree-shakeable • TypeScript • 25KB min
-                          </p>
-                        </div>
+                        <ul className="space-y-2 text-sm text-gray-300">
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            Pluggable date picker adapters
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            Customizable date expressions
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            Extensible filter presets
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            Override any behavior with callbacks
+                          </li>
+                        </ul>
                       </div>
                     </div>
                   </div>
@@ -888,104 +948,15 @@ export const ComponentsShowcaseComplete: React.FC<
             </div>
           </div>
 
-          {/* Filling the UX Gap Section */}
-          <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
-            <div className="mx-auto max-w-2xl lg:text-center mb-16">
-              <h2 className="text-base font-semibold leading-7 text-indigo-400">
-                The Missing Pieces
-              </h2>
-              <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Turn AG Grid into a complete data workspace
-              </p>
-              <p className="mt-6 text-lg text-gray-300">
-                AG Grid handles the heavy lifting. These components handle the
-                human experience.
-              </p>
-            </div>
-            <div className="mx-auto max-w-2xl lg:mt-24 lg:max-w-none">
-              <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-                <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
-                  <h3 className="text-xl font-semibold text-white mb-4">
-                    The Problem
-                  </h3>
-                  <ul className="space-y-3 text-gray-300">
-                    <li className="flex items-start">
-                      <span className="text-red-400 mr-2">×</span>
-                      Users manually pick dates every single time
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-400 mr-2">×</span>
-                      "Last 30 days" becomes outdated tomorrow
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-400 mr-2">×</span>
-                      Can't share or bookmark filtered views
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-400 mr-2">×</span>
-                      Tiny blue dots hide active filters
-                    </li>
-                  </ul>
-                </div>
-                <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
-                  <h3 className="text-xl font-semibold text-white mb-4">
-                    The Solution
-                  </h3>
-                  <ul className="space-y-3 text-gray-300">
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      Relative date expressions that stay current
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      Quick filter presets for common queries
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      Shareable URLs with compressed state
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      Clear filter pills with one-click removal
-                    </li>
-                  </ul>
-                </div>
-                <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
-                  <h3 className="text-xl font-semibold text-white mb-4">
-                    The Benefit
-                  </h3>
-                  <ul className="space-y-3 text-gray-300">
-                    <li className="flex items-start">
-                      <span className="text-indigo-400 mr-2">→</span>
-                      Users save hours on repetitive filtering
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-indigo-400 mr-2">→</span>
-                      Teams share consistent report views
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-indigo-400 mr-2">→</span>
-                      Dashboards that update automatically
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-indigo-400 mr-2">→</span>
-                      Happy users, fewer support tickets
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Developer Experience section */}
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
             <div className="mx-auto max-w-2xl lg:text-center">
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Developer experience that just works
+                Seamlessly integrates with your existing AG Grid setup
               </p>
               <p className="mt-6 text-lg text-gray-300">
-                Clean APIs, zero dependencies, and thoughtful defaults. Style it
-                your way or use it headless.
+                Drop-in components with zero dependencies. Use our thoughtful
+                defaults or customize every detail with headless flexibility.
               </p>
             </div>
 
@@ -1134,119 +1105,6 @@ const columnDefs = [{
               </div>
             </div>
           </div>
-
-          {/* Open Source Contribution Section */}
-          <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
-            <div className="mx-auto max-w-2xl lg:text-center">
-              <h2 className="text-base font-semibold leading-7 text-indigo-400">
-                Open Source
-              </h2>
-              <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Built by the community, for the community
-              </p>
-              <p className="mt-6 text-lg text-gray-300">
-                We actively encourage contributions. Found a bug? Have a feature
-                idea? Want to improve the docs? Jump in! This project exists
-                because developers like you make it better.
-              </p>
-            </div>
-            <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-              <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
-                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                  <div className="text-center">
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-600">
-                      <svg
-                        className="h-8 w-8 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"
-                        />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-white">
-                      Report Issues
-                    </h3>
-                    <p className="mt-2 text-gray-400">
-                      Found a bug? Let us know on GitHub
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-600">
-                      <svg
-                        className="h-8 w-8 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
-                        />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-white">
-                      Suggest Features
-                    </h3>
-                    <p className="mt-2 text-gray-400">
-                      Have an idea? We'd love to hear it
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-600">
-                      <svg
-                        className="h-8 w-8 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"
-                        />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-white">
-                      Submit PRs
-                    </h3>
-                    <p className="mt-2 text-gray-400">
-                      Code contributions always welcome
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-8 text-center">
-                  <a
-                    href="https://github.com/ryanrozich/ag-grid-react-components"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100"
-                  >
-                    <svg
-                      className="mr-2 h-5 w-5"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Contribute on GitHub
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <Footer />
@@ -1366,15 +1224,6 @@ const columnDefs = [{
                           automatically.
                         </p>
 
-                        {/* TODO: Add animated GIF - date picker fatigue vs "last 30 days" */}
-                        <div className="my-6 rounded-lg overflow-hidden border border-gray-700 bg-gray-900/50 p-4">
-                          <p className="text-gray-500 text-center text-sm">
-                            [Animated GIF placeholder: Show user clicking
-                            through date pickers repeatedly, then switching to
-                            typing "last 30 days" once and being done]
-                          </p>
-                        </div>
-
                         <p className="text-gray-300 mb-4">
                           <strong>Then visibility becomes crucial.</strong> As
                           your grid grows to dozens of columns, users lose track
@@ -1389,15 +1238,6 @@ const columnDefs = [{
                           display every active filter clearly, making them
                           instantly visible and removable.
                         </p>
-
-                        {/* TODO: Add animated GIF - hunting for blue dots vs clear filter pills */}
-                        <div className="my-6 rounded-lg overflow-hidden border border-gray-700 bg-gray-900/50 p-4">
-                          <p className="text-gray-500 text-center text-sm">
-                            [Animated GIF placeholder: Split screen showing user
-                            hunting for tiny blue dots vs instantly seeing and
-                            removing filter pills]
-                          </p>
-                        </div>
 
                         <p className="text-gray-300 mb-4">
                           <strong>Soon, patterns emerge.</strong> Your team runs
@@ -1414,15 +1254,6 @@ const columnDefs = [{
                           combinations.
                         </p>
 
-                        {/* TODO: Add animated GIF - manual multi-column filtering vs dropdown selection */}
-                        <div className="my-6 rounded-lg overflow-hidden border border-gray-700 bg-gray-900/50 p-4">
-                          <p className="text-gray-500 text-center text-sm">
-                            [Animated GIF placeholder: User clicking through
-                            multiple columns to set filters vs selecting "High
-                            Priority Bugs" from dropdown]
-                          </p>
-                        </div>
-
                         <p className="text-gray-300 mb-4">
                           <strong>Finally, collaboration kicks in.</strong>{" "}
                           Teams want to save their carefully crafted views, name
@@ -1437,15 +1268,6 @@ const columnDefs = [{
                           to colleagues, or simply copy a URL that captures
                           their exact grid state.
                         </p>
-
-                        {/* TODO: Add animated GIF - saving, sharing, and loading presets */}
-                        <div className="my-6 rounded-lg overflow-hidden border border-gray-700 bg-gray-900/50 p-4">
-                          <p className="text-gray-500 text-center text-sm">
-                            [Animated GIF placeholder: User saving a preset
-                            named "Q4 Critical Issues", copying link, colleague
-                            opening exact same view]
-                          </p>
-                        </div>
 
                         <p className="text-gray-300 text-lg font-medium">
                           Together, these components transform AG Grid from a
