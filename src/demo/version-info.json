@@ -1,12 +1,12 @@
 {
   "version": "0.2.0-rc1",
   "git": {
-    "commitHash": "df6082d8bfa0d4d0eca4fd66a59d873a0520e198",
-    "shortHash": "df6082d",
+    "commitHash": "e16ce6c8d64221a5bb23fc22dda4bcb682282fff",
+    "shortHash": "e16ce6c",
     "branch": "release/v0.2.0-rc1",
-    "commitDate": "2025-07-08 11:06:45 -0500",
+    "commitDate": "2025-07-08 11:31:59 -0500",
     "latestTag": "v0.1.1-rc1",
-    "commitsSinceTag": 19,
+    "commitsSinceTag": 20,
     "isDirty": true
   },
   "deployment": {
@@ -15,7 +15,7 @@
     "isMainBranch": false,
     "deployPath": "ag-grid-react-components"
   },
-  "buildTime": "2025-07-08T16:25:43.403Z",
-  "displayVersion": "v0.2.0-rc1+19",
+  "buildTime": "2025-07-08T16:39:22.027Z",
+  "displayVersion": "v0.2.0-rc1+20",
   "displayLabel": "release/v0.2.0-rc1"
 }

@@ -60,17 +60,19 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [_activePresetId, setActivePresetId] = useState<string | null>(null);
 
+  // Memoize the presets config to prevent infinite loops
+  const presetsConfig = useMemo(() => {
+    if (!enablePresets) return undefined;
+    return {
+      storage: enablePresets.storage,
+      systemPresets: enablePresets.systemPresets,
+      onPresetChange: enablePresets.onPresetChange,
+      maxPresets: enablePresets.maxPresets,
+    };
+  }, [enablePresets]);
+
   // Initialize presets hook (must be called unconditionally for React hooks rules)
-  const presets = usePresets(
-    enablePresets
-      ? {
-          storage: enablePresets.storage,
-          systemPresets: enablePresets.systemPresets,
-          onPresetChange: enablePresets.onPresetChange,
-          maxPresets: enablePresets.maxPresets,
-        }
-      : undefined,
-  );
+  const presets = usePresets(presetsConfig);
 
   // Detect if we should use portal based on parent overflow
   const shouldUsePortal = useMemo(() => {
@@ -103,7 +105,14 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
 
     try {
       const activeOption = getActiveFilterOption(api, columnId, allOptions);
-      setState((prev) => ({ ...prev, selectedOption: activeOption }));
+
+      // Only update state if the selected option has actually changed
+      setState((prev) => {
+        if (prev.selectedOption?.id === activeOption?.id) {
+          return prev; // No change needed
+        }
+        return { ...prev, selectedOption: activeOption };
+      });
 
       // Check if current filter matches any preset
       if (enablePresets && presets) {

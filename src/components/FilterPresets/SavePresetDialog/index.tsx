@@ -32,9 +32,18 @@ export function SavePresetDialog({
   const [errors, setErrors] = useState<SavePresetFormErrors>({});
   const dialogRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
-  const headingId = useRef(`save-preset-dialog-${Date.now()}`).current;
-  const nameErrorId = useRef(`name-error-${Date.now()}`).current;
-  const tagsErrorId = useRef(`tags-error-${Date.now()}`).current;
+  const headingId = useMemo(
+    () => `save-preset-dialog-${Math.random().toString(36).slice(2)}`,
+    [],
+  );
+  const nameErrorId = useMemo(
+    () => `name-error-${Math.random().toString(36).slice(2)}`,
+    [],
+  );
+  const tagsErrorId = useMemo(
+    () => `tags-error-${Math.random().toString(36).slice(2)}`,
+    [],
+  );
 
   // Validate form data
   const validateForm = useCallback(
