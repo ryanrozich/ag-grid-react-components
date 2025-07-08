@@ -6,8 +6,8 @@ import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import {
   QuickFilterDropdown,
   ActiveFilters,
+  FilterPresetActions,
   setupGridStatePersistence,
-  ShareButton,
   usePresetFromUrl,
 } from "../index";
 import { generateData } from "./data/generator";
@@ -7162,29 +7162,28 @@ const handleFilterSelect = async (option) => {
                       className="min-w-[140px]"
                       usePortal="always"
                     />
-                    {/* Share Button for filter presets */}
-                    {Object.keys(filterModel).length > 0 && (
-                      <ShareButton
-                        preset={{
-                          id: `preset-${Date.now()}`,
-                          name: "Current Filters",
-                          gridState: filterModel,
-                          createdAt: new Date().toISOString(),
-                        }}
-                        onCopy={() => {
-                          console.log("Filter preset URL copied!");
-                        }}
-                      />
-                    )}
                   </>
                 )}
               </DemoToolbar>
 
-              {/* Active Filters Row (when present) */}
-              {gridApi && Object.keys(filterModel).length > 0 && (
+              {/* Active Filters Row and Filter Preset Actions */}
+              {gridApi && (
                 <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg mt-3">
                   <div className="border-t border-gray-700/50 bg-gray-800/20 p-3">
-                    <ActiveFilters api={gridApi} filterModel={filterModel} />
+                    <div className="flex items-center justify-between gap-4 flex-wrap">
+                      {Object.keys(filterModel).length > 0 && (
+                        <ActiveFilters
+                          api={gridApi}
+                          filterModel={filterModel}
+                        />
+                      )}
+                      <FilterPresetActions
+                        api={gridApi}
+                        onPresetApplied={(preset) => {
+                          console.log("Applied preset:", preset.name);
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               )}

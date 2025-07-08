@@ -20,6 +20,14 @@ export { ActiveFilters };
 import { FilterPresetManager } from "./components/FilterPresetManager";
 export { FilterPresetManager };
 
+// Filter Preset Actions (Comprehensive System)
+import { FilterPresetActions } from "./components/FilterPresetActions";
+export { FilterPresetActions };
+
+// Saved Filters Dropdown
+import { SavedFiltersDropdown } from "./components/SavedFiltersDropdown";
+export { SavedFiltersDropdown };
+
 // Filter Presets Components
 export { PresetSelector } from "./components/FilterPresets/PresetSelector";
 export { SavePresetDialog } from "./components/FilterPresets/SavePresetDialog";
@@ -37,6 +45,18 @@ export type {
   UsePresetsOptions,
   UsePresetsReturn,
 } from "./components/FilterPresets/types";
+
+// Filter Preset Manager Types
+export type {
+  FilterPreset,
+  FilterPresetManagerProps,
+} from "./components/FilterPresetManager";
+
+// Filter Preset Actions Types
+export type { FilterPresetActionsProps } from "./components/FilterPresetActions";
+
+// Saved Filters Dropdown Types
+export type { SavedFiltersDropdownProps } from "./components/SavedFiltersDropdown";
 
 // Export all types from central location
 export * from "./types";
@@ -107,7 +127,7 @@ export type {
   BasePreset,
   SystemPreset,
   UserPreset,
-  FilterPreset,
+  FilterPreset as SystemFilterPreset,
   TemplateVariables,
   PresetSystemOptions,
   PresetSystemEvents,

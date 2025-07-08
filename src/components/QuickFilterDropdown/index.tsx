@@ -77,9 +77,9 @@ export const QuickFilterDropdown: React.FC<QuickFilterDropdownProps> = ({
     if (usePortal === "always") return true;
     if (usePortal === "never") return false;
 
-    // Auto-detect: Check if any parent has overflow hidden/auto/scroll
-    // This is a simplified check - in production you might want more sophisticated detection
-    return false; // For now, default to false for 'auto' mode
+    // Auto-detect: Default to true for better compatibility
+    // This prevents dropdown cutoff issues in most scenarios
+    return true;
   }, [usePortal]);
 
   // Combine system presets and user options

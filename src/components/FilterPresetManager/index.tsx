@@ -5,8 +5,10 @@ import styles from "./FilterPresetManager.module.css";
 export interface FilterPreset {
   id: string;
   name: string;
+  category?: string;
   filterModel: FilterModel;
   createdAt: Date;
+  order?: number;
 }
 
 export interface FilterPresetManagerProps {

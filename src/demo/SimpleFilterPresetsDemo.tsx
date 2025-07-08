@@ -7,6 +7,8 @@ import type {
 } from "ag-grid-community";
 import { ActiveFilters } from "../components/ActiveFilters";
 import { QuickFilterDropdown } from "../components/QuickFilterDropdown";
+import { FilterPresetActions } from "../components/FilterPresetActions";
+import type { FilterPreset } from "../components/FilterPresetManager";
 import styles from "./SimpleFilterPresetsDemo.module.css";
 
 // Sample data
@@ -70,7 +72,7 @@ export const SimpleFilterPresetsDemo: React.FC = () => {
     setFilterModel(event.api.getFilterModel());
   }, []);
 
-  const handlePresetApplied = useCallback((preset: { name: string }) => {
+  const handlePresetApplied = useCallback((preset: FilterPreset) => {
     setLastAppliedPreset(preset.name);
     // Clear the message after 3 seconds
     setTimeout(() => setLastAppliedPreset(null), 3000);
@@ -154,6 +156,7 @@ export const SimpleFilterPresetsDemo: React.FC = () => {
           options={dateFilterOptions}
           placeholder="Date Range"
           className={styles.filterDropdown}
+          usePortal="always"
         />
         <QuickFilterDropdown
           api={gridApi!}
@@ -161,20 +164,29 @@ export const SimpleFilterPresetsDemo: React.FC = () => {
           options={categoryFilterOptions}
           placeholder="Category"
           className={styles.filterDropdown}
+          usePortal="always"
         />
       </div>
 
       {/* Active filters with preset management */}
-      {gridApi && Object.keys(filterModel).length > 0 && (
-        <div className={styles.activeFiltersContainer}>
-          <ActiveFilters
-            api={gridApi}
-            filterModel={filterModel}
-            enablePresets={true}
-            onPresetApplied={handlePresetApplied}
-          />
+      <div className={styles.activeFiltersContainer}>
+        <div className={styles.filterBar}>
+          {gridApi && Object.keys(filterModel).length > 0 && (
+            <ActiveFilters
+              api={gridApi}
+              filterModel={filterModel}
+              enablePresets={false}
+            />
+          )}
+          {gridApi && (
+            <FilterPresetActions
+              api={gridApi}
+              onPresetApplied={handlePresetApplied}
+              className={styles.presetActions}
+            />
+          )}
         </div>
-      )}
+      </div>
 
       {/* Preset applied notification */}
       {lastAppliedPreset && (
@@ -208,11 +220,40 @@ export const SimpleFilterPresetsDemo: React.FC = () => {
           <li>
             Apply filters using the quick filter dropdowns or column filters
           </li>
-          <li>Click the "Save" button that appears next to "Clear all"</li>
-          <li>Give your filter preset a name and save it</li>
-          <li>Access saved presets anytime via the "Saved Filters" button</li>
-          <li>Export/import presets to share with team members</li>
+          <li>Click the "Save" button to save current filters as a preset</li>
+          <li>
+            Give your preset a name and optionally assign it to a category
+          </li>
+          <li>
+            Use the "Apply Filter" dropdown to quickly apply saved presets
+          </li>
+          <li>
+            Click "Manage" to edit names, categories, delete, or reorder presets
+          </li>
+          <li>
+            Use "Share" to export/import presets to share with team members
+          </li>
         </ol>
+        <div className={styles.features}>
+          <h4>Key Features:</h4>
+          <ul>
+            <li>
+              <strong>Save:</strong> Create named presets with categories
+            </li>
+            <li>
+              <strong>Share:</strong> Export presets to JSON or import from
+              files
+            </li>
+            <li>
+              <strong>Manage:</strong> Rename, categorize, delete, and reorder
+              with drag & drop
+            </li>
+            <li>
+              <strong>Apply:</strong> Quick access dropdown grouped by
+              categories
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   );
