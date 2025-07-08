@@ -311,10 +311,16 @@ export const ComponentsShowcaseComplete: React.FC<
   }, [savedPresets]);
 
   // Auto-load preset from URL
-  const { preset: urlPreset } = usePresetFromUrl({
-    loadPresetById: async (id) => {
+  // Memoize the loadPresetById function to prevent infinite loops
+  const loadPresetById = useCallback(
+    async (id: string) => {
       return savedPresets.find((p) => p.id === id);
     },
+    [savedPresets],
+  );
+
+  const { preset: urlPreset } = usePresetFromUrl({
+    loadPresetById,
   });
 
   // Apply URL preset when loaded
