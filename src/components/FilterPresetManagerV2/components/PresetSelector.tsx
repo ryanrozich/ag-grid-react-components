@@ -113,20 +113,6 @@ export const PresetSelector: React.FC<PresetSelectorProps> = ({
     [api, onPresetSelect],
   );
 
-  // Handle clear filters
-  const handleClearFilters = useCallback(() => {
-    api.setFilterModel(null);
-    setSelectedPresetId(null);
-    setIsOpen(false);
-    setSearchQuery("");
-    onPresetSelect({
-      id: "clear",
-      name: "Clear all filters",
-      filterModel: {},
-      createdAt: new Date(),
-    });
-  }, [api, onPresetSelect]);
-
   // Update position when dropdown opens
   useEffect(() => {
     if (isOpen) {
@@ -195,31 +181,6 @@ export const PresetSelector: React.FC<PresetSelectorProps> = ({
       </div>
 
       <div className={styles.presetList}>
-        {/* Clear filters option */}
-        <button
-          className={`${styles.clearButton} ${
-            !selectedPresetId ? styles.active : ""
-          }`}
-          onClick={handleClearFilters}
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M15 9l-6 6M9 9l6 6" />
-          </svg>
-          Clear all filters
-        </button>
-
-        {/* Divider */}
-        {Object.keys(filteredGroups).length > 0 && (
-          <div className={styles.divider} />
-        )}
-
         {/* Grouped presets */}
         {Object.keys(filteredGroups).length === 0 ? (
           <div className={styles.emptyMessage}>

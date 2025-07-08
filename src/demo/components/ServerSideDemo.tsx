@@ -14,7 +14,11 @@ import type {
   FilterChangedEvent,
 } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
-import { ActiveFilters } from "../../index";
+import {
+  ActiveFilters,
+  QuickFilterDropdown,
+  FilterPresetManager,
+} from "../../index";
 import {
   darkTheme,
   getColumnDefs,
@@ -300,11 +304,29 @@ export const ServerSideDemo: React.FC = () => {
         </div>
       </DemoToolbar>
 
-      {/* Active Filters */}
-      {gridApi && Object.keys(filterModel).length > 0 && (
+      {/* Filters section */}
+      {gridApi && (
         <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg mt-3">
           <div className="border-t border-gray-700/50 bg-gray-800/20 p-3">
-            <ActiveFilters api={gridApi} filterModel={filterModel} />
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              {Object.keys(filterModel).length > 0 && (
+                <ActiveFilters api={gridApi} filterModel={filterModel} />
+              )}
+              <div className="flex items-center gap-2">
+                <QuickFilterDropdown
+                  api={gridApi}
+                  columnId="dueDate"
+                  placeholder="Filter by due date..."
+                />
+                <FilterPresetManager
+                  api={gridApi}
+                  gridId="server-side-demo"
+                  onPresetApplied={(preset) => {
+                    console.log("Applied preset:", preset.name);
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -200,6 +200,14 @@
 
 .presetInfo {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  gap: 1rem;
+}
+
+.presetInfo > div {
+  display: flex;
   flex-direction: column;
   gap: 0.125rem;
 }
@@ -207,6 +215,12 @@
 .presetName {
   font-weight: 500;
   font-size: 0.875rem;
+}
+
+.presetCategory {
+  font-size: 0.75rem;
+  color: #3b82f6;
+  font-weight: 500;
 }
 
 .presetDate {
@@ -252,6 +266,106 @@
 
 .deleteButton:hover {
   background: rgb(239, 68, 68, 0.1);
+}
+
+.editButton {
+  padding: 0.375rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.25rem;
+  color: #3b82f6;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editButton:hover {
+  background: rgb(59, 130, 246, 0.1);
+}
+
+/* Edit form */
+.editForm {
+  display: flex;
+  flex: 1;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.editInput {
+  flex: 1;
+  padding: 0.375rem 0.75rem;
+  background: rgb(0, 0, 0, 0.2);
+  border: 1px solid rgb(255, 255, 255, 0.2);
+  border-radius: 0.25rem;
+  color: white;
+  font-size: 0.875rem;
+}
+
+.editInput:focus {
+  outline: 2px solid rgb(99, 102, 241, 0.5);
+  outline-offset: 2px;
+  border-color: rgb(99, 102, 241);
+}
+
+.editSelect {
+  padding: 0.375rem 0.75rem;
+  background: rgb(0, 0, 0, 0.2);
+  border: 1px solid rgb(255, 255, 255, 0.2);
+  border-radius: 0.25rem;
+  color: white;
+  font-size: 0.875rem;
+  min-width: 100px;
+}
+
+.editSelect:focus {
+  outline: 2px solid rgb(99, 102, 241, 0.5);
+  outline-offset: 2px;
+  border-color: rgb(99, 102, 241);
+}
+
+.editActions {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.editActions .saveButton {
+  padding: 0.375rem 0.75rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.editActions .saveButton:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.editActions .saveButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  padding: 0.375rem 0.75rem;
+  background: transparent;
+  color: #e2e8f0;
+  border: 1px solid rgb(255, 255, 255, 0.2);
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cancelButton:hover {
+  background: rgb(255, 255, 255, 0.1);
+  border-color: rgb(255, 255, 255, 0.3);
 }
 
 /* Import/Export */
