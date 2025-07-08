@@ -17,7 +17,7 @@
 
 2. **Go to GitHub Actions**:
 
-   - Navigate to: https://github.com/ryanrozich/ag-grid-react-components/actions/workflows/release-candidate.yml
+   - Navigate to: <https://github.com/ryanrozich/ag-grid-react-components/actions/workflows/release-candidate.yml>
    - Click "Run workflow"
    - Enter:
      - RC version: `0.2.0-rc.1`
@@ -35,7 +35,7 @@
 ## What Gets Published
 
 - **NPM Package**: Available as `ag-grid-react-components@next`
-- **GitHub Release**: Pre-release at https://github.com/ryanrozich/ag-grid-react-components/releases
+- **GitHub Release**: Pre-release at <https://github.com/ryanrozich/ag-grid-react-components/releases>
 - **Cloudflare Pages**: Your PR preview continues to work
 
 ## Installation for Testing

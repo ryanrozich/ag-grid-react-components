@@ -101,14 +101,14 @@ const Navigation: React.FC<{
 const Footer: React.FC = () => (
   <footer className="bg-gray-900 border-t border-gray-800 mt-auto">
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
           <h3 className="text-white font-semibold mb-4">
             AG Grid React Components
           </h3>
           <p className="text-gray-400 text-sm">
-            Enterprise-ready date filtering components for AG Grid. Released
-            under the MIT License.
+            Supercharge AG Grid with modern UX components. Tree-shakeable,
+            headless, and released under the MIT License.
           </p>
         </div>
         <div>
@@ -136,6 +136,35 @@ const Footer: React.FC = () => (
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 AG Grid Documentation
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3 className="text-white font-semibold mb-4">Community</h3>
+          <ul className="space-y-2 text-sm">
+            <li>
+              <a
+                href="https://github.com/ryanrozich/ag-grid-react-components/issues"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                Report Issues
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://github.com/ryanrozich/ag-grid-react-components/issues/new?labels=enhancement"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                Suggest Features
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://github.com/ryanrozich/ag-grid-react-components/pulls"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                View Pull Requests
               </a>
             </li>
           </ul>
@@ -640,6 +669,87 @@ export const ComponentsShowcaseComplete: React.FC<
                         </div>
                       </div>
                     </div>
+
+                    {/* Developer Experience Points */}
+                    <div className="mt-8 space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center">
+                          <svg
+                            className="w-5 h-5 text-green-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="2"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <h4 className="text-white font-medium">
+                            Simple npm install
+                          </h4>
+                          <p className="text-gray-400 text-sm mt-1">
+                            npm install ag-grid-react-components
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center">
+                          <svg
+                            className="w-5 h-5 text-green-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="2"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <h4 className="text-white font-medium">
+                            Clean, intuitive APIs
+                          </h4>
+                          <p className="text-gray-400 text-sm mt-1">
+                            Thoughtful defaults with full customization
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center">
+                          <svg
+                            className="w-5 h-5 text-green-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="2"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <h4 className="text-white font-medium">
+                            Zero dependencies
+                          </h4>
+                          <p className="text-gray-400 text-sm mt-1">
+                            Tree-shakeable • TypeScript • 25KB min
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -778,11 +888,18 @@ export const ComponentsShowcaseComplete: React.FC<
             </div>
           </div>
 
-          {/* Problem/Solution Section */}
+          {/* Filling the UX Gap Section */}
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
             <div className="mx-auto max-w-2xl lg:text-center mb-16">
+              <h2 className="text-base font-semibold leading-7 text-indigo-400">
+                The Missing Pieces
+              </h2>
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Your users understand dates differently than databases do
+                Turn AG Grid into a complete data workspace
+              </p>
+              <p className="mt-6 text-lg text-gray-300">
+                AG Grid handles the heavy lifting. These components handle the
+                human experience.
               </p>
             </div>
             <div className="mx-auto max-w-2xl lg:mt-24 lg:max-w-none">
@@ -1249,6 +1366,15 @@ const columnDefs = [{
                           automatically.
                         </p>
 
+                        {/* TODO: Add animated GIF - date picker fatigue vs "last 30 days" */}
+                        <div className="my-6 rounded-lg overflow-hidden border border-gray-700 bg-gray-900/50 p-4">
+                          <p className="text-gray-500 text-center text-sm">
+                            [Animated GIF placeholder: Show user clicking
+                            through date pickers repeatedly, then switching to
+                            typing "last 30 days" once and being done]
+                          </p>
+                        </div>
+
                         <p className="text-gray-300 mb-4">
                           <strong>Then visibility becomes crucial.</strong> As
                           your grid grows to dozens of columns, users lose track
@@ -1263,6 +1389,15 @@ const columnDefs = [{
                           display every active filter clearly, making them
                           instantly visible and removable.
                         </p>
+
+                        {/* TODO: Add animated GIF - hunting for blue dots vs clear filter pills */}
+                        <div className="my-6 rounded-lg overflow-hidden border border-gray-700 bg-gray-900/50 p-4">
+                          <p className="text-gray-500 text-center text-sm">
+                            [Animated GIF placeholder: Split screen showing user
+                            hunting for tiny blue dots vs instantly seeing and
+                            removing filter pills]
+                          </p>
+                        </div>
 
                         <p className="text-gray-300 mb-4">
                           <strong>Soon, patterns emerge.</strong> Your team runs
@@ -1279,6 +1414,15 @@ const columnDefs = [{
                           combinations.
                         </p>
 
+                        {/* TODO: Add animated GIF - manual multi-column filtering vs dropdown selection */}
+                        <div className="my-6 rounded-lg overflow-hidden border border-gray-700 bg-gray-900/50 p-4">
+                          <p className="text-gray-500 text-center text-sm">
+                            [Animated GIF placeholder: User clicking through
+                            multiple columns to set filters vs selecting "High
+                            Priority Bugs" from dropdown]
+                          </p>
+                        </div>
+
                         <p className="text-gray-300 mb-4">
                           <strong>Finally, collaboration kicks in.</strong>{" "}
                           Teams want to save their carefully crafted views, name
@@ -1294,6 +1438,15 @@ const columnDefs = [{
                           their exact grid state.
                         </p>
 
+                        {/* TODO: Add animated GIF - saving, sharing, and loading presets */}
+                        <div className="my-6 rounded-lg overflow-hidden border border-gray-700 bg-gray-900/50 p-4">
+                          <p className="text-gray-500 text-center text-sm">
+                            [Animated GIF placeholder: User saving a preset
+                            named "Q4 Critical Issues", copying link, colleague
+                            opening exact same view]
+                          </p>
+                        </div>
+
                         <p className="text-gray-300 text-lg font-medium">
                           Together, these components transform AG Grid from a
                           feature-rich table into a tool people actually enjoy
@@ -1302,91 +1455,41 @@ const columnDefs = [{
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-                        <h3 className="text-lg font-semibold text-white mb-3">
-                          🚀 Quick Start
-                        </h3>
-                        <p className="text-gray-300 mb-4">
-                          Get up and running with minimal setup. Start with just
-                          25KB for basic features.
-                        </p>
-                        <button
-                          onClick={() => setActiveDocSection("getting-started")}
-                          className="text-indigo-400 hover:text-indigo-300 font-medium"
-                        >
-                          Getting Started →
-                        </button>
-                      </div>
-
-                      <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-                        <h3 className="text-lg font-semibold text-white mb-3">
-                          📦 Components
-                        </h3>
-                        <p className="text-gray-300 mb-4">
-                          Explore our modular components: relative date
-                          filtering, active filter pills, quick filter menus,
-                          and filter presets.
-                        </p>
-                        <button
-                          onClick={() =>
-                            setActiveDocSection("relativedatefilter")
-                          }
-                          className="text-indigo-400 hover:text-indigo-300 font-medium"
-                        >
-                          Explore Components →
-                        </button>
-                      </div>
-
-                      <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-                        <h3 className="text-lg font-semibold text-white mb-3">
-                          🎯 What You Can Build
-                        </h3>
-                        <ul className="text-gray-300 space-y-2">
-                          <li>• Reports that update automatically</li>
-                          <li>• Dashboards with shareable filters</li>
-                          <li>• Views that remember user preferences</li>
-                          <li>• Grids that are actually user-friendly</li>
-                        </ul>
-                      </div>
-
-                      <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-                        <h3 className="text-lg font-semibold text-white mb-3">
-                          📖 Resources
-                        </h3>
-                        <div className="space-y-2">
-                          <a
-                            href="https://github.com/ryanrozich/ag-grid-react-components"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block text-indigo-400 hover:text-indigo-300"
-                          >
-                            GitHub Repository
-                          </a>
-                          <button
-                            onClick={() => setActiveDocSection("expressions")}
-                            className="block text-indigo-400 hover:text-indigo-300 text-left"
-                          >
-                            Date Expressions Guide
-                          </button>
-                          <button
-                            onClick={() => setActiveDocSection("types")}
-                            className="block text-indigo-400 hover:text-indigo-300 text-left"
-                          >
-                            TypeScript Reference
-                          </button>
-                        </div>
-                      </div>
+                    {/* Why These Components Exist */}
+                    <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700 mb-8">
+                      <h3 className="text-lg font-semibold text-white mb-3">
+                        Why We Built This
+                      </h3>
+                      <p className="text-gray-300 mb-4">
+                        AG Grid is incredibly powerful, flexible, and
+                        feature-rich. It's the Swiss Army knife of data grids.
+                        But when you're building applications where users live
+                        in these grids 8 hours a day, you need more than just
+                        features—you need thoughtful UX.
+                      </p>
+                      <p className="text-gray-300">
+                        These components are the missing piece that transforms
+                        AG Grid from a powerful development tool into a
+                        delightful user experience. They're the difference
+                        between a grid that <em>works</em> and a grid that users{" "}
+                        <em>love</em>.
+                      </p>
                     </div>
 
-                    <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-6 mt-8">
-                      <h3 className="text-lg font-semibold text-blue-300 mb-2">
-                        Version {VERSION_DISPLAY}
-                      </h3>
-                      <p className="text-gray-300">
-                        This is the latest release of AG Grid React Components.
-                        We welcome your feedback and contributions!
-                      </p>
+                    {/* Quick Navigation */}
+                    <div className="flex gap-4 mb-8">
+                      <button
+                        onClick={() => setActiveDocSection("getting-started")}
+                        className="flex-1 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white font-medium transition-colors"
+                      >
+                        Get Started →
+                      </button>
+                      <button
+                        onClick={() => navigate("/demo")}
+                        className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-medium transition-colors"
+                      >
+                        View Live Demo →
+                      </button>
                     </div>
                   </div>
                 )}

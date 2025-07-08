@@ -336,6 +336,7 @@ export const ServerSideDemo: React.FC = () => {
                     api={gridApi}
                     columnId="dueDate"
                     placeholder="Filter by due date..."
+                    options={[]}
                   />
                   <FilterPresetManager
                     api={gridApi}

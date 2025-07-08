@@ -8,7 +8,7 @@ import type {
 import { ActiveFilters } from "../components/ActiveFilters";
 import { QuickFilterDropdown } from "../components/QuickFilterDropdown";
 import { FilterPresetActions } from "../components/FilterPresetActions";
-import type { FilterPreset } from "../components/FilterPresetManager";
+import type { FilterPreset } from "../components/FilterPresets/types";
 import styles from "./SimpleFilterPresetsDemo.module.css";
 
 // Sample data
