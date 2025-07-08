@@ -6,7 +6,7 @@ import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import {
   QuickFilterDropdown,
   ActiveFilters,
-  FilterPresetActions,
+  FilterPresetManager,
   setupGridStatePersistence,
   usePresetFromUrl,
 } from "../index";
@@ -7177,8 +7177,9 @@ const handleFilterSelect = async (option) => {
                           filterModel={filterModel}
                         />
                       )}
-                      <FilterPresetActions
+                      <FilterPresetManager
                         api={gridApi}
+                        gridId="client-side-demo"
                         onPresetApplied={(preset) => {
                           console.log("Applied preset:", preset.name);
                         }}

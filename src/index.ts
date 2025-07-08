@@ -16,15 +16,13 @@ export { QuickFilterDropdown, DATE_FILTER_PRESETS };
 import ActiveFilters from "./components/ActiveFilters";
 export { ActiveFilters };
 
-// Filter Preset Manager (Lightweight Alternative)
-import { FilterPresetManager } from "./components/FilterPresetManager";
+// Filter Preset Manager v2 (Grid-Specific with Required ID)
+import { FilterPresetManager } from "./components/FilterPresetManagerV2";
 export { FilterPresetManager };
 
-// Filter Preset Actions (Comprehensive System)
+// Legacy Filter Preset Components (v0.1.x)
 import { FilterPresetActions } from "./components/FilterPresetActions";
 export { FilterPresetActions };
-
-// Saved Filters Dropdown
 import { SavedFiltersDropdown } from "./components/SavedFiltersDropdown";
 export { SavedFiltersDropdown };
 
@@ -46,16 +44,14 @@ export type {
   UsePresetsReturn,
 } from "./components/FilterPresets/types";
 
-// Filter Preset Manager Types
+// Filter Preset Manager v2 Types
 export type {
   FilterPreset,
   FilterPresetManagerProps,
-} from "./components/FilterPresetManager";
+} from "./components/FilterPresetManagerV2";
 
-// Filter Preset Actions Types
+// Legacy Filter Preset Types (v0.1.x)
 export type { FilterPresetActionsProps } from "./components/FilterPresetActions";
-
-// Saved Filters Dropdown Types
 export type { SavedFiltersDropdownProps } from "./components/SavedFiltersDropdown";
 
 // Export all types from central location

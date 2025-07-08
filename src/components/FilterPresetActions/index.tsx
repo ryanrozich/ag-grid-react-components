@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 import type { GridApi } from "ag-grid-community";
-import type { FilterPreset } from "../FilterPresetManager";
+import type { FilterPreset } from "../FilterPresetManagerV2/types";
 import { SavedFiltersDropdown } from "../SavedFiltersDropdown";
 import styles from "./FilterPresetActions.module.css";
 

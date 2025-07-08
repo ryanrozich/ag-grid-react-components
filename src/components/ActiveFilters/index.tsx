@@ -2,7 +2,7 @@ import React from "react";
 import type { GridApi, FilterModel } from "ag-grid-community";
 import styles from "./ActiveFilters.module.css";
 import type { DateFilterModel } from "../interfaces";
-import { FilterPresetManager } from "../FilterPresetManager";
+// import { FilterPresetManager } from "../FilterPresetManager"; // TODO: Update to use new FilterPresetManagerV2
 
 export interface ActiveFiltersProps {
   api: GridApi;
@@ -139,8 +139,8 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   api,
   filterModel,
   className = "",
-  enablePresets = false,
-  onPresetApplied,
+  enablePresets: _enablePresets = false,
+  onPresetApplied: _onPresetApplied,
 }) => {
   const filterPills: FilterPill[] = React.useMemo(() => {
     const pills: FilterPill[] = [];
@@ -205,9 +205,10 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         >
           Clear all
         </button>
+        {/* TODO: Update to use new FilterPresetManagerV2
         {enablePresets && (
           <FilterPresetManager api={api} onPresetApplied={onPresetApplied} />
-        )}
+        )} */}
       </div>
     </div>
   );

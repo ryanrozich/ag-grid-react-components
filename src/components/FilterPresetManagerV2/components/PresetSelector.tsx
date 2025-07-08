@@ -1,46 +1,48 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  useRef,
+} from "react";
 import { createPortal } from "react-dom";
-import type { GridApi } from "ag-grid-community";
-import type { FilterPreset } from "../FilterPresetManagerV2/types";
-import styles from "./SavedFiltersDropdown.module.css";
+import type { PresetSelectorProps, FilterPreset } from "../types";
+import styles from "./PresetSelector.module.css";
 
-export interface SavedFiltersDropdownProps {
-  api: GridApi;
-  presets: FilterPreset[];
-  onPresetSelect?: (preset: FilterPreset) => void;
-  placeholder?: string;
-  className?: string;
-}
-
-export const SavedFiltersDropdown: React.FC<SavedFiltersDropdownProps> = ({
+export const PresetSelector: React.FC<PresetSelectorProps> = ({
   api,
   presets,
   onPresetSelect,
-  placeholder = "My Filters",
+  placeholder = "My Views",
   className = "",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedPreset, setSelectedPreset] = useState<FilterPreset | null>(
-    null,
-  );
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState<{
     top: number;
     left: number;
     width: number;
   } | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Group presets by category
   const groupedPresets = useMemo(() => {
     const groups: Record<string, FilterPreset[]> = {};
 
-    // Sort presets by order, then by name
     const sortedPresets = [...presets].sort((a, b) => {
+      // Default presets first
+      if (a.isDefault && !b.isDefault) return -1;
+      if (!a.isDefault && b.isDefault) return 1;
+
+      // Then by order
       if (a.order !== undefined && b.order !== undefined) {
         return a.order - b.order;
       }
+
+      // Then by name
       return a.name.localeCompare(b.name);
     });
 
@@ -85,7 +87,7 @@ export const SavedFiltersDropdown: React.FC<SavedFiltersDropdownProps> = ({
     const viewportHeight = window.innerHeight;
     const spaceBelow = viewportHeight - rect.bottom;
     const spaceAbove = rect.top;
-    const dropdownHeight = 320; // Approximate height
+    const dropdownHeight = 320;
 
     let top = rect.bottom + 4;
     if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
@@ -95,7 +97,7 @@ export const SavedFiltersDropdown: React.FC<SavedFiltersDropdownProps> = ({
     return {
       top,
       left: rect.left,
-      width: Math.max(rect.width, 200),
+      width: Math.max(rect.width, 240),
     };
   }, []);
 
@@ -103,12 +105,35 @@ export const SavedFiltersDropdown: React.FC<SavedFiltersDropdownProps> = ({
   const handlePresetSelect = useCallback(
     (preset: FilterPreset) => {
       api.setFilterModel(preset.filterModel);
-      setSelectedPreset(preset);
+      setSelectedPresetId(preset.id);
       setIsOpen(false);
-      onPresetSelect?.(preset);
+      setSearchQuery("");
+      onPresetSelect(preset);
     },
     [api, onPresetSelect],
   );
+
+  // Handle clear filters
+  const handleClearFilters = useCallback(() => {
+    api.setFilterModel(null);
+    setSelectedPresetId(null);
+    setIsOpen(false);
+    setSearchQuery("");
+    onPresetSelect({
+      id: "clear",
+      name: "Clear all filters",
+      filterModel: {},
+      createdAt: new Date(),
+    });
+  }, [api, onPresetSelect]);
+
+  // Update position when dropdown opens
+  useEffect(() => {
+    if (isOpen) {
+      const position = calculateDropdownPosition();
+      setDropdownPosition(position);
+    }
+  }, [isOpen, calculateDropdownPosition]);
 
   // Handle click outside
   useEffect(() => {
@@ -132,13 +157,14 @@ export const SavedFiltersDropdown: React.FC<SavedFiltersDropdownProps> = ({
     }
   }, [isOpen]);
 
-  // Update position when dropdown opens
-  useEffect(() => {
-    if (isOpen) {
-      const position = calculateDropdownPosition();
-      setDropdownPosition(position);
+  // Get display text
+  const displayText = useMemo(() => {
+    if (selectedPresetId) {
+      const preset = presets.find((p) => p.id === selectedPresetId);
+      return preset?.name || placeholder;
     }
-  }, [isOpen, calculateDropdownPosition]);
+    return placeholder;
+  }, [selectedPresetId, presets, placeholder]);
 
   const dropdownContent = (
     <div
@@ -160,17 +186,44 @@ export const SavedFiltersDropdown: React.FC<SavedFiltersDropdownProps> = ({
         <input
           type="text"
           className={styles.searchInput}
-          placeholder="Search filters..."
+          placeholder="Search views..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onClick={(e) => e.stopPropagation()}
+          autoFocus
         />
       </div>
 
       <div className={styles.presetList}>
+        {/* Clear filters option */}
+        <button
+          className={`${styles.clearButton} ${
+            !selectedPresetId ? styles.active : ""
+          }`}
+          onClick={handleClearFilters}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M15 9l-6 6M9 9l6 6" />
+          </svg>
+          Clear all filters
+        </button>
+
+        {/* Divider */}
+        {Object.keys(filteredGroups).length > 0 && (
+          <div className={styles.divider} />
+        )}
+
+        {/* Grouped presets */}
         {Object.keys(filteredGroups).length === 0 ? (
           <div className={styles.emptyMessage}>
-            {searchQuery ? "No matching filters" : "No saved filters yet"}
+            {searchQuery ? "No matching views" : "No saved views yet"}
           </div>
         ) : (
           Object.entries(filteredGroups).map(([category, presetList]) => (
@@ -180,11 +233,14 @@ export const SavedFiltersDropdown: React.FC<SavedFiltersDropdownProps> = ({
                 <button
                   key={preset.id}
                   className={`${styles.presetItem} ${
-                    selectedPreset?.id === preset.id ? styles.selected : ""
+                    selectedPresetId === preset.id ? styles.selected : ""
                   }`}
                   onClick={() => handlePresetSelect(preset)}
                 >
-                  <span className={styles.presetName}>{preset.name}</span>
+                  <span className={styles.presetName}>
+                    {preset.isDefault && "⭐ "}
+                    {preset.name}
+                  </span>
                   <span className={styles.presetDate}>
                     {new Date(preset.createdAt).toLocaleDateString()}
                   </span>
@@ -206,11 +262,19 @@ export const SavedFiltersDropdown: React.FC<SavedFiltersDropdownProps> = ({
         aria-expanded={isOpen}
         aria-haspopup="listbox"
       >
-        <span className={styles.triggerText}>
-          {selectedPreset ? selectedPreset.name : placeholder}
-        </span>
         <svg
-          className={`${styles.triggerIcon} ${isOpen ? styles.open : ""}`}
+          className={styles.triggerIcon}
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
+          <path d="M3 4h18M3 8h12M3 12h12M3 16h18M3 20h12" strokeWidth="2" />
+        </svg>
+        <span className={styles.triggerText}>{displayText}</span>
+        <svg
+          className={`${styles.triggerChevron} ${isOpen ? styles.open : ""}`}
           width="12"
           height="12"
           viewBox="0 0 12 12"
