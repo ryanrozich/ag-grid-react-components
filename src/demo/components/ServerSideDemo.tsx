@@ -41,6 +41,12 @@ const ServerStats: React.FC<{
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
+  // Memoize the filter model string to prevent infinite re-renders
+  const filterModelString = useMemo(
+    () => JSON.stringify(filterModel),
+    [filterModel],
+  );
+
   useEffect(() => {
     const fetchStats = async () => {
       setLoading(true);
@@ -48,7 +54,10 @@ const ServerStats: React.FC<{
         const response = await fetch(`${apiUrl}/stats`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ filterModel, searchText }),
+          body: JSON.stringify({
+            filterModel: JSON.parse(filterModelString),
+            searchText,
+          }),
         });
         const data = await response.json();
         // Transform server stats to match our common format
@@ -73,7 +82,7 @@ const ServerStats: React.FC<{
     };
 
     fetchStats();
-  }, [apiUrl, filterModel, searchText]);
+  }, [apiUrl, filterModelString, searchText]);
 
   if (loading || !stats) {
     return (
