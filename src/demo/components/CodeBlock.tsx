@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { vs } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 // Import only the languages we need
 import typescript from "react-syntax-highlighter/dist/esm/languages/prism/typescript";
@@ -33,7 +32,7 @@ interface CodeBlockProps {
     | "css";
   showLineNumbers?: boolean;
   showCopyButton?: boolean;
-  variant?: "default" | "hero" | "light";
+  variant?: "default" | "hero";
 }
 
 export const CodeBlock: React.FC<CodeBlockProps> = ({
@@ -44,52 +43,6 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
   variant = "default",
 }) => {
   const [copied, setCopied] = useState(false);
-  const [detectedTheme, setDetectedTheme] = useState<"light" | "dark">("dark");
-
-  // Detect the actual theme based on background
-  React.useEffect(() => {
-    if (variant !== "default") return;
-
-    const checkTheme = () => {
-      const body = document.body;
-      const computedStyle = window.getComputedStyle(body);
-      const bgColor = computedStyle.backgroundColor;
-
-      // Check if background is light
-      if (bgColor === "rgb(255, 255, 255)" || bgColor === "white") {
-        setDetectedTheme("light");
-      } else {
-        // Check the nearest parent with a background
-        let foundDarkBg = false;
-
-        // Look for elements with dark backgrounds
-        const darkElements = document.querySelectorAll(
-          ".bg-gray-950, .bg-gray-900, .min-h-screen",
-        );
-        darkElements.forEach((el) => {
-          const elBg = window.getComputedStyle(el).backgroundColor;
-          if (elBg && elBg !== "rgba(0, 0, 0, 0)" && elBg !== "transparent") {
-            // Parse RGB values
-            const match = elBg.match(/\d+/g);
-            if (match) {
-              const [r, g, b] = match.map(Number);
-              // If all values are low, it's a dark background
-              if (r < 50 && g < 50 && b < 50) {
-                foundDarkBg = true;
-              }
-            }
-          }
-        });
-
-        setDetectedTheme(foundDarkBg ? "dark" : "light");
-      }
-    };
-
-    checkTheme();
-    // Re-check on window resize or other changes
-    window.addEventListener("resize", checkTheme);
-    return () => window.removeEventListener("resize", checkTheme);
-  }, [variant]);
 
   const handleCopy = async () => {
     try {
@@ -110,21 +63,12 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
   // Always disable line numbers for now
   const shouldShowLineNumbers = false;
 
-  // Use light theme for light variant or detected light theme
-  const isLightTheme =
-    variant === "light" || (variant === "default" && detectedTheme === "light");
-  const theme = isLightTheme ? vs : vscDarkPlus;
-
   return (
     <div className="relative group">
       {showCopyButton && variant !== "hero" && (
         <button
           onClick={handleCopy}
-          className={`absolute top-3 right-3 px-3 py-1 ${
-            isLightTheme
-              ? "bg-gray-100/80 hover:bg-gray-200/90 text-gray-700 border-gray-300/50"
-              : "bg-gray-700/50 hover:bg-gray-600/70 text-gray-300 border-gray-600/50"
-          } backdrop-blur-sm rounded text-xs border transition-all duration-200 z-10 ${
+          className={`absolute top-3 right-3 px-3 py-1 bg-gray-700/50 hover:bg-gray-600/70 backdrop-blur-sm rounded text-xs text-gray-300 border border-gray-600/50 transition-all duration-200 z-10 ${
             copied ? "opacity-100" : "opacity-50 group-hover:opacity-100"
           }`}
           title="Copy code"
@@ -170,9 +114,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
         className={`overflow-x-auto rounded-lg shadow-lg ${
           variant === "hero"
             ? "bg-gray-900/80 border border-gray-700/30"
-            : isLightTheme
-              ? "bg-gray-50 border border-gray-200"
-              : "bg-gray-900/90 border border-gray-700/50"
+            : "bg-gray-900/90 border border-gray-700/50"
         }`}
       >
         <div style={{ position: "relative" }}>
@@ -200,7 +142,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
           )}
           <SyntaxHighlighter
             language={language}
-            style={theme}
+            style={vscDarkPlus}
             showLineNumbers={false}
             customStyle={{
               margin: 0,
@@ -211,7 +153,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                 : variant === "hero"
                   ? "1.25rem"
                   : "1rem",
-              background: isLightTheme ? "#fafafa" : "transparent",
+              background: "transparent",
               fontSize: variant === "hero" ? "0.9375rem" : "0.875rem",
               lineHeight: 1.7,
               fontFamily:
