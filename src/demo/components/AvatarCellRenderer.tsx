@@ -83,18 +83,6 @@ const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
     return `https://i.pravatar.cc/64?u=${seed}`;
   }, [value, hasPhoto, backgroundColor]);
 
-  // Debug logging
-  React.useEffect(() => {
-    if (hasPhoto && value) {
-      console.log(`Avatar for ${value}:`, {
-        url: avatarUrl,
-        seed: value.toLowerCase().replace(/\s+/g, ""),
-        imageError,
-        imageLoaded,
-      });
-    }
-  }, [value, avatarUrl, hasPhoto, imageError, imageLoaded]);
-
   if (!value) return null;
 
   return (
@@ -121,11 +109,9 @@ const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
               className={styles.avatar}
               loading="lazy"
               onLoad={() => {
-                console.log(`Successfully loaded avatar for ${value}`);
                 setImageLoaded(true);
               }}
-              onError={(e) => {
-                console.error(`Failed to load avatar for ${value}:`, e);
+              onError={() => {
                 setImageError(true);
               }}
               style={{
