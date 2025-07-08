@@ -2,7 +2,7 @@
 
 ## Before (Slow with fixed timeouts)
 
-```typescript
+````typescript
 await page.goto("/");
 await page.waitForTimeout(2000); // Wait for page load
 
@@ -16,7 +16,7 @@ await page.waitForTimeout(1500); // Wait for filter to apply
 const gridRows = await page.locator(".ag-row");
 await page.waitForTimeout(500);
 expect(await gridRows.count()).toBe(10);
-```
+```text
 
 ## After (Fast with smart waits)
 
@@ -33,7 +33,7 @@ await setDateFilterValue(page, "2024-01-01"); // Handles all the waiting intelli
 // Check results - no arbitrary wait needed
 const data = await getGridData(page);
 expect(data).toHaveLength(10);
-```
+````
 
 ## Time Saved
 

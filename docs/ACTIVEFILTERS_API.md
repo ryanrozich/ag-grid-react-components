@@ -4,9 +4,9 @@ The ActiveFilters component displays currently active AG Grid filters as removab
 
 ## Installation
 
-```bash
+````bash
 npm install ag-grid-react-components
-```
+```text
 
 ## Basic Usage
 
@@ -14,7 +14,7 @@ npm install ag-grid-react-components
 import { ActiveFilters } from "ag-grid-react-components";
 
 <ActiveFilters api={gridApi} filterModel={filterModel} />;
-```
+````
 
 ## API
 
@@ -34,7 +34,7 @@ import { ActiveFilters } from "ag-grid-react-components";
 
 ### TypeScript Interfaces
 
-```typescript
+````typescript
 interface ActiveFiltersProps {
   api: GridApi;
   filterModel: FilterModel;
@@ -50,7 +50,7 @@ interface ActiveFiltersProps {
 interface FilterModel {
   [columnId: string]: any;
 }
-```
+```text
 
 ## Examples
 
@@ -74,7 +74,7 @@ const MyGrid = () => {
     </>
   );
 };
-```
+```text
 
 ### Custom Styling
 
@@ -96,7 +96,7 @@ const MyGrid = () => {
   background: #007bff;
   color: white;
 }
-```
+```text
 
 ### With Custom Labels
 
@@ -110,14 +110,14 @@ const MyGrid = () => {
     assignedTo: "Assigned To",
   }}
 />
-```
+```text
 
 ### Limited Display
 
 ```tsx
 // Only show first 5 filters
 <ActiveFilters api={gridApi} filterModel={filterModel} maxFilters={5} />
-```
+```text
 
 ### Custom Callbacks
 
@@ -135,7 +135,7 @@ const MyGrid = () => {
     }
   }}
 />
-```
+````
 
 ## Filter Display Format
 
@@ -169,7 +169,7 @@ The component intelligently formats different filter types:
 
 The component uses CSS modules with these classes:
 
-```css
+````css
 /* Container */
 .container {
   display: flex;
@@ -217,7 +217,7 @@ The component uses CSS modules with these classes:
   font-size: 0.875rem;
   cursor: pointer;
 }
-```
+```text
 
 ## Accessibility
 
@@ -248,7 +248,7 @@ Full TypeScript support with proper AG Grid type integration:
 ```typescript
 import type { GridApi, FilterModel } from "ag-grid-community";
 import type { ActiveFiltersProps } from "ag-grid-react-components";
-```
+````
 
 ## Browser Support
 

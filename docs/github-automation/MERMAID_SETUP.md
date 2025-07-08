@@ -6,15 +6,15 @@
 
 The most common issue is not having a Mermaid preview extension installed. Install one of these:
 
-**Recommended: Markdown Preview Mermaid Support**
+### Recommended: Markdown Preview Mermaid Support
 
-```
+```text
 ext install bierner.markdown-mermaid
 ```
 
-**Alternative: Mermaid Markdown Syntax Highlighting**
+### Alternative: Mermaid Markdown Syntax Highlighting
 
-```
+```text
 ext install bpruitt-goddard.mermaid-markdown-syntax-highlighting
 ```
 
@@ -53,7 +53,7 @@ Make sure you're using the correct preview:
 
 If VS Code still won't render them, paste the diagrams here:
 
-- https://mermaid.live/
+- [https://mermaid.live/](https://mermaid.live/)
 
 ### 6. Verify Diagram Syntax
 
@@ -96,7 +96,7 @@ graph TD
 ```
 ````
 
-```
+```text
 
 If this simple diagram doesn't render, the issue is with your VS Code setup, not the diagram syntax.
 ```

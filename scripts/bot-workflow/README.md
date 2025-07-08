@@ -4,7 +4,7 @@ This directory contains scripts for the automated bot development workflow syste
 
 ## 🏗️ Directory Structure
 
-```
+```text
 bot-workflow/
 ├── core/               # Core bot workflow scripts
 ├── worktree/          # Git worktree management
@@ -189,14 +189,14 @@ bot-workflow/
 ## 🔄 Workflows
 
 ### Bot Development Lifecycle
-```
+```text
 Issue Created → agent:todo → Bot Claims → agent:wip →
 Bot Works → Creates PR → agent:needs-review →
 Human Reviews → Merged → agent:done
 ```
 
 ### Coordinator Flow
-```
+```text
 Feature Request → Plan Feature → Create Issues →
 Assign Bots → Monitor Progress → Coordinate PRs →
 Feature Complete
@@ -235,7 +235,7 @@ Bot state is persisted in multiple locations:
 ```bash
 git worktree prune
 rm -rf ~/ag-grid-worktrees/feature-*
-```
+```text
 
 ### CI failures
 ```bash
@@ -244,7 +244,7 @@ node scripts/bot-workflow/utils/bot-fix-ci.js <pr>
 
 # Manual check
 gh pr checks <pr>
-```
+```text
 
 ### State corruption
 ```bash

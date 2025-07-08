@@ -8,7 +8,7 @@ This guide covers advanced topics for filter presets including performance optim
 
 Filter presets can grow large with complex filter models. Use compression to reduce storage size and URL length:
 
-```typescript
+````typescript
 import { createPresetStorage } from "ag-grid-react-components";
 
 // Enable LZ-String compression (reduces size by ~60-80%)
@@ -39,7 +39,7 @@ const customStorage = createPresetStorage({
     },
   },
 });
-```
+```text
 
 ### Lazy Loading Presets
 
@@ -77,7 +77,7 @@ function PresetList() {
     </>
   );
 }
-```
+```text
 
 ### Debouncing Auto-Save
 
@@ -109,7 +109,7 @@ onFilterChanged: (params) => {
     debouncedSave(params.api.getFilterModel());
   }
 };
-```
+```text
 
 ### Optimizing URL Length
 
@@ -135,7 +135,7 @@ function encodeShareableUrl(gridState: GridState): string {
   const urlSafe = compressed.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
   return `${window.location.origin}?p=${urlSafe}`;
 }
-```
+```text
 
 ## Storage Strategies
 
@@ -191,7 +191,7 @@ class IndexedDBStorage implements PresetStorageAdapter {
 
   // Implement other methods...
 }
-```
+```text
 
 ### Hybrid Storage Strategy
 
@@ -239,7 +239,7 @@ class HybridStorage implements PresetStorageAdapter {
     await this.indexedDB.save(preset);
   }
 }
-```
+```text
 
 ### Cloud Storage Integration
 
@@ -294,7 +294,7 @@ class CloudStorage implements PresetStorageAdapter {
     await Promise.all([this.updateAll(merged.forCloud), localStorage.updateAll(merged.forLocal)]);
   }
 }
-```
+```text
 
 ## Security Considerations
 
@@ -341,7 +341,7 @@ function sanitizeGridState(gridState: unknown): Partial<GridState> {
 
   return schema.parse(gridState);
 }
-```
+```text
 
 ### XSS Prevention
 
@@ -371,7 +371,7 @@ function PresetItem({ preset }) {
     </div>
   );
 }
-```
+```text
 
 ### URL Injection Protection
 
@@ -416,7 +416,7 @@ function createShareableUrl(preset: Preset): string {
 
   return url.toString();
 }
-```
+```text
 
 ### Encryption for Sensitive Data
 
@@ -457,7 +457,7 @@ class EncryptedStorage implements PresetStorageAdapter {
     };
   }
 }
-```
+```text
 
 ## Preset Versioning
 
@@ -525,7 +525,7 @@ class PresetMigrationService {
     return migrated;
   }
 }
-```
+```text
 
 ## Migration Strategies
 
@@ -580,7 +580,7 @@ function convertLegacyFilterModel(legacyFilters: any): any {
 
   return filterModel;
 }
-```
+```text
 
 ### Gradual Migration Strategy
 
@@ -643,7 +643,7 @@ class GradualMigrationService {
     await this.legacyStorage.clear();
   }
 }
-```
+```text
 
 ## Performance Benchmarks
 
@@ -734,7 +734,7 @@ setInterval(() => {
   // Send to analytics
   analytics.track("preset_performance", report);
 }, 60000); // Every minute
-```
+````
 
 ## Best Practices Summary
 

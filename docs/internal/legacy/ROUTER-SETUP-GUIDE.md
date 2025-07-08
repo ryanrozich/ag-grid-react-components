@@ -1,6 +1,6 @@
 # Setting Up the Demo Router Worker Repository
 
-## Why a Separate Repo?
+## Why a Separate Repo
 
 1. **Single Responsibility** - The router handles routing for ALL demos
 2. **Independent Deployment** - Router updates don't affect individual demos
@@ -9,7 +9,7 @@
 
 ## Repository Structure
 
-```txt
+````txt
 demo-router-worker/
 ├── src/
 │   ├── index.ts          # Main router logic
@@ -22,7 +22,7 @@ demo-router-worker/
 ├── package.json
 ├── tsconfig.json
 └── README.md
-```
+```text
 
 ## Step-by-Step Setup
 
@@ -36,7 +36,7 @@ git init
 
 # Create the Worker project
 npm create cloudflare@latest . -- --type=hello-world --ts
-```
+```text
 
 ### 2. Full Router Implementation
 
@@ -299,7 +299,7 @@ async function handleAPI(request: Request, env: Env): Promise<Response> {
     headers: { "Content-Type": "application/json" },
   });
 }
-```
+```text
 
 ### 3. Cloudflare Configuration
 
@@ -327,7 +327,7 @@ id = "YOUR_KV_NAMESPACE_ID" # Create in dashboard first
 # Optional: Analytics
 # [[analytics_engine_datasets]]
 # binding = "ANALYTICS"
-```
+```text
 
 ### 4. GitHub Actions for the Router
 
@@ -358,7 +358,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-```
+```text
 
 ### 5. README for the Router Repo
 
@@ -403,7 +403,7 @@ Set these as GitHub secrets:
 
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
-```
+````
 
 ## Benefits of This Architecture
 

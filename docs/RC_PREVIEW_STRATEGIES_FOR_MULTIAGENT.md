@@ -35,7 +35,7 @@ During the integration of 6 parallel PRs for the filter presets milestone in ag-
 **Implementation**: `rc-integration-deploy.yml`
 
 ```yaml
-# Key features:
+# Key features
 - Automatically finds all PRs in a milestone
 - Creates integration branch with all features
 - Generates RC version number
@@ -53,13 +53,13 @@ During the integration of 6 parallel PRs for the filter presets milestone in ag-
 
 **Implementation**: `deploy-rc-preview.yml`
 
-```yaml
-# Key features:
+````yaml
+# Key features: (2)
 - Deploy any branch as RC preview
 - Unique URLs for each preview
 - Posts links to relevant issues
 - Creates testing issues with checklists
-```
+```text
 
 **Benefits**:
 
@@ -82,7 +82,7 @@ During the integration of 6 parallel PRs for the filter presets milestone in ag-
 - [ ] Features A+B interaction tested
 - [ ] Performance acceptable
 - [ ] No console errors
-```
+```text
 
 **Benefits**:
 
@@ -109,7 +109,7 @@ export default {
     },
   },
 };
-```
+```text
 
 ### 2. Integration Agent Role
 
@@ -134,7 +134,7 @@ class IntegrationAgent extends BaseAgent {
     await this.notifyStakeholders(previewUrl, results);
   }
 }
-```
+```text
 
 ### 3. Progressive Integration Strategy
 
@@ -151,7 +151,7 @@ graph LR
     D[Feature D] --> I3[Integration 3]
     P2 --> I3
     I3 --> RC[Release Candidate]
-```
+```text
 
 ### 4. Conflict Prediction
 
@@ -185,7 +185,7 @@ async function predictConflicts(prs: PR[]): ConflictReport {
 
   return { conflicts, riskScore: calculateRiskScore(conflicts) };
 }
-```
+```text
 
 ### 5. RC Preview Dashboard
 
@@ -214,7 +214,7 @@ interface RCDashboard {
     approvals: Approval[];
   };
 }
-```
+```text
 
 ### 6. Automated RC Versioning
 
@@ -245,7 +245,7 @@ function generateRCVersion(currentVersion: string, changes: Change[]): string {
   const rcNumber = getRCNumber(semver);
   return `${semver.major}.${semver.minor}.${semver.patch}-rc.${rcNumber}`;
 }
-```
+```text
 
 ### 7. Feature Flags for Progressive Rollout
 
@@ -264,7 +264,7 @@ interface RCFeatureFlags {
 
 // In RC preview
 const features = getRCFeatures(user, rcVersion);
-```
+```text
 
 ### 8. RC Feedback Loop
 
@@ -291,7 +291,7 @@ class RCFeedbackCollector {
     };
   }
 }
-```
+```text
 
 ## Implementation Guide for MADF
 
@@ -336,7 +336,7 @@ madf rc feedback --version 0.2.0-rc.1
 
 # Promote RC to release
 madf rc promote --version 0.2.0-rc.1
-```
+```text
 
 ## Benefits for Multi-Agent Development
 
@@ -359,7 +359,7 @@ interface RCMetrics {
   rollbackRate: number; // % of RCs that fail
   stakeholderSatisfaction: number; // Survey score
 }
-```
+````
 
 ## Conclusion
 

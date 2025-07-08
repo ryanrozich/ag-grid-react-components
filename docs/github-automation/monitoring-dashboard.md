@@ -58,7 +58,7 @@ Our monitoring approach provides visibility into:
 
 ### 1. Workflow Performance Script
 
-```bash
+````bash
 # Basic usage - last 7 days
 node scripts/automation/monitoring/workflow-performance.js
 
@@ -67,7 +67,7 @@ node scripts/automation/monitoring/workflow-performance.js "CI" --days=30
 
 # Export detailed report
 node scripts/automation/monitoring/workflow-performance.js --export
-```
+```text
 
 Output includes:
 
@@ -87,7 +87,7 @@ node scripts/automation/monitoring/bot-productivity.js --days=7
 
 # Stale work detection
 node scripts/automation/monitoring/check-stale-work.js
-```
+```text
 
 ### 3. Project Board Analytics
 
@@ -110,7 +110,7 @@ gh api graphql -f query='
     }
   }
 }'
-```
+```text
 
 ## 📈 Real-time Monitoring
 
@@ -146,48 +146,54 @@ Set up GitHub notifications for:
 
 ### Executive Summary
 
-```
+````
+
 ┌─────────────────────────────────────────┐
-│          Weekly Automation Report        │
+│ Weekly Automation Report │
 ├─────────────────────────────────────────┤
-│ Features Completed:    12               │
-│ Bot Success Rate:      94%              │
-│ Avg CI Time:          8.5 min           │
-│ Total Cost:           $24.50            │
-│                                         │
-│ Top Issues:                             │
-│ - Flaky E2E tests (3 failures)         │
-│ - Slow preview deployments              │
+│ Features Completed: 12 │
+│ Bot Success Rate: 94% │
+│ Avg CI Time: 8.5 min │
+│ Total Cost: $24.50 │
+│ │
+│ Top Issues: │
+│ - Flaky E2E tests (3 failures) │
+│ - Slow preview deployments │
 └─────────────────────────────────────────┘
-```
+
+```text
 
 ### Workflow Performance
 
 ```
+
 ┌─────────────────────────────────────────┐
-│         Workflow Performance Matrix      │
+│ Workflow Performance Matrix │
 ├─────────────────────────────────────────┤
-│ Workflow    │ Runs │ Success │ Avg Time │
+│ Workflow │ Runs │ Success │ Avg Time │
 ├─────────────┼──────┼─────────┼──────────┤
-│ CI          │ 142  │ 96.5%   │ 8.2 min  │
-│ Deploy      │ 45   │ 100%    │ 3.5 min  │
-│ E2E Tests   │ 38   │ 92.1%   │ 12.4 min │
-│ Release     │ 3    │ 100%    │ 5.8 min  │
+│ CI │ 142 │ 96.5% │ 8.2 min │
+│ Deploy │ 45 │ 100% │ 3.5 min │
+│ E2E Tests │ 38 │ 92.1% │ 12.4 min │
+│ Release │ 3 │ 100% │ 5.8 min │
 └─────────────┴──────┴─────────┴──────────┘
-```
+
+```text
 
 ### Bot Activity
 
 ```
+
 ┌─────────────────────────────────────────┐
-│           Bot Activity Timeline          │
+│ Bot Activity Timeline │
 ├─────────────────────────────────────────┤
-│ Bot-1  │████████░░│ Issue #45 (80%)     │
-│ Bot-2  │██████████│ Issue #46 (Done)    │
-│ Bot-3  │███░░░░░░░│ Issue #47 (30%)     │
-│ Bot-4  │░░░░░░░░░░│ Idle                │
+│ Bot-1 │████████░░│ Issue #45 (80%) │
+│ Bot-2 │██████████│ Issue #46 (Done) │
+│ Bot-3 │███░░░░░░░│ Issue #47 (30%) │
+│ Bot-4 │░░░░░░░░░░│ Idle │
 └─────────────────────────────────────────┘
-```
+
+````text
 
 ## 📊 Custom Metrics
 
@@ -220,7 +226,7 @@ const metrics = {
     return ((debt.length / features.length) * 100).toFixed(1);
   },
 };
-```
+```text
 
 ### Track Over Time
 
@@ -232,7 +238,7 @@ const metrics = {
 date,features_week,bot_efficiency,tech_debt
 2024-01-15,12,94.5,15.2
 2024-01-16,14,92.3,14.8
-```
+```text
 
 ## 🚨 Health Checks
 
@@ -264,7 +270,7 @@ date,features_week,bot_efficiency,tech_debt
 # scripts/automation/monitoring/health-check.js
 node health-check.js
 
-# Output:
+# Output
 System Health: 🟢 Healthy
 
 ✅ Workflows: 96% success rate (last 24h)
@@ -275,7 +281,7 @@ System Health: 🟢 Healthy
 Recommendations:
 - Review stale issues #34, #38
 - Consider increasing bot concurrency
-```
+````
 
 ## 📉 Troubleshooting Patterns
 
@@ -298,11 +304,12 @@ Recommendations:
    ```
 
 3. **Performance Degradation**
-   ```bash
+   ````bash
    # Compare performance over time
    node workflow-performance.js CI --days=30 \
      | grep "Average Duration"
-   ```
+   ```text
+   ````
 
 ## 🎯 KPIs and Goals
 
@@ -327,13 +334,13 @@ Recommendations:
 
 ### 1. Install Monitoring Scripts
 
-```bash
+````bash
 # Make scripts executable
 chmod +x scripts/automation/monitoring/*.js
 
 # Add to PATH
 export PATH=$PATH:$(pwd)/scripts/automation/monitoring
-```
+```text
 
 ### 2. Schedule Reports
 
@@ -364,7 +371,7 @@ jobs:
           path: |
             *.json
             *.md
-```
+```text
 
 ### 3. Create Dashboards
 
@@ -388,7 +395,7 @@ Using GitHub Pages or internal tools:
     <canvas id="cost-chart"></canvas>
   </div>
 </div>
-```
+````
 
 ## 📚 Related Documentation
 

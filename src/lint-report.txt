@@ -1,0 +1,195 @@
+[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G[2K[0G
+[1m[30m[107m  ISSUES  [0m
+
+[1m[4m.github/CONTRIBUTING.md[0m[4m[90m:144:0[0m
+ [1m[90m[49m144:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m225:0[22m[39m[49m  [33m[49mlow[39m[49m  No empty links                                       [1m[90m[49mmarkdownlint/MD042[22m[39m[49m
+
+[1m[4m.github/PROJECT_SETUP.md[0m[4m[90m:7:0[0m
+ [1m[90m[49m  7:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                                        [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m 76:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m 83:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m 91:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m 98:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m105:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m282:0[22m[39m[49m  [33m[49mlow[39m[49m  No empty links                                       [1m[90m[49mmarkdownlint/MD042[22m[39m[49m
+
+[1m[4m.github/PROJECT_SETUP_SCRIPT.md[0m[4m[90m:7:0[0m
+ [1m[90m[49m 7:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                    [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m54:0[22m[39m[49m  [33m[49mlow[39m[49m  Trailing punctuation in heading  [1m[90m[49mmarkdownlint/MD026[22m[39m[49m
+ [1m[90m[49m97:0[22m[39m[49m  [33m[49mlow[39m[49m  Trailing punctuation in heading  [1m[90m[49mmarkdownlint/MD026[22m[39m[49m
+
+[1m[4mCHANGELOG.md[0m[4m[90m:96:0[0m
+ [1m[90m[49m 96:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content  [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+ [1m[90m[49m106:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content  [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+ [1m[90m[49m156:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content  [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+
+[1m[4mREADME.md[0m[4m[90m:447:0[0m
+ [1m[90m[49m 447:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content              [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+ [1m[90m[49m1095:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+
+[1m[4mdocs/RELEASE_PROCESS.md[0m[4m[90m:119:0[0m
+ [1m[90m[49m119:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used  [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m180:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used  [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+
+[1m[4mdocs/github-automation/MERMAID_SETUP.md[0m[4m[90m:9:0[0m
+ [1m[90m[49m 9:0[22m[39m[49m  [33m[49mlow[39m[49m  Emphasis used instead of a heading                   [1m[90m[49mmarkdownlint/MD036[22m[39m[49m
+ [1m[90m[49m11:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m15:0[22m[39m[49m  [33m[49mlow[39m[49m  Emphasis used instead of a heading                   [1m[90m[49mmarkdownlint/MD036[22m[39m[49m
+ [1m[90m[49m17:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m56:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                                        [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m99:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+
+[1m[4mdocs/github-automation/README.md[0m[4m[90m:250:0[0m
+ [1m[90m[49m250:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+
+[1m[4mdocs/github-automation/bot-development-guide.md[0m[4m[90m:289:0[0m
+ [1m[90m[49m289:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m314:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m322:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m330:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m338:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m346:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m646:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+
+[1m[4mdocs/github-automation/monitoring-dashboard.md[0m[4m[90m:149:0[0m
+ [1m[90m[49m149:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m166:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m181:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+
+[1m[4mdocs/github-automation/release-management.md[0m[4m[90m:7:0[0m
+ [1m[90m[49m  7:0[22m[39m[49m  [33m[49mlow[39m[49m  Link fragments should be valid                       [1m[90m[49mmarkdownlint/MD051[22m[39m[49m
+ [1m[90m[49m  8:0[22m[39m[49m  [33m[49mlow[39m[49m  Link fragments should be valid                       [1m[90m[49mmarkdownlint/MD051[22m[39m[49m
+ [1m[90m[49m  9:0[22m[39m[49m  [33m[49mlow[39m[49m  Link fragments should be valid                       [1m[90m[49mmarkdownlint/MD051[22m[39m[49m
+ [1m[90m[49m 10:0[22m[39m[49m  [33m[49mlow[39m[49m  Link fragments should be valid                       [1m[90m[49mmarkdownlint/MD051[22m[39m[49m
+ [1m[90m[49m 11:0[22m[39m[49m  [33m[49mlow[39m[49m  Link fragments should be valid                       [1m[90m[49mmarkdownlint/MD051[22m[39m[49m
+ [1m[90m[49m 12:0[22m[39m[49m  [33m[49mlow[39m[49m  Link fragments should be valid                       [1m[90m[49mmarkdownlint/MD051[22m[39m[49m
+ [1m[90m[49m 13:0[22m[39m[49m  [33m[49mlow[39m[49m  Link fragments should be valid                       [1m[90m[49mmarkdownlint/MD051[22m[39m[49m
+ [1m[90m[49m 14:0[22m[39m[49m  [33m[49mlow[39m[49m  Link fragments should be valid                       [1m[90m[49mmarkdownlint/MD051[22m[39m[49m
+ [1m[90m[49m 15:0[22m[39m[49m  [33m[49mlow[39m[49m  Link fragments should be valid                       [1m[90m[49mmarkdownlint/MD051[22m[39m[49m
+ [1m[90m[49m161:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+
+[1m[4mdocs/github-automation/workflows-reference.md[0m[4m[90m:212:0[0m
+ [1m[90m[49m212:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                                        [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m480:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m486:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m491:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+
+[1m[4mdocs/internal/archive/prompt.md[0m[4m[90m:175:0[0m
+ [1m[90m[49m175:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content  [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+ [1m[90m[49m185:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content  [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+ [1m[90m[49m193:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content  [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+ [1m[90m[49m195:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content  [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+ [1m[90m[49m202:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content  [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+ [1m[90m[49m210:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content  [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+ [1m[90m[49m217:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content  [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+ [1m[90m[49m226:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content  [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+
+[1m[4mdocs/internal/archive/refactoring-todo.md[0m[4m[90m:258:0[0m
+ [1m[90m[49m258:0[22m[39m[49m  [33m[49mlow[39m[49m  Emphasis used instead of a heading  [1m[90m[49mmarkdownlint/MD036[22m[39m[49m
+
+[1m[4mdocs/internal/legacy/BUNDLE_ANALYSIS.md[0m[4m[90m:81:0[0m
+ [1m[90m[49m81:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+
+[1m[4mdocs/internal/legacy/CODE_REVIEW_FOLLOW_UP.md[0m[4m[90m:24:0[0m
+ [1m[90m[49m24:0[22m[39m[49m  [33m[49mlow[39m[49m  Inline HTML                      [1m[90m[49mmarkdownlint/MD033[22m[39m[49m
+ [1m[90m[49m35:0[22m[39m[49m  [33m[49mlow[39m[49m  Trailing punctuation in heading  [1m[90m[49mmarkdownlint/MD026[22m[39m[49m
+ [1m[90m[49m45:0[22m[39m[49m  [33m[49mlow[39m[49m  Trailing punctuation in heading  [1m[90m[49mmarkdownlint/MD026[22m[39m[49m
+
+[1m[4mdocs/internal/legacy/CODE_REVIEW_REPORT.md[0m[4m[90m:7:0[0m
+ [1m[90m[49m  7:0[22m[39m[49m  [33m[49mlow[39m[49m  Emphasis used instead of a heading  [1m[90m[49mmarkdownlint/MD036[22m[39m[49m
+ [1m[90m[49m157:0[22m[39m[49m  [33m[49mlow[39m[49m  Trailing punctuation in heading     [1m[90m[49mmarkdownlint/MD026[22m[39m[49m
+ [1m[90m[49m164:0[22m[39m[49m  [33m[49mlow[39m[49m  Trailing punctuation in heading     [1m[90m[49mmarkdownlint/MD026[22m[39m[49m
+ [1m[90m[49m172:0[22m[39m[49m  [33m[49mlow[39m[49m  Trailing punctuation in heading     [1m[90m[49mmarkdownlint/MD026[22m[39m[49m
+
+[1m[4mdocs/internal/legacy/IMPLEMENTATION_COMPLETE.md[0m[4m[90m:1:0[0m
+ [1m[90m[49m1:0[22m[39m[49m  [33m[49mlow[39m[49m  Trailing punctuation in heading                      [1m[90m[49mmarkdownlint/MD026[22m[39m[49m
+ [1m[90m[49m9:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+
+[1m[4mdocs/internal/legacy/MIGRATION_GUIDE_V2.md[0m[4m[90m:116:0[0m
+ [1m[90m[49m116:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content              [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+ [1m[90m[49m143:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content              [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+ [1m[90m[49m175:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content              [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+ [1m[90m[49m262:0[22m[39m[49m  [33m[49mlow[39m[49m  Multiple headings with the same content              [1m[90m[49mmarkdownlint/MD024[22m[39m[49m
+ [1m[90m[49m264:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m274:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m282:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m370:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                                        [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m371:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                                        [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m372:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                                        [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m373:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                                        [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+
+[1m[4mdocs/internal/legacy/MODULARIZATION_EXECUTIVE_SUMMARY.md[0m[4m[90m:21:0[0m
+ [1m[90m[49m21:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+
+[1m[4mdocs/internal/legacy/MODULAR_ARCHITECTURE_PLAN.md[0m[4m[90m:11:0[0m
+ [1m[90m[49m11:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+ [1m[90m[49m21:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+
+[1m[4mdocs/internal/legacy/MODULAR_IMPLEMENTATION_STATUS.md[0m[4m[90m:9:0[0m
+ [1m[90m[49m9:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+
+[1m[4mdocs/internal/legacy/NPM_ACCOUNT_SETUP.md[0m[4m[90m:7:0[0m
+ [1m[90m[49m  7:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                       [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m 23:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                       [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m 56:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                       [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m 96:0[22m[39m[49m  [33m[49mlow[39m[49m  Emphasis used instead of a heading  [1m[90m[49mmarkdownlint/MD036[22m[39m[49m
+ [1m[90m[49m101:0[22m[39m[49m  [33m[49mlow[39m[49m  Emphasis used instead of a heading  [1m[90m[49mmarkdownlint/MD036[22m[39m[49m
+ [1m[90m[49m106:0[22m[39m[49m  [33m[49mlow[39m[49m  Emphasis used instead of a heading  [1m[90m[49mmarkdownlint/MD036[22m[39m[49m
+ [1m[90m[49m120:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                       [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m121:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                       [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m122:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                       [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m123:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                       [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+
+[1m[4mdocs/internal/legacy/PUBLISHING_CHECKLIST.md[0m[4m[90m:7:0[0m
+ [1m[90m[49m  7:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                                        [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m121:0[22m[39m[49m  [33m[49mlow[39m[49m  Fenced code blocks should have a language specified  [1m[90m[49mmarkdownlint/MD040[22m[39m[49m
+
+[1m[4mdocs/internal/legacy/PUBLISH_TO_NPM.md[0m[4m[90m:3:0[0m
+ [1m[90m[49m  3:0[22m[39m[49m  [33m[49mlow[39m[49m  Trailing punctuation in heading  [1m[90m[49mmarkdownlint/MD026[22m[39m[49m
+ [1m[90m[49m  9:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                    [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m116:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                    [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m117:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                    [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m118:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                    [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m119:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                    [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+
+[1m[4mdocs/internal/legacy/PUBLISH_WITH_OTP.md[0m[4m[90m:42:0[0m
+ [1m[90m[49m42:0[22m[39m[49m  [33m[49mlow[39m[49m  Trailing punctuation in heading  [1m[90m[49mmarkdownlint/MD026[22m[39m[49m
+ [1m[90m[49m46:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                    [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m47:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                    [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m48:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                    [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+ [1m[90m[49m49:0[22m[39m[49m  [33m[49mlow[39m[49m  Bare URL used                    [1m[90m[49mmarkdownlint/MD034[22m[39m[49m
+
+[1m[4mdocs/internal/legacy/README-V2.md[0m[4m[90m:366:0[0m
+ [1m[90m[49m366:0[22m[39m[49m  [33m[49mlow[39m[49m  Inline HTML  [1m[90m[49mmarkdownlint/MD033[22m[39m[49m
+ [1m[90m[49m367:0[22m[39m[49m  [33m[49mlow[39m[49m  Inline HTML  [1m[90m[49mmarkdownlint/MD033[22m[39m[49m
+ [1m[90m[49m368:0[22m[39m[49m  [33m[49mlow[39m[49m  Inline HTML  [1m[90m[49mmarkdownlint/MD033[22m[39m[49m
+ [1m[90m[49m370:0[22m[39m[49m  [33m[49mlow[39m[49m  Inline HTML  [1m[90m[49mmarkdownlint/MD033[22m[39m[49m
+ [1m[90m[49m371:0[22m[39m[49m  [33m[49mlow[39m[49m  Inline HTML  [1m[90m[49mmarkdownlint/MD033[22m[39m[49m
+ [1m[90m[49m373:0[22m[39m[49m  [33m[49mlow[39m[49m  Inline HTML  [1m[90m[49mmarkdownlint/MD033[22m[39m[49m
+ [1m[90m[49m374:0[22m[39m[49m  [33m[49mlow[39m[49m  Inline HTML  [1m[90m[49mmarkdownlint/MD033[22m[39m[49m
+
+[1m[4msrc/demo/TestDemo.tsx[0m[4m[90m:93:5[0m
+ [1m[90m[49m 93:5[22m[39m[49m  [35m[49mmedium[39m[49m  React Hook useMemo has an unnecessary dependency:                     [1m[90m[49meslint/react-hooks/exhaustive-deps[22m[39m[49m
+                'isPaginationEnabled'. Either exclude it or remove the dependency                                       
+                array.                                                                                                  
+ [1m[90m[49m103:5[22m[39m[49m  [35m[49mmedium[39m[49m  React Hook useCallback has an unnecessary dependency:                 [1m[90m[49meslint/react-hooks/exhaustive-deps[22m[39m[49m
+                'rowData.length'. Either exclude it or remove the dependency array.                                     
+ [1m[90m[49m133:6[22m[39m[49m  [35m[49mmedium[39m[49m  React Hook useMemo has unnecessary dependencies: 'filterModel' and    [1m[90m[49meslint/react-hooks/exhaustive-deps[22m[39m[49m
+                'rowData'. Either exclude them or remove the dependency array.                                          
+
+[1m[4msrc/demo/components-showcase.tsx[0m[4m[90m:517:5[0m
+ [1m[90m[49m517:5[22m[39m[49m  [35m[49mmedium[39m[49m  React Hook useMemo has a missing dependency: 'customQuickFilters'.    [1m[90m[49meslint/react-hooks/exhaustive-deps[22m[39m[49m
+                Either include it or remove the dependency array.                                                       
+
+[1m[4msrc/demo/working-demo-original.tsx[0m[4m[90m:583:5[0m
+ [1m[90m[49m583:5[22m[39m[49m  [35m[49mmedium[39m[49m  React Hook useCallback has an unnecessary dependency:                 [1m[90m[49meslint/react-hooks/exhaustive-deps[22m[39m[49m
+                'filterStatus'. Either exclude it or remove the dependency array.                                       
+
+[1m[30m[107m  NOTICES  [0m
+
+ [4m[90m[49msrc/lint-report.txt[24m[39m[49m  [90m[49mdiscarded as modified during check [trufflehog][39m[49m
+
+Checked 340 files
+[1m[91m✖ 119 lint issues
+[0m

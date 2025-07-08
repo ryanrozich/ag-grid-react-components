@@ -209,7 +209,7 @@ coverage-threshold: 80%
 
 **Environment**:
 
-- URL: https://demo.rozich.net/ag-grid-react-components/
+- URL: [https://demo.rozich.net/ag-grid-react-components/](https://demo.rozich.net/ag-grid-react-components/)
 - Platform: Cloudflare Pages + Workers
 
 **Secrets Required**:
@@ -477,18 +477,18 @@ graph TD
 
 1. **PR Lifecycle**:
 
-   ```
+   ```text
    Create PR → Add to Project → Set Status → Deploy Preview → Update URL → Review → Merge → Cleanup
    ```
 
 2. **Release Path**:
 
-   ```
+   ```text
    Push to Main → CI Passes → Manual Release → Publish NPM → Create GitHub Release
    ```
 
 3. **Sync Loop**:
-   ```
+   ```text
    Labels Change → Update Project → Project Change → Update Labels
    ```
 
@@ -534,22 +534,22 @@ Add secret: `ACTIONS_RUNNER_DEBUG: true`
 
 #### Check Workflow Runs
 
-```bash
+````bash
 gh run list --workflow=workflow-name.yml
 gh run view <run-id>
-```
+```text
 
 #### Download Artifacts
 
 ```bash
 gh run download <run-id>
-```
+```text
 
 #### Re-run Failed Jobs
 
 ```bash
 gh run rerun <run-id> --failed
-```
+```text
 
 ### Performance Optimization
 
@@ -561,7 +561,7 @@ Add to workflows to prevent duplicate runs:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-```
+```text
 
 #### Caching
 
@@ -571,7 +571,7 @@ Ensure dependency caching is used:
 - uses: actions/setup-node@v4
   with:
     cache: "npm"
-```
+```text
 
 #### Path Filtering
 
@@ -581,7 +581,7 @@ Use path filters to skip unnecessary runs:
 paths:
   - "src/**"
   - "package.json"
-```
+````
 
 ---
 
@@ -622,4 +622,4 @@ paths:
 - [GitHub Automation Overview](./README.md)
 - [Bot Development Guide](./bot-development-guide.md)
 - [Maintenance Guide](./maintenance-guide.md)
-- [GitHub Actions Documentation](https://docs.github.com/actions)
+- [GitHub Actions Documentation](<[https://docs.github.com/action](https://docs.github.com/action)s>)

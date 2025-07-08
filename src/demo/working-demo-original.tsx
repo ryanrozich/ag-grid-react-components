@@ -580,7 +580,7 @@ const App: React.FC = () => {
       // Store cleanup function
       cleanupRef.current = cleanup;
     },
-    [filterStatus, initialData],
+    [initialData],
   );
 
   // Clean up filter persistence on unmount

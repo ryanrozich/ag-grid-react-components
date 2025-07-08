@@ -8,9 +8,9 @@ Filter presets provide a powerful way to save, share, and reuse filter configura
 
 The filter preset functionality is built into the `ag-grid-react-components` package:
 
-```bash
+````bash
 npm install ag-grid-react-components
-```
+```text
 
 ### Your First Preset
 
@@ -68,7 +68,7 @@ function MyGrid() {
     </div>
   );
 }
-```
+```text
 
 ### Common Use Cases
 
@@ -109,7 +109,7 @@ const datePresets = [
     },
   },
 ];
-```
+```text
 
 #### 2. Status-Based Presets
 
@@ -135,7 +135,7 @@ const statusPresets = [
     },
   },
 ];
-```
+```text
 
 #### 3. Complex Multi-Column Presets
 
@@ -158,7 +158,7 @@ const complexPresets = [
     },
   },
 ];
-```
+```text
 
 ## Core Concepts
 
@@ -189,7 +189,7 @@ You can specify a default preset that loads automatically:
     systemPresets: presets
   }}
 />
-```
+```text
 
 ### Storage Limitations
 
@@ -240,7 +240,7 @@ The QuickFilterDropdown component has built-in preset support:
     console.log('Preset deleted:', presetId);
   }}
 />
-```
+```text
 
 ### With Custom Filter UI
 
@@ -288,7 +288,7 @@ function CustomFilterUI({ gridApi }) {
     </div>
   );
 }
-```
+```text
 
 ### With Existing Applications
 
@@ -306,7 +306,7 @@ const gridOptions = {
     // Update URL or state as needed
   },
 };
-```
+```text
 
 2. **Add Preset UI**:
 
@@ -324,7 +324,7 @@ function MyApp() {
     </>
   );
 }
-```
+```text
 
 3. **Migrate Existing Filters**:
 
@@ -343,7 +343,7 @@ const migrateFilters = () => {
     });
   }
 };
-```
+````
 
 ## Next Steps
 

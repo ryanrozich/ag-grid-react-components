@@ -46,11 +46,11 @@ Only users with write permissions can use these commands.
 
 ### PR with only workflow changes
 
-```yaml
+````yaml
 # Changes to .github/workflows/ci.yml
 # Result: No preview deployed
 # Message: "Demo Preview Skipped - Contains no demo-relevant changes"
-```
+```text
 
 ### PR with component changes
 
@@ -58,7 +58,7 @@ Only users with write permissions can use these commands.
 // Changes to src/components/DateFilter/index.tsx
 // Result: Preview automatically deployed
 // Message: "Demo Preview Ready!"
-```
+```text
 
 ### Forcing a preview
 
@@ -66,7 +66,7 @@ Only users with write permissions can use these commands.
 # Comment on PR: /preview
 # Result: Preview deployed regardless of changes
 # Label added: deploy-preview
-```
+````
 
 ## Benefits
 

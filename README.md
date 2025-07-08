@@ -81,24 +81,24 @@ Choose your installation based on your needs:
 
 ### Minimal Installation (25KB)
 
-```bash
+````bash
 # Install the complete package (tree-shakeable)
 npm install ag-grid-react-components
-```
+```text
 
 ### With React DatePicker (65KB)
 
 ```bash
 # Install with peer dependencies for date picker
 npm install ag-grid-react-components react-datepicker
-```
+```text
 
 ### Full Installation (85KB)
 
 ```bash
 # Install with all optional dependencies
 npm install ag-grid-react-components react-datepicker lz-string
-```
+```text
 
 ## 📋 Requirements
 
@@ -124,7 +124,7 @@ const columnDefs = [
     floatingFilter: true,
   },
 ];
-```
+```text
 
 ### React DatePicker Integration
 
@@ -135,7 +135,7 @@ import { createDateFilter, reactDatePickerAdapter } from "ag-grid-react-componen
 const DateFilter = createDateFilter({
   datePickerAdapter: reactDatePickerAdapter,
 });
-```
+```text
 
 ### Full Setup Example (85KB)
 
@@ -177,7 +177,7 @@ function App() {
     </div>
   );
 }
-```
+```text
 
 ### Filter Presets Example
 
@@ -242,7 +242,7 @@ function CustomPresetUI({ gridApi }) {
     </div>
   );
 }
-```
+````
 
 ## 🌟 Bundle Sizes
 
@@ -279,7 +279,7 @@ The dropdown supports three rendering modes via the `usePortal` prop:
 - **`"always"`**: Always renders using React Portal. Use when the dropdown is inside containers with `overflow: hidden`.
 - **`"auto"`**: Automatically detects if portal is needed (experimental).
 
-```tsx
+````tsx
 // Example: Dropdown inside a scrollable container
 <div style={{ overflow: "auto", height: "300px" }}>
   <QuickFilterDropdown
@@ -289,7 +289,7 @@ The dropdown supports three rendering modes via the `usePortal` prop:
     usePortal="always" // Prevents clipping in scrollable container
   />
 </div>
-```
+```text
 
 ## 📚 API Documentation
 
@@ -318,7 +318,7 @@ filterParams: {
     to?: boolean
   }
 }
-```
+```text
 
 ### Quick Filter Dropdown
 
@@ -353,7 +353,7 @@ const QuickFilterDropdown = createQuickFilterDropdown();
     maxPresets: 20
   }}
 />
-```
+```text
 
 ### Filter Presets
 
@@ -408,7 +408,7 @@ const presets = usePresets({
   onExport={presets.exportPresets}
   onImport={presets.importPresets}
 />
-```
+```text
 
 ### Grid State Persistence
 
@@ -428,7 +428,7 @@ const cleanup = setupGridStatePersistence(gridApi, {
   onStateLoad: (state) => console.log("Loaded:", state),
   onStateSave: (state) => console.log("Saved:", state),
 });
-```
+```text
 
 #### Advanced Examples
 
@@ -442,9 +442,9 @@ const cleanup = setupGridStatePersistence(gridApi, {
   includeSort: true,
   includeRowGrouping: false, // Don't persist grouping
 });
-```
+```text
 
-### Filter Presets
+### Filter Presets (2)
 
 ```typescript
 // Using with QuickFilterDropdown
@@ -508,7 +508,7 @@ await savePreset({
 
 // Example: Generate shareable URL
 const shareUrl = getShareableUrl(preset.id);
-```
+```text
 
 #### Manual State Management
 
@@ -539,7 +539,7 @@ const saveToServer = async () => {
     body: JSON.stringify(state),
   });
 };
-```
+```text
 
 #### Compression Effectiveness
 
@@ -555,7 +555,7 @@ Example compressed URL:
 
 ```text
 https://app.com/?gridState=N4IgZgpgLghgbgUwHZQKYQPYFMCeEB0IA5gMYD2AdAK4C2E...
-```
+```text
 
 #### State Persistence Options
 
@@ -574,7 +574,7 @@ setupGridStatePersistence(params.api, {
   includeColumns: true,
   includeSort: true,
 });
-```
+```text
 
 #### Custom State Handlers
 
@@ -619,7 +619,7 @@ const setupServerStatePersistence = (gridApi) => {
     },
   });
 };
-```
+```text
 
 ### Filter Preset Sharing
 
@@ -675,7 +675,7 @@ const shareResult = createShareableUrl(preset, {
 // Extract preset from current URL
 const extractResult = extractPresetFromUrl();
 // Returns: { preset?: FilterPreset, presetId?: string, compressed: boolean, error?: string }
-```
+```text
 
 #### Preset Format
 
@@ -690,7 +690,7 @@ interface FilterPreset {
   tags?: string[];
   author?: string;
 }
-```
+````
 
 #### Sharing Modes
 
@@ -706,13 +706,13 @@ interface FilterPreset {
 
 The sharing system uses LZ-String compression to achieve >50% size reduction:
 
-```typescript
+````typescript
 // Compression utilities are also exported
 import { compress, decompress } from "ag-grid-react-components";
 
 const compressed = compress(JSON.stringify(data)); // Returns compressed string
 const original = JSON.parse(decompress(compressed)); // Returns original data
-```
+```text
 
 ## 📅 Advanced DateFilter Features
 
@@ -744,7 +744,7 @@ const filterModel = {
   expressionFrom: "Today-30d",
   expressionTo: null, // All dates from 30 days ago onwards
 };
-```
+```text
 
 ### Inclusive/Exclusive Date Filtering
 
@@ -770,7 +770,7 @@ const columnDefs = [
     },
   },
 ];
-```
+```text
 
 You can also set inclusivity per filter instance:
 
@@ -786,7 +786,7 @@ api.setFilterModel({
     toInclusive: false, // Exclude December 31st
   },
 });
-```
+````
 
 #### Inclusivity Examples
 
@@ -822,13 +822,13 @@ The preset system provides a two-tier architecture for managing and applying pre
 
 Read-only presets defined by developers for common filtering patterns:
 
-```tsx
+````tsx
 import { PresetManager, DEFAULT_SYSTEM_PRESETS } from "ag-grid-react-components";
 
 // Initialize preset manager with system presets
 const presetManager = new PresetManager();
 presetManager.registerSystemPresets(DEFAULT_SYSTEM_PRESETS);
-```
+```text
 
 ### User Presets
 
@@ -853,7 +853,7 @@ presetManager.updateUserPreset(preset.id, {
 
 // Delete a preset
 presetManager.deleteUserPreset(preset.id);
-```
+```text
 
 ### Template Variables
 
@@ -891,7 +891,7 @@ const systemPreset = {
     },
   },
 };
-```
+```text
 
 ### Integration with QuickFilterDropdown
 
@@ -928,7 +928,7 @@ const systemPresetOptions = presetManager.getAllPresets().system.map((preset) =>
     presetManager.deleteUserPreset(presetId);
   }}
 />;
-```
+```text
 
 ### Preset Storage
 
@@ -950,7 +950,7 @@ const unsubscribeDefault = presetManager.onDefaultChange((preset) => {
     api.setFilterModel(resolvedState.filters);
   }
 });
-```
+```text
 
 ### Creating Custom System Presets
 
@@ -974,7 +974,7 @@ const mySystemPresets = [
 
 // Combine with default presets
 const allSystemPresets = combineSystemPresets(DEFAULT_SYSTEM_PRESETS, mySystemPresets);
-```
+```text
 
 ## 🎨 Customization
 
@@ -990,7 +990,7 @@ The components use CSS variables for easy theming:
   --agrc-border: #e5e7eb;
   --agrc-hover: #f3f4f6;
 }
-```
+```text
 
 ### Custom Quick Filter Options
 
@@ -1012,7 +1012,7 @@ const customOptions = [
     },
   },
 ];
-```
+```text
 
 ### Styling
 
@@ -1024,7 +1024,7 @@ The components use CSS modules and can be customized via CSS variables:
   --agrc-border: #e5e7eb;
   --agrc-hover: #f3f4f6;
 }
-```
+````
 
 ## 🧪 Testing
 
@@ -1040,17 +1040,17 @@ Components are thoroughly tested with:
 
 When calling `api.setFilterModel()` programmatically on custom React filter components in AG Grid v33, the filter doesn't properly initialize. This is a known AG Grid bug affecting all v33.x versions.
 
-**Related Issues:**
+### Related Issues
 
 - [ag-grid/ag-grid#2256](https://github.com/ag-grid/ag-grid/issues/2256)
 - [ag-grid/ag-grid#2709](https://github.com/ag-grid/ag-grid/issues/2709)
 - [ag-grid/ag-grid#4870](https://github.com/ag-grid/ag-grid/issues/4870)
 
-**Workaround:**
+### Workaround
 
 Use the provided `applyFilterModelWithWorkaround` function:
 
-```tsx
+````tsx
 import { applyFilterModelWithWorkaround } from "ag-grid-react-components";
 
 // Instead of:
@@ -1058,7 +1058,7 @@ api.setFilterModel({ dateColumn: filterModel });
 
 // Use:
 await applyFilterModelWithWorkaround(api, "dateColumn", filterModel);
-```
+```text
 
 This workaround handles AG Grid v33's Promise-based filter instances and ensures the filter state is properly initialized. It should be removed once AG Grid fixes the underlying issue.
 
@@ -1091,7 +1091,4 @@ When creating issues, our automation will sync labels to project fields for bett
 
 - **[GitHub Project Automation](./docs/github-project-automation.md)** - How issue labels sync to project fields
 - **[CLAUDE.md](./CLAUDE.md)** - Instructions for AI assistants working with this codebase
-
-```
-
-```
+````

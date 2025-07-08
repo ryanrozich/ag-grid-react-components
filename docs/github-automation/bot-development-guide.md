@@ -150,9 +150,10 @@ graph TB
    ```
 
 5. **Create PR When Ready**:
-   ```bash
+   ````bash
    # The bot scripts handle PR creation automatically
-   ```
+   ```text
+   ````
 
 ---
 
@@ -179,14 +180,14 @@ node scripts/bot-workflow/bot-claim-issue.js <issue-number>
 
 **Example**:
 
-```bash
+````bash
 $ node scripts/bot-workflow/bot-claim-issue.js 456
 ✓ Claimed issue #456
 ✓ Created branch: feature/456-add-timezone-support
 ✓ Set up worktree: ~/ag-grid-worktrees/feature/456-add-timezone-support
 ✓ Initialized bot state
 Ready to work on issue #456
-```
+```text
 
 ---
 
@@ -196,7 +197,7 @@ Saves current progress with a descriptive message.
 
 ```bash
 node scripts/bot-workflow/bot-checkpoint.js "checkpoint message"
-```
+````
 
 **What it does**:
 
@@ -208,13 +209,13 @@ node scripts/bot-workflow/bot-checkpoint.js "checkpoint message"
 
 **Example**:
 
-```bash
+````bash
 $ node scripts/bot-workflow/bot-checkpoint.js "Added timezone dropdown component with tests"
 ✓ Saved checkpoint: Added timezone dropdown component with tests
 ✓ Updated memory log
 ✓ Committed changes
 ✓ State persisted to .bot/context.json
-```
+```text
 
 ---
 
@@ -224,7 +225,7 @@ Resumes work on an existing PR or last checkpoint.
 
 ```bash
 node scripts/bot-workflow/bot-resume-work.js [pr-number]
-```
+```text
 
 **What it does**:
 
@@ -243,7 +244,7 @@ $ node scripts/bot-workflow/bot-resume-work.js
 ✓ Working directory: ~/ag-grid-worktrees/feature/456-add-timezone-support
 ✓ Last checkpoint: "Added timezone dropdown component with tests"
 Ready to continue work
-```
+```text
 
 ---
 
@@ -253,7 +254,7 @@ Prepares work for human takeover.
 
 ```bash
 node scripts/bot-workflow/bot-handoff.js "reason for handoff"
-```
+````
 
 **What it does**:
 
@@ -265,14 +266,14 @@ node scripts/bot-workflow/bot-handoff.js "reason for handoff"
 
 **Example**:
 
-```bash
+````bash
 $ node scripts/bot-workflow/bot-handoff.js "Need decision on timezone database to use"
 ✓ Created handoff summary
 ✓ Updated PR #457 description
 ✓ Added needs-human-review label
 ✓ Notified @owner
 Handoff complete
-```
+```text
 
 ---
 
@@ -282,24 +283,29 @@ Shows status of all bot-managed work.
 
 ```bash
 node scripts/bot-workflow/bot-status-all.js
-```
+```text
 
 **Output Example**:
 
-```
+````
+
 📊 Bot Work Status
 
 Active Work:
+
 - #456: Add timezone support (PR #457) - Last checkpoint: 2 hours ago
 - #458: Fix date parsing (claimed) - Started: 30 minutes ago
 
 Stale Work (>24h):
+
 - #423: Update documentation (PR #424) - Last activity: 2 days ago
 
 Completed This Week:
+
 - #421: Add relative date filter ✓
 - #419: Fix validation bug ✓
-```
+
+```text
 
 ---
 
@@ -312,40 +318,50 @@ These commands work in issue and PR comments:
 Claims the issue for bot work.
 
 ```
+
 /bot claim
-```
+
+```text
 
 #### /bot checkpoint
 
 Saves progress with a message.
 
 ```
+
 /bot checkpoint Fixed the validation logic and added tests
-```
+
+```text
 
 #### /bot resume
 
 Resumes work on a PR.
 
 ```
+
 /bot resume 457
-```
+
+```text
 
 #### /bot handoff
 
 Prepares for human takeover.
 
 ```
+
 /bot handoff Need help with API design decision
-```
+
+```text
 
 #### /bot status
 
 Shows current status.
 
 ```
+
 /bot status
-```
+
+````text
 
 ---
 
@@ -381,7 +397,7 @@ sequenceDiagram
     H->>GH: Approves & Merges
     GH->>WT: Cleanup worktree
     GH->>GH: Labels: agent:done
-```
+```text
 
 ### Handoff Flow
 
@@ -402,7 +418,7 @@ sequenceDiagram
     B2->>GH: Resumes with context
     B2->>GH: Continues development
     B2->>GH: Completes PR
-```
+```text
 
 ### Parallel Development
 
@@ -441,7 +457,7 @@ graph LR
     B1 -->|Works in| W1
     B2 -->|Works in| W2
     B3 -->|Works in| W3
-```
+````
 
 ---
 
@@ -497,7 +513,7 @@ Human-readable progress log.
 
 Task tracking for complex issues.
 
-```markdown
+`````markdown
 # Task Checklist - Issue #123
 
 - [x] Analyze existing DateFilter code
@@ -508,7 +524,8 @@ Task tracking for complex issues.
 - [ ] Add timezone conversion
 - [ ] Update documentation
 - [ ] Add examples to demo
-```
+
+````text
 
 ### PR Metadata
 
@@ -526,7 +543,7 @@ bot_metadata:
 ---
 ## Summary
 This PR adds timezone support to the DateFilter component...
-```
+```text
 
 ---
 
@@ -558,7 +575,7 @@ await exec(`git worktree add ${worktreePath} ${branch}`);
 await exec(`cd ${worktreePath} && npm install`);
 
 console.log(`✓ Worktree created: ${worktreePath}`);
-```
+```text
 
 ### Cleanup Script
 
@@ -578,7 +595,10 @@ await exec(`git branch -d ${branch}`);
 await exec(`git push origin --delete ${branch}`);
 
 console.log(`✓ Worktree cleaned up: ${branch}`);
-```
+````
+`````
+
+`````bash
 
 ### Benefits
 
@@ -796,15 +816,16 @@ console.log(`✓ Worktree cleaned up: ${branch}`);
    ```
 
 4. **Test Failures**:
-   ```bash
+   ````bash
    npm run test:unit -- --watch
-   ```
+   ```text
+`````
 
 **Bot Auto-Fix** (future feature):
 
-```bash
+````bash
 node scripts/bot-workflow/bot-fix-ci.js
-```
+```text
 
 ---
 
@@ -817,7 +838,7 @@ export BOT_DEBUG=true
 export BOT_LOG_LEVEL=verbose
 
 node scripts/bot-workflow/bot-claim-issue.js 123
-```
+````
 
 ### Manual State Recovery
 
@@ -844,9 +865,10 @@ If automated recovery fails:
    ```
 
 4. **Resume Work**:
-   ```bash
+   ````bash
    node scripts/bot-workflow/bot-resume-work.js
-   ```
+   ```text
+   ````
 
 ---
 
@@ -856,7 +878,7 @@ If automated recovery fails:
 
 The coordinator agent can orchestrate multiple worker bots:
 
-```javascript
+````javascript
 // scripts/bot-workflow/coordinator/plan-feature.js
 
 async function planFeature(description) {
@@ -878,7 +900,7 @@ async function planFeature(description) {
   // Create tracking issue
   await createTrackingIssue(tasks);
 }
-```
+```text
 
 ### CI Integration
 
@@ -906,7 +928,7 @@ async function monitorCI(prNumber) {
     }
   }
 }
-```
+```text
 
 ### Custom Bot Behaviors
 
@@ -931,7 +953,7 @@ export async function optimizeComponent(componentPath) {
   // Verify improvements
   await runPerformanceTests();
 }
-```
+```text
 
 ### Monitoring and Metrics
 
@@ -949,7 +971,7 @@ export async function trackBotMetrics() {
     humanInterventions: await countHandoffs(),
   };
 }
-```
+````
 
 ---
 

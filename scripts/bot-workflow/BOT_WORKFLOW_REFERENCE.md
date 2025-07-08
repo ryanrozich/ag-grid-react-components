@@ -13,7 +13,7 @@ node scripts/bot-workflow/core/bot-claim-issue.js <issue-number>
 ### 2. Save Progress Checkpoint
 ```bash
 node scripts/bot-workflow/core/bot-checkpoint.js "Description of progress"
-```
+```text
 - Saves current state
 - Commits changes with checkpoint message
 - Updates PR if one exists
@@ -33,7 +33,7 @@ node scripts/bot-workflow/core/bot-create-pr.js [--title "PR title"] [--body "PR
 ### 4. Check All Bot Status
 ```bash
 node scripts/bot-workflow/core/bot-status-all.js
-```
+```text
 - Shows all active bot work
 - Displays checkpoints and PR status
 - Lists stale work (>24h old)
@@ -41,14 +41,14 @@ node scripts/bot-workflow/core/bot-status-all.js
 ### 5. Resume Work
 ```bash
 node scripts/bot-workflow/core/bot-resume-work.js <issue-number>
-```
+```text
 - Resume work on an existing issue
 - Restores context and state
 
 ### 6. Bot Handoff (if stuck)
 ```bash
 node scripts/bot-workflow/core/bot-handoff.js "Reason for handoff"
-```
+```text
 - Marks work as needing human intervention
 - Updates labels appropriately
 
@@ -57,7 +57,7 @@ node scripts/bot-workflow/core/bot-handoff.js "Reason for handoff"
 ### Launch Bot Army (tmux)
 ```bash
 node scripts/bot-workflow/coordinator/launch-bot-army.js 47 48 49 50 51 52
-```
+```text
 - Creates tmux session with all bots
 - Sets up dashboard for monitoring
 - Provides instructions for each bot

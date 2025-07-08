@@ -17,13 +17,13 @@ This is a Cloudflare Worker that provides a server-side API for the AG Grid demo
 
 To run the API alongside the demo app:
 
-```bash
+````bash
 # Install dependencies
 npm install
 
 # Run both the demo app and API
 npm run dev
-```
+```text
 
 Or run them separately:
 
@@ -33,7 +33,7 @@ npm run frontend
 
 # Terminal 2: Run the API worker only
 npm run api
-```
+````
 
 The API will be available at:
 
@@ -48,7 +48,7 @@ Get paginated, filtered, and sorted task data for the grid.
 
 Request body:
 
-```json
+````json
 {
   "startRow": 0,
   "endRow": 100,
@@ -58,7 +58,7 @@ Request body:
   "groupKeys": [],
   "rowGroupCols": []
 }
-```
+```text
 
 ### POST /api/stats
 
@@ -71,7 +71,7 @@ Request body:
   "filterModel": {},
   "searchText": ""
 }
-```
+````
 
 Response includes aggregations for:
 

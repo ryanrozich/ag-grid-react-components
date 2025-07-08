@@ -22,12 +22,10 @@ import { logger } from "../utils/logger";
 const RelativeDateFilter = (props: DateFilterParams) => {
   const {
     model,
-    dateFormat,
+    dateFormat = "yyyy-MM-dd",
     dateParser,
     getValue,
     onModelChange,
-    disableRelativeMode: _disableRelativeMode,
-    defaultDateMode: _defaultDateMode,
     defaultMode,
     afterInclusive,
     beforeInclusive,

@@ -8,14 +8,14 @@ If you're already using QuickFilterDropdown, enabling presets is straightforward
 
 ### Legacy Version (v0.x)
 
-```typescript
+````typescript
 <QuickFilterDropdown
   columns={columnDefs}
   onFilterApplied={(filter) => {
     gridApi.setFilterModel(filter.filterModel);
   }}
 />
-```
+```text
 
 ### Current Version (v1.0)
 
@@ -39,7 +39,7 @@ If you're already using QuickFilterDropdown, enabling presets is straightforward
     ]
   }}
 />
-```
+````
 
 **Key Points**:
 
@@ -54,9 +54,9 @@ If you have a custom filter UI, you can integrate the preset system:
 
 ### Step 1: Install the Package
 
-```bash
+````bash
 npm install ag-grid-react-components@latest
-```
+```text
 
 ### Step 2: Add Preset Hook
 
@@ -114,7 +114,7 @@ function MyCustomFilters({ gridApi }) {
     </div>
   );
 }
-```
+````
 
 ### Step 3: Migration Checklist
 
@@ -132,7 +132,7 @@ If you're currently using URL parameters for filter persistence:
 
 ### Before
 
-```typescript
+````typescript
 // Manual URL handling
 function MyGrid() {
   useEffect(() => {
@@ -158,7 +158,7 @@ function MyGrid() {
 
   // ...
 }
-```
+```text
 
 ### Modern URL Handling
 
@@ -184,7 +184,7 @@ function MyGrid() {
 
   // ...
 }
-```
+```text
 
 ### Benefits of Migration
 
@@ -223,7 +223,7 @@ function deleteFilter(id: string) {
   const saved = loadFilters().filter((f) => f.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
 }
-```
+```text
 
 ### Modern Preset System
 
@@ -253,7 +253,7 @@ function loadFilters() {
 async function deleteFilter(id: string) {
   await deletePreset(id);
 }
-```
+```text
 
 ### Migration Script
 
@@ -289,7 +289,7 @@ async function migrateExistingFilters() {
 
   console.log("Migration completed!");
 }
-```
+```text
 
 ## From Server-Side Filter Storage
 
@@ -352,7 +352,7 @@ const { presets, savePreset } = useFilterPresets({
   gridApi,
   storage,
 });
-```
+```text
 
 ### Full Server Migration
 
@@ -394,7 +394,7 @@ const { presets, savePreset } = useFilterPresets({
   gridApi,
   storage: new ServerStorage("/api"),
 });
-```
+````
 
 ## Breaking Changes
 
@@ -423,7 +423,7 @@ While we've maintained backward compatibility, some internal changes may affect 
 
 The following features are deprecated and will be removed in v2.0:
 
-```typescript
+````typescript
 // Deprecated - use enablePresets instead
 <QuickFilterDropdown
   savedFilters={filters} // ❌ Deprecated
@@ -437,7 +437,7 @@ The following features are deprecated and will be removed in v2.0:
     onPresetSaved: save
   }}
 />
-```
+```text
 
 ## Testing Your Migration
 
@@ -462,7 +462,7 @@ describe("Filter Preset Migration", () => {
     });
   });
 });
-```
+```text
 
 ### E2E Tests
 
@@ -488,7 +488,7 @@ test("legacy filters should be accessible after migration", async ({ page }) => 
   // Verify filter applied
   await expect(page.locator(".ag-filter-active")).toBeVisible();
 });
-```
+```text
 
 ## Rollback Plan
 
@@ -519,13 +519,13 @@ const presetVersion = localStorage.getItem("preset-version");
 if (!presetVersion || presetVersion < "1.0.0") {
   // Use compatibility mode
 }
-```
+````
 
 ## Getting Help
 
 - **Documentation**: See the [Getting Started Guide](./getting-started.md)
 - **API Reference**: Check the [API documentation](./api-reference.md)
-- **Issues**: Report problems on [GitHub](https://github.com/your-repo/issues)
+- **Issues**: Report problems on [GitHub](<[https://github.com/your-repo/issue](https://github.com/your-repo/issue)s>)
 - **Support**: Contact <support@example.com> for enterprise customers
 
 ## Migration Timeline

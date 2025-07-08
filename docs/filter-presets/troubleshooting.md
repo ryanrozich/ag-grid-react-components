@@ -18,13 +18,13 @@ This guide covers common issues you might encounter when working with filter pre
 
 1. **Check storage usage**:
 
-```typescript
+````typescript
 const { getStorageInfo } = usePresetStorage();
 
 const info = await getStorageInfo();
 console.log(`Using ${info.used} of ${info.quota} bytes`);
 console.log(`${info.count} presets stored`);
-```
+```text
 
 2. **Clean up old presets**:
 
@@ -39,7 +39,7 @@ for (const preset of presets) {
     await deletePreset(preset.id);
   }
 }
-```
+```text
 
 3. **Enable compression**:
 
@@ -48,7 +48,7 @@ const storage = createPresetStorage({
   adapter: "localStorage",
   compression: true, // Reduces size by 60-80%
 });
-```
+```text
 
 4. **Use IndexedDB for larger storage**:
 
@@ -57,7 +57,7 @@ const storage = createPresetStorage({
   adapter: "indexedDB", // Much larger quota (50MB+)
   dbName: "FilterPresets",
 });
-```
+```text
 
 ### Presets Not Loading
 
@@ -88,7 +88,7 @@ function isPrivateMode(): boolean {
 if (isPrivateMode()) {
   console.warn("Private mode detected - presets may not persist");
 }
-```
+```text
 
 2. **Validate storage data**:
 
@@ -120,7 +120,7 @@ async function validateAndRepairStorage() {
     }
   }
 }
-```
+```text
 
 3. **Handle version mismatches**:
 
@@ -135,7 +135,7 @@ const { presets, error } = useFilterPresets({
     throw error;
   },
 });
-```
+```text
 
 ### URL Sharing Not Working
 
@@ -157,7 +157,7 @@ const url = `${location.origin}#preset=${encodedData}`;
 
 // Good - query parameters are more reliable
 const url = `${location.origin}?p=${encodedData}`;
-```
+```text
 
 2. **Implement URL shortening**:
 
@@ -176,7 +176,7 @@ async function createShortUrl(longUrl: string): Promise<string> {
 
   return longUrl;
 }
-```
+```text
 
 3. **Handle URL parsing errors gracefully**:
 
@@ -202,7 +202,7 @@ function loadFromUrl() {
     });
   }
 }
-```
+```javascript
 
 ### Import/Export Failures
 
@@ -252,7 +252,7 @@ async function importPresets(file: File) {
     throw error;
   }
 }
-```
+```text
 
 2. **Handle encoding issues**:
 
@@ -280,7 +280,7 @@ function downloadPresets(presets: Preset[]) {
   // Clean up
   URL.revokeObjectURL(url);
 }
-```
+```text
 
 ## Browser-Specific Issues
 
@@ -310,7 +310,7 @@ function getSafariPrivateStorage(): PresetStorageAdapter {
 
 // Detect and use appropriate storage
 const storage = isSafariPrivate() ? getSafariPrivateStorage() : createPresetStorage({ adapter: "localStorage" });
-```
+```text
 
 ### Firefox Tracking Protection
 
@@ -340,7 +340,7 @@ async function checkStorageAccess(): Promise<boolean> {
 if (!(await checkStorageAccess())) {
   showWarning("Storage access appears to be blocked. " + "Please check your browser's tracking protection settings.");
 }
-```
+```text
 
 ### IE11 Compatibility
 
@@ -369,7 +369,7 @@ class LegacyStorage implements PresetStorageAdapter {
 
   // ... other methods using ES5 syntax
 }
-```
+```text
 
 ## Performance Issues
 
@@ -389,7 +389,7 @@ const { presets, loadMore, hasMore } = useFilterPresets({
     loadOnScroll: true,
   },
 });
-```
+```text
 
 2. **Use virtual scrolling for preset lists**:
 
@@ -415,7 +415,7 @@ function PresetList({ presets, onSelect }) {
     </FixedSizeList>
   );
 }
-```
+```text
 
 3. **Defer complex operations**:
 
@@ -436,7 +436,7 @@ function savePresetDeferred(preset: UserPreset) {
     }, 100);
   }
 }
-```
+```text
 
 ### Memory Leaks
 
@@ -461,7 +461,7 @@ useEffect(() => {
     window.removeEventListener("storage", handleStorageChange);
   };
 }, [storageKey]);
-```
+```text
 
 2. **Limit cache size**:
 
@@ -497,7 +497,7 @@ class CachedStorage implements PresetStorageAdapter {
     this.cache.set(id, preset);
   }
 }
-```
+```text
 
 ## Migration Failures
 
@@ -548,7 +548,7 @@ async function migratePresets() {
     });
   }
 }
-```
+```text
 
 2. **Provide rollback option**:
 
@@ -560,7 +560,7 @@ function restoreBackup() {
     location.reload();
   }
 }
-```
+```text
 
 ## Security Issues
 
@@ -595,7 +595,7 @@ function PresetDescription({ html }) {
 
   return <div dangerouslySetInnerHTML={{ __html: sanitized }} />;
 }
-```
+```text
 
 ## Debugging Tips
 
@@ -617,7 +617,7 @@ function debugLog(...args: any[]) {
 // Use throughout your code
 debugLog("Saving preset:", preset);
 debugLog("Storage info:", await getStorageInfo());
-```
+```text
 
 ### Storage Inspector
 
@@ -641,7 +641,7 @@ window.inspectPresetStorage = async function () {
   );
   console.groupEnd();
 };
-```
+```text
 
 ### Performance Profiling
 
@@ -662,7 +662,7 @@ async function profilePresetOperations() {
     console.log(`${op.name}: ${duration.toFixed(2)}ms`);
   }
 }
-```
+````
 
 ## Getting Help
 
@@ -672,7 +672,7 @@ If you encounter issues not covered here:
 2. **Enable debug logging** (see above)
 3. **Test in incognito/private mode** to rule out extensions
 4. **Try a different browser** to identify browser-specific issues
-5. **Check the [GitHub issues](https://github.com/your-repo/issues)**
+5. **Check the [GitHub issues](<[https://github.com/your-repo/issue](https://github.com/your-repo/issue)s>)**
 6. **File a bug report** with:
    - Browser version
    - Error messages

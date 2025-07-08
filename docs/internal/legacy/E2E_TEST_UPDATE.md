@@ -30,13 +30,13 @@ Created `quickFilters.updated.spec.ts` that:
 
 ### 3. Test Results
 
-**Before fixes:**
+### Before fixes
 
 - Playwright browsers not installed
 - JSX syntax error preventing demo from loading
 - 15 out of 16 tests failing due to missing elements
 
-**After fixes:**
+### After fixes
 
 - Playwright browsers installed
 - Demo loads successfully
@@ -55,13 +55,15 @@ Created `quickFilters.updated.spec.ts` that:
 
 2. **Add data-testid attributes** to components for more reliable testing:
 
-   ```tsx
+   ````tsx
    // In QuickFilterDropdown
    <div data-testid="quick-filter-dropdown">
 
    // In DateFilter
    <div data-testid="date-filter">
-   ```
+   ```text
+
+   ````
 
 3. **Create E2E test fixtures** with consistent test data
 

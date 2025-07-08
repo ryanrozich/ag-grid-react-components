@@ -45,7 +45,7 @@ Use these scopes to indicate what part of the codebase changed:
 
 ### Feature Addition
 
-```bash
+````bash
 feat(components): add keyboard navigation support
 
 - Add arrow key navigation between date inputs
@@ -53,7 +53,7 @@ feat(components): add keyboard navigation support
 - Add Escape key to cancel changes
 
 Closes #123
-```
+```text
 
 ### Bug Fix
 
@@ -64,7 +64,7 @@ The parser was not accounting for DST transitions,
 causing dates to shift by one day in certain timezones.
 
 BREAKING CHANGE: parseDate now requires timezone parameter
-```
+```text
 
 ### Breaking Change
 
@@ -75,7 +75,7 @@ Migrate from flat to nested filter model for better extensibility.
 
 BREAKING CHANGE: Filter models from v1.x need migration.
 See migration guide in README.
-```
+````
 
 ## Tips
 

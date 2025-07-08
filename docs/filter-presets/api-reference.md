@@ -10,7 +10,7 @@ The main component for quick filtering with preset support.
 
 #### Props
 
-```typescript
+````typescript
 interface QuickFilterDropdownProps {
   /** Column definitions from AG Grid */
   columns: ColDef[];
@@ -36,7 +36,7 @@ interface QuickFilterDropdownProps {
   /** Maximum dropdown height */
   maxHeight?: number;
 }
-```
+```text
 
 #### PresetConfig Interface
 
@@ -66,7 +66,7 @@ interface PresetConfig {
   /** Callback when a preset is loaded */
   onPresetLoaded?: (preset: Preset) => void;
 }
-```
+```text
 
 #### QuickFilterDropdown Example
 
@@ -93,7 +93,7 @@ interface PresetConfig {
     gridApi.setFilterModel(filter.filterModel);
   }}
 />
-```
+```text
 
 ### FilterPresetManager
 
@@ -127,7 +127,7 @@ interface FilterPresetManagerProps {
   /** Theme */
   theme?: "light" | "dark" | "auto";
 }
-```
+```text
 
 #### FilterPresetManager Example
 
@@ -143,7 +143,7 @@ interface FilterPresetManagerProps {
     compression: true
   }}
 />
-```
+```text
 
 ## Hooks
 
@@ -173,7 +173,7 @@ interface UseFilterPresetsParams {
   /** Auto-save delay in ms (default: 1000) */
   autoSaveDelay?: number;
 }
-```
+```text
 
 #### Returns
 
@@ -221,7 +221,7 @@ interface UseFilterPresetsReturn {
   /** Error state */
   error: Error | null;
 }
-```
+```text
 
 #### useFilterPresets Example
 
@@ -266,7 +266,7 @@ function MyFilterControls({ gridApi }) {
     </div>
   );
 }
-```
+```text
 
 ### usePresetStorage
 
@@ -288,7 +288,7 @@ interface UsePresetStorageParams {
   /** Max storage size in bytes */
   maxSize?: number;
 }
-```
+```text
 
 #### usePresetStorage Returns
 
@@ -318,7 +318,7 @@ interface UsePresetStorageReturn {
   /** Storage quota exceeded */
   isQuotaExceeded: boolean;
 }
-```
+```javascript
 
 ## Utility Functions
 
@@ -345,7 +345,7 @@ interface StorageOptions {
   /** Encryption key (optional) */
   encryptionKey?: string;
 }
-```
+```text
 
 ### parseShareableUrl
 
@@ -370,7 +370,7 @@ interface ShareableUrlData {
   /** Version for compatibility */
   version?: string;
 }
-```
+```text
 
 ### validatePreset
 
@@ -389,7 +389,7 @@ interface ValidationResult {
   /** Sanitized preset data */
   sanitized?: Preset;
 }
-```
+```text
 
 ### migratePresets
 
@@ -409,7 +409,7 @@ interface MigrationResult {
     errors: MigrationError[];
   };
 }
-```
+```text
 
 ## TypeScript Interfaces
 
@@ -492,7 +492,7 @@ interface GridState {
   /** Pagination state */
   paginationState?: PaginationState;
 }
-```
+```text
 
 ### Storage Types
 
@@ -538,7 +538,7 @@ interface StorageInfo {
   /** Compression enabled */
   compressed: boolean;
 }
-```
+```text
 
 ### Event Types
 
@@ -563,7 +563,7 @@ interface PresetEvents {
   /** Fired when storage quota exceeded */
   onQuotaExceeded: (info: StorageInfo) => void;
 }
-```
+```text
 
 ## Error Handling
 
@@ -599,7 +599,7 @@ class ImportExportError extends PresetError {
   code = "IMPORT_EXPORT_ERROR";
   phase: "parse" | "validate" | "save";
 }
-```
+```text
 
 ## Browser Storage Events
 
@@ -621,4 +621,4 @@ const { presets } = useFilterPresets({
   // Automatically syncs across tabs
   syncAcrossTabs: true,
 });
-```
+````

@@ -2,7 +2,7 @@
 
 This directory contains Architecture Decision Records (ADRs) for the AG Grid React Components project.
 
-## What is an ADR?
+## What is an ADR
 
 An Architecture Decision Record (ADR) captures an important architecture decision made for the project, including the context, the decision, and its consequences.
 

@@ -75,11 +75,13 @@ Our release process ensures high-quality, well-tested releases through:
 
 2. **Trigger RC workflow**:
 
-   ```bash
+   ````bash
    gh workflow run release-candidate.yml \
      -f version=0.2.0-rc.1 \
      -f milestone=3
-   ```
+   ```text
+
+   ````
 
 3. **What happens**:
    - Validates version format
@@ -93,7 +95,7 @@ Our release process ensures high-quality, well-tested releases through:
 
 The RC workflow automatically creates a testing issue with:
 
-```markdown
+`````markdown
 # Release Candidate Testing: 0.2.0-rc.1
 
 ## 📋 Testing Checklist
@@ -118,7 +120,8 @@ The RC workflow automatically creates a testing issue with:
 - [ ] TypeScript types correct
 - [ ] Tree-shaking works
 - [ ] No console errors
-```
+
+````text
 
 ### Installing RC
 
@@ -128,7 +131,7 @@ npm install ag-grid-react-components@next
 
 # Specific RC version
 npm install ag-grid-react-components@0.2.0-rc.1
-```
+```text
 
 ## 📈 Version Management
 
@@ -144,7 +147,7 @@ node scripts/release/bump-version.js minor         # 0.1.1 → 0.2.0
 node scripts/release/bump-version.js major         # 0.2.0 → 1.0.0
 node scripts/release/bump-version.js rc            # 0.2.0 → 0.2.1-rc.0
 node scripts/release/bump-version.js prerelease beta  # 0.2.0 → 0.2.1-beta.0
-```
+```text
 
 ### Version Validation
 
@@ -157,16 +160,21 @@ The script performs:
 - File updates (package.json, README.md)
 
 ### Version Conventions
+````
+`````
 
-```
+`````yaml
+
 MAJOR.MINOR.PATCH[-PRERELEASE.NUMBER]
 
 Examples:
+
 - 1.0.0 (stable release)
 - 1.1.0-rc.1 (release candidate)
 - 2.0.0-beta.3 (beta release)
 - 0.5.0-alpha.1 (alpha release)
-```
+
+````text
 
 ## 🎯 Release Process
 
@@ -176,7 +184,7 @@ Examples:
 # Check if ready for release
 node scripts/release/prepare-release.js
 
-# This validates:
+# This validates
 # ✅ Git working directory clean
 # ✅ On main branch
 # ✅ Branch up to date
@@ -186,7 +194,7 @@ node scripts/release/prepare-release.js
 # ✅ No TypeScript errors
 # ✅ NPM auth configured
 # ✅ GitHub CLI authenticated
-```
+```text
 
 ### 2. Create Release Candidate
 
@@ -204,7 +212,7 @@ git push origin main --tags
 
 # Trigger RC workflow
 gh workflow run release-candidate.yml -f version=0.2.0-rc.1
-```
+```text
 
 ### 3. RC Testing Period
 
@@ -234,13 +242,13 @@ mv CHANGELOG_NEW.md CHANGELOG.md
 git add -A
 git commit -m "release: v0.2.0"
 
-# Create and push tag
+# Create and push tag (2)
 git tag -a v0.2.0 -m "Version 0.2.0"
 git push origin main --tags
 
 # Trigger release workflow
 gh workflow run release.yml
-```
+```text
 
 ## 📝 Changelog Generation
 
@@ -270,7 +278,7 @@ node scripts/release/generate-changelog.js \
   --from=v0.1.0 \
   --version=0.2.0 \
   --output=CHANGELOG_UPDATE.md
-```
+```text
 
 ### Changelog Format
 
@@ -297,7 +305,7 @@ _December 15, 2024_
 - 15 commits
 - 4 pull requests
 - 3 contributors
-```
+```text
 
 ### Commit Convention
 
@@ -311,7 +319,7 @@ refactor: restructure code
 docs: update documentation
 test: add tests
 chore: maintenance tasks
-```
+```text
 
 ## 📦 NPM Publishing
 
@@ -333,7 +341,7 @@ npm publish --tag next
 
 # Beta release
 npm publish --tag beta
-```
+`````
 
 ### Automated Publishing
 
@@ -376,16 +384,16 @@ The release workflows handle publishing automatically:
 
 ### RC Workflow Fails
 
-```bash
+````bash
 # Check workflow logs
 gh run list --workflow=release-candidate.yml
 gh run view <run-id>
 
-# Common issues:
+# Common issues
 # - Invalid version format
 # - Tests failing
 # - NPM auth issues
-```
+```text
 
 ### Version Already Exists
 
@@ -398,7 +406,7 @@ git tag -d v0.2.0
 
 # Delete remote tag (careful!)
 git push origin :refs/tags/v0.2.0
-```
+```text
 
 ### NPM Publish Fails
 
@@ -411,7 +419,7 @@ npm pack --dry-run
 
 # Try manual publish
 npm publish --dry-run
-```
+```text
 
 ### Changelog Issues
 
@@ -427,7 +435,7 @@ node scripts/release/generate-changelog.js \
   --from=v0.1.0 \
   --version=0.2.0 \
   --debug
-```
+````
 
 ## 📚 Related Documentation
 
@@ -437,7 +445,7 @@ node scripts/release/generate-changelog.js \
 
 ## 🔗 External Resources
 
-- [Semantic Versioning](https://semver.org/)
-- [Conventional Commits](https://www.conventionalcommits.org/)
-- [NPM Publishing](https://docs.npmjs.com/cli/v8/commands/npm-publish)
-- [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github)
+- [Semantic Versioning](<[https://semver.org](https://semver.org)/>)
+- [Conventional Commits](<[https://www.conventionalcommits.org](https://www.conventionalcommits.org)/>)
+- [NPM Publishing](<[https://docs.npmjs.com/cli/v8/commands/npm-publis](https://docs.npmjs.com/cli/v8/commands/npm-publis)h>)
+- [GitHub Releases](<[https://docs.github.com/en/repositories/releasing-projects-on-githu](https://docs.github.com/en/repositories/releasing-projects-on-githu)b>)

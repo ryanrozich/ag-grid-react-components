@@ -88,9 +88,10 @@ To add new label-to-field mappings:
 
 1. Edit `.github/workflows/sync-labels-to-project.yml`
 2. Add to the `labelMappings` object:
-   ```javascript
+   ````javascript
    'your-label': { field: 'FieldName', value: 'FieldValue' },
-   ```
+   ```text
+   ````
 3. Ensure the project has the corresponding field
 
 ## Troubleshooting
@@ -284,7 +285,7 @@ See [Release Strategy](./release-strategy.md) for detailed information.
 
 ## Related Resources
 
-- [GitHub Projects V2 Documentation](https://docs.github.com/en/issues/planning-and-tracking-with-projects)
-- [GraphQL API Reference](https://docs.github.com/en/graphql)
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Scheduled Workflows](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule)
+- [GitHub Projects V2 Documentation](<[https://docs.github.com/en/issues/planning-and-tracking-with-project](https://docs.github.com/en/issues/planning-and-tracking-with-project)s>)
+- [GraphQL API Reference](<[https://docs.github.com/en/graphq](https://docs.github.com/en/graphq)l>)
+- [GitHub Actions Documentation](<[https://docs.github.com/en/action](https://docs.github.com/en/action)s>)
+- [Scheduled Workflows](<[https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedul](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedul)e>)

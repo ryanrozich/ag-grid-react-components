@@ -5,7 +5,7 @@ import "./styles/showcase.css";
 import styles from "./FilterPresetsShowcase.module.css";
 
 import BasicPresetExample from "./examples/BasicPresetExample";
-import AdvancedPresetExample from "./examples/AdvancedPresetExample";
+// import AdvancedPresetExample from "./examples/AdvancedPresetExample";
 import CustomUIExample from "./examples/CustomUIExample";
 import RealWorldExamples from "./examples/RealWorldExamples";
 import { AnchorHeading } from "./components/AnchorHeading";
@@ -84,7 +84,7 @@ const FilterPresetsShowcase: React.FC = () => {
               synchronization, URL sharing, import/export workflows, and
               cross-tab synchronization.
             </p>
-            <AdvancedPresetExample />
+            {/* <AdvancedPresetExample /> */}
           </div>
         </TabPanel>
 

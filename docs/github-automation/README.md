@@ -8,7 +8,7 @@ This repository implements a comprehensive GitHub automation system designed to 
 
 ### Core Components
 
-```mermaid
+````mermaid
 graph TB
     subgraph HumanDeveloper[Human Developer]
         HD[Developer]
@@ -61,7 +61,7 @@ graph TB
 
     GP -->|Reviews| HD
     GA -->|Syncs| GB
-```
+```text
 
 ### Workflow Interaction Map
 
@@ -93,7 +93,7 @@ graph LR
         CL --> UL[Update Labels]
         UL --> CS[Close Issue]
     end
-```
+````
 
 ## 🤖 Bot Workflow Lifecycle
 
@@ -134,7 +134,7 @@ graph LR
 $ node scripts/bot-workflow/coordinator/plan-feature.js
 "Add timezone support to DateFilter component"
 
-# Coordinator creates issues:
+# Coordinator creates issues
 # - #101: Add timezone UI component
 # - #102: Update date parsing logic
 # - #103: Add timezone tests
@@ -247,7 +247,7 @@ npm run release -- --dry-run
 
 ## 📁 Directory Structure
 
-```
+```text
 .github/
 ├── workflows/           # GitHub Actions workflows (17 total, consolidated)
 │   ├── ci.yml          # Main CI pipeline

@@ -8,9 +8,9 @@ This document defines how the parallel development of filter presets will be int
 
 ### 1. Storage Engine (#47) - ✅ DONE
 
-**Exports:**
+### Exports
 
-```typescript
+````typescript
 export class PresetStorageEngine {
   save(preset: FilterPreset): void;
   load(id: string): FilterPreset | null;
@@ -25,12 +25,12 @@ export interface FilterPreset {
   gridState: GridState;
   // ... other fields
 }
-```
+```text
 
 ### 2. UI Components (#48)
 
 **Depends on:** Storage Engine (#47)
-**Exports:**
+### Exports: (2)
 
 ```typescript
 export interface FilterPresetManagerProps {
@@ -41,12 +41,12 @@ export interface FilterPresetManagerProps {
 
 export const FilterPresetManager: React.FC<FilterPresetManagerProps>;
 export const PresetSelector: React.FC<PresetSelectorProps>;
-```
+```text
 
 ### 3. Sharing System (#49)
 
 **Depends on:** Storage Engine (#47)
-**Exports:**
+### Exports: (3)
 
 ```typescript
 export class PresetSharingService {
@@ -55,24 +55,25 @@ export class PresetSharingService {
   exportToFile(preset: FilterPreset): Blob;
   importFromFile(file: File): Promise<FilterPreset>;
 }
-```
+```text
 
 ### 4. System Presets (#50)
 
 **Depends on:** Storage Engine (#47)
-**Exports:**
+### Exports: (4)
 
 ```typescript
 export interface SystemPresetProvider {
   getSystemPresets(): FilterPreset[];
   isSystemPreset(id: string): boolean;
 }
-```
+````
 
 ### 5. Demo & Examples (#51)
 
 **Depends on:** All above (#47-50)
-**Provides:**
+
+### Provides
 
 - Working examples
 - Integration patterns
@@ -81,7 +82,8 @@ export interface SystemPresetProvider {
 ### 6. Testing & Docs (#52)
 
 **Depends on:** All above (#47-51)
-**Provides:**
+
+### Provides: (2)
 
 - Integration tests
 - E2E tests
@@ -138,11 +140,12 @@ export interface SystemPresetProvider {
 
 Each issue should declare:
 
-```markdown
+`````markdown
 **Depends on:** #47 (Storage Engine)
 **Blocking:** #52 (Integration Tests)
 **Contract:** `src/contracts/IFilterPresetUI.ts`
-```
+
+````text
 
 ### Contract Files
 
@@ -153,7 +156,7 @@ Create contract definitions early:
 export interface IFilterPresetStorage {
   // Define interface that #48-51 will use
 }
-```
+```text
 
 ### Integration Tests
 
@@ -223,7 +226,10 @@ Create issue #54: "Coordinate filter preset integration"
 
 ```bash
 node scripts/bot-workflow/integration-check.js --milestone "Filter Presets v1"
-```
+````
+`````
+
+```typescript
 
 ## Success Metrics
 
@@ -232,3 +238,4 @@ node scripts/bot-workflow/integration-check.js --milestone "Filter Presets v1"
 3. **100% test coverage** including integration
 4. **Clean dependency graph** (no circular deps)
 5. **Release candidate in 2 weeks**
+```

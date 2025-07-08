@@ -15,7 +15,7 @@ The components use a combination of:
 
 The components respect these CSS custom properties that you can override:
 
-```css
+````css
 :root {
   /* Primary Colors */
   --agrc-primary: #2563eb; /* Primary brand color */
@@ -51,7 +51,7 @@ The components respect these CSS custom properties that you can override:
   --agrc-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --agrc-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
 }
-```
+```text
 
 ## Component-Specific Styling
 
@@ -108,7 +108,7 @@ The DateFilter component exposes these CSS classes:
 .agrc-date-filter__button--secondary {
   /* Secondary button (Reset) */
 }
-```
+```text
 
 #### Example: Custom DateFilter Theme
 
@@ -131,7 +131,7 @@ The DateFilter component exposes these CSS classes:
   padding: var(--agrc-spacing-sm);
   font-size: 0.875rem;
 }
-```
+```text
 
 ### QuickFilterDropdown Component
 
@@ -168,7 +168,7 @@ The DateFilter component exposes these CSS classes:
 .agrc-quick-filter__search {
   /* Search box styling */
 }
-```
+```text
 
 #### Example: Custom QuickFilter Styling
 
@@ -197,7 +197,7 @@ The DateFilter component exposes these CSS classes:
   height: 1.25rem;
   color: var(--agrc-text-secondary);
 }
-```
+```text
 
 ### ActiveFilters Component
 
@@ -231,7 +231,7 @@ The DateFilter component exposes these CSS classes:
 .agrc-active-filters__clear-all {
   /* Clear all button */
 }
-```
+```text
 
 #### Example: Custom ActiveFilters Pills
 
@@ -252,7 +252,7 @@ The DateFilter component exposes these CSS classes:
   border-radius: 9999px;
   padding: 0.25rem 0.75rem;
 }
-```
+```javascript
 
 ## Using CSS Modules
 
@@ -268,13 +268,13 @@ const customStyles = {
 };
 
 <DateFilter className={customStyles.filterContainer} />;
-```
+````
 
 ## Tailwind CSS Integration
 
 The components work well with Tailwind CSS. You can use the `className` prop:
 
-```tsx
+````tsx
 <DateFilter
   className="p-4 bg-gray-50 rounded-lg shadow-sm"
 />
@@ -287,7 +287,7 @@ The components work well with Tailwind CSS. You can use the `className` prop:
 <ActiveFilters
   className="flex flex-wrap gap-2 p-2 bg-gray-100 rounded"
 />
-```
+```text
 
 ## Advanced Customization
 
@@ -310,7 +310,7 @@ Some components support render props for maximum flexibility:
     </div>
   )}
 />
-```
+```text
 
 ### Headless UI Compatibility
 
@@ -323,7 +323,7 @@ import { Transition } from "@headlessui/react";
 <Transition show={isOpen} enter="transition-opacity duration-150" enterFrom="opacity-0" enterTo="opacity-100">
   <DateFilter />
 </Transition>;
-```
+```text
 
 ### Component Composition
 
@@ -341,7 +341,7 @@ function CustomFilterBar({ api }) {
     </div>
   );
 }
-```
+```text
 
 ## Dark Mode Support
 
@@ -364,7 +364,7 @@ The components automatically support dark mode through CSS variables:
   --agrc-text: #f9fafb;
   /* ... */
 }
-```
+```text
 
 ## Accessibility Styling
 
@@ -381,7 +381,7 @@ The components include proper ARIA attributes. You can enhance with custom focus
 .agrc-quick-filter__option:focus {
   box-shadow: inset 0 0 0 2px var(--agrc-primary);
 }
-```
+```text
 
 ## Performance Considerations
 
@@ -422,7 +422,7 @@ The components include proper ARIA attributes. You can enhance with custom focus
   border: none;
   box-shadow: 0 2px 4px rgba(124, 58, 237, 0.3);
 }
-```
+```text
 
 ### Bootstrap Integration
 
@@ -441,7 +441,7 @@ The components include proper ARIA attributes. You can enhance with custom focus
   @extend .btn;
   @extend .btn-outline-secondary;
 }
-```
+```text
 
 ## Troubleshooting
 
@@ -453,7 +453,7 @@ If your styles aren't applying, increase specificity:
 .my-app .agrc-date-filter .agrc-date-filter__input {
   /* Your styles */
 }
-```
+````
 
 ### CSS Module Conflicts
 
@@ -485,7 +485,7 @@ Adjust your z-index accordingly.
 
 ## Resources
 
-- [CSS Modules Documentation](https://github.com/css-modules/css-modules)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [CSS Custom Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)
+- [CSS Modules Documentation](<[https://github.com/css-modules/css-module](https://github.com/css-modules/css-module)s>)
+- [Tailwind CSS](<[https://tailwindcss.com](https://tailwindcss.com)/>)
+- [CSS Custom Properties](<[https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_propertie](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_propertie)s>)
 - [Component Source Styles](../src/components/)
