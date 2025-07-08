@@ -132,6 +132,7 @@ const FilterPresetsShowcase: React.FC = () => {
                 </AnchorHeading>
                 <CodeBlock
                   language="typescript"
+                  variant="light"
                   code={`
 // Enable presets with basic configuration
 <QuickFilterDropdown
@@ -165,6 +166,7 @@ const FilterPresetsShowcase: React.FC = () => {
                 </AnchorHeading>
                 <CodeBlock
                   language="typescript"
+                  variant="light"
                   code={`
 // Use the useFilterPresets hook for programmatic control
 const {
@@ -202,6 +204,7 @@ const handleLoad = (presetId: string) => {
                 </AnchorHeading>
                 <CodeBlock
                   language="typescript"
+                  variant="light"
                   code={`
 // Configure storage options
 const storageConfig = {
@@ -220,6 +223,7 @@ const storageConfig = {
                 </AnchorHeading>
                 <CodeBlock
                   language="typescript"
+                  variant="light"
                   code={`
 // Provide custom UI components
 <QuickFilterDropdown
@@ -257,6 +261,7 @@ const storageConfig = {
                 </AnchorHeading>
                 <CodeBlock
                   language="typescript"
+                  variant="light"
                   code={`
 // Listen to preset events
 <QuickFilterDropdown
