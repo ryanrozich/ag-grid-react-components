@@ -1,0 +1,290 @@
+/* Action buttons */
+.actions {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.saveButton,
+.manageButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid rgb(156, 163, 175, 0.3);
+  border-radius: 0.375rem;
+  background: transparent;
+  color: rgb(156, 163, 175);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.saveButton:hover,
+.manageButton:hover {
+  background-color: rgb(156, 163, 175, 0.1);
+  border-color: rgb(156, 163, 175, 0.5);
+  color: rgb(209, 213, 219);
+}
+
+.saveButton:focus,
+.manageButton:focus {
+  outline: 2px solid rgb(99, 102, 241, 0.5);
+  outline-offset: 2px;
+}
+
+/* Modal overlay */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+/* Modal container */
+.modal {
+  background: #1f2937;
+  border: 1px solid rgb(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  box-shadow:
+    0 20px 25px -5px rgb(0, 0, 0, 0.5),
+    0 10px 10px -5px rgb(0, 0, 0, 0.3);
+  max-width: 32rem;
+  width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  color: #e2e8f0;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgb(255, 255, 255, 0.1);
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.15s ease;
+}
+
+.closeButton:hover {
+  background: rgb(255, 255, 255, 0.1);
+  color: #f3f4f6;
+}
+
+.modalBody {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* Save form */
+.saveForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.input {
+  padding: 0.625rem 0.875rem;
+  border: 1px solid rgb(255, 255, 255, 0.2);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background: rgb(0, 0, 0, 0.3);
+  color: #e2e8f0;
+  transition: all 0.15s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59, 130, 246, 0.1);
+}
+
+.primaryButton {
+  padding: 0.625rem 1.25rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.primaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Manage content */
+.manageContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.presetList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 20rem;
+  overflow-y: auto;
+}
+
+.emptyMessage {
+  text-align: center;
+  color: #6b7280;
+  padding: 2rem 0;
+  margin: 0;
+}
+
+.presetItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgb(255, 255, 255, 0.1);
+  border-radius: 0.375rem;
+  transition: all 0.15s ease;
+}
+
+.presetItem:hover {
+  background: rgb(255, 255, 255, 0.05);
+  border-color: rgb(255, 255, 255, 0.2);
+}
+
+.presetInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.presetName {
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.presetDate {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.presetActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.applyButton {
+  padding: 0.375rem 0.75rem;
+  background: transparent;
+  color: #3b82f6;
+  border: 1px solid #3b82f6;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.applyButton:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+.deleteButton {
+  padding: 0.375rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.25rem;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deleteButton:hover {
+  background: rgb(239, 68, 68, 0.1);
+}
+
+/* Import/Export */
+.importExport {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(255, 255, 255, 0.1);
+}
+
+.secondaryButton {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid rgb(255, 255, 255, 0.2);
+  border-radius: 0.375rem;
+  background: transparent;
+  color: #e2e8f0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.secondaryButton:hover {
+  background: rgb(255, 255, 255, 0.1);
+  border-color: rgb(255, 255, 255, 0.3);
+}
+
+/* Scrollbar styling */
+.presetList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.presetList::-webkit-scrollbar-track {
+  background: rgb(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.presetList::-webkit-scrollbar-thumb {
+  background: rgb(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.presetList::-webkit-scrollbar-thumb:hover {
+  background: rgb(0, 0, 0, 0.3);
+}

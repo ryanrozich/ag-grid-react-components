@@ -17,7 +17,7 @@ import { VERSION_DISPLAY, IS_PRERELEASE } from "./version";
 import VersionInfo from "./components/VersionInfo";
 import heroScreenshot from "./assets/screenshots/hero-screenshot.png";
 import { ServerSideDemo } from "./components/ServerSideDemo";
-import FilterPresetsShowcase from "./FilterPresetsShowcase";
+import { SimpleFilterPresetsDemo } from "./SimpleFilterPresetsDemo";
 import {
   darkTheme,
   getColumnDefs,
@@ -7246,7 +7246,7 @@ const handleFilterSelect = async (option) => {
           {/* Filter Presets Showcase */}
           {activeDemoTab === "presets" && (
             <div className="flex-1 flex flex-col">
-              <FilterPresetsShowcase />
+              <SimpleFilterPresetsDemo />
             </div>
           )}
         </div>

@@ -16,6 +16,10 @@ export { QuickFilterDropdown, DATE_FILTER_PRESETS };
 import ActiveFilters from "./components/ActiveFilters";
 export { ActiveFilters };
 
+// Filter Preset Manager (Lightweight Alternative)
+import { FilterPresetManager } from "./components/FilterPresetManager";
+export { FilterPresetManager };
+
 // Filter Presets Components
 export { PresetSelector } from "./components/FilterPresets/PresetSelector";
 export { SavePresetDialog } from "./components/FilterPresets/SavePresetDialog";
