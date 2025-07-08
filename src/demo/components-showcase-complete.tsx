@@ -561,13 +561,13 @@ export const ComponentsShowcaseComplete: React.FC<
                   </span>
                 </div>
                 <h1 className="mt-10 text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                  AG Grid filters that understand "today"
+                  Supercharge AG Grid with modern UX components
                 </h1>
                 <p className="mt-6 text-lg leading-8 text-gray-300">
-                  If you're using AG Grid, you know users struggle with date
-                  filtering. They want "last 30 days" to mean last 30
-                  days—tomorrow too. These open source React components make it
-                  happen.
+                  Transform AG Grid from a powerful data table into a delightful
+                  user experience. These production-ready React components add
+                  the filtering, presets, and state management features your
+                  users have been asking for.
                 </p>
                 <div className="mt-10 flex items-center gap-x-6">
                   <button
@@ -650,13 +650,13 @@ export const ComponentsShowcaseComplete: React.FC<
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-16">
             <div className="mx-auto max-w-2xl lg:text-center">
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                New UX features for AG Grid
+                Essential components for modern data applications
               </p>
               <p className="mt-6 text-lg text-gray-300">
-                AG Grid is incredibly extensible, but its filtering UX hasn't
-                kept up with modern apps. When you have dozens of columns and
-                dynamic data, users need better ways to filter, save, and share
-                their views. These open source components fill that gap.
+                AG Grid gives you the foundation. These components add the
+                polish your users expect: intuitive filtering, visible filter
+                pills, shareable presets, and persistent state. Built for teams
+                who use grids as their primary workspace.
               </p>
             </div>
             <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
@@ -678,13 +678,13 @@ export const ComponentsShowcaseComplete: React.FC<
                         />
                       </svg>
                     </div>
-                    DateFilter
+                    Relative Date Filtering
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      Let users filter by "this week", "last month", or "next
-                      quarter". These relative queries stay current and work
-                      perfectly when bookmarked or shared.
+                      Natural language date filters like "last 30 days" that
+                      actually update every day. Your saved views and shared
+                      links always show current data.
                     </p>
                   </dd>
                 </div>
@@ -705,13 +705,13 @@ export const ComponentsShowcaseComplete: React.FC<
                         />
                       </svg>
                     </div>
-                    QuickFilterDropdown
+                    Quick Filter Menus
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      Give users instant access to common filters like "Overdue
-                      tasks" or "Due this week". No more manual date picking for
-                      repetitive queries.
+                      One-click access to your most-used filters. Configure
+                      dropdowns for "High Priority", "Due This Week", or any
+                      complex filter combination your team needs.
                     </p>
                   </dd>
                 </div>
@@ -737,13 +737,13 @@ export const ComponentsShowcaseComplete: React.FC<
                         />
                       </svg>
                     </div>
-                    ActiveFilters
+                    Active Filter Pills
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      No more hunting for tiny blue dots. Show exactly what's
-                      filtered in clear, removable pills that users can
-                      understand at a glance.
+                      Stop hunting for tiny blue dots. Display active filters as
+                      clear, interactive pills that users can see and remove
+                      with a single click.
                     </p>
                   </dd>
                 </div>
@@ -760,17 +760,17 @@ export const ComponentsShowcaseComplete: React.FC<
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
+                          d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"
                         />
                       </svg>
                     </div>
-                    URL State Persistence
+                    Filter Presets & Sharing
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      Users can bookmark their favorite views and share them
-                      with teammates. "Last 30 days" stays last 30 days, even
-                      next month.
+                      Save complex filter combinations as named presets. Export
+                      and share them with your team, or copy a URL that captures
+                      your exact grid state.
                     </p>
                   </dd>
                 </div>
@@ -1224,11 +1224,82 @@ const columnDefs = [{
                         AG Grid React Components Documentation
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6 text-lg">
-                        Learn how to give your users the filtering experience
-                        they've been asking for. Enable relative date queries,
-                        quick filter presets, and shareable views with these
-                        powerful components for AG Grid.
+                        Transform AG Grid from a powerful data table into a
+                        delightful daily workspace. These components solve the
+                        real-world filtering challenges your users face.
                       </p>
+
+                      <div className="prose prose-invert max-w-none mb-8">
+                        <h3 className="text-xl font-semibold text-white mb-4">
+                          The Journey to Better Filtering
+                        </h3>
+
+                        <p className="text-gray-300 mb-4">
+                          <strong>It starts with dates.</strong> Your users are
+                          tired of manually selecting date ranges every day.
+                          They want "last 30 days" to actually mean the last 30
+                          days—including tomorrow. Our{" "}
+                          <Link
+                            to="/demo"
+                            className="text-indigo-400 hover:text-indigo-300"
+                          >
+                            DateFilter component
+                          </Link>{" "}
+                          introduces relative date expressions that update
+                          automatically.
+                        </p>
+
+                        <p className="text-gray-300 mb-4">
+                          <strong>Then visibility becomes crucial.</strong> As
+                          your grid grows to dozens of columns, users lose track
+                          of what's filtered. Those tiny blue dots in column
+                          headers? Nobody notices them.
+                          <Link
+                            to="/demo"
+                            className="text-indigo-400 hover:text-indigo-300"
+                          >
+                            Active Filter Pills
+                          </Link>{" "}
+                          display every active filter clearly, making them
+                          instantly visible and removable.
+                        </p>
+
+                        <p className="text-gray-300 mb-4">
+                          <strong>Soon, patterns emerge.</strong> Your team runs
+                          the same queries repeatedly: "High priority bugs",
+                          "Due this week", "My overdue tasks". Instead of
+                          recreating these filters daily,
+                          <Link
+                            to="/demo"
+                            className="text-indigo-400 hover:text-indigo-300"
+                          >
+                            Quick Filter Menus
+                          </Link>{" "}
+                          provide one-click access to complex filter
+                          combinations.
+                        </p>
+
+                        <p className="text-gray-300 mb-4">
+                          <strong>Finally, collaboration kicks in.</strong>{" "}
+                          Teams want to save their carefully crafted views, name
+                          them, organize them, and share them. The{" "}
+                          <Link
+                            to="/demo"
+                            className="text-indigo-400 hover:text-indigo-300"
+                          >
+                            Filter Presets system
+                          </Link>{" "}
+                          enables users to build a library of views, export them
+                          to colleagues, or simply copy a URL that captures
+                          their exact grid state.
+                        </p>
+
+                        <p className="text-gray-300 text-lg font-medium">
+                          Together, these components transform AG Grid from a
+                          feature-rich table into a tool people actually enjoy
+                          using every day.
+                        </p>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1253,8 +1324,9 @@ const columnDefs = [{
                           📦 Components
                         </h3>
                         <p className="text-gray-300 mb-4">
-                          Explore our modular components including DateFilter,
-                          QuickFilterDropdown, and more.
+                          Explore our modular components: relative date
+                          filtering, active filter pills, quick filter menus,
+                          and filter presets.
                         </p>
                         <button
                           onClick={() =>
