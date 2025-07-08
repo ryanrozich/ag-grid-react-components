@@ -381,7 +381,8 @@ export const ComponentsShowcaseComplete: React.FC<
         setGridApi(null);
       }
     }
-  }, [currentPage, gridApi]); // Run when page changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]); // Only run when page changes, not when gridApi changes
 
   // Get column definitions from shared config
   const columnDefs = useMemo(

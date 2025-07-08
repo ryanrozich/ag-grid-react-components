@@ -24,12 +24,15 @@ export const AnchorHeading: React.FC<AnchorHeadingProps> = ({
     const hash = location.hash.slice(1); // Remove the #
     if (hash === id && headingRef.current) {
       // Small delay to ensure DOM is ready
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         headingRef.current?.scrollIntoView({
           behavior: "smooth",
           block: "start",
         });
       }, 100);
+
+      // Cleanup timeout on unmount or when dependencies change
+      return () => clearTimeout(timeoutId);
     }
   }, [location.hash, id]);
 
