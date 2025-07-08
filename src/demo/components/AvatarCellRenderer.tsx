@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { ICellRendererParams } from "ag-grid-community";
 import styles from "./AvatarCellRenderer.module.css";
 
@@ -25,9 +25,6 @@ const ASSIGNEES_WITH_PHOTOS = new Set([
 ]);
 
 const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
-  const [imageError, setImageError] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
-
   // Check if this assignee should have a photo
   const hasPhoto = value ? ASSIGNEES_WITH_PHOTOS.has(value) : false;
 
@@ -88,42 +85,37 @@ const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
   return (
     <div className={styles.avatarContainer}>
       <div className={styles.avatarWrapper}>
-        {!imageError ? (
-          <>
-            {!imageLoaded && hasPhoto && (
-              <div
-                className={styles.avatarFallback}
-                style={{
-                  backgroundColor: `#${backgroundColor}`,
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                }}
-              >
-                {initials}
-              </div>
-            )}
-            <img
-              src={avatarUrl}
-              alt={value}
-              className={styles.avatar}
-              loading="lazy"
-              onLoad={() => {
-                setImageLoaded(true);
-              }}
-              onError={() => {
-                setImageError(true);
-              }}
-              style={{
-                opacity: imageLoaded || !hasPhoto ? 1 : 0,
-                transition: "opacity 0.3s ease-in-out",
-              }}
-            />
-          </>
+        {hasPhoto ? (
+          <img
+            src={avatarUrl}
+            alt={value}
+            className={styles.avatar}
+            loading="lazy"
+            onError={(e) => {
+              // On error, hide the image and show initials
+              const img = e.target as HTMLImageElement;
+              img.style.display = "none";
+              const fallback = img.nextElementSibling as HTMLElement;
+              if (fallback) {
+                fallback.style.display = "flex";
+              }
+            }}
+          />
         ) : (
           <div
             className={styles.avatarFallback}
             style={{ backgroundColor: `#${backgroundColor}` }}
+          >
+            {initials}
+          </div>
+        )}
+        {hasPhoto && (
+          <div
+            className={styles.avatarFallback}
+            style={{
+              backgroundColor: `#${backgroundColor}`,
+              display: "none",
+            }}
           >
             {initials}
           </div>
