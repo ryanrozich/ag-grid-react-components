@@ -44,6 +44,52 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
   variant = "default",
 }) => {
   const [copied, setCopied] = useState(false);
+  const [detectedTheme, setDetectedTheme] = useState<"light" | "dark">("dark");
+
+  // Detect the actual theme based on background
+  React.useEffect(() => {
+    if (variant !== "default") return;
+
+    const checkTheme = () => {
+      const body = document.body;
+      const computedStyle = window.getComputedStyle(body);
+      const bgColor = computedStyle.backgroundColor;
+
+      // Check if background is light
+      if (bgColor === "rgb(255, 255, 255)" || bgColor === "white") {
+        setDetectedTheme("light");
+      } else {
+        // Check the nearest parent with a background
+        let foundDarkBg = false;
+
+        // Look for elements with dark backgrounds
+        const darkElements = document.querySelectorAll(
+          ".bg-gray-950, .bg-gray-900, .min-h-screen",
+        );
+        darkElements.forEach((el) => {
+          const elBg = window.getComputedStyle(el).backgroundColor;
+          if (elBg && elBg !== "rgba(0, 0, 0, 0)" && elBg !== "transparent") {
+            // Parse RGB values
+            const match = elBg.match(/\d+/g);
+            if (match) {
+              const [r, g, b] = match.map(Number);
+              // If all values are low, it's a dark background
+              if (r < 50 && g < 50 && b < 50) {
+                foundDarkBg = true;
+              }
+            }
+          }
+        });
+
+        setDetectedTheme(foundDarkBg ? "dark" : "light");
+      }
+    };
+
+    checkTheme();
+    // Re-check on window resize or other changes
+    window.addEventListener("resize", checkTheme);
+    return () => window.removeEventListener("resize", checkTheme);
+  }, [variant]);
 
   const handleCopy = async () => {
     try {
@@ -64,8 +110,9 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
   // Always disable line numbers for now
   const shouldShowLineNumbers = false;
 
-  // Use light theme for light variant
-  const isLightTheme = variant === "light";
+  // Use light theme for light variant or detected light theme
+  const isLightTheme =
+    variant === "light" || (variant === "default" && detectedTheme === "light");
   const theme = isLightTheme ? vs : vscDarkPlus;
 
   return (
