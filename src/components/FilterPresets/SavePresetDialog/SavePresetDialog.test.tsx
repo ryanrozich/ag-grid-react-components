@@ -158,12 +158,19 @@ describe("SavePresetDialog", () => {
     });
 
     it("should trim whitespace from inputs", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const onSave = vi.fn();
       render(<SavePresetDialog {...defaultProps} onSave={onSave} />);
 
-      await user.type(screen.getByLabelText("Name"), "  Test Preset  ");
-      await user.type(screen.getByLabelText("Tags"), " tag1 , tag2 , tag3 ");
+      const nameInput = screen.getByLabelText("Name");
+      const tagsInput = screen.getByLabelText("Tags");
+
+      await user.clear(nameInput);
+      await user.type(nameInput, "  Test Preset  ");
+
+      await user.clear(tagsInput);
+      await user.type(tagsInput, " tag1 , tag2 , tag3 ");
+
       await user.click(screen.getByRole("button", { name: "Save" }));
 
       expect(onSave).toHaveBeenCalledWith(
@@ -177,13 +184,23 @@ describe("SavePresetDialog", () => {
 
   describe("Save Functionality", () => {
     it("should call onSave with correct data", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const onSave = vi.fn();
       render(<SavePresetDialog {...defaultProps} onSave={onSave} />);
 
-      await user.type(screen.getByLabelText("Name"), "My Preset");
-      await user.type(screen.getByLabelText("Description"), "My description");
-      await user.type(screen.getByLabelText("Tags"), "tag1, tag2");
+      const nameInput = screen.getByLabelText("Name");
+      const descInput = screen.getByLabelText("Description");
+      const tagsInput = screen.getByLabelText("Tags");
+
+      await user.clear(nameInput);
+      await user.type(nameInput, "My Preset");
+
+      await user.clear(descInput);
+      await user.type(descInput, "My description");
+
+      await user.clear(tagsInput);
+      await user.type(tagsInput, "tag1, tag2");
+
       await user.click(screen.getByLabelText("Set as default preset"));
 
       await user.click(screen.getByRole("button", { name: "Save" }));
@@ -272,21 +289,24 @@ describe("SavePresetDialog", () => {
     });
 
     it("should not submit on Enter in textarea", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const onSave = vi.fn();
       render(<SavePresetDialog {...defaultProps} onSave={onSave} />);
 
-      await user.type(screen.getByLabelText("Name"), "My Preset");
-      await user.type(
-        screen.getByLabelText("Description"),
-        "Line 1{Enter}Line 2",
-      );
-
-      expect(onSave).not.toHaveBeenCalled();
+      const nameInput = screen.getByLabelText("Name");
       const textarea = screen.getByLabelText(
         "Description",
       ) as HTMLTextAreaElement;
-      expect(textarea.value).toContain("Line 1\nLine 2");
+
+      await user.clear(nameInput);
+      await user.type(nameInput, "My Preset");
+
+      await user.clear(textarea);
+      await user.type(textarea, "Line 1{Enter}Line 2");
+
+      expect(onSave).not.toHaveBeenCalled();
+      // The value should contain both lines
+      expect(textarea.value).toBe("Line 1\nLine 2");
     });
   });
 

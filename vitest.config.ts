@@ -11,6 +11,8 @@ export default defineConfig({
       "**/.trunk/**",
       "tests/e2e/**",
       "api/**",
+      "src/tests/**",
+      "**/*.spec.ts",
     ],
     coverage: {
       provider: "v8",
