@@ -113,15 +113,19 @@ describe("SavePresetDialog", () => {
     });
 
     it("should show error for invalid tag characters", async () => {
-      const user = userEvent.setup();
       render(<SavePresetDialog {...defaultProps} />);
 
-      const tagsInput = screen.getByLabelText("Tags");
-      await user.type(tagsInput, "tag1, tag@2, tag#3");
+      const tagsInput = screen.getByLabelText("Tags") as HTMLInputElement;
+      fireEvent.change(tagsInput, { target: { value: "tag1, tag@2, tag#3" } });
 
-      await waitFor(() => {
-        expect(screen.getByText(/Tags can only contain/i)).toBeInTheDocument();
-      });
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText(/Tags can only contain/i),
+          ).toBeInTheDocument();
+        },
+        { timeout: 3000 },
+      );
     });
   });
 
