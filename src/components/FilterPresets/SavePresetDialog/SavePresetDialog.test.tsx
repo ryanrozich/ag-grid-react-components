@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SavePresetDialog } from "./index";
 import type { SavePresetDialogProps } from "../types";
@@ -162,8 +162,15 @@ describe("SavePresetDialog", () => {
       const onSave = vi.fn();
       render(<SavePresetDialog {...defaultProps} onSave={onSave} />);
 
-      await user.type(screen.getByLabelText("Name"), "  Test Preset  ");
-      await user.type(screen.getByLabelText("Tags"), " tag1 , tag2 , tag3 ");
+      const nameInput = screen.getByLabelText("Name") as HTMLInputElement;
+      const tagsInput = screen.getByLabelText("Tags") as HTMLInputElement;
+
+      // Use fireEvent to set values directly
+      fireEvent.change(nameInput, { target: { value: "  Test Preset  " } });
+      fireEvent.change(tagsInput, {
+        target: { value: " tag1 , tag2 , tag3 " },
+      });
+
       await user.click(screen.getByRole("button", { name: "Save" }));
 
       expect(onSave).toHaveBeenCalledWith(
@@ -181,9 +188,17 @@ describe("SavePresetDialog", () => {
       const onSave = vi.fn();
       render(<SavePresetDialog {...defaultProps} onSave={onSave} />);
 
-      await user.type(screen.getByLabelText("Name"), "My Preset");
-      await user.type(screen.getByLabelText("Description"), "My description");
-      await user.type(screen.getByLabelText("Tags"), "tag1, tag2");
+      // Use fireEvent for more reliable input
+      const nameInput = screen.getByLabelText("Name") as HTMLInputElement;
+      const descInput = screen.getByLabelText(
+        "Description",
+      ) as HTMLTextAreaElement;
+      const tagsInput = screen.getByLabelText("Tags") as HTMLInputElement;
+
+      fireEvent.change(nameInput, { target: { value: "My Preset" } });
+      fireEvent.change(descInput, { target: { value: "My description" } });
+      fireEvent.change(tagsInput, { target: { value: "tag1, tag2" } });
+
       await user.click(screen.getByLabelText("Set as default preset"));
 
       await user.click(screen.getByRole("button", { name: "Save" }));
@@ -277,16 +292,18 @@ describe("SavePresetDialog", () => {
       render(<SavePresetDialog {...defaultProps} onSave={onSave} />);
 
       await user.type(screen.getByLabelText("Name"), "My Preset");
-      await user.type(
-        screen.getByLabelText("Description"),
-        "Line 1{Enter}Line 2",
-      );
+
+      // Type the description in parts to avoid issues with special keys
+      const descTextarea = screen.getByLabelText("Description");
+      await user.type(descTextarea, "Line 1");
+      await user.keyboard("{Enter}");
+      await user.type(descTextarea, "Line 2");
 
       expect(onSave).not.toHaveBeenCalled();
       const textarea = screen.getByLabelText(
         "Description",
       ) as HTMLTextAreaElement;
-      expect(textarea.value).toContain("Line 1\nLine 2");
+      expect(textarea.value).toBe("Line 1\nLine 2");
     });
   });
 
