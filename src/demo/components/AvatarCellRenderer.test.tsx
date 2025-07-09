@@ -142,7 +142,7 @@ describe("AvatarCellRenderer", () => {
     // Get the first avatar fallback element
     const firstFallback = screen.getByText("TN");
     const firstStyle = window.getComputedStyle(firstFallback);
-    
+
     // Re-render with same name
     rerender(<AvatarCellRenderer {...mockParams} value="Test Name" />);
 

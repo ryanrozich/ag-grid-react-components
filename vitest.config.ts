@@ -4,7 +4,14 @@ export default defineConfig({
   test: {
     setupFiles: "./vitest.setup.ts",
     environment: "jsdom",
-    exclude: ["node_modules", "dist", ".trunk", "**/.trunk/**", "tests/e2e/**"],
+    exclude: [
+      "node_modules",
+      "dist",
+      ".trunk",
+      "**/.trunk/**",
+      "tests/e2e/**",
+      "api/**",
+    ],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],

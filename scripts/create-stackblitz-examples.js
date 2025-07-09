@@ -49,8 +49,8 @@ function App() {
 
   const [columnDefs] = useState([
     { field: 'name', headerName: 'Name' },
-    { 
-      field: 'date', 
+    {
+      field: 'date',
       headerName: 'Date',
       filter: ${component.name === 'DateFilter' ? 'DateFilter' : 'true'},
     },
@@ -105,7 +105,7 @@ const generateExamples = () => {
   // Create shared package.json
   const sharedDir = join(examplesDir, 'shared');
   mkdirSync(sharedDir, { recursive: true });
-  
+
   const packageJson = {
     name: 'ag-grid-react-components-examples',
     version: '1.0.0',
@@ -135,10 +135,10 @@ const generateExamples = () => {
   components.forEach(component => {
     const componentDir = join(examplesDir, component.name.toLowerCase());
     mkdirSync(componentDir, { recursive: true });
-    
+
     const appContent = createExampleApp(component);
     writeFileSync(join(componentDir, 'App.tsx'), appContent);
-    
+
     // Create main.tsx entry point
     const mainTsx = `import React from 'react';
 import ReactDOM from 'react-dom/client';
@@ -152,7 +152,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>
 );`;
     writeFileSync(join(componentDir, 'main.tsx'), mainTsx);
-    
+
     // Create index.html
     const indexHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -166,9 +166,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <script type="module" src="/main.tsx"></script>
   </body>
 </html>`;
-    
+
     writeFileSync(join(componentDir, 'index.html'), indexHtml);
-    
+
     // Create vite.config.ts
     const viteConfig = `import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -176,9 +176,9 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
 });`;
-    
+
     writeFileSync(join(componentDir, 'vite.config.ts'), viteConfig);
-    
+
     // Create tsconfig.json
     const tsConfig = {
       compilerOptions: {
@@ -201,9 +201,9 @@ export default defineConfig({
       include: ["**/*.ts", "**/*.tsx"],
       references: [{ path: "./tsconfig.node.json" }]
     };
-    
+
     writeFileSync(join(componentDir, 'tsconfig.json'), JSON.stringify(tsConfig, null, 2));
-    
+
     // Create tsconfig.node.json
     const tsConfigNode = {
       compilerOptions: {
@@ -215,9 +215,9 @@ export default defineConfig({
       },
       include: ["vite.config.ts"]
     };
-    
+
     writeFileSync(join(componentDir, 'tsconfig.node.json'), JSON.stringify(tsConfigNode, null, 2));
-    
+
     // Copy package.json to each example
     const examplePackageJson = JSON.parse(readFileSync(join(sharedDir, 'package.json'), 'utf8'));
     examplePackageJson.name = `${component.name.toLowerCase()}-example`;

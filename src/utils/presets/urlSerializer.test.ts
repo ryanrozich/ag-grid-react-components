@@ -53,8 +53,10 @@ class PresetUrlSerializer {
           };
 
     const json = JSON.stringify(toEncode);
-    // Simple base64 encoding for now - would use compression in real implementation
-    return btoa(json).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+    // Handle unicode characters by encoding to UTF-8 first
+    const utf8 = new TextEncoder().encode(json);
+    const base64 = btoa(String.fromCharCode(...utf8));
+    return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
   }
 
   /**
@@ -66,7 +68,13 @@ class PresetUrlSerializer {
       const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
       const padded = base64 + "==".substring(0, (3 * base64.length) % 4);
 
-      const json = atob(padded);
+      const binaryString = atob(padded);
+      // Convert from UTF-8 binary string to actual string
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const json = new TextDecoder().decode(bytes);
       const data = JSON.parse(json);
 
       if (data.id) {
@@ -436,14 +444,14 @@ describe("PresetUrlSerializer", () => {
 
       const gridState2: Partial<GridState> = {
         filterModel: {
-          col1: { type: "greaterThanOrEqual", filter: 100 },
+          col1: { type: "greaterThanOrEqual", filter: "verylongvaluestring" },
         },
       };
 
       const url1 = serializer.generateShareableUrl(gridState1);
       const url2 = serializer.generateShareableUrl(gridState2);
 
-      // Shorter type name should result in shorter URL
+      // URL with longer filter value should be longer
       expect(url1.length).toBeLessThan(url2.length);
     });
 

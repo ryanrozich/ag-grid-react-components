@@ -18,7 +18,7 @@ export const StackBlitzExample: React.FC<StackBlitzExampleProps> = ({
   // Method 1: Direct GitHub import (most reliable)
   const openGitHubExample = () => {
     const baseUrl =
-      "https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/main";
+      "https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/feat/remove-react-datepicker";
     const path = githubPath || `/examples/${component.toLowerCase()}`;
     window.open(`${baseUrl}${path}`, "_blank");
   };
@@ -90,7 +90,7 @@ export const StackBlitzExample: React.FC<StackBlitzExampleProps> = ({
         {/* Secondary actions */}
         <div className="flex gap-2">
           <a
-            href={`https://github.com/ryanrozich/ag-grid-react-components/tree/main/examples/${component.toLowerCase()}`}
+            href={`https://github.com/ryanrozich/ag-grid-react-components/tree/feat/remove-react-datepicker/examples/${component.toLowerCase()}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors"
@@ -100,7 +100,7 @@ export const StackBlitzExample: React.FC<StackBlitzExampleProps> = ({
           <button
             onClick={() =>
               navigator.clipboard.writeText(
-                `https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/main/examples/${component.toLowerCase()}`,
+                `https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/feat/remove-react-datepicker/examples/${component.toLowerCase()}`,
               )
             }
             className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors"
