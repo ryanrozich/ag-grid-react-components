@@ -18,6 +18,7 @@ import VersionInfo from "./components/VersionInfo";
 import heroScreenshot from "./assets/screenshots/hero-screenshot.png";
 import { ServerSideDemo } from "./components/ServerSideDemo";
 import { SimpleFilterPresetsDemo } from "./SimpleFilterPresetsDemo";
+import { StackBlitzExample } from "./components/StackBlitzExample";
 import {
   darkTheme,
   getColumnDefs,
@@ -6699,6 +6700,74 @@ function FilterToolbar({ gridApi }) {
                             language="tsx"
                             showLineNumbers
                           />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="interactive-examples">
+                            Interactive Examples
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-6">
+                            Try out the components directly in your browser with
+                            our StackBlitz examples. Each example is a complete,
+                            working project that you can edit and experiment
+                            with.
+                          </p>
+
+                          <div className="grid gap-6">
+                            <StackBlitzExample
+                              component="DateFilter"
+                              title="DateFilter - Natural Language Example"
+                              description="Try natural language date filtering with expressions like 'last 30 days', 'this week', or 'yesterday'. The filter automatically updates as time passes."
+                            />
+
+                            <StackBlitzExample
+                              component="QuickFilterDropdown"
+                              title="QuickFilterDropdown - Custom Presets"
+                              description="Create custom filter presets for common queries. Mix multiple columns, save filter combinations, and provide one-click access to complex filters."
+                            />
+
+                            <StackBlitzExample
+                              component="ActiveFilters"
+                              title="ActiveFilters - Interactive Pills"
+                              description="Display all active filters as interactive pills. Users can see at a glance what filters are applied and remove them with a single click."
+                            />
+                          </div>
+
+                          <div className="mt-8 bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <h4 className="text-base font-semibold text-white mb-3">
+                              Tips for Using StackBlitz Examples
+                            </h4>
+                            <ul className="space-y-2 text-sm text-gray-300">
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <span>
+                                  Click "Open in StackBlitz" to launch the
+                                  example in a new tab
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <span>
+                                  Fork the project to save your changes and
+                                  create your own version
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <span>
+                                  All examples use the latest version of
+                                  ag-grid-react-components
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <span>
+                                  Examples include sample data and are ready to
+                                  run immediately
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
                         </div>
                       </div>
                     </div>

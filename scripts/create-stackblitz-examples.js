@@ -49,8 +49,8 @@ function App() {
 
   const [columnDefs] = useState([
     { field: 'name', headerName: 'Name' },
-    { 
-      field: 'date', 
+    {
+      field: 'date',
       headerName: 'Date',
       filter: ${component.name === 'DateFilter' ? 'DateFilter' : 'true'},
     },
@@ -105,7 +105,7 @@ const generateExamples = () => {
   // Create shared package.json
   const sharedDir = join(examplesDir, 'shared');
   mkdirSync(sharedDir, { recursive: true });
-  
+
   const packageJson = {
     name: 'ag-grid-react-components-examples',
     version: '1.0.0',
@@ -135,11 +135,25 @@ const generateExamples = () => {
   components.forEach(component => {
     const componentDir = join(examplesDir, component.name.toLowerCase());
     mkdirSync(componentDir, { recursive: true });
-    
+
     const appContent = createExampleApp(component);
     writeFileSync(join(componentDir, 'App.tsx'), appContent);
-    
-    // Create a simple index.html
+
+    // Create main.tsx entry point
+    const mainTsx = `import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-quartz.css';
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);`;
+    writeFileSync(join(componentDir, 'main.tsx'), mainTsx);
+
+    // Create index.html
     const indexHtml = `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -149,11 +163,65 @@ const generateExamples = () => {
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/main.tsx"></script>
   </body>
 </html>`;
-    
+
     writeFileSync(join(componentDir, 'index.html'), indexHtml);
+
+    // Create vite.config.ts
+    const viteConfig = `import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+});`;
+
+    writeFileSync(join(componentDir, 'vite.config.ts'), viteConfig);
+
+    // Create tsconfig.json
+    const tsConfig = {
+      compilerOptions: {
+        target: "ES2020",
+        useDefineForClassFields: true,
+        lib: ["ES2020", "DOM", "DOM.Iterable"],
+        module: "ESNext",
+        skipLibCheck: true,
+        moduleResolution: "bundler",
+        allowImportingTsExtensions: true,
+        resolveJsonModule: true,
+        isolatedModules: true,
+        noEmit: true,
+        jsx: "react-jsx",
+        strict: true,
+        noUnusedLocals: true,
+        noUnusedParameters: true,
+        noFallthroughCasesInSwitch: true
+      },
+      include: ["**/*.ts", "**/*.tsx"],
+      references: [{ path: "./tsconfig.node.json" }]
+    };
+
+    writeFileSync(join(componentDir, 'tsconfig.json'), JSON.stringify(tsConfig, null, 2));
+
+    // Create tsconfig.node.json
+    const tsConfigNode = {
+      compilerOptions: {
+        composite: true,
+        skipLibCheck: true,
+        module: "ESNext",
+        moduleResolution: "bundler",
+        allowSyntheticDefaultImports: true
+      },
+      include: ["vite.config.ts"]
+    };
+
+    writeFileSync(join(componentDir, 'tsconfig.node.json'), JSON.stringify(tsConfigNode, null, 2));
+
+    // Copy package.json to each example
+    const examplePackageJson = JSON.parse(readFileSync(join(sharedDir, 'package.json'), 'utf8'));
+    examplePackageJson.name = `${component.name.toLowerCase()}-example`;
+    writeFileSync(join(componentDir, 'package.json'), JSON.stringify(examplePackageJson, null, 2));
   });
 
   // Create manifest

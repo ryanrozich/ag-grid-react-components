@@ -35,7 +35,6 @@ if (typeof window !== "undefined" && !window.matchMedia) {
 // Mock CSS imports for component styles
 try {
   vi.mock("./src/index.css", () => ({}));
-  vi.mock("react-datepicker/dist/react-datepicker.css", () => ({}));
 } catch {
   // ignore if not needed
 }
