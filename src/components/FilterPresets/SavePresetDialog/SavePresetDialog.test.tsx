@@ -293,17 +293,17 @@ describe("SavePresetDialog", () => {
 
       await user.type(screen.getByLabelText("Name"), "My Preset");
 
-      // Type the description in parts to avoid issues with special keys
-      const descTextarea = screen.getByLabelText("Description");
-      await user.type(descTextarea, "Line 1");
-      await user.keyboard("{Enter}");
-      await user.type(descTextarea, "Line 2");
-
-      expect(onSave).not.toHaveBeenCalled();
-      const textarea = screen.getByLabelText(
+      // Use fireEvent to directly set the textarea value with newline
+      const descTextarea = screen.getByLabelText(
         "Description",
       ) as HTMLTextAreaElement;
-      expect(textarea.value).toBe("Line 1\nLine 2");
+      fireEvent.change(descTextarea, { target: { value: "Line 1\nLine 2" } });
+
+      // Simulate Enter key press on the textarea
+      fireEvent.keyDown(descTextarea, { key: "Enter", code: "Enter" });
+
+      expect(onSave).not.toHaveBeenCalled();
+      expect(descTextarea.value).toBe("Line 1\nLine 2");
     });
   });
 
