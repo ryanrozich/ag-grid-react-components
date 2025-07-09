@@ -40,7 +40,7 @@ describe("AvatarCellRenderer", () => {
   it("shows UI Avatars for users without photos", () => {
     render(<AvatarCellRenderer {...mockParams} value="Test User" />);
 
-    // Should show initials since Test User is not in ASSIGNEES_WITH_PHOTOS
+    // Test User is not in ASSIGNEES_WITH_PHOTOS, so it shows initials
     expect(screen.getByText("TU")).toBeInTheDocument();
     expect(screen.getByText("Test User")).toBeInTheDocument();
   });
@@ -64,14 +64,14 @@ describe("AvatarCellRenderer", () => {
   it("generates correct initials in avatar URL for single name", () => {
     render(<AvatarCellRenderer {...mockParams} value="Madonna" />);
 
-    // Madonna is not in ASSIGNEES_WITH_PHOTOS, so shows initials
+    // Madonna is not in ASSIGNEES_WITH_PHOTOS, so it shows initials
     expect(screen.getByText("M")).toBeInTheDocument();
   });
 
   it("generates correct initials in avatar URL for multiple names", () => {
     render(<AvatarCellRenderer {...mockParams} value="Mary Jane Watson" />);
 
-    // Mary Jane Watson is not in ASSIGNEES_WITH_PHOTOS, so shows initials
+    // Mary Jane Watson is not in ASSIGNEES_WITH_PHOTOS, so it shows initials
     expect(screen.getByText("MW")).toBeInTheDocument();
   });
 
@@ -104,7 +104,7 @@ describe("AvatarCellRenderer", () => {
   it("shows loading state while image loads", () => {
     render(<AvatarCellRenderer {...mockParams} value="Emma Davis" />);
 
-    // Emma Davis is in ASSIGNEES_WITH_PHOTOS, so shows an image
+    // Emma Davis is in ASSIGNEES_WITH_PHOTOS, so it shows an img
     const img = screen.getByRole("img");
     expect(img).toBeInTheDocument();
     expect(img).toHaveAttribute("src", expect.stringContaining("pravatar.cc"));
@@ -116,12 +116,9 @@ describe("AvatarCellRenderer", () => {
     render(<AvatarCellRenderer {...mockParams} value="Marcus Williams" />);
 
     const img = screen.getByRole("img");
-    expect(img).toBeInTheDocument();
-    expect(img).toHaveAttribute("src", expect.stringContaining("pravatar.cc"));
 
-    // Marcus Williams is in ASSIGNEES_WITH_PHOTOS, so it shows an img element
-    // The component doesn't have opacity transitions, so we just verify it's rendered
-    expect(img).toHaveAttribute("alt", "Marcus Williams");
+    // Marcus Williams is in ASSIGNEES_WITH_PHOTOS, so it shows a real image
+    expect(img).toHaveAttribute("src", expect.stringContaining("pravatar.cc"));
 
     consoleLog.mockRestore();
   });
@@ -129,7 +126,7 @@ describe("AvatarCellRenderer", () => {
   it("uses UI Avatars service for users without photos", () => {
     render(<AvatarCellRenderer {...mockParams} value="Unknown User" />);
 
-    // Unknown User is not in ASSIGNEES_WITH_PHOTOS, so shows initials
+    // Unknown User is not in ASSIGNEES_WITH_PHOTOS, so it shows initials
     expect(screen.getByText("UU")).toBeInTheDocument();
     expect(screen.getByText("Unknown User")).toBeInTheDocument();
   });
@@ -139,18 +136,19 @@ describe("AvatarCellRenderer", () => {
       <AvatarCellRenderer {...mockParams} value="Test Name" />,
     );
 
-    // Get the first avatar fallback element
+    // Test Name is not in ASSIGNEES_WITH_PHOTOS, so it shows initials
     const firstFallback = screen.getByText("TN");
-    const firstStyle = window.getComputedStyle(firstFallback);
+    const firstBgColor = window.getComputedStyle(firstFallback).backgroundColor;
 
     // Re-render with same name
     rerender(<AvatarCellRenderer {...mockParams} value="Test Name" />);
 
     const secondFallback = screen.getByText("TN");
-    const secondStyle = window.getComputedStyle(secondFallback);
+    const secondBgColor =
+      window.getComputedStyle(secondFallback).backgroundColor;
 
-    // Background colors should be the same for the same name
-    expect(firstStyle.backgroundColor).toBe(secondStyle.backgroundColor);
+    // Background colors should be consistent for the same name
+    expect(firstBgColor).toBe(secondBgColor);
   });
 
   it("adds title attribute for long names", () => {

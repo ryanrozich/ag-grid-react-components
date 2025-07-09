@@ -496,7 +496,16 @@ describe("PresetStorage - LocalStorage Adapter", () => {
         oldValue: "[]",
       });
 
-      window.dispatchEvent(storageEvent);
+      // Manually trigger a storage event handler
+      const event = new Event("storage");
+      Object.defineProperty(event, "key", { value: "ag-grid-filter-presets" });
+      Object.defineProperty(event, "newValue", {
+        value: JSON.stringify([preset]),
+      });
+      Object.defineProperty(event, "oldValue", { value: "[]" });
+      Object.defineProperty(event, "storageArea", { value: localStorage });
+
+      window.dispatchEvent(event);
 
       // The storage adapter should pick up the change
       const presets = await storage.getAll();
