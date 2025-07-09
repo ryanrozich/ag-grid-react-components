@@ -486,11 +486,14 @@ describe("PresetStorage - LocalStorage Adapter", () => {
       };
 
       // Simulate storage event from another tab
+      // Note: jsdom doesn't fully support StorageEvent with storageArea
+      // so we'll manually update localStorage and dispatch a simpler event
+      localStorage.setItem("ag-grid-filter-presets", JSON.stringify([preset]));
+      
       const storageEvent = new StorageEvent("storage", {
         key: "ag-grid-filter-presets",
         newValue: JSON.stringify([preset]),
         oldValue: "[]",
-        storageArea: localStorage,
       });
 
       window.dispatchEvent(storageEvent);
