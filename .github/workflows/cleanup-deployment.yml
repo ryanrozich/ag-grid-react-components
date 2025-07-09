@@ -1,0 +1,237 @@
+name: Cleanup Deployment
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  cleanup:
+    name: Remove Preview Deployment
+    runs-on: ubuntu-latest
+    # Only run if PR was merged and was from the same repository (not a fork)
+    if: github.event.pull_request.merged == true && github.event.pull_request.head.repo.full_name == github.repository
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Wrangler
+        run: npm install -g wrangler
+
+      - name: Delete API Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          WORKER_NAME="ag-grid-demo-api-pr-${PR_NUMBER}"
+
+          echo "🗑️ Deleting API worker: ${WORKER_NAME}"
+
+          # Delete using Cloudflare API (more reliable than wrangler)
+          curl -X DELETE "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/${WORKER_NAME}" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -s || echo "Worker may not exist or already deleted"
+
+          echo "✅ API worker cleanup complete"
+
+      - name: Remove KV Entry
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_KV_NAMESPACE_ID: ${{ secrets.CLOUDFLARE_KV_NAMESPACE_ID }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          KEY_NAME="ag-grid-react-components-pr-${PR_NUMBER}"
+
+          echo "🗑️ Removing KV entry for ${KEY_NAME}"
+
+          wrangler kv key delete "${KEY_NAME}" \
+            --namespace-id="${CLOUDFLARE_KV_NAMESPACE_ID}" \
+            --remote || echo "KV entry may not exist or already deleted"
+
+          echo "✅ KV entry cleanup complete"
+
+      - name: Remove R2 Objects
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+          CLOUDFLARE_R2_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          DEPLOY_PATH="ag-grid-react-components-pr-${PR_NUMBER}"
+
+          echo "🧹 Cleaning up R2 deployment for PR #${PR_NUMBER}"
+          echo "Path: ${DEPLOY_PATH}"
+
+          # Prefer AWS CLI if R2 credentials are available (more efficient for bulk operations)
+          if [ -n "$CLOUDFLARE_R2_ACCESS_KEY_ID" ] && [ -n "$CLOUDFLARE_R2_SECRET_ACCESS_KEY" ]; then
+            echo "Using AWS CLI for R2 cleanup..."
+
+            # Configure AWS CLI for R2
+            export AWS_ACCESS_KEY_ID="${CLOUDFLARE_R2_ACCESS_KEY_ID}"
+            export AWS_SECRET_ACCESS_KEY="${CLOUDFLARE_R2_SECRET_ACCESS_KEY}"
+            export AWS_DEFAULT_REGION="auto"
+
+            # Install AWS CLI
+            pip install awscli
+
+            # List objects first (for logging)
+            echo "📋 Listing objects to be deleted:"
+            aws s3 ls "s3://rozich-demos/${DEPLOY_PATH}/" \
+              --endpoint-url="https://$CLOUDFLARE_ACCOUNT_ID.r2.cloudflarestorage.com" \
+              --recursive || echo "No objects found"
+
+            # Delete R2 objects
+            echo "🗑️ Deleting R2 objects..."
+            aws s3 rm "s3://rozich-demos/${DEPLOY_PATH}/" \
+              --endpoint-url="https://$CLOUDFLARE_ACCOUNT_ID.r2.cloudflarestorage.com" \
+              --recursive || echo "No R2 objects to delete"
+          else
+            echo "Using Wrangler for R2 cleanup..."
+
+            # List objects first (for logging)
+            echo "📋 Listing objects to be deleted:"
+            wrangler r2 object list "rozich-demos" --prefix="${DEPLOY_PATH}/" --remote || true
+
+            # Delete all objects for this PR
+            echo "🗑️ Deleting R2 objects..."
+            wrangler r2 object delete "rozich-demos/${DEPLOY_PATH}/" --remote --recursive || true
+          fi
+
+          echo "✅ R2 objects cleanup complete"
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+
+            const comment = `🧹 **Preview Deployment Cleaned Up**
+
+            The preview deployment for this PR has been removed:
+            - ✅ API worker deleted
+            - ✅ KV metadata removed
+            - ✅ R2 objects deleted
+
+            Thank you for your contribution! 🎉`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: comment
+            });
+
+  update-project:
+    name: Clear Preview URL in Project
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+
+    steps:
+      - name: Clear Preview URL field
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+
+            console.log(`Clearing Preview URL for PR #${prNumber}`);
+
+            // GraphQL query to find the PR in the project
+            const projectQuery = `
+              query($owner: String!, $repo: String!, $number: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $number) {
+                    projectItems(first: 10) {
+                      nodes {
+                        id
+                        project {
+                          id
+                          title
+                          fields(first: 20) {
+                            nodes {
+                              ... on ProjectV2Field {
+                                id
+                                name
+                                dataType
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            try {
+              const projectData = await github.graphql(projectQuery, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                number: prNumber
+              });
+
+              const projectItems = projectData.repository.pullRequest?.projectItems?.nodes || [];
+
+              for (const projectItem of projectItems) {
+                const project = projectItem.project;
+                const previewUrlField = project.fields.nodes.find(f =>
+                  f.name === 'Preview URL' && f.dataType === 'TEXT'
+                );
+
+                if (previewUrlField) {
+                  const updateMutation = `
+                    mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
+                      updateProjectV2ItemFieldValue(input: {
+                        projectId: $projectId
+                        itemId: $itemId
+                        fieldId: $fieldId
+                        value: $value
+                      }) {
+                        projectV2Item {
+                          id
+                        }
+                      }
+                    }
+                  `;
+
+                  await github.graphql(updateMutation, {
+                    projectId: project.id,
+                    itemId: projectItem.id,
+                    fieldId: previewUrlField.id,
+                    value: { text: "" }
+                  });
+
+                  console.log(`✅ Cleared Preview URL field`);
+                }
+              }
+            } catch (error) {
+              console.error('Failed to clear Preview URL:', error.message);
+            }
+
+      - name: Remove preview label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                name: 'has-preview'
+              });
+              console.log('✅ Removed has-preview label');
+            } catch (e) {
+              console.log('Could not remove label:', e.message);
+            }

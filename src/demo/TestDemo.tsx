@@ -90,18 +90,15 @@ export const TestDemo: React.FC = () => {
         valueFormatter: (params) => (params.value ? "Yes" : "No"),
       },
     ],
-    [isPaginationEnabled],
+    [],
   );
 
   // Handle grid ready event
-  const onGridReady = useCallback(
-    (params: GridReadyEvent<TestRecord>) => {
-      setGridRefs({ api: params.api });
-      params.api.sizeColumnsToFit();
-      // Grid ready
-    },
-    [rowData.length],
-  );
+  const onGridReady = useCallback((params: GridReadyEvent<TestRecord>) => {
+    setGridRefs({ api: params.api });
+    params.api.sizeColumnsToFit();
+    // Grid ready
+  }, []);
 
   // Handle filter changes
   const onFilterChanged = useCallback(() => {
@@ -130,7 +127,7 @@ export const TestDemo: React.FC = () => {
   // Get the current row count
   const rowCount = useMemo(() => {
     return gridRefs.api ? gridRefs.api.getDisplayedRowCount() : 0;
-  }, [gridRefs.api, rowData, filterModel]);
+  }, [gridRefs.api]);
 
   return (
     <div className="test-demo-container">

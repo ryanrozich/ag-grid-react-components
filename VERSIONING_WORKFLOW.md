@@ -6,13 +6,13 @@ This guide ensures GitHub tags, releases, and NPM versions stay synchronized.
 
 We already have GitHub Actions set up for this! Use the Release workflow:
 
-```bash
+````bash
 # Trigger via GitHub CLI
 gh workflow run release.yml -f version=0.1.1 -f create_release=true -f publish_npm=true
 
 # Or via GitHub UI
 # Go to Actions → Create Release → Run workflow
-```
+```text
 
 This will automatically:
 
@@ -36,7 +36,7 @@ npm version minor -m "chore(release): v%s"
 
 # For major (0.1.0 → 1.0.0)
 npm version major -m "chore(release): v%s"
-```
+```text
 
 This automatically:
 
@@ -48,7 +48,7 @@ This automatically:
 
 ```bash
 git push origin main --tags
-```
+```text
 
 ### 3. Create GitHub Release
 
@@ -56,13 +56,13 @@ git push origin main --tags
 gh release create v0.1.1 \
   --title "v0.1.1" \
   --generate-notes
-```
+```text
 
 ### 4. Publish to NPM
 
 ```bash
 npm publish
-```
+```text
 
 ## Quick Release Commands
 
@@ -77,7 +77,7 @@ npm version patch -m "chore(release): v%s - Documentation fixes"
 git push origin main --tags
 gh release create v0.1.1 --generate-notes
 npm publish
-```
+````
 
 ## Version Numbering
 

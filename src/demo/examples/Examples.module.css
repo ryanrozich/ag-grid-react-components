@@ -1,0 +1,306 @@
+.exampleContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.controlsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.presetControls {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.presetSelector {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.presetSelector label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.presetSelector select {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 1rem;
+  min-width: 200px;
+  background: white;
+}
+
+.presetActions {
+  display: flex;
+  gap: 1rem;
+}
+
+.saveButton,
+.clearButton,
+.deleteButton,
+.shareButton,
+.importButton,
+.exportButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.saveButton {
+  background: #28a745;
+  color: white;
+}
+
+.saveButton:hover {
+  background: #218838;
+}
+
+.clearButton {
+  background: #6c757d;
+  color: white;
+}
+
+.clearButton:hover {
+  background: #5a6268;
+}
+
+.deleteButton {
+  background: #dc3545;
+  color: white;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.75rem;
+}
+
+.deleteButton:hover {
+  background: #c82333;
+}
+
+.shareButton {
+  background: #17a2b8;
+  color: white;
+}
+
+.shareButton:hover {
+  background: #138496;
+}
+
+.importButton,
+.exportButton {
+  background: #6c757d;
+  color: white;
+}
+
+.importButton:hover,
+.exportButton:hover {
+  background: #5a6268;
+}
+
+.presetInfo {
+  padding: 1rem;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  position: relative;
+}
+
+.presetInfo h4 {
+  margin: 0 0 0.5rem;
+  color: #212529;
+}
+
+.presetInfo p {
+  margin: 0 0 0.5rem;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.presetDate {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.presetInfo .deleteButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.activeFiltersContainer {
+  padding: 1rem;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+.gridSection {
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.codeExample {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.codeExample h4 {
+  margin: 0 0 1rem;
+  color: #212529;
+}
+
+.codeExample pre {
+  margin: 0;
+  padding: 1rem;
+  background: #282c34;
+  color: #abb2bf;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.features {
+  padding: 1.5rem;
+  background: #e8f5e9;
+  border-radius: 8px;
+  border: 1px solid #c8e6c9;
+}
+
+.features h4 {
+  margin: 0 0 1rem;
+  color: #2e7d32;
+}
+
+.features ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style: none;
+}
+
+.features li {
+  padding: 0.25rem 0;
+  color: #388e3c;
+  line-height: 1.6;
+}
+
+/* Advanced Example Styles */
+.tabsContainer {
+  margin-bottom: 2rem;
+}
+
+.gridContainer {
+  margin-bottom: 2rem;
+}
+
+.syncIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #d4edda;
+  color: #155724;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.shareSection {
+  padding: 1.5rem;
+  background: #e3f2fd;
+  border-radius: 8px;
+  border: 1px solid #bbdefb;
+  margin-top: 1rem;
+}
+
+.shareUrl {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.shareUrl input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #90caf9;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.875rem;
+}
+
+.copyButton {
+  padding: 0.5rem 1rem;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.copyButton:hover {
+  background: #1976d2;
+}
+
+.qrCode {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.importExportSection {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.storageInfo {
+  padding: 1rem;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.storageInfo h5 {
+  margin: 0 0 0.5rem;
+  color: #856404;
+}
+
+.storageBar {
+  width: 100%;
+  height: 20px;
+  background: #fff;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0.5rem 0;
+}
+
+.storageUsed {
+  height: 100%;
+  background: #ffc107;
+  transition: width 0.3s ease;
+}
+
+.storageText {
+  font-size: 0.875rem;
+  color: #856404;
+}

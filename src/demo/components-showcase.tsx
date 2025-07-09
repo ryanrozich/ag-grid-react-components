@@ -139,66 +139,69 @@ export const ComponentsShowcase: React.FC = () => {
   }, []);
 
   // Quick filter options for demo
-  const customQuickFilters = [
-    {
-      id: "all",
-      label: "All Data",
-      filterModel: null,
-      icon: "🌍",
-      description: "Show all records",
-    },
-    {
-      id: "last7days",
-      label: "Last 7 Days",
-      filterModel: {
-        mode: "relative",
-        type: "inRange",
-        expressionFrom: "Today-7d",
-        expressionTo: "Today",
+  const customQuickFilters = useMemo(
+    () => [
+      {
+        id: "all",
+        label: "All Data",
+        filterModel: null,
+        icon: "🌍",
+        description: "Show all records",
       },
-      icon: "📅",
-      description: "Records from the past week",
-    },
-    {
-      id: "thisMonth",
-      label: "This Month",
-      filterModel: {
-        mode: "relative",
-        type: "inRange",
-        expressionFrom: "StartOfMonth",
-        expressionTo: "EndOfMonth",
+      {
+        id: "last7days",
+        label: "Last 7 Days",
+        filterModel: {
+          mode: "relative",
+          type: "inRange",
+          expressionFrom: "Today-7d",
+          expressionTo: "Today",
+        },
+        icon: "📅",
+        description: "Records from the past week",
       },
-      icon: "📆",
-      description: "All records from current month",
-    },
-    {
-      id: "future",
-      label: "Future Dates",
-      filterModel: {
-        mode: "relative",
-        type: "after",
-        expressionFrom: "Today",
+      {
+        id: "thisMonth",
+        label: "This Month",
+        filterModel: {
+          mode: "relative",
+          type: "inRange",
+          expressionFrom: "StartOfMonth",
+          expressionTo: "EndOfMonth",
+        },
+        icon: "📆",
+        description: "All records from current month",
       },
-      icon: "🔮",
-      description: "Upcoming records only",
-    },
-    {
-      id: "highValue",
-      label: "High Value (>$500)",
-      filterModel: null,
-      icon: "💰",
-      description: "Filter by amount > $500",
-      onSelect: (api: GridApi) => {
-        // Custom filter logic for non-date filter
-        api.setFilterModel({
-          value: {
-            type: "greaterThan",
-            filter: 500,
-          },
-        });
+      {
+        id: "future",
+        label: "Future Dates",
+        filterModel: {
+          mode: "relative",
+          type: "after",
+          expressionFrom: "Today",
+        },
+        icon: "🔮",
+        description: "Upcoming records only",
       },
-    },
-  ];
+      {
+        id: "highValue",
+        label: "High Value (>$500)",
+        filterModel: null,
+        icon: "💰",
+        description: "Filter by amount > $500",
+        onSelect: (api: GridApi) => {
+          // Custom filter logic for non-date filter
+          api.setFilterModel({
+            value: {
+              type: "greaterThan",
+              filter: 500,
+            },
+          });
+        },
+      },
+    ],
+    [],
+  );
 
   // Showcase sections
   const sections: ShowcaseSection[] = useMemo(
@@ -514,7 +517,7 @@ return cleanup;`}</code>
         ),
       },
     ],
-    [gridApi, filterModel],
+    [gridApi, filterModel, customQuickFilters],
   );
 
   const gridOptions: GridOptions = {

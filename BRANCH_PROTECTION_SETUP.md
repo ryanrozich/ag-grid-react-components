@@ -4,7 +4,7 @@ Follow these steps to protect your main branch and enforce PR workflow.
 
 ## Step 1: Navigate to Branch Protection Settings
 
-1. Go to your repository: <https://github.com/ryanrozich/ag-grid-react-components>
+1. Go to your repository: <[https://github.com/ryanrozich/ag-grid-react-components>](https://github.com/ryanrozich/ag-grid-react-components>)
 2. Click **Settings** tab
 3. In the left sidebar, click **Branches**
 4. Click **Add rule** button
@@ -62,22 +62,22 @@ Check these boxes:
 
 Try this to confirm it's working:
 
-```bash
-# This should fail:
+````bash
+# This should fail
 git checkout main
 echo "test" >> README.md
 git add . && git commit -m "test"
 git push origin main
-# ❌ Should be rejected!
+# ❌ Should be rejected
 
-# This should work:
+# This should work
 git checkout -b test/branch-protection
 echo "test" >> README.md
 git add . && git commit -m "test: verify branch protection"
 git push -u origin test/branch-protection
 gh pr create --title "test: branch protection" --body "Testing setup"
-# ✅ Should create PR successfully!
-```
+# ✅ Should create PR successfully
+```text
 
 ## First Real PR Workflow
 
@@ -95,7 +95,7 @@ git pull origin main
 git checkout -b fix/datefilter-test
 
 # 3. Make your fixes
-# ... edit files ...
+# ... edit files ..
 
 # 4. Commit and push
 git add .
@@ -116,7 +116,7 @@ gh pr checks
 
 # 7. Merge when ready
 gh pr merge --squash --delete-branch
-```
+````
 
 ## Tips
 

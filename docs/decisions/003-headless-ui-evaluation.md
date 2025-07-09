@@ -2,9 +2,9 @@
 
 ## Overview
 
-This document evaluates whether [Headless UI](https://headlessui.com/) would be beneficial for the AG Grid React Components library.
+This document evaluates whether [Headless UI](<[https://headlessui.com](https://headlessui.com)/>) would be beneficial for the AG Grid React Components library.
 
-## What is Headless UI?
+## What is Headless UI
 
 Headless UI provides completely unstyled, fully accessible UI components designed to integrate seamlessly with Tailwind CSS. It handles:
 
@@ -26,7 +26,7 @@ Our components currently:
 
 ### 1. Improved Accessibility
 
-```tsx
+````tsx
 // With Headless UI
 import { Listbox } from "@headlessui/react";
 
@@ -41,7 +41,7 @@ import { Listbox } from "@headlessui/react";
   </Listbox.Options>
 </Listbox>;
 // Automatically handles ARIA, keyboard nav, focus trap
-```
+```text
 
 ### 2. Reduced Maintenance
 
@@ -56,7 +56,7 @@ import { Listbox } from "@headlessui/react";
 <Transition show={isOpen} enter="transition-opacity duration-75" enterFrom="opacity-0" enterTo="opacity-100">
   <DateFilter />
 </Transition>
-```
+````
 
 ## Cons of Adding Headless UI
 
@@ -126,13 +126,13 @@ Learn from their accessibility implementations:
 
 For v2.0, consider offering headless variants:
 
-```tsx
+````tsx
 // Headless version for maximum flexibility
 import { DateFilterHeadless } from "ag-grid-react-components/headless";
 
 // Regular version with built-in styles
 import { DateFilter } from "ag-grid-react-components";
-```
+```text
 
 ### 3. Improve Current Accessibility
 
@@ -147,7 +147,7 @@ Apply Headless UI patterns without the dependency:
     </div>
   ))}
 </div>
-```
+```text
 
 ## Alternative Approach: Accessibility Utils
 
@@ -164,7 +164,7 @@ export function useListboxKeyboard({ options, onSelect, isOpen }) {
 export function useCombobox({ options, onSelect, onSearch }) {
   // Combobox-specific logic
 }
-```
+````
 
 ## Migration Path (If Ever Needed)
 

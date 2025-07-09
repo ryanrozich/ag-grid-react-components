@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { ICellRendererParams } from "ag-grid-community";
 import styles from "./AvatarCellRenderer.module.css";
 
@@ -25,16 +25,12 @@ const ASSIGNEES_WITH_PHOTOS = new Set([
 ]);
 
 const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
-  const [imageError, setImageError] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
-
-  if (!value) return null;
-
   // Check if this assignee should have a photo
-  const hasPhoto = ASSIGNEES_WITH_PHOTOS.has(value);
+  const hasPhoto = value ? ASSIGNEES_WITH_PHOTOS.has(value) : false;
 
   // Get initials from the name
   const initials = useMemo(() => {
+    if (!value) return "";
     const parts = value.trim().split(" ");
     if (parts.length >= 2) {
       return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
@@ -44,6 +40,7 @@ const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
 
   // Generate a color based on the name (deterministic)
   const backgroundColor = useMemo(() => {
+    if (!value) return "94a3b8"; // default gray color
     let hash = 0;
     for (let i = 0; i < value.length; i++) {
       hash = value.charCodeAt(i) + ((hash << 5) - hash);
@@ -69,6 +66,7 @@ const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
 
   // Use different avatar services for variety
   const avatarUrl = useMemo(() => {
+    if (!value) return "";
     if (!hasPhoto) {
       // Use UI Avatars for initials-based avatars (30% of users)
       return `https://ui-avatars.com/api/?name=${encodeURIComponent(value)}&background=${backgroundColor}&color=fff&size=32&bold=true&format=svg`;
@@ -82,59 +80,42 @@ const AvatarCellRenderer: React.FC<AvatarCellRendererProps> = ({ value }) => {
     return `https://i.pravatar.cc/64?u=${seed}`;
   }, [value, hasPhoto, backgroundColor]);
 
-  // Debug logging
-  React.useEffect(() => {
-    if (hasPhoto) {
-      console.log(`Avatar for ${value}:`, {
-        url: avatarUrl,
-        seed: value.toLowerCase().replace(/\s+/g, ""),
-        imageError,
-        imageLoaded,
-      });
-    }
-  }, [value, avatarUrl, hasPhoto, imageError, imageLoaded]);
+  if (!value) return null;
 
   return (
     <div className={styles.avatarContainer}>
       <div className={styles.avatarWrapper}>
-        {!imageError ? (
-          <>
-            {!imageLoaded && hasPhoto && (
-              <div
-                className={styles.avatarFallback}
-                style={{
-                  backgroundColor: `#${backgroundColor}`,
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                }}
-              >
-                {initials}
-              </div>
-            )}
-            <img
-              src={avatarUrl}
-              alt={value}
-              className={styles.avatar}
-              loading="lazy"
-              onLoad={() => {
-                console.log(`Successfully loaded avatar for ${value}`);
-                setImageLoaded(true);
-              }}
-              onError={(e) => {
-                console.error(`Failed to load avatar for ${value}:`, e);
-                setImageError(true);
-              }}
-              style={{
-                opacity: imageLoaded || !hasPhoto ? 1 : 0,
-                transition: "opacity 0.3s ease-in-out",
-              }}
-            />
-          </>
+        {hasPhoto ? (
+          <img
+            src={avatarUrl}
+            alt={value}
+            className={styles.avatar}
+            loading="lazy"
+            onError={(e) => {
+              // On error, hide the image and show initials
+              const img = e.target as HTMLImageElement;
+              img.style.display = "none";
+              const fallback = img.nextElementSibling as HTMLElement;
+              if (fallback) {
+                fallback.style.display = "flex";
+              }
+            }}
+          />
         ) : (
           <div
             className={styles.avatarFallback}
             style={{ backgroundColor: `#${backgroundColor}` }}
+          >
+            {initials}
+          </div>
+        )}
+        {hasPhoto && (
+          <div
+            className={styles.avatarFallback}
+            style={{
+              backgroundColor: `#${backgroundColor}`,
+              display: "none",
+            }}
           >
             {initials}
           </div>

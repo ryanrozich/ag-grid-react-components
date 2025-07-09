@@ -4,7 +4,7 @@ Since GitHub CLI has limitations with project creation, here's a step-by-step gu
 
 ## Step 1: Create the Project Manually
 
-1. Go to: https://github.com/ryanrozich/ag-grid-react-components/projects
+1. Go to: [https://github.com/ryanrozich/ag-grid-react-components/projects](https://github.com/ryanrozich/ag-grid-react-components/projects)
 2. Click "New project" (green button)
 3. Select "Board" template
 4. Name it: "AG Grid React Components Roadmap"
@@ -35,7 +35,7 @@ Since this is a repository project, adding issues is even easier! In the project
 
 Alternatively, use this script:
 
-```bash
+````bash
 #!/bin/bash
 OWNER=ryanrozich
 REPO=ag-grid-react-components
@@ -45,13 +45,13 @@ echo "To bulk add issues:"
 echo "1. Go to https://github.com/$OWNER/$REPO/issues"
 echo "2. Select issues using checkboxes"
 echo "3. Click 'Projects' → 'AG Grid React Components Roadmap'"
-```
+```text
 
 ## Step 5: Configure Project Settings
 
 In the project settings, you'll need to manually add:
 
-### Custom Fields (Settings → Fields → + New Field):
+### Custom Fields (Settings → Fields → + New Field)
 
 1. **Area** (Single select)
 
@@ -94,7 +94,7 @@ In the project settings, you'll need to manually add:
    - Demo App
    - N/A
 
-### Workflows (Settings → Workflows):
+### Workflows (Settings → Workflows)
 
 1. **Auto-add to project**
 
@@ -145,7 +145,7 @@ Here's a script to help map the existing labels to custom fields:
 
 ```bash
 # This would need to be done manually in the UI as the API doesn't support custom fields yet
-# But here's the mapping:
+# But here's the mapping
 
 # Issue #6 (Grand total z-index)
 # - Area: Demo
@@ -157,31 +157,31 @@ Here's a script to help map the existing labels to custom fields:
 # Issue #5 (.serena directory)
 # - Area: Build
 # - Priority: High
-# - Type: Bug
+# - Type: Bug (2)
 # - Effort: XS
 # - Component: N/A
 
 # Issue #4 (OG image)
-# - Area: Demo
+# - Area: Demo (2)
 # - Priority: Low
 # - Type: Enhancement
-# - Effort: S
-# - Component: Demo App
+# - Effort: S (2)
+# - Component: Demo App (2)
 
 # Issue #3 (Cloudflare secrets)
 # - Area: CI/CD
-# - Priority: High
+# - Priority: High (2)
 # - Type: Documentation
-# - Effort: XS
-# - Component: N/A
+# - Effort: XS (2)
+# - Component: N/A (2)
 
 # Issue #1 (Test coverage)
 # - Area: Testing
-# - Priority: Medium
-# - Type: Enhancement
+# - Priority: Medium (2)
+# - Type: Enhancement (2)
 # - Effort: XL
-# - Component: N/A
-```
+# - Component: N/A (3)
+```text
 
 ## Step 8: Set Up Issue Templates Link
 
@@ -194,7 +194,7 @@ Add this to your README.md:
 - [✨ Request a Feature](https://github.com/ryanrozich/ag-grid-react-components/issues/new?template=02-feature-request.yml)
 - [🔍 Create Discovery Task](https://github.com/ryanrozich/ag-grid-react-components/issues/new?template=03-discovery-task.yml)
 - [📊 View Project Board](https://github.com/users/ryanrozich/projects/X) <!-- Replace X -->
-```
+```text
 
 ## Automation Helper Scripts
 
@@ -218,7 +218,7 @@ echo "- Critical: $(gh issue list --repo $OWNER/$REPO --label "priority: critica
 echo "- High: $(gh issue list --repo $OWNER/$REPO --label "priority: high" --state open --json number | jq '. | length')"
 echo "- Medium: $(gh issue list --repo $OWNER/$REPO --label "priority: medium" --state open --json number | jq '. | length')"
 echo "- Low: $(gh issue list --repo $OWNER/$REPO --label "priority: low" --state open --json number | jq '. | length')"
-```
+```text
 
 ### triage-helper.sh
 
@@ -229,7 +229,7 @@ REPO=ag-grid-react-components
 
 echo "Issues needing triage:"
 gh issue list --repo $OWNER/$REPO --label "status: needs-triage" --json number,title,createdAt | jq -r '.[] | "#\(.number): \(.title) (created: \(.createdAt | split("T")[0]))"'
-```
+````
 
 ## Notes
 

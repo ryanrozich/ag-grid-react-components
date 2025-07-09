@@ -6,12 +6,12 @@ A simple but effective workflow for solo development with good practices.
 
 ### 1. Create an Issue First
 
-```bash
+````bash
 # Use GitHub CLI
 gh issue create --title "Add date range picker" --body "Need to support date ranges"
 
 # Or create on GitHub.com
-```
+```text
 
 ### 2. Create a Feature Branch
 
@@ -23,7 +23,7 @@ git checkout -b feat/date-range-picker
 
 # Or for fixes
 git checkout -b fix/validation-bug
-```
+```text
 
 ### 3. Make Your Changes
 
@@ -34,7 +34,7 @@ git commit -m "feat: add date range picker component"
 
 # Push to remote
 git push -u origin feat/date-range-picker
-```
+```text
 
 ### 4. Create a Pull Request
 
@@ -43,7 +43,7 @@ git push -u origin feat/date-range-picker
 gh pr create --title "feat: add date range picker" --body "Closes #17"
 
 # This opens PR in browser for review
-```
+```text
 
 ### 5. Merge When Ready
 
@@ -52,7 +52,7 @@ gh pr create --title "feat: add date range picker" --body "Closes #17"
 gh pr merge --squash
 
 # Or use GitHub UI
-```
+````
 
 ## Branch Naming Conventions
 
@@ -109,9 +109,10 @@ No need for release branches! Just:
 
 1. Merge all features/fixes to main
 2. When ready to release:
-   ```bash
+   ````bash
    gh workflow run release.yml -f version=0.1.1
-   ```
+   ```text
+   ````
 
 ## Tips for Solo Development
 
@@ -123,13 +124,13 @@ No need for release branches! Just:
 
 ## Current State → Better State
 
-**Current:**
+### Current
 
 - Direct commits to main
 - No issue tracking
 - No PR history
 
-**Better:**
+### Better
 
 - All changes through PRs
 - Issues track what needs doing

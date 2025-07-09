@@ -4,12 +4,12 @@ The Grid State Persistence utilities provide comprehensive state management for 
 
 ## Installation
 
-```bash
+````bash
 npm install ag-grid-react-components
 
 # Optional: For compression support
 npm install lz-string
-```
+```text
 
 ## Basic Usage
 
@@ -24,7 +24,7 @@ const onGridReady = (params) => {
   // Call cleanup when component unmounts
   return cleanup;
 };
-```
+```text
 
 ## API
 
@@ -34,9 +34,9 @@ Automatically synchronizes grid state with URL parameters.
 
 ```typescript
 function setupGridStatePersistence(api: GridApi, options?: GridStateOptions): () => void;
-```
+````
 
-#### Options
+### Options
 
 | Option               | Type                         | Default | Description                                              |
 | -------------------- | ---------------------------- | ------- | -------------------------------------------------------- |
@@ -56,9 +56,9 @@ function setupGridStatePersistence(api: GridApi, options?: GridStateOptions): ()
 
 Manually capture current grid state.
 
-```typescript
+````typescript
 function captureGridState(api: GridApi, options?: Partial<GridStateOptions>): GridState;
-```
+```text
 
 ### applyGridState
 
@@ -66,7 +66,7 @@ Manually apply a saved grid state.
 
 ```typescript
 function applyGridState(api: GridApi, state: GridState, options?: Partial<GridStateOptions>): void;
-```
+```text
 
 ### TypeScript Interfaces
 
@@ -100,7 +100,7 @@ interface CompressionAdapter {
   compress: (data: string) => string;
   decompress: (data: string) => string;
 }
-```
+```text
 
 ## Examples
 
@@ -121,7 +121,7 @@ const MyGrid = () => {
     return cleanup;
   }, [gridApi]);
 };
-```
+```text
 
 ### Selective State Persistence
 
@@ -133,7 +133,7 @@ const cleanup = setupGridStatePersistence(gridApi, {
   includeSort: true,
   includeRowGrouping: false, // Don't save grouping
 });
-```
+```text
 
 ### Manual State Management
 
@@ -152,7 +152,7 @@ const loadFromLocalStorage = () => {
     applyGridState(gridApi, state);
   }
 };
-```
+```text
 
 ### Server-Side Persistence
 
@@ -186,7 +186,7 @@ const loadFromServer = async (stateId: string) => {
 
   applyGridState(gridApi, state);
 };
-```
+```text
 
 ### Custom Compression Adapter
 
@@ -212,7 +212,7 @@ const gzipAdapter: CompressionAdapter = {
 setupGridStatePersistence(gridApi, {
   compressionAdapter: gzipAdapter,
 });
-```
+```text
 
 ### Handling Large States
 
@@ -254,7 +254,7 @@ const setupHybridPersistence = (gridApi: GridApi) => {
     },
   });
 };
-```
+````
 
 ## Compression Statistics
 

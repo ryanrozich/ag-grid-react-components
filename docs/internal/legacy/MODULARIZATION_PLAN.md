@@ -10,7 +10,7 @@ Based on the bundle composition analysis, the library can reduce its bundle size
 
 **Impact**: -100KB (-31% of bundle size)
 
-```typescript
+````typescript
 // Option A: Use native HTML5 date inputs by default
 interface DateFilterParams {
   useNativeDatePicker?: boolean; // default: true
@@ -23,7 +23,7 @@ interface DateFilterParams {
   // or
   datePickerComponent={lazy(() => import('react-datepicker'))}
 />
-```
+```text
 
 ### 2. Make lz-string Optional
 
@@ -39,7 +39,7 @@ setupGridStatePersistence(api, {
     decompress: (str) => customDecompress(str),
   },
 });
-```
+````
 
 ## Implementation Roadmap
 
@@ -65,10 +65,10 @@ setupGridStatePersistence(api, {
 
 ### Before (Current)
 
-```typescript
+````typescript
 import { DateFilter } from "ag-grid-react-components";
 // Automatically includes react-datepicker + lz-string
-```
+```text
 
 ### After (Modularized)
 
@@ -86,7 +86,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 // Option 3: Lazy load date picker
 const DatePicker = lazy(() => import('react-datepicker'));
 <DateFilter datePickerComponent={DatePicker} />
-```
+```text
 
 ## Bundle Size Comparison
 
@@ -116,14 +116,14 @@ import DatePicker from 'react-datepicker';
     datePickerComponent: DatePicker
   }}
 />
-```
+```text
 
 ### For Native Date Input Users
 
 ```typescript
 // No changes needed - native inputs become default
 import { DateFilter } from "ag-grid-react-components";
-```
+```text
 
 ### For Grid State Persistence
 
@@ -138,7 +138,7 @@ import LZString from "lz-string";
 setupGridStatePersistence(api, {
   compressor: LZString,
 });
-```
+````
 
 ## Benefits
 

@@ -8,13 +8,13 @@ To bootstrap everything at once:
 
 ```bash
 npm run bootstrap:project
-```
+```text
 
 Or run the shell script directly:
 
 ```bash
 ./scripts/bootstrap-all.sh
-```
+```text
 
 ## 📜 Available Scripts
 
@@ -33,7 +33,7 @@ Ensures all issues have required labels:
 
 ```bash
 node scripts/add-missing-labels.js
-```
+```text
 
 ### bootstrap-project-sync.js
 Syncs all project field values to issue labels:
@@ -44,7 +44,7 @@ Syncs all project field values to issue labels:
 
 ```bash
 node scripts/bootstrap-project-sync.js
-```
+```text
 
 ## 🔄 How Sync Works
 
@@ -54,12 +54,12 @@ node scripts/bootstrap-project-sync.js
 
 ## 📋 Label Categories
 
-### Required Labels (one from each):
+### Required Labels (one from each)
 - **Type**: bug, enhancement, documentation, question
 - **Priority**: priority: critical/high/medium/low
 - **Area**: area: components/demo/build/ci-cd/testing/docs
 
-### Optional Labels:
+### Optional Labels
 - **Status**: status: needs-triage/triaging/backlog/in-progress/in-review/done
 - **Component**: component: date-filter/quick-filter-dropdown/active-filters/etc
 
@@ -73,7 +73,7 @@ brew install gh
 
 # Authenticate
 gh auth login
-```
+```text
 
 ### "GraphQL request failed" error
 Your GitHub token might not have the right permissions:
@@ -100,6 +100,6 @@ After bootstrap, the system maintains itself:
 ## 📊 Monitoring
 
 View sync status:
-- [GitHub Actions](https://github.com/ryanrozich/ag-grid-react-components/actions)
-- [Project Board](https://github.com/users/ryanrozich/projects/1)
-- [Issues List](https://github.com/ryanrozich/ag-grid-react-components/issues)
+- [GitHub Actions]([https://github.com/ryanrozich/ag-grid-react-components/action](https://github.com/ryanrozich/ag-grid-react-components/action)s)
+- [Project Board]([https://github.com/users/ryanrozich/projects/](https://github.com/users/ryanrozich/projects/)1)
+- [Issues List]([https://github.com/ryanrozich/ag-grid-react-components/issue](https://github.com/ryanrozich/ag-grid-react-components/issue)s)

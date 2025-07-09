@@ -4,7 +4,7 @@
 
 ### 1. NPM Account Setup
 
-- [ ] Create npm account at https://www.npmjs.com/signup
+- [ ] Create npm account at [https://www.npmjs.com/signup](https://www.npmjs.com/signup)
 - [ ] Login: `npm login`
 - [ ] Enable 2FA for publishing (recommended)
 
@@ -21,7 +21,7 @@ Since `ag-grid-react-components` is already taken on npm, consider:
 
 For the modular approach, use a scope:
 
-```bash
+````bash
 # Option 1: Personal scope
 @ryanrozich/ag-grid-react-components
 
@@ -29,7 +29,7 @@ For the modular approach, use a scope:
 @agrc/core
 @agrc/adapters
 @agrc/styles
-```
+```text
 
 ## Implementation Steps
 
@@ -50,7 +50,7 @@ mkdir -p packages/{core,adapters,styles,compat}
 
 # 3. Install workspace tools
 npm install -D turbo
-```
+````
 
 ### Phase 2: Package Configuration
 
@@ -70,7 +70,7 @@ Each package needs:
 
 ### Phase 3: Publishing Configuration
 
-```json
+````json
 // packages/core/package.json
 {
   "name": "@agrc/core",
@@ -80,7 +80,7 @@ Each package needs:
     "registry": "https://registry.npmjs.org/"
   }
 }
-```
+```text
 
 ### Phase 4: Automated Publishing
 
@@ -105,7 +105,7 @@ npm publish --access public
 
 # Publish with beta tag
 npm publish --tag beta
-```
+```text
 
 ### Automated Publishing
 
@@ -114,31 +114,33 @@ npm publish --tag beta
 npx changeset
 npx changeset version
 npx changeset publish
-```
+```text
 
 ## Package Structure
 
-```
+````
+
 ag-grid-react-components/
 ├── packages/
-│   ├── core/                 # @agrc/core
-│   │   ├── src/
-│   │   ├── package.json
-│   │   ├── tsconfig.json
-│   │   └── README.md
-│   ├── adapters/            # @agrc/adapters
-│   │   ├── react-datepicker/
-│   │   ├── compression/
-│   │   └── package.json
-│   ├── styles/              # @agrc/styles
-│   │   ├── core.css
-│   │   └── package.json
-│   └── compat/              # @agrc/compat (v1 compatibility)
-│       └── package.json
-├── package.json             # Workspace root
-├── turbo.json              # Build orchestration
-└── .changeset/             # Version management
-```
+│ ├── core/ # @agrc/core
+│ │ ├── src/
+│ │ ├── package.json
+│ │ ├── tsconfig.json
+│ │ └── README.md
+│ ├── adapters/ # @agrc/adapters
+│ │ ├── react-datepicker/
+│ │ ├── compression/
+│ │ └── package.json
+│ ├── styles/ # @agrc/styles
+│ │ ├── core.css
+│ │ └── package.json
+│ └── compat/ # @agrc/compat (v1 compatibility)
+│ └── package.json
+├── package.json # Workspace root
+├── turbo.json # Build orchestration
+└── .changeset/ # Version management
+
+```bash
 
 ## Version Strategy
 
@@ -207,3 +209,4 @@ Before publishing:
 - Bundle size reduction reports
 - Community feedback
 - Adoption in production
+```

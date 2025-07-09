@@ -172,7 +172,7 @@ The implementation is complete when:
 
 Use descriptive commit messages that explain what was accomplished.
 
-## GitHub Integration
+## GitHub Integration (2)
 
 Use GitHub CLI to:
 
@@ -182,7 +182,7 @@ Use GitHub CLI to:
 4. Set up GitHub Actions for CI/CD
 5. Configure GitHub Pages to host the demo
 
-## Testing
+## Testing (2)
 
 Write comprehensive tests using Vitest and React Testing Library:
 
@@ -190,16 +190,16 @@ Write comprehensive tests using Vitest and React Testing Library:
 - Test the filter component's UI interactions
 - Test filter logic against sample data
 
-## Implementation Notes
+## Implementation Notes (2)
 
-### Date Expression Format
+### Date Expression Format (2)
 
 - "Today" - Current date at midnight
 - "Today+Nd" - N days after today
 - "Today-Nd" - N days before today
 - Also support weeks (w), months (m), years (y)
 
-### Filter Operations
+### Filter Operations (2)
 
 - equals - Cell value matches the target date
 - notEqual - Cell value does not match the target date
@@ -207,14 +207,14 @@ Write comprehensive tests using Vitest and React Testing Library:
 - lessThan - Cell value is before the target date
 - inRange - Cell value is between two target dates
 
-### Component UI Guidelines
+### Component UI Guidelines (2)
 
 - Clean, minimal design following AG Grid's aesthetic
 - Clear visual indication of which mode is active
 - Helpful placeholder text for relative expressions
 - Display resolved dates below the input
 
-## Optional Features
+## Optional Features (2)
 
 If time permits, consider adding these enhancements:
 
@@ -223,7 +223,7 @@ If time permits, consider adding these enhancements:
 - Localization support
 - Theme compatibility (light/dark mode)
 
-## Completion Criteria
+## Completion Criteria (2)
 
 The implementation is complete when:
 

@@ -12,7 +12,7 @@ This guide explains how to deploy the demo application to `demo.rozich.net/ag-gr
 
 ### 1. Initial Cloudflare Pages Setup
 
-1. Log in to [Cloudflare Dashboard](https://dash.cloudflare.com)
+1. Log in to [Cloudflare Dashboard](<[https://dash.cloudflare.co](https://dash.cloudflare.co)m>)
 2. Go to **Workers & Pages** > **Create application** > **Pages**
 3. Connect your Git account or choose "Direct Upload"
 
@@ -56,13 +56,13 @@ This means your demo will be accessible at:
 
 ### Build and Preview Locally
 
-```bash
+````bash
 # Build the demo
 npm run build:demo
 
 # Preview the built demo
 npm run preview:demo
-```
+```text
 
 ### Test with Wrangler (Optional)
 
@@ -70,12 +70,12 @@ npm run preview:demo
 # Install wrangler if not already installed
 npm install -g wrangler
 
-# Build the demo
+# Build the demo (2)
 npm run build:demo
 
 # Serve locally with Cloudflare Workers
 wrangler pages dev dist-demo --port 8788
-```
+```text
 
 ## Deployment Options
 
@@ -94,7 +94,7 @@ npm run build:demo
 
 # Deploy using wrangler
 wrangler pages publish dist-demo --project-name=ag-grid-react-components-demo
-```
+````
 
 ### Option 3: Direct Upload
 
@@ -171,11 +171,13 @@ With Cloudflare's free plan:
 
 2. Commit the new files:
 
-   ```bash
+   ````bash
    git add vite.config.demo.ts wrangler.toml .cloudflare/config.json DEPLOYMENT.md
    git add package.json # for the new scripts
    git commit -m "feat: add Cloudflare Pages deployment configuration"
-   ```
+   ```text
+
+   ````
 
 3. Set up the Pages project in Cloudflare dashboard
 

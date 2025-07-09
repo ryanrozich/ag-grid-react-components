@@ -13,6 +13,24 @@ dist
 dist-ssr
 *.local
 
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.*
+
+# Security and credentials
+*credentials*
+*CREDENTIALS*
+*secret*
+*SECRET*
+*token*
+*TOKEN*
+*apikey*
+*APIKEY*
+private.txt
+PRIVATE.txt
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -39,6 +57,8 @@ ryans_notes/
 
 # Screenshots and temporary files
 # *.png - Removed to allow hero screenshot
+ultra-minimal-screenshot.png
+watch_*
 simple-test.html
 clause copy.md
 clause*.md
@@ -97,3 +117,33 @@ TEST_COVERAGE_*.md
 
 # GitHub identity management docs
 GITHUB_IDENTITY_MANAGEMENT.md
+
+# MADF (Multi-Agent Development Framework) related files
+MADF_*.md
+CLAUDE_MADF_*.md
+*_MADF_*.md
+MIGRATION_TO_MADF.md
+examples/madf.config.ts
+scripts/*madf*.sh
+scripts/*-madf.sh
+
+# Multi-agent coordination files
+MULTI_AGENT_*.md
+AI_AGENT_*.md
+COORDINATOR_*.md
+BOT_*.md
+AUTOMATION_FRAMEWORK.md
+
+# Bot-specific files
+.bot/
+bot-*.json
+
+# Framework extraction/migration files
+*_EXTRACTION_*.md
+*_MIGRATION_*.md
+COALESCE_LABS_*.md
+
+# Cleanup and temporary automation files
+CLEANUP_*.md
+R2_CLEANUP_*.md
+test-framework-*.mdEXPOSED-CREDENTIALS-PRIVATE.txt

@@ -179,8 +179,8 @@ const SPRINT_NAMES = [
 const getRandomItem = <T>(arr: T[]): T =>
   arr[Math.floor(Math.random() * arr.length)];
 
-// Helper function to generate ticket ID
-const generateTicketId = (index: number): string => {
+// Helper function to generate task ID (for separate ID column)
+const generateTaskId = (index: number): string => {
   const prefix = getRandomItem(PROJECT_PREFIXES);
   const number = 1000 + index;
   return `${prefix}-${number}`;
@@ -270,7 +270,7 @@ export const generateData = (count: number): RowData[] => {
     // Get task name from templates
     const taskTemplates = TASK_TEMPLATES[category];
     const taskName = getRandomItem(taskTemplates);
-    const ticketId = generateTicketId(i);
+    const taskId = generateTaskId(i);
 
     // Determine status based on various factors
     const status = determineStatus(date, dueDate, category);
@@ -337,8 +337,8 @@ export const generateData = (count: number): RowData[] => {
     const sprint = Math.random() < 0.7 ? getRandomItem(SPRINT_NAMES) : "";
 
     data.push({
-      id: i,
-      name: `[${ticketId}] ${taskName}${sprint ? ` (${sprint})` : ""}`,
+      id: taskId, // Now using the task ID string instead of numeric index
+      name: `${taskName}${sprint ? ` (${sprint})` : ""}`, // Just the task name without ID
       date,
       dateString,
       dueDate,

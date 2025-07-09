@@ -56,7 +56,7 @@ v1.0.0: Stable API Release
 
 ### Create a Milestone
 
-```bash
+````bash
 # Create first public release
 node scripts/create-milestone.js v0.1.0 "First Public Release" "Initial stable release"
 
@@ -65,7 +65,7 @@ node scripts/create-milestone.js v0.2.0 "Pill & Avatar Components" "Add PillRend
 
 # Create patch release
 node scripts/create-milestone.js v0.1.1 "Bug Fixes" "Critical bug fixes for v0.1.0"
-```
+```text
 
 ### Assign Items to Milestone
 
@@ -75,7 +75,7 @@ node scripts/assign-to-milestone.js
 
 # Assign ready items to milestone #1
 node scripts/assign-to-milestone.js 1
-```
+```text
 
 ### View Milestone Progress
 
@@ -85,7 +85,7 @@ node scripts/milestone-overview.js
 
 # Open in browser
 gh milestone list --web
-```
+````
 
 ## Workflow
 

@@ -12,6 +12,12 @@
   flex: 1;
 }
 
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 .filterPill {
   display: inline-flex;
   align-items: center;

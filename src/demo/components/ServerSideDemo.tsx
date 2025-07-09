@@ -14,7 +14,11 @@ import type {
   FilterChangedEvent,
 } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
-import { ActiveFilters } from "../../index";
+import {
+  ActiveFilters,
+  QuickFilterDropdown,
+  FilterPresetManager,
+} from "../../index";
 import {
   darkTheme,
   getColumnDefs,
@@ -37,6 +41,12 @@ const ServerStats: React.FC<{
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
+  // Memoize the filter model string to prevent infinite re-renders
+  const filterModelString = useMemo(
+    () => JSON.stringify(filterModel),
+    [filterModel],
+  );
+
   useEffect(() => {
     const fetchStats = async () => {
       setLoading(true);
@@ -44,7 +54,10 @@ const ServerStats: React.FC<{
         const response = await fetch(`${apiUrl}/stats`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ filterModel, searchText }),
+          body: JSON.stringify({
+            filterModel: JSON.parse(filterModelString),
+            searchText,
+          }),
         });
         const data = await response.json();
         // Transform server stats to match our common format
@@ -69,7 +82,7 @@ const ServerStats: React.FC<{
     };
 
     fetchStats();
-  }, [apiUrl, filterModel, searchText]);
+  }, [apiUrl, filterModelString, searchText]);
 
   if (loading || !stats) {
     return (
@@ -220,8 +233,16 @@ export const ServerSideDemo: React.FC = () => {
         },
       };
 
-      // Set the datasource
-      params.api.setGridOption("serverSideDatasource", datasource);
+      // Set the datasource with error handling for license issues
+      try {
+        params.api.setGridOption("serverSideDatasource", datasource);
+      } catch (error) {
+        console.error("Error setting server-side datasource:", error);
+        // Fall back to client-side if server-side fails due to licensing
+        alert(
+          "Server-side features require AG Grid Enterprise license. Please use the Client-Side Data tab for testing.",
+        );
+      }
     },
     [apiUrl, fetchAggregations],
   );
@@ -300,11 +321,33 @@ export const ServerSideDemo: React.FC = () => {
         </div>
       </DemoToolbar>
 
-      {/* Active Filters */}
-      {gridApi && Object.keys(filterModel).length > 0 && (
+      {/* Filters section - Only render when gridApi is ready */}
+      {gridApi && (
         <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg mt-3">
           <div className="border-t border-gray-700/50 bg-gray-800/20 p-3">
-            <ActiveFilters api={gridApi} filterModel={filterModel} />
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              {Object.keys(filterModel).length > 0 && (
+                <ActiveFilters api={gridApi} filterModel={filterModel} />
+              )}
+              {/* Only show filter components if grid is ready */}
+              {gridApi && (
+                <div className="flex items-center gap-2">
+                  <QuickFilterDropdown
+                    api={gridApi}
+                    columnId="dueDate"
+                    placeholder="Filter by due date..."
+                    options={[]}
+                  />
+                  <FilterPresetManager
+                    api={gridApi}
+                    gridId="server-side-demo"
+                    onPresetApplied={(preset) => {
+                      console.log("Applied preset:", preset.name);
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -65,8 +65,8 @@ Welcome to the comprehensive documentation for AG Grid React Components. This di
 ## 🚀 Quick Links
 
 - [Main README](../README.md) - Installation and basic usage
-- [Live Demo](https://demo.rozich.net/ag-grid-react-components/) - Interactive examples
-- [GitHub Repository](https://github.com/ryanrozich/ag-grid-react-components) - Source code and issues
+- [Live Demo](<[https://demo.rozich.net/ag-grid-react-components](https://demo.rozich.net/ag-grid-react-components)/>) - Interactive examples
+- [GitHub Repository](<[https://github.com/ryanrozich/ag-grid-react-component](https://github.com/ryanrozich/ag-grid-react-component)s>) - Source code and issues
 
 ## 📖 Getting Started
 

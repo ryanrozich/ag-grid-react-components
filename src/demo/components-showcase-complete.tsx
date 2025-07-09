@@ -6,7 +6,9 @@ import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import {
   QuickFilterDropdown,
   ActiveFilters,
+  FilterPresetManager,
   setupGridStatePersistence,
+  usePresetFromUrl,
 } from "../index";
 import { generateData } from "./data/generator";
 import { CodeBlock } from "./components/CodeBlock";
@@ -15,6 +17,8 @@ import { VERSION_DISPLAY, IS_PRERELEASE } from "./version";
 import VersionInfo from "./components/VersionInfo";
 import heroScreenshot from "./assets/screenshots/hero-screenshot.png";
 import { ServerSideDemo } from "./components/ServerSideDemo";
+import { SimpleFilterPresetsDemo } from "./SimpleFilterPresetsDemo";
+import { StackBlitzExample } from "./components/StackBlitzExample";
 import {
   darkTheme,
   getColumnDefs,
@@ -63,16 +67,18 @@ const Navigation: React.FC<{
         </div>
         <div className="flex items-center gap-4">
           <VersionInfo className="hidden md:block" />
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                clipRule="evenodd"
-              />
+          <a
+            href="https://www.npmjs.com/package/ag-grid-react-components"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 256 256">
+              <path d="M0 256V0h256v256z" />
+              <path d="M128 128v128h128V0H128z" fill="#C12127" />
             </svg>
-            MIT License
-          </div>
+            NPM
+          </a>
           <a
             href="https://github.com/ryanrozich/ag-grid-react-components"
             target="_blank"
@@ -98,14 +104,14 @@ const Navigation: React.FC<{
 const Footer: React.FC = () => (
   <footer className="bg-gray-900 border-t border-gray-800 mt-auto">
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
           <h3 className="text-white font-semibold mb-4">
             AG Grid React Components
           </h3>
           <p className="text-gray-400 text-sm">
-            Enterprise-ready date filtering components for AG Grid. Released
-            under the MIT License.
+            Supercharge AG Grid with modern UX components. Tree-shakeable,
+            headless, and released under the MIT License.
           </p>
         </div>
         <div>
@@ -133,6 +139,35 @@ const Footer: React.FC = () => (
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 AG Grid Documentation
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3 className="text-white font-semibold mb-4">Community</h3>
+          <ul className="space-y-2 text-sm">
+            <li>
+              <a
+                href="https://github.com/ryanrozich/ag-grid-react-components/issues"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                Report Issues
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://github.com/ryanrozich/ag-grid-react-components/issues/new?labels=enhancement"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                Suggest Features
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://github.com/ryanrozich/ag-grid-react-components/pulls"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                View Pull Requests
               </a>
             </li>
           </ul>
@@ -296,13 +331,44 @@ export const ComponentsShowcaseComplete: React.FC<
     budgetRemaining: 0,
   });
 
+  // Preset sharing state
+  const [savedPresets, _setSavedPresets] = useState<any[]>(() => {
+    const stored = localStorage.getItem("demo-filter-presets");
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  // Save presets to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("demo-filter-presets", JSON.stringify(savedPresets));
+  }, [savedPresets]);
+
+  // Auto-load preset from URL
+  // Memoize the loadPresetById function to prevent infinite loops
+  const loadPresetById = useCallback(
+    async (id: string) => {
+      return savedPresets.find((p) => p.id === id);
+    },
+    [savedPresets],
+  );
+
+  const { preset: urlPreset } = usePresetFromUrl({
+    loadPresetById,
+  });
+
+  // Apply URL preset when loaded
+  useEffect(() => {
+    if (urlPreset && gridApi) {
+      gridApi.setFilterModel(urlPreset.gridState);
+    }
+  }, [urlPreset, gridApi]);
+
   // Store cleanup function reference
   const cleanupRef = React.useRef<(() => void) | null>(null);
 
   // State for demo tabs
-  const [activeDemoTab, setActiveDemoTab] = useState<"client" | "server">(
-    "client",
-  );
+  const [activeDemoTab, setActiveDemoTab] = useState<
+    "client" | "server" | "presets"
+  >("client");
 
   // Clean up grid API when switching tabs
   useEffect(() => {
@@ -353,7 +419,8 @@ export const ComponentsShowcaseComplete: React.FC<
         setGridApi(null);
       }
     }
-  }, [currentPage, gridApi]); // Run when page changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]); // Only run when page changes, not when gridApi changes
 
   // Get column definitions from shared config
   const columnDefs = useMemo(
@@ -526,13 +593,13 @@ export const ComponentsShowcaseComplete: React.FC<
                   </span>
                 </div>
                 <h1 className="mt-10 text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                  AG Grid filters that understand "today"
+                  Supercharge AG Grid with modern UX components
                 </h1>
                 <p className="mt-6 text-lg leading-8 text-gray-300">
-                  If you're using AG Grid, you know users struggle with date
-                  filtering. They want "last 30 days" to mean last 30
-                  days—tomorrow too. These open source React components make it
-                  happen.
+                  Transform AG Grid from a powerful data table into a delightful
+                  user experience. These production-ready React components add
+                  the filtering, presets, and state management features your
+                  users have been asking for.
                 </p>
                 <div className="mt-10 flex items-center gap-x-6">
                   <button
@@ -551,9 +618,9 @@ export const ComponentsShowcaseComplete: React.FC<
               </div>
               <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
                 <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
-                  <div className="space-y-8">
+                  <div className="flex flex-col lg:flex-row gap-8 items-start">
                     {/* Hero Component Showcase */}
-                    <div className="relative overflow-hidden rounded-2xl max-w-4xl">
+                    <div className="relative overflow-hidden rounded-2xl flex-1">
                       {/* Gradient background */}
                       <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-purple-600/10 to-pink-600/10 blur-2xl" />
 
@@ -605,6 +672,145 @@ export const ComponentsShowcaseComplete: React.FC<
                         </div>
                       </div>
                     </div>
+
+                    {/* Developer Experience Cards */}
+                    <div className="lg:w-96 space-y-6">
+                      {/* Start in minutes */}
+                      <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 bg-indigo-600/20 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-6 h-6 text-indigo-400"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"
+                              />
+                            </svg>
+                          </div>
+                          <h3 className="text-lg font-semibold text-white">
+                            Start in minutes
+                          </h3>
+                        </div>
+                        <ul className="space-y-2 text-sm text-gray-300">
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            Single npm install
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            Works with AG Grid Community & Enterprise
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            TypeScript support out of the box
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            Minimal bundle: starts at 25KB
+                          </li>
+                        </ul>
+                      </div>
+
+                      {/* Style it your way */}
+                      <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 bg-purple-600/20 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-6 h-6 text-purple-400"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                              />
+                            </svg>
+                          </div>
+                          <h3 className="text-lg font-semibold text-white">
+                            Style it your way
+                          </h3>
+                        </div>
+                        <ul className="space-y-2 text-sm text-gray-300">
+                          <li className="flex items-start">
+                            <span className="text-purple-400 mr-2">→</span>
+                            Headless by default
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-purple-400 mr-2">→</span>
+                            CSS modules for scoped styles
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-purple-400 mr-2">→</span>
+                            Override any style with className
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-purple-400 mr-2">→</span>
+                            Works with Tailwind, CSS-in-JS, etc.
+                          </li>
+                        </ul>
+                      </div>
+
+                      {/* Configure everything */}
+                      <div className="bg-gray-900/50 rounded-lg p-6 border border-gray-800">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 bg-green-600/20 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-6 h-6 text-green-400"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                            </svg>
+                          </div>
+                          <h3 className="text-lg font-semibold text-white">
+                            Configure everything
+                          </h3>
+                        </div>
+                        <ul className="space-y-2 text-sm text-gray-300">
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            Pluggable date picker adapters
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            Customizable date expressions
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            Extensible filter presets
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-400 mr-2">→</span>
+                            Override any behavior with callbacks
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -615,13 +821,13 @@ export const ComponentsShowcaseComplete: React.FC<
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-16">
             <div className="mx-auto max-w-2xl lg:text-center">
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                New UX features for AG Grid
+                Essential components for modern data applications
               </p>
               <p className="mt-6 text-lg text-gray-300">
-                AG Grid is incredibly extensible, but its filtering UX hasn't
-                kept up with modern apps. When you have dozens of columns and
-                dynamic data, users need better ways to filter, save, and share
-                their views. These open source components fill that gap.
+                AG Grid gives you the foundation. These components add the
+                polish your users expect: intuitive filtering, visible filter
+                pills, shareable presets, and persistent state. Built for teams
+                who use grids as their primary workspace.
               </p>
             </div>
             <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
@@ -643,13 +849,13 @@ export const ComponentsShowcaseComplete: React.FC<
                         />
                       </svg>
                     </div>
-                    DateFilter
+                    Relative Date Filtering
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      Let users filter by "this week", "last month", or "next
-                      quarter". These relative queries stay current and work
-                      perfectly when bookmarked or shared.
+                      Natural language date filters like "last 30 days" that
+                      actually update every day. Your saved views and shared
+                      links always show current data.
                     </p>
                   </dd>
                 </div>
@@ -670,13 +876,13 @@ export const ComponentsShowcaseComplete: React.FC<
                         />
                       </svg>
                     </div>
-                    QuickFilterDropdown
+                    Quick Filter Menus
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      Give users instant access to common filters like "Overdue
-                      tasks" or "Due this week". No more manual date picking for
-                      repetitive queries.
+                      One-click access to your most-used filters. Configure
+                      dropdowns for "High Priority", "Due This Week", or any
+                      complex filter combination your team needs.
                     </p>
                   </dd>
                 </div>
@@ -702,13 +908,13 @@ export const ComponentsShowcaseComplete: React.FC<
                         />
                       </svg>
                     </div>
-                    ActiveFilters
+                    Active Filter Pills
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      No more hunting for tiny blue dots. Show exactly what's
-                      filtered in clear, removable pills that users can
-                      understand at a glance.
+                      Stop hunting for tiny blue dots. Display active filters as
+                      clear, interactive pills that users can see and remove
+                      with a single click.
                     </p>
                   </dd>
                 </div>
@@ -725,17 +931,17 @@ export const ComponentsShowcaseComplete: React.FC<
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
+                          d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"
                         />
                       </svg>
                     </div>
-                    URL State Persistence
+                    Filter Presets & Sharing
                   </dt>
                   <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
                     <p className="flex-auto">
-                      Users can bookmark their favorite views and share them
-                      with teammates. "Last 30 days" stays last 30 days, even
-                      next month.
+                      Save complex filter combinations as named presets. Export
+                      and share them with your team, or copy a URL that captures
+                      your exact grid state.
                     </p>
                   </dd>
                 </div>
@@ -743,97 +949,15 @@ export const ComponentsShowcaseComplete: React.FC<
             </div>
           </div>
 
-          {/* Problem/Solution Section */}
-          <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
-            <div className="mx-auto max-w-2xl lg:text-center mb-16">
-              <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Your users understand dates differently than databases do
-              </p>
-            </div>
-            <div className="mx-auto max-w-2xl lg:mt-24 lg:max-w-none">
-              <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-                <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
-                  <h3 className="text-xl font-semibold text-white mb-4">
-                    The Problem
-                  </h3>
-                  <ul className="space-y-3 text-gray-300">
-                    <li className="flex items-start">
-                      <span className="text-red-400 mr-2">×</span>
-                      Users manually pick dates every single time
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-400 mr-2">×</span>
-                      "Last 30 days" becomes outdated tomorrow
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-400 mr-2">×</span>
-                      Can't share or bookmark filtered views
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-red-400 mr-2">×</span>
-                      Tiny blue dots hide active filters
-                    </li>
-                  </ul>
-                </div>
-                <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
-                  <h3 className="text-xl font-semibold text-white mb-4">
-                    The Solution
-                  </h3>
-                  <ul className="space-y-3 text-gray-300">
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      Relative date expressions that stay current
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      Quick filter presets for common queries
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      Shareable URLs with compressed state
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-green-400 mr-2">✓</span>
-                      Clear filter pills with one-click removal
-                    </li>
-                  </ul>
-                </div>
-                <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
-                  <h3 className="text-xl font-semibold text-white mb-4">
-                    The Benefit
-                  </h3>
-                  <ul className="space-y-3 text-gray-300">
-                    <li className="flex items-start">
-                      <span className="text-indigo-400 mr-2">→</span>
-                      Users save hours on repetitive filtering
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-indigo-400 mr-2">→</span>
-                      Teams share consistent report views
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-indigo-400 mr-2">→</span>
-                      Dashboards that update automatically
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-indigo-400 mr-2">→</span>
-                      Happy users, fewer support tickets
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Developer Experience section */}
           <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
             <div className="mx-auto max-w-2xl lg:text-center">
               <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Developer experience that just works
+                Seamlessly integrates with your existing AG Grid setup
               </p>
               <p className="mt-6 text-lg text-gray-300">
-                Clean APIs, zero dependencies, and thoughtful defaults. Style it
-                your way or use it headless.
+                Drop-in components with zero dependencies. Use our thoughtful
+                defaults or customize every detail with headless flexibility.
               </p>
             </div>
 
@@ -982,119 +1106,6 @@ const columnDefs = [{
               </div>
             </div>
           </div>
-
-          {/* Open Source Contribution Section */}
-          <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
-            <div className="mx-auto max-w-2xl lg:text-center">
-              <h2 className="text-base font-semibold leading-7 text-indigo-400">
-                Open Source
-              </h2>
-              <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Built by the community, for the community
-              </p>
-              <p className="mt-6 text-lg text-gray-300">
-                We actively encourage contributions. Found a bug? Have a feature
-                idea? Want to improve the docs? Jump in! This project exists
-                because developers like you make it better.
-              </p>
-            </div>
-            <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-              <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
-                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                  <div className="text-center">
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-600">
-                      <svg
-                        className="h-8 w-8 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"
-                        />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-white">
-                      Report Issues
-                    </h3>
-                    <p className="mt-2 text-gray-400">
-                      Found a bug? Let us know on GitHub
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-600">
-                      <svg
-                        className="h-8 w-8 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
-                        />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-white">
-                      Suggest Features
-                    </h3>
-                    <p className="mt-2 text-gray-400">
-                      Have an idea? We'd love to hear it
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-600">
-                      <svg
-                        className="h-8 w-8 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"
-                        />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-white">
-                      Submit PRs
-                    </h3>
-                    <p className="mt-2 text-gray-400">
-                      Code contributions always welcome
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-8 text-center">
-                  <a
-                    href="https://github.com/ryanrozich/ag-grid-react-components"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100"
-                  >
-                    <svg
-                      className="mr-2 h-5 w-5"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Contribute on GitHub
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <Footer />
@@ -1116,6 +1127,7 @@ const columnDefs = [{
       { id: "relativedatefilter", label: "DateFilter", indent: true },
       { id: "quickfilterdropdown", label: "QuickFilterDropdown", indent: true },
       { id: "activefilters", label: "ActiveFilters", indent: true },
+      { id: "filterpresets", label: "Filter Presets", indent: true },
       { id: "urlstate", label: "URL State Persistence", indent: true },
 
       // Demo Guide Section
@@ -1188,97 +1200,119 @@ const columnDefs = [{
                         AG Grid React Components Documentation
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6 text-lg">
-                        Learn how to give your users the filtering experience
-                        they've been asking for. Enable relative date queries,
-                        quick filter presets, and shareable views with these
-                        powerful components for AG Grid.
+                        Transform AG Grid from a powerful data table into a
+                        delightful daily workspace. These components solve the
+                        real-world filtering challenges your users face.
                       </p>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-                        <h3 className="text-lg font-semibold text-white mb-3">
-                          🚀 Quick Start
+                      <div className="prose prose-invert max-w-none mb-8">
+                        <h3 className="text-xl font-semibold text-white mb-4">
+                          The Journey to Better Filtering
                         </h3>
+
                         <p className="text-gray-300 mb-4">
-                          Get up and running with minimal setup. Start with just
-                          25KB for basic features.
+                          <strong>It starts with dates.</strong> Your users are
+                          tired of manually selecting date ranges every day.
+                          They want "last 30 days" to actually mean the last 30
+                          days—including tomorrow. Our{" "}
+                          <Link
+                            to="/demo"
+                            className="text-indigo-400 hover:text-indigo-300"
+                          >
+                            DateFilter component
+                          </Link>{" "}
+                          introduces relative date expressions that update
+                          automatically.
                         </p>
-                        <button
-                          onClick={() => setActiveDocSection("getting-started")}
-                          className="text-indigo-400 hover:text-indigo-300 font-medium"
-                        >
-                          Getting Started →
-                        </button>
-                      </div>
 
-                      <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-                        <h3 className="text-lg font-semibold text-white mb-3">
-                          📦 Components
-                        </h3>
                         <p className="text-gray-300 mb-4">
-                          Explore our modular components including DateFilter,
-                          QuickFilterDropdown, and more.
+                          <strong>Then visibility becomes crucial.</strong> As
+                          your grid grows to dozens of columns, users lose track
+                          of what's filtered. Those tiny blue dots in column
+                          headers? Nobody notices them.
+                          <Link
+                            to="/demo"
+                            className="text-indigo-400 hover:text-indigo-300"
+                          >
+                            Active Filter Pills
+                          </Link>{" "}
+                          display every active filter clearly, making them
+                          instantly visible and removable.
                         </p>
-                        <button
-                          onClick={() =>
-                            setActiveDocSection("relativedatefilter")
-                          }
-                          className="text-indigo-400 hover:text-indigo-300 font-medium"
-                        >
-                          Explore Components →
-                        </button>
-                      </div>
 
-                      <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-                        <h3 className="text-lg font-semibold text-white mb-3">
-                          🎯 What You Can Build
-                        </h3>
-                        <ul className="text-gray-300 space-y-2">
-                          <li>• Reports that update automatically</li>
-                          <li>• Dashboards with shareable filters</li>
-                          <li>• Views that remember user preferences</li>
-                          <li>• Grids that are actually user-friendly</li>
-                        </ul>
-                      </div>
+                        <p className="text-gray-300 mb-4">
+                          <strong>Soon, patterns emerge.</strong> Your team runs
+                          the same queries repeatedly: "High priority bugs",
+                          "Due this week", "My overdue tasks". Instead of
+                          recreating these filters daily,
+                          <Link
+                            to="/demo"
+                            className="text-indigo-400 hover:text-indigo-300"
+                          >
+                            Quick Filter Menus
+                          </Link>{" "}
+                          provide one-click access to complex filter
+                          combinations.
+                        </p>
 
-                      <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-                        <h3 className="text-lg font-semibold text-white mb-3">
-                          📖 Resources
-                        </h3>
-                        <div className="space-y-2">
-                          <a
-                            href="https://github.com/ryanrozich/ag-grid-react-components"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block text-indigo-400 hover:text-indigo-300"
+                        <p className="text-gray-300 mb-4">
+                          <strong>Finally, collaboration kicks in.</strong>{" "}
+                          Teams want to save their carefully crafted views, name
+                          them, organize them, and share them. The{" "}
+                          <Link
+                            to="/demo"
+                            className="text-indigo-400 hover:text-indigo-300"
                           >
-                            GitHub Repository
-                          </a>
-                          <button
-                            onClick={() => setActiveDocSection("expressions")}
-                            className="block text-indigo-400 hover:text-indigo-300 text-left"
-                          >
-                            Date Expressions Guide
-                          </button>
-                          <button
-                            onClick={() => setActiveDocSection("types")}
-                            className="block text-indigo-400 hover:text-indigo-300 text-left"
-                          >
-                            TypeScript Reference
-                          </button>
-                        </div>
+                            Filter Presets system
+                          </Link>{" "}
+                          enables users to build a library of views, export them
+                          to colleagues, or simply copy a URL that captures
+                          their exact grid state.
+                        </p>
+
+                        <p className="text-gray-300 text-lg font-medium">
+                          Together, these components transform AG Grid from a
+                          feature-rich table into a tool people actually enjoy
+                          using every day.
+                        </p>
                       </div>
                     </div>
 
-                    <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-6 mt-8">
-                      <h3 className="text-lg font-semibold text-blue-300 mb-2">
-                        Version {VERSION_DISPLAY}
+                    {/* Why These Components Exist */}
+                    <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700 mb-8">
+                      <h3 className="text-lg font-semibold text-white mb-3">
+                        Why We Built This
                       </h3>
-                      <p className="text-gray-300">
-                        This is the latest release of AG Grid React Components.
-                        We welcome your feedback and contributions!
+                      <p className="text-gray-300 mb-4">
+                        AG Grid is incredibly powerful, flexible, and
+                        feature-rich. It's the Swiss Army knife of data grids.
+                        But when you're building applications where users live
+                        in these grids 8 hours a day, you need more than just
+                        features—you need thoughtful UX.
                       </p>
+                      <p className="text-gray-300">
+                        These components are the missing piece that transforms
+                        AG Grid from a powerful development tool into a
+                        delightful user experience. They're the difference
+                        between a grid that <em>works</em> and a grid that users{" "}
+                        <em>love</em>.
+                      </p>
+                    </div>
+
+                    {/* Quick Navigation */}
+                    <div className="flex gap-4 mb-8">
+                      <button
+                        onClick={() => setActiveDocSection("getting-started")}
+                        className="flex-1 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white font-medium transition-colors"
+                      >
+                        Get Started →
+                      </button>
+                      <button
+                        onClick={() => navigate("/demo")}
+                        className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-medium transition-colors"
+                      >
+                        View Live Demo →
+                      </button>
                     </div>
                   </div>
                 )}
@@ -3257,6 +3291,292 @@ function FilterableGrid() {
 }`}
                             language="tsx"
                           />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Filter Presets Section */}
+                {activeDocSection === "filterpresets" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="filter-presets">
+                        Filter Presets
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        Save, load, and share filter configurations with the
+                        powerful Filter Presets feature. Enable your users to
+                        create custom filter views, share them with teammates,
+                        and restore their favorite configurations instantly.
+                      </p>
+
+                      <div className="bg-indigo-900/20 border border-indigo-600/30 rounded-lg p-4 mb-6">
+                        <p className="text-indigo-400 font-semibold mb-2">
+                          🎉 New Feature
+                        </p>
+                        <p className="text-gray-300">
+                          Filter Presets is a new feature that integrates
+                          seamlessly with QuickFilterDropdown and other
+                          components. Check out the{" "}
+                          <Link
+                            to="/demo"
+                            onClick={() => setActiveDemoTab("presets")}
+                            className="text-indigo-400 hover:text-indigo-300"
+                          >
+                            interactive showcase
+                          </Link>{" "}
+                          to see it in action!
+                        </p>
+                      </div>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="preset-features">
+                            Key Features
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <ul className="space-y-3 text-gray-300">
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Save Filter States:</strong> Users can
+                                  save their current filter configuration with a
+                                  custom name
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>System Presets:</strong> Provide
+                                  pre-configured filters for common use cases
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>User Presets:</strong> Allow users to
+                                  create and manage their own presets
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>URL Sharing:</strong> Share filter
+                                  configurations via URL with automatic
+                                  compression
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Import/Export:</strong> Transfer
+                                  presets between users or systems
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Cross-Tab Sync:</strong> Automatically
+                                  sync presets across browser tabs
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <div>
+                                  <strong>Custom UI:</strong> Fully customizable
+                                  UI components or bring your own
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-quick-start">
+                            Quick Start
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`// Enable presets with QuickFilterDropdown
+import { QuickFilterDropdown } from 'ag-grid-react-components';
+
+const MyGrid = () => {
+  const systemPresets = [
+    {
+      id: 'recent',
+      name: 'Recent Orders',
+      gridState: {
+        filters: {
+          date: {
+            type: 'after',
+            mode: 'relative',
+            expressionFrom: 'Today-7d'
+          }
+        }
+      }
+    }
+  ];
+
+  return (
+    <QuickFilterDropdown
+      api={gridApi}
+      columnId="date"
+      enablePresets={{
+        systemPresets,
+        allowUserPresets: true,
+        allowSharing: true,
+        allowExport: true
+      }}
+    />
+  );
+};`}
+                            language="tsx"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-api">
+                            Programmatic API
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            Use the useFilterPresets hook for full programmatic
+                            control:
+                          </p>
+                          <CodeBlock
+                            code={`import { useFilterPresets } from 'ag-grid-react-components';
+
+const MyComponent = () => {
+  const {
+    presets,
+    savePreset,
+    loadPreset,
+    deletePreset,
+    setDefaultPreset,
+    exportPresets,
+    importPresets,
+    sharePreset
+  } = useFilterPresets({
+    storageKey: 'myApp.filterPresets',
+    maxPresets: 20,
+    enableCompression: true
+  });
+
+  // Save current state
+  const handleSave = async () => {
+    const preset = await savePreset({
+      name: 'My Filter',
+      description: 'Q4 Analysis',
+      isDefault: true
+    });
+  };
+
+  // Share via URL
+  const handleShare = async (presetId) => {
+    const shareUrl = await sharePreset(presetId);
+    navigator.clipboard.writeText(shareUrl);
+  };
+};`}
+                            language="tsx"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-storage">
+                            Storage & Performance
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-3">
+                              Storage Configuration
+                            </h4>
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b border-gray-700">
+                                  <th className="text-left py-2 text-gray-300">
+                                    Option
+                                  </th>
+                                  <th className="text-left py-2 text-gray-300">
+                                    Default
+                                  </th>
+                                  <th className="text-left py-2 text-gray-300">
+                                    Description
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="text-gray-400">
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">maxStorageSize</td>
+                                  <td className="py-3">5MB</td>
+                                  <td className="py-3">
+                                    Maximum storage per domain
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">compressionEnabled</td>
+                                  <td className="py-3">true</td>
+                                  <td className="py-3">
+                                    Enable LZ compression
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">compressionThreshold</td>
+                                  <td className="py-3">1KB</td>
+                                  <td className="py-3">
+                                    Compress if larger than
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">autoCleanup</td>
+                                  <td className="py-3">true</td>
+                                  <td className="py-3">Remove old presets</td>
+                                </tr>
+                                <tr>
+                                  <td className="py-3">maxAge</td>
+                                  <td className="py-3">90 days</td>
+                                  <td className="py-3">Preset expiration</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-examples">
+                            See It In Action
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              Explore the Filter Presets feature with
+                              interactive examples:
+                            </p>
+                            <div className="flex gap-4">
+                              <Link
+                                to="/demo"
+                                onClick={() => {
+                                  navigate("/demo");
+                                  setTimeout(
+                                    () => setActiveDemoTab("presets"),
+                                    100,
+                                  );
+                                }}
+                                className="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+                              >
+                                View Showcase
+                                <svg
+                                  className="w-4 h-4 ml-2"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M9 5l7 7-7 7"
+                                  />
+                                </svg>
+                              </Link>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -6139,6 +6459,316 @@ const customFilters = [
                             showLineNumbers
                           />
                         </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="filter-presets-example">
+                            Filter Presets Example
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            Enable users to save and manage their frequently
+                            used filter configurations:
+                          </p>
+                          <CodeBlock
+                            code={`import React, { useState, useCallback } from 'react';
+import { AgGridReact } from 'ag-grid-react';
+import {
+  QuickFilterDropdown,
+  DATE_FILTER_PRESETS
+} from 'ag-grid-react-components';
+
+function GridWithPresets() {
+  const [gridApi, setGridApi] = useState(null);
+
+  // Local storage adapter for saving presets
+  const presetStorage = {
+    load: async () => {
+      const saved = localStorage.getItem('filter-presets');
+      return saved ? JSON.parse(saved) : [];
+    },
+    save: async (presets) => {
+      localStorage.setItem('filter-presets', JSON.stringify(presets));
+    },
+    remove: async (id) => {
+      const presets = await presetStorage.load();
+      const filtered = presets.filter(p => p.id !== id);
+      await presetStorage.save(filtered);
+    },
+    getStorageInfo: async () => {
+      const data = localStorage.getItem('filter-presets') || '';
+      return {
+        used: new Blob([data]).size,
+        available: 5 * 1024 * 1024, // 5MB limit
+        quota: 5 * 1024 * 1024
+      };
+    }
+  };
+
+  // System presets that are always available
+  const systemPresets = [
+    {
+      id: 'recent-items',
+      name: 'Recent Items',
+      description: 'Items from the last 7 days',
+      filterModel: {
+        date: {
+          mode: 'relative',
+          type: 'after',
+          expressionFrom: 'Today-7d'
+        }
+      },
+      isSystem: true
+    },
+    {
+      id: 'this-month',
+      name: 'This Month',
+      description: 'All items from current month',
+      filterModel: {
+        date: {
+          mode: 'relative',
+          type: 'inRange',
+          expressionFrom: 'StartOfMonth',
+          expressionTo: 'EndOfMonth'
+        }
+      },
+      isSystem: true
+    }
+  ];
+
+  const handlePresetChange = useCallback((preset) => {
+    console.log('Preset selected:', preset);
+  }, []);
+
+  const handleManagePresets = useCallback(() => {
+    // Open your preset management UI
+    console.log('Opening preset manager...');
+  }, []);
+
+  return (
+    <div>
+      {gridApi && (
+        <div className="mb-4">
+          <QuickFilterDropdown
+            api={gridApi}
+            columnId="date"
+            options={DATE_FILTER_PRESETS}
+            placeholder="Quick date filters"
+            enablePresets={{
+              storage: presetStorage,
+              systemPresets: systemPresets,
+              onPresetChange: handlePresetChange,
+              allowSave: true,
+              allowManage: true,
+              onManageClick: handleManagePresets,
+              maxPresets: 20
+            }}
+          />
+        </div>
+      )}
+
+      <div style={{ height: 400, width: '100%' }}>
+        <AgGridReact
+          rowData={rowData}
+          columnDefs={columnDefs}
+          onGridReady={(params) => setGridApi(params.api)}
+        />
+      </div>
+    </div>
+  );
+}`}
+                            language="tsx"
+                            showLineNumbers
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="preset-manager-example">
+                            Preset Manager Component
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            Use the PresetManager component for a full
+                            management interface:
+                          </p>
+                          <CodeBlock
+                            code={`import { PresetManager, usePresets } from 'ag-grid-react-components';
+
+function PresetManagementUI() {
+  const presets = usePresets({
+    storage: presetStorage,
+    systemPresets: systemPresets
+  });
+
+  return (
+    <PresetManager
+      presets={[...systemPresets, ...presets.presets]}
+      activePresetId={presets.activePresetId}
+      onSetDefault={presets.setDefaultPreset}
+      onEdit={(preset) => {
+        // Open edit dialog for preset
+        console.log('Editing preset:', preset);
+      }}
+      onDelete={presets.deletePresets}
+      onExport={presets.exportPresets}
+      onImport={presets.importPresets}
+      renderPresetItem={(props) => (
+        // Custom preset item rendering
+        <div className="custom-preset-item">
+          <h4>{props.preset.name}</h4>
+          {props.preset.description && <p>{props.preset.description}</p>}
+          <div className="preset-actions">
+            {!props.preset.isSystem && (
+              <>
+                <button onClick={() => props.onSetDefault()}>
+                  {props.preset.isDefault ? '★' : '☆'}
+                </button>
+                <button onClick={() => props.onEdit()}>Edit</button>
+                <button onClick={() => props.onDelete()}>Delete</button>
+              </>
+            )}
+            <button onClick={() => props.onExport()}>Export</button>
+          </div>
+        </div>
+      )}
+    />
+  );
+}`}
+                            language="tsx"
+                            showLineNumbers
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="save-preset-dialog-example"
+                          >
+                            Save Preset Dialog
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            Let users save their current filter state as a
+                            reusable preset:
+                          </p>
+                          <CodeBlock
+                            code={`import { SavePresetDialog, usePresets } from 'ag-grid-react-components';
+
+function FilterToolbar({ gridApi }) {
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const presets = usePresets({ storage: presetStorage });
+
+  const handleSavePreset = useCallback((name, description, tags) => {
+    const currentFilterModel = gridApi.getFilterModel();
+    const newPreset = {
+      id: \`user-\${Date.now()}\`,
+      name,
+      description,
+      tags,
+      filterModel: currentFilterModel,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    presets.addPreset(newPreset);
+    setShowSaveDialog(false);
+  }, [gridApi, presets]);
+
+  return (
+    <>
+      <button onClick={() => setShowSaveDialog(true)}>
+        Save Current Filters
+      </button>
+
+      <SavePresetDialog
+        isOpen={showSaveDialog}
+        onClose={() => setShowSaveDialog(false)}
+        onSave={handleSavePreset}
+        existingNames={presets.presets.map(p => p.name)}
+        currentFilterModel={gridApi?.getFilterModel()}
+        storageInfo={presets.storageInfo}
+        renderContent={(form, actions) => (
+          // Custom dialog content
+          <div className="custom-save-dialog">
+            <h2>Save Filter Preset</h2>
+            {form}
+            <div className="dialog-actions">
+              {actions}
+            </div>
+          </div>
+        )}
+      />
+    </>
+  );
+}`}
+                            language="tsx"
+                            showLineNumbers
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="interactive-examples">
+                            Interactive Examples
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-6">
+                            Try out the components directly in your browser with
+                            our StackBlitz examples. Each example is a complete,
+                            working project that you can edit and experiment
+                            with.
+                          </p>
+
+                          <div className="grid gap-6">
+                            <StackBlitzExample
+                              component="DateFilter"
+                              title="DateFilter - Natural Language Example"
+                              description="Try natural language date filtering with expressions like 'last 30 days', 'this week', or 'yesterday'. The filter automatically updates as time passes."
+                            />
+
+                            <StackBlitzExample
+                              component="QuickFilterDropdown"
+                              title="QuickFilterDropdown - Custom Presets"
+                              description="Create custom filter presets for common queries. Mix multiple columns, save filter combinations, and provide one-click access to complex filters."
+                            />
+
+                            <StackBlitzExample
+                              component="ActiveFilters"
+                              title="ActiveFilters - Interactive Pills"
+                              description="Display all active filters as interactive pills. Users can see at a glance what filters are applied and remove them with a single click."
+                            />
+                          </div>
+
+                          <div className="mt-8 bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <h4 className="text-base font-semibold text-white mb-3">
+                              Tips for Using StackBlitz Examples
+                            </h4>
+                            <ul className="space-y-2 text-sm text-gray-300">
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <span>
+                                  Click "Open in StackBlitz" to launch the
+                                  example in a new tab
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <span>
+                                  Fork the project to save your changes and
+                                  create your own version
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <span>
+                                  All examples use the latest version of
+                                  ag-grid-react-components
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-indigo-400 mr-2">•</span>
+                                <span>
+                                  Examples include sample data and are ready to
+                                  run immediately
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -6553,6 +7183,19 @@ const handleFilterSelect = async (option) => {
                     API
                   </span>
                 </button>
+                <button
+                  onClick={() => setActiveDemoTab("presets")}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeDemoTab === "presets"
+                      ? "border-indigo-500 text-white"
+                      : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
+                  }`}
+                >
+                  Filter Presets
+                  <span className="ml-2 px-2 py-0.5 text-xs bg-green-600 text-white rounded-full">
+                    NEW
+                  </span>
+                </button>
               </nav>
             </div>
           </div>
@@ -6596,11 +7239,25 @@ const handleFilterSelect = async (option) => {
                 )}
               </DemoToolbar>
 
-              {/* Active Filters Row (when present) */}
-              {gridApi && Object.keys(filterModel).length > 0 && (
+              {/* Active Filters Row and Filter Preset Actions */}
+              {gridApi && (
                 <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg mt-3">
                   <div className="border-t border-gray-700/50 bg-gray-800/20 p-3">
-                    <ActiveFilters api={gridApi} filterModel={filterModel} />
+                    <div className="flex items-center justify-between gap-4 flex-wrap">
+                      {Object.keys(filterModel).length > 0 && (
+                        <ActiveFilters
+                          api={gridApi}
+                          filterModel={filterModel}
+                        />
+                      )}
+                      <FilterPresetManager
+                        api={gridApi}
+                        gridId="client-side-demo"
+                        onPresetApplied={(preset) => {
+                          console.log("Applied preset:", preset.name);
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -6656,6 +7313,13 @@ const handleFilterSelect = async (option) => {
           {activeDemoTab === "server" && (
             <div className="flex-1 flex flex-col">
               <ServerSideDemo />
+            </div>
+          )}
+
+          {/* Filter Presets Showcase */}
+          {activeDemoTab === "presets" && (
+            <div className="flex-1 flex flex-col">
+              <SimpleFilterPresetsDemo />
             </div>
           )}
         </div>

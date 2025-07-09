@@ -9,6 +9,11 @@ afterEach(() => {
   cleanup();
 });
 
+// Mock scrollIntoView which is not available in jsdom
+if (typeof window !== "undefined" && !Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = vi.fn();
+}
+
 // Mock matchMedia for jsdom compatibility
 if (typeof window !== "undefined" && !window.matchMedia) {
   window.matchMedia = function () {
@@ -30,7 +35,6 @@ if (typeof window !== "undefined" && !window.matchMedia) {
 // Mock CSS imports for component styles
 try {
   vi.mock("./src/index.css", () => ({}));
-  vi.mock("react-datepicker/dist/react-datepicker.css", () => ({}));
 } catch {
   // ignore if not needed
 }

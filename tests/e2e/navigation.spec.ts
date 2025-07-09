@@ -46,9 +46,9 @@ test.describe("Navigation between pages", () => {
         if (
           !text.includes("AG Grid Enterprise") &&
           !text.includes("License Key Not Found") &&
-          !text.includes("ag-grid.com") &&
+          !text.includes("://ag-grid.com") && // More specific URL check to avoid security issue
           !text.includes("****") &&
-          !text.includes("license")
+          !text.toLowerCase().includes("license")
         ) {
           consoleErrors.push(text);
         }
