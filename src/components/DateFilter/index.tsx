@@ -228,6 +228,7 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
     // Event handlers - Simplified since validation is now debounced
     const handleExpressionFromChange = useCallback(
       (value: string) => {
+        filterState.setIsUserInteracting(true);
         filterState.setExpressionFrom(value);
         // Validation is handled by useDebouncedValidation hook with 300ms delay
       },
@@ -236,6 +237,7 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
 
     const handleExpressionToChange = useCallback(
       (value: string) => {
+        filterState.setIsUserInteracting(true);
         filterState.setExpressionTo(value);
         // Validation is handled by useDebouncedValidation hook with 300ms delay
       },
@@ -254,7 +256,9 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
         filterChangedCallback();
       }
       logger.debug("Applied filter:", currentModel);
-    }, [onModelChange, filterChangedCallback, currentModel]);
+      // Reset user interaction flag after applying
+      filterState.setIsUserInteracting(false);
+    }, [onModelChange, filterChangedCallback, currentModel, filterState]);
 
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent) => {
@@ -269,6 +273,7 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
     const resetFilter = useCallback(() => {
       try {
         filterState.resetState();
+        filterState.setIsUserInteracting(false);
         if (onModelChange) {
           onModelChange(null);
         }
@@ -332,7 +337,8 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
               : model.dateTo,
         };
 
-        filterState.initializeFromModel(deserializedModel);
+        // Force update when setModel is called programmatically
+        filterState.initializeFromModel(deserializedModel, true);
 
         logger.debug("Filter state initialized from model:", model);
 
@@ -361,6 +367,14 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
     const destroy = useCallback(() => {
       // Clean up when destroyed
     }, []);
+
+    // Handle blur events to reset interaction state
+    const handleFilterBlur = useCallback(() => {
+      // Reset interaction state when filter loses focus
+      setTimeout(() => {
+        filterState.setIsUserInteracting(false);
+      }, 100);
+    }, [filterState]);
 
     // Register with AG Grid
     const callbacks = useMemo(
@@ -412,13 +426,15 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
 
     useGridFilter(callbacks);
 
-    // Handle model changes from props (when AG Grid creates new instance)
+    // Handle model changes from props - only on mount or when explicitly needed
     React.useEffect(() => {
-      // Only reinitialize if we have a model and it's different from current state
+      // Only initialize on mount (first render)
+      // The initializeFromModel function now checks for model changes internally
       if (initialModel) {
         filterState.initializeFromModel(initialModel);
       }
-    }, [initialModel, filterState]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Empty dependency array - only run on mount
 
     // Model is handled during initial state creation in useFilterState
     // No ongoing synchronization to avoid state conflicts
@@ -443,6 +459,7 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
     return (
       <div
         ref={filterRef}
+        onBlur={handleFilterBlur}
         className={`ag-filter ag-date-filter ${styles.dateFilter} ${
           filterState.filterType === "inRange"
             ? styles.dateFilterRange
@@ -454,12 +471,18 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
       >
         <FilterTypeSelector
           filterType={filterState.filterType}
-          onTypeChange={filterState.setFilterType}
+          onTypeChange={(type) => {
+            filterState.setIsUserInteracting(true);
+            filterState.setFilterType(type);
+          }}
         />
 
         <FilterModeToggle
           mode={filterState.filterMode}
-          onModeChange={filterState.toggleFilterMode}
+          onModeChange={() => {
+            filterState.setIsUserInteracting(true);
+            filterState.toggleFilterMode();
+          }}
         />
 
         <div className={`date-inputs-section ${styles.dateInputsSection}`}>
@@ -468,8 +491,14 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
               filterType={filterState.filterType}
               dateFrom={filterState.absoluteDateFrom}
               dateTo={filterState.absoluteDateTo}
-              onDateFromChange={filterState.setAbsoluteDateFrom}
-              onDateToChange={filterState.setAbsoluteDateTo}
+              onDateFromChange={(date) => {
+                filterState.setIsUserInteracting(true);
+                filterState.setAbsoluteDateFrom(date);
+              }}
+              onDateToChange={(date) => {
+                filterState.setIsUserInteracting(true);
+                filterState.setAbsoluteDateTo(date);
+              }}
               dateFormat={dateFormat}
               minDate={props.minDate}
               maxDate={props.maxDate}
