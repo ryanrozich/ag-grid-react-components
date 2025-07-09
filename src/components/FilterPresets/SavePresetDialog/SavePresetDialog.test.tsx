@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SavePresetDialog } from "./index";
 import type { SavePresetDialogProps } from "../types";
@@ -113,19 +113,15 @@ describe("SavePresetDialog", () => {
     });
 
     it("should show error for invalid tag characters", async () => {
+      const user = userEvent.setup();
       render(<SavePresetDialog {...defaultProps} />);
 
-      const tagsInput = screen.getByLabelText("Tags") as HTMLInputElement;
-      fireEvent.change(tagsInput, { target: { value: "tag1, tag@2, tag#3" } });
+      const tagsInput = screen.getByLabelText("Tags");
+      await user.type(tagsInput, "tag1, tag@2, tag#3");
 
-      await waitFor(
-        () => {
-          expect(
-            screen.getByText(/Tags can only contain/i),
-          ).toBeInTheDocument();
-        },
-        { timeout: 3000 },
-      );
+      await waitFor(() => {
+        expect(screen.getByText(/Tags can only contain/i)).toBeInTheDocument();
+      });
     });
   });
 
@@ -162,18 +158,18 @@ describe("SavePresetDialog", () => {
     });
 
     it("should trim whitespace from inputs", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const onSave = vi.fn();
       render(<SavePresetDialog {...defaultProps} onSave={onSave} />);
 
-      const nameInput = screen.getByLabelText("Name") as HTMLInputElement;
-      const tagsInput = screen.getByLabelText("Tags") as HTMLInputElement;
+      const nameInput = screen.getByLabelText("Name");
+      const tagsInput = screen.getByLabelText("Tags");
 
-      // Use fireEvent to set values directly
-      fireEvent.change(nameInput, { target: { value: "  Test Preset  " } });
-      fireEvent.change(tagsInput, {
-        target: { value: " tag1 , tag2 , tag3 " },
-      });
+      await user.clear(nameInput);
+      await user.type(nameInput, "  Test Preset  ");
+
+      await user.clear(tagsInput);
+      await user.type(tagsInput, " tag1 , tag2 , tag3 ");
 
       await user.click(screen.getByRole("button", { name: "Save" }));
 
@@ -188,20 +184,22 @@ describe("SavePresetDialog", () => {
 
   describe("Save Functionality", () => {
     it("should call onSave with correct data", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const onSave = vi.fn();
       render(<SavePresetDialog {...defaultProps} onSave={onSave} />);
 
-      // Use fireEvent for more reliable input
-      const nameInput = screen.getByLabelText("Name") as HTMLInputElement;
-      const descInput = screen.getByLabelText(
-        "Description",
-      ) as HTMLTextAreaElement;
-      const tagsInput = screen.getByLabelText("Tags") as HTMLInputElement;
+      const nameInput = screen.getByLabelText("Name");
+      const descInput = screen.getByLabelText("Description");
+      const tagsInput = screen.getByLabelText("Tags");
 
-      fireEvent.change(nameInput, { target: { value: "My Preset" } });
-      fireEvent.change(descInput, { target: { value: "My description" } });
-      fireEvent.change(tagsInput, { target: { value: "tag1, tag2" } });
+      await user.clear(nameInput);
+      await user.type(nameInput, "My Preset");
+
+      await user.clear(descInput);
+      await user.type(descInput, "My description");
+
+      await user.clear(tagsInput);
+      await user.type(tagsInput, "tag1, tag2");
 
       await user.click(screen.getByLabelText("Set as default preset"));
 
@@ -291,23 +289,24 @@ describe("SavePresetDialog", () => {
     });
 
     it("should not submit on Enter in textarea", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ delay: null });
       const onSave = vi.fn();
       render(<SavePresetDialog {...defaultProps} onSave={onSave} />);
 
-      await user.type(screen.getByLabelText("Name"), "My Preset");
-
-      // Use fireEvent to directly set the textarea value with newline
-      const descTextarea = screen.getByLabelText(
+      const nameInput = screen.getByLabelText("Name");
+      const textarea = screen.getByLabelText(
         "Description",
       ) as HTMLTextAreaElement;
-      fireEvent.change(descTextarea, { target: { value: "Line 1\nLine 2" } });
 
-      // Simulate Enter key press on the textarea
-      fireEvent.keyDown(descTextarea, { key: "Enter", code: "Enter" });
+      await user.clear(nameInput);
+      await user.type(nameInput, "My Preset");
+
+      await user.clear(textarea);
+      await user.type(textarea, "Line 1{Enter}Line 2");
 
       expect(onSave).not.toHaveBeenCalled();
-      expect(descTextarea.value).toBe("Line 1\nLine 2");
+      // The value should contain both lines
+      expect(textarea.value).toBe("Line 1\nLine 2");
     });
   });
 

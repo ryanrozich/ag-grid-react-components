@@ -9,11 +9,6 @@ afterEach(() => {
   cleanup();
 });
 
-// Mock scrollIntoView which is not available in jsdom
-if (typeof window !== "undefined" && !Element.prototype.scrollIntoView) {
-  Element.prototype.scrollIntoView = vi.fn();
-}
-
 // Mock matchMedia for jsdom compatibility
 if (typeof window !== "undefined" && !window.matchMedia) {
   window.matchMedia = function () {

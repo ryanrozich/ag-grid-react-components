@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import { DateFilterType, DateFilterMode, DateFilterModel } from "../types";
 
 interface UseFilterStateReturn {
@@ -23,9 +23,6 @@ interface UseFilterStateReturn {
   fromInclusive: boolean;
   toInclusive: boolean;
 
-  // Interaction state
-  isUserInteracting: boolean;
-
   // State setters
   setFilterType: (type: DateFilterType) => void;
   setFilterMode: (mode: DateFilterMode) => void;
@@ -38,15 +35,11 @@ interface UseFilterStateReturn {
   setToExpressionError: (error: string) => void;
   setFromInclusive: (inclusive: boolean) => void;
   setToInclusive: (inclusive: boolean) => void;
-  setIsUserInteracting: (interacting: boolean) => void;
 
   // Actions
   toggleFilterMode: () => void;
   resetState: () => void;
-  initializeFromModel: (
-    model: DateFilterModel | null,
-    forceUpdate?: boolean,
-  ) => void;
+  initializeFromModel: (model: DateFilterModel | null) => void;
 }
 
 // Helper functions to validate filter types and modes
@@ -66,12 +59,6 @@ export const useFilterState = (
   defaultMode?: DateFilterMode,
 ): UseFilterStateReturn => {
   console.log("[useFilterState] Initializing with model:", initialModel);
-
-  // Track the last applied model to avoid unnecessary re-initialization
-  const lastAppliedModelRef = useRef<DateFilterModel | null>(
-    initialModel || null,
-  );
-  const isInitializedRef = useRef(false);
 
   // Filter state with validation
   const [filterType, setFilterType] = useState<DateFilterType>(
@@ -124,14 +111,6 @@ export const useFilterState = (
     initialModel?.toInclusive ?? false,
   );
 
-  // Track user interaction state
-  const [isUserInteracting, setIsUserInteracting] = useState<boolean>(false);
-
-  // Mark component as initialized after first render
-  if (!isInitializedRef.current) {
-    isInitializedRef.current = true;
-  }
-
   // Toggle filter mode
   const toggleFilterMode = useCallback(() => {
     setFilterMode((prevMode) =>
@@ -154,89 +133,16 @@ export const useFilterState = (
     setToInclusive(false);
   }, [defaultMode]);
 
-  // Helper to check if two models are equivalent
-  const areModelsEqual = (
-    model1: DateFilterModel | null,
-    model2: DateFilterModel | null,
-  ): boolean => {
-    if (!model1 && !model2) return true;
-    if (!model1 || !model2) return false;
-
-    // Compare core properties
-    if (model1.type !== model2.type || model1.mode !== model2.mode)
-      return false;
-
-    // Compare dates/expressions based on mode
-    if (model1.mode === "absolute") {
-      // Handle Date objects and ISO strings
-      const getTime = (
-        date: Date | string | null | undefined,
-      ): number | null => {
-        if (!date) return null;
-        if (date instanceof Date) return date.getTime();
-        if (typeof date === "string") return new Date(date).getTime();
-        return null;
-      };
-
-      const date1From = getTime(model1.dateFrom);
-      const date2From = getTime(model2.dateFrom);
-      const date1To = getTime(model1.dateTo);
-      const date2To = getTime(model2.dateTo);
-
-      if (date1From !== date2From || date1To !== date2To) return false;
-    } else {
-      if (
-        model1.expressionFrom !== model2.expressionFrom ||
-        model1.expressionTo !== model2.expressionTo
-      )
-        return false;
-    }
-
-    // Compare inclusivity flags
-    if (
-      model1.fromInclusive !== model2.fromInclusive ||
-      model1.toInclusive !== model2.toInclusive
-    )
-      return false;
-
-    return true;
-  };
-
   // Initialize state from a model
   const initializeFromModel = useCallback(
-    (model: DateFilterModel | null, forceUpdate = false) => {
-      console.log(
-        "[useFilterState] initializeFromModel called with:",
-        model,
-        "force:",
-        forceUpdate,
-      );
-
-      // Don't re-initialize if user is interacting with the filter
-      if (isUserInteracting && !forceUpdate) {
-        console.log(
-          "[useFilterState] User is interacting, skipping initialization",
-        );
-        return;
-      }
-
-      // Check if the model has actually changed
-      if (!forceUpdate && areModelsEqual(model, lastAppliedModelRef.current)) {
-        console.log(
-          "[useFilterState] Model hasn't changed, skipping initialization",
-        );
-        return;
-      }
+    (model: DateFilterModel | null) => {
+      console.log("[useFilterState] initializeFromModel called with:", model);
 
       if (!model) {
         console.log("[useFilterState] No model, resetting state");
         resetState();
-        lastAppliedModelRef.current = null;
         return;
       }
-
-      // Store the model we're applying
-      lastAppliedModelRef.current = { ...model };
 
       console.log("[useFilterState] Setting filter type to:", model.type);
       setFilterType(model.type);
@@ -273,7 +179,7 @@ export const useFilterState = (
       setFromInclusive(model.fromInclusive ?? false);
       setToInclusive(model.toInclusive ?? false);
     },
-    [resetState, isUserInteracting],
+    [resetState],
   );
 
   return {
@@ -298,9 +204,6 @@ export const useFilterState = (
     fromInclusive,
     toInclusive,
 
-    // Interaction state
-    isUserInteracting,
-
     // State setters
     setFilterType,
     setFilterMode,
@@ -313,7 +216,6 @@ export const useFilterState = (
     setToExpressionError,
     setFromInclusive,
     setToInclusive,
-    setIsUserInteracting,
 
     // Actions
     toggleFilterMode,
