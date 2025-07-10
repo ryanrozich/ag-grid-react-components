@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
+import { CategorySelector } from "../../CategorySelector";
 import type { FilterPreset } from "../types";
+import type { GridApi } from "ag-grid-community";
+import {
+  exportPreset,
+  downloadJson,
+  generateExportFilename,
+} from "../utils/export";
 import styles from "../FilterPresetManager.module.css";
 
 interface ManagePresetsModalProps {
@@ -8,6 +15,7 @@ interface ManagePresetsModalProps {
   onPresetsChange: (presets: FilterPreset[]) => void;
   onClose: () => void;
   allowedCategories?: string[];
+  api: GridApi;
 }
 
 export const ManagePresetsModal: React.FC<ManagePresetsModalProps> = ({
@@ -15,6 +23,7 @@ export const ManagePresetsModal: React.FC<ManagePresetsModalProps> = ({
   onPresetsChange,
   onClose,
   allowedCategories,
+  api,
 }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
@@ -58,6 +67,12 @@ export const ManagePresetsModal: React.FC<ManagePresetsModalProps> = ({
     setEditCategory("");
   };
 
+  const handleExport = (preset: FilterPreset) => {
+    const exportData = exportPreset(preset, api);
+    const filename = generateExportFilename(preset.name);
+    downloadJson(exportData, filename);
+  };
+
   const existingCategories = Array.from(
     new Set(presets.map((p) => p.category).filter(Boolean) as string[]),
   );
@@ -94,20 +109,15 @@ export const ManagePresetsModal: React.FC<ManagePresetsModalProps> = ({
                           placeholder="View name..."
                           autoFocus
                         />
-                        <select
-                          className={styles.editSelect}
+                        <CategorySelector
                           value={editCategory}
-                          onChange={(e) => setEditCategory(e.target.value)}
-                        >
-                          <option value="">No category</option>
-                          {(allowedCategories || existingCategories).map(
-                            (cat) => (
-                              <option key={cat} value={cat}>
-                                {cat}
-                              </option>
-                            ),
-                          )}
-                        </select>
+                          onChange={setEditCategory}
+                          existingCategories={
+                            allowedCategories || existingCategories
+                          }
+                          placeholder="Select or create category"
+                          className={styles.editSelect}
+                        />
                         <div className={styles.editActions}>
                           <button
                             className={styles.saveButton}
@@ -143,6 +153,23 @@ export const ManagePresetsModal: React.FC<ManagePresetsModalProps> = ({
                           </span>
                         </div>
                         <div className={styles.presetActions}>
+                          <button
+                            className={styles.exportButton}
+                            onClick={() => handleExport(preset)}
+                            title="Export this view"
+                          >
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                            >
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                              <polyline points="7 10 12 15 17 10" />
+                              <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                          </button>
                           <button
                             className={styles.editButton}
                             onClick={() => handleEdit(preset)}

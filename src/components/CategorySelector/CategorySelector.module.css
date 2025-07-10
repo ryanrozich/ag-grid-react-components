@@ -1,0 +1,154 @@
+.container {
+  position: relative;
+  width: 100%;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  padding: 8px 32px 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59, 130, 246, 0.1);
+}
+
+.dropdownIcon {
+  position: absolute;
+  right: 12px;
+  pointer-events: none;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow:
+    0 10px 15px -3px rgb(0, 0, 0, 0.1),
+    0 4px 6px -2px rgb(0, 0, 0, 0.05);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.option {
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  font-size: 14px;
+}
+
+.option:hover,
+.option.highlighted {
+  background-color: #f3f4f6;
+}
+
+.createOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 500;
+  color: #3b82f6;
+}
+
+.createIcon {
+  font-size: 16px;
+}
+
+.noResults {
+  padding: 10px 12px;
+  color: #6b7280;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.createForm {
+  padding: 12px;
+}
+
+.createInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.createInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59, 130, 246, 0.1);
+}
+
+.createInput.error {
+  border-color: #ef4444;
+}
+
+.errorMessage {
+  color: #ef4444;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.createActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.createButton,
+.cancelButton {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.createButton {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.createButton:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.createButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.cancelButton:hover {
+  background-color: #d1d5db;
+}

@@ -1,6 +1,13 @@
 import React, { useCallback } from "react";
 import { createPortal } from "react-dom";
 import type { FilterPreset } from "../types";
+import type { GridApi } from "ag-grid-community";
+import {
+  exportPresets,
+  downloadJson,
+  generateExportFilename,
+  importPresets,
+} from "../utils/export";
 import styles from "../FilterPresetManager.module.css";
 
 interface ImportExportModalProps {
@@ -8,6 +15,7 @@ interface ImportExportModalProps {
   presets: FilterPreset[];
   onPresetsChange: (presets: FilterPreset[]) => void;
   onClose: () => void;
+  api: GridApi;
 }
 
 export const ImportExportModal: React.FC<ImportExportModalProps> = ({
@@ -15,68 +23,60 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
   presets,
   onPresetsChange,
   onClose,
+  api,
 }) => {
   const handleExport = useCallback(() => {
-    const dataStr = JSON.stringify(
-      {
-        gridId,
-        presets,
-        exportedAt: new Date().toISOString(),
-        version: "1.0",
-      },
-      null,
-      2,
-    );
-    const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
-
-    const link = document.createElement("a");
-    link.href = dataUri;
-    link.download = `filter-views-${gridId}-${new Date().toISOString().split("T")[0]}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const exportData = exportPresets(presets, api);
+    const filename = generateExportFilename();
+    downloadJson(exportData, filename);
     onClose();
-  }, [gridId, presets, onClose]);
+  }, [presets, api, onClose]);
 
   const handleImport = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const data = JSON.parse(e.target?.result as string);
+      try {
+        const data = await importPresets(file);
 
-          // Validate the import
-          if (data.gridId && data.gridId !== gridId) {
-            alert(
-              `These presets are for grid "${data.gridId}" but you're importing to "${gridId}". ` +
-                "The presets may not work correctly.",
-            );
-          }
+        // Handle single preset or multiple presets
+        const importedPresets =
+          "presets" in data
+            ? data.presets.map((ep) => ep.preset)
+            : [data.preset];
 
-          if (Array.isArray(data.presets)) {
-            const merged = [...presets];
-            data.presets.forEach((preset: FilterPreset) => {
-              if (!merged.find((p) => p.name === preset.name)) {
-                merged.push({
-                  ...preset,
-                  id: `${gridId}-${Date.now()}-${Math.random()}`,
-                  createdAt: new Date(preset.createdAt),
-                });
-              }
+        const merged = [...presets];
+        let importCount = 0;
+
+        importedPresets.forEach((preset: FilterPreset) => {
+          // Check for duplicates by name
+          if (!merged.find((p) => p.name === preset.name)) {
+            merged.push({
+              ...preset,
+              id: `${gridId}-${Date.now()}-${Math.random()}`,
+              // Dates are already converted by importPresets
             });
-            onPresetsChange(merged);
-            alert(`Imported ${data.presets.length} views successfully!`);
-            onClose();
+            importCount++;
           }
-        } catch (error) {
-          console.error("Failed to import presets:", error);
-          alert("Failed to import views. Please check the file format.");
+        });
+
+        if (importCount > 0) {
+          onPresetsChange(merged);
+          alert(
+            `Imported ${importCount} view${importCount > 1 ? "s" : ""} successfully!`,
+          );
+        } else {
+          alert("All views already exist. No new views were imported.");
         }
-      };
-      reader.readAsText(file);
+        onClose();
+      } catch (error) {
+        console.error("Failed to import presets:", error);
+        alert(
+          (error as Error).message ||
+            "Failed to import views. Please check the file format.",
+        );
+      }
     },
     [gridId, presets, onPresetsChange, onClose],
   );

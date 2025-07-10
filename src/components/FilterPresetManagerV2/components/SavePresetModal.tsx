@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
+import { CategorySelector } from "../../CategorySelector";
 import styles from "../FilterPresetManager.module.css";
 
 interface SavePresetModalProps {
@@ -11,12 +12,15 @@ interface SavePresetModalProps {
 export const SavePresetModal: React.FC<SavePresetModalProps> = ({
   onSave,
   onClose,
+  existingCategories,
 }) => {
   const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
+  const [isDefault, setIsDefault] = useState(false);
 
   const handleSave = () => {
     if (name.trim()) {
-      onSave(name.trim());
+      onSave(name.trim(), category || undefined, isDefault);
     }
   };
 
@@ -31,15 +35,46 @@ export const SavePresetModal: React.FC<SavePresetModalProps> = ({
         </div>
         <div className={styles.modalBody}>
           <div className={styles.saveForm}>
-            <input
-              type="text"
-              className={styles.input}
-              placeholder="View name..."
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSave()}
-              autoFocus
-            />
+            <div className={styles.formGroup}>
+              <label htmlFor="preset-name" className={styles.label}>
+                View Name
+              </label>
+              <input
+                id="preset-name"
+                type="text"
+                className={styles.input}
+                placeholder="Enter view name..."
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSave()}
+                autoFocus
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="preset-category" className={styles.label}>
+                Category (Optional)
+              </label>
+              <CategorySelector
+                id="preset-category"
+                value={category}
+                onChange={setCategory}
+                existingCategories={existingCategories}
+                placeholder="Select or create category"
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={isDefault}
+                  onChange={(e) => setIsDefault(e.target.checked)}
+                />
+                Set as default view
+              </label>
+            </div>
+
             <button
               className={styles.primaryButton}
               onClick={handleSave}
