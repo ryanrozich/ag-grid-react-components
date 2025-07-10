@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { ActiveFilters, DateFilter } from "ag-grid-react-components";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-quartz.css";
+// AG Grid styles removed - using v33+ Theming API
 
 // Example implementation for ActiveFilters
 function App() {
@@ -47,10 +46,7 @@ function App() {
         <h1>ActiveFilters - Interactive Pills</h1>
         <p>Display active filters as removable pills</p>
       </div>
-      <div
-        className="ag-theme-quartz-dark"
-        style={{ flex: 1, padding: "0 20px 20px" }}
-      >
+      <div style={{ flex: 1, padding: "0 20px 20px" }}>
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}

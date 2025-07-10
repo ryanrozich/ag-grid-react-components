@@ -258,7 +258,7 @@ export const PresetSystemDemo: React.FC = () => {
         </div>
       </div>
 
-      <div className="ag-theme-alpine" style={{ height: 500, width: "100%" }}>
+      <div style={{ height: 500, width: "100%" }}>
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}

@@ -20,9 +20,7 @@ import "./styles/showcase.css";
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);
 
-// Import AG Grid styles
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-material.css";
+// AG Grid styles removed - using v33+ Theming API
 
 interface ShowcaseSection {
   id: string;
@@ -691,7 +689,7 @@ return cleanup;`}</code>
 
             <div className="relative">
               <div
-                className="ag-theme-material rounded-lg overflow-hidden shadow-xl border border-slate-200"
+                className="rounded-lg overflow-hidden shadow-xl border border-slate-200"
                 style={{ height: 700, width: "100%" }}
               >
                 <AgGridReact

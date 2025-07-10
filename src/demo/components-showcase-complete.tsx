@@ -1757,7 +1757,7 @@ function App() {
   ];
 
   return (
-    <div className="ag-theme-quartz" style={{ height: 600 }}>
+    <div style={{ height: 600 }}>
       <AgGridReact columnDefs={columnDefs} rowData={rowData} />
     </div>
   );
@@ -1806,7 +1806,7 @@ function App() {
         ]}
       />
 
-      <div className="ag-theme-quartz" style={{ height: 600 }}>
+      <div style={{ height: 600 }}>
         <AgGridReact
           columnDefs={columnDefs}
           rowData={rowData}
@@ -1860,7 +1860,7 @@ function App() {
     <div>
       <ActiveFilters api={gridApi} filterModel={filterModel} />
 
-      <div className="ag-theme-quartz" style={{ height: 600 }}>
+      <div style={{ height: 600 }}>
         <AgGridReact
           columnDefs={columnDefs}
           onGridReady={onGridReady}
@@ -3278,7 +3278,7 @@ function FilterableGrid() {
       </div>
 
       {/* Grid */}
-      <div className="ag-theme-quartz" style={{ height: 500 }}>
+      <div style={{ height: 500 }}>
         <AgGridReact
           columnDefs={columnDefs}
           onGridReady={onGridReady}
