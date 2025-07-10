@@ -3,8 +3,12 @@ import { test, expect } from "@playwright/test";
 test.describe("Demo Deployment", () => {
   test.beforeEach(async ({ page }) => {
     // Get the demo URL from environment variable or use default
-    const demoUrl = process.env.DEMO_URL || "http://localhost:3000";
-    // Navigate to the demo page, not the landing page
+    // Use the same port as configured in playwright.config.ts
+    const PORT = process.env.E2E_PORT
+      ? parseInt(process.env.E2E_PORT, 10)
+      : 5173;
+    const demoUrl = process.env.DEMO_URL || `http://localhost:${PORT}`;
+    // Navigate to the demo page - the router supports both '/' and '/demo'
     const demoDashboardUrl = demoUrl.endsWith("/")
       ? `${demoUrl}demo`
       : `${demoUrl}/demo`;
@@ -107,7 +111,10 @@ test.describe("Demo Deployment", () => {
 // Deployment-specific tests
 test.describe("Deployment Validation", () => {
   test("should have correct base path for assets", async ({ page }) => {
-    const demoUrl = process.env.DEMO_URL || "http://localhost:3000";
+    const PORT = process.env.E2E_PORT
+      ? parseInt(process.env.E2E_PORT, 10)
+      : 5173;
+    const demoUrl = process.env.DEMO_URL || `http://localhost:${PORT}`;
 
     // Extract base path from URL
     const url = new URL(demoUrl);
