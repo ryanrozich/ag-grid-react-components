@@ -1,12 +1,12 @@
 {
   "version": "0.2.0-rc1",
   "git": {
-    "commitHash": "b1ba6bf2f6c13897f70b4bceb9bf94a459525d5e",
-    "shortHash": "b1ba6bf",
-    "branch": "fix/e2e-test-selectors",
-    "commitDate": "2025-07-09 18:27:31 -0500",
+    "commitHash": "c6a2b7440d5a36f779178c92e13a5b5cbe16c7bd",
+    "shortHash": "c6a2b74",
+    "branch": "fix/bundled-ui-fixes",
+    "commitDate": "2025-07-09 23:21:14 -0500",
     "latestTag": "v0.1.1-rc1",
-    "commitsSinceTag": 31,
+    "commitsSinceTag": 34,
     "isDirty": true
   },
   "deployment": {
@@ -15,7 +15,7 @@
     "isMainBranch": false,
     "deployPath": "ag-grid-react-components"
   },
-  "buildTime": "2025-07-10T02:55:14.965Z",
-  "displayVersion": "v0.2.0-rc1+31",
-  "displayLabel": "fix/e2e-test-selectors"
+  "buildTime": "2025-07-10T04:51:20.271Z",
+  "displayVersion": "v0.2.0-rc1+34",
+  "displayLabel": "fix/bundled-ui-fixes"
 }

@@ -200,6 +200,8 @@ font-family:
 
 .ag-theme-quartz-dark .ag-cell {
   line-height: var(--ag-row-height);
+  display: flex;
+  align-items: center;
 }
 
 /* Numeric cells styling */
@@ -393,6 +395,14 @@ font-family:
   border: 1px solid #374151;
   margin: 8px;
   border-radius: 4px;
+}
+
+/* Ensure custom cell renderers respect alignment */
+.ag-theme-quartz-dark .ag-cell .pill-renderer,
+.ag-theme-quartz-dark .ag-cell .avatar-renderer {
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 
 /* Custom scrollbar */

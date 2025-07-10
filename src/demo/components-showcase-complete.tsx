@@ -68,18 +68,6 @@ const Navigation: React.FC<{
         <div className="flex items-center gap-4">
           <VersionInfo className="hidden md:block" />
           <a
-            href="https://www.npmjs.com/package/ag-grid-react-components"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
-          >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 256 256">
-              <path d="M0 256V0h256v256z" />
-              <path d="M128 128v128h128V0H128z" fill="#C12127" />
-            </svg>
-            NPM
-          </a>
-          <a
             href="https://github.com/ryanrozich/ag-grid-react-components"
             target="_blank"
             rel="noopener noreferrer"

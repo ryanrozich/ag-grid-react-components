@@ -34,7 +34,12 @@ export const darkTheme = themeQuartz.withParams({
 });
 
 // Status chip renderer
-export const StatusRenderer: React.FC<ICellRendererParams> = ({ value }) => {
+export const StatusRenderer: React.FC<ICellRendererParams> = ({ value, node }) => {
+  // Don't render anything in footer/total rows
+  if (node?.footer || node?.aggData) {
+    return null;
+  }
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Backlog":
@@ -68,7 +73,12 @@ export const StatusRenderer: React.FC<ICellRendererParams> = ({ value }) => {
 };
 
 // Priority chip renderer
-export const PriorityRenderer: React.FC<ICellRendererParams> = ({ value }) => {
+export const PriorityRenderer: React.FC<ICellRendererParams> = ({ value, node }) => {
+  // Don't render anything in footer/total rows
+  if (node?.footer || node?.aggData) {
+    return null;
+  }
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "Critical":
