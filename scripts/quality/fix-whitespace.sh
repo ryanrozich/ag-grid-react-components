@@ -1,48 +1,13 @@
 #!/bin/bash
+# Fix whitespace issues in all text files
 
-# Fix trailing whitespace in all tracked files
-echo "Fixing trailing whitespace in all tracked files..."
+# Find all text files and remove trailing whitespace
+find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.md" -o -name "*.css" -o -name "*.yml" -o -name "*.yaml" \) \
+  -not -path "./node_modules/*" \
+  -not -path "./dist/*" \
+  -not -path "./.trunk/*" \
+  -not -path "./coverage/*" \
+  -not -path "./.git/*" \
+  -exec sed -i '' 's/[[:space:]]*$//' {} \;
 
-# Get all tracked files
-files=$(git ls-files)
-
-# Track how many files we fixed
-fixed_count=0
-
-# Fix each file
-for file in $files; do
-  if [[ -f "$file" ]]; then
-    # Create a temporary backup
-    cp "$file" "$file.bak"
-
-    # Skip binary files
-    if file -b "$file" | grep -q "text"; then
-      # Remove trailing whitespace
-      # This works on macOS and Linux
-      if sed -i '' 's/[[:space:]]*$//' "$file" 2>/dev/null; then
-        # Check if file actually changed
-        if ! cmp -s "$file" "$file.bak"; then
-          echo "✅ Fixed: $file"
-          ((fixed_count++))
-        fi
-      else
-        # Fallback for systems where sed -i '' doesn't work
-        sed 's/[[:space:]]*$//' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
-        if ! cmp -s "$file" "$file.bak"; then
-          echo "✅ Fixed: $file"
-          ((fixed_count++))
-        fi
-      fi
-    fi
-
-    # Remove backup
-    rm -f "$file.bak"
-  fi
-done
-
-if [ $fixed_count -gt 0 ]; then
-  echo ""
-  echo "✅ Fixed whitespace issues in $fixed_count files!"
-else
-  echo "✅ No whitespace issues found!"
-fi
+echo "Whitespace fixed in all text files"

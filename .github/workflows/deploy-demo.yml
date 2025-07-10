@@ -38,7 +38,7 @@ jobs:
           VITE_BASE_PATH: /ag-grid-react-components/
         run: |
           # Generate version info
-          node scripts/generate-version-info.js
+          node scripts/build/generate-version-info.js
 
           # Build demo
           npm run build:demo
