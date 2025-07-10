@@ -16,7 +16,7 @@ test.describe("Filter Presets - Save and Load Flow", () => {
     await page.goto("/");
 
     // Wait for the grid to be ready
-    await page.waitForSelector(".ag-root", { timeout: 10000 });
+    await page.waitForSelector(".ag-root-wrapper", { timeout: 10000 });
 
     // Clear any existing presets from localStorage
     await page.evaluate(() => {
@@ -230,7 +230,7 @@ test.describe("Filter Presets - Save and Load Flow", () => {
     await page.reload();
 
     // Wait for grid to be ready
-    await page.waitForSelector(".ag-root", { timeout: 10000 });
+    await page.waitForSelector(".ag-root-wrapper", { timeout: 10000 });
 
     // Open preset manager
     await page.click('[data-testid="preset-manager-button"]');
@@ -295,7 +295,7 @@ test.describe("Filter Presets - Save and Load Flow", () => {
     await page.goto("/?defaultPreset=recent");
 
     // Wait for grid to be ready
-    await page.waitForSelector(".ag-root", { timeout: 10000 });
+    await page.waitForSelector(".ag-root-wrapper", { timeout: 10000 });
 
     // Verify filters from "Recent Activity" preset are applied
     await expect(page.locator(".ag-filter-active")).toBeVisible();

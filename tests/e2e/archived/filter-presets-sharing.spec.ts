@@ -16,7 +16,7 @@ test.describe("Filter Presets - URL Sharing", () => {
     await page.goto("/");
 
     // Wait for the grid to be ready
-    await page.waitForSelector(".ag-root", { timeout: 10000 });
+    await page.waitForSelector(".ag-root-wrapper", { timeout: 10000 });
   });
 
   test("should generate shareable URL for current filters", async () => {
@@ -58,14 +58,14 @@ test.describe("Filter Presets - URL Sharing", () => {
 
     // Navigate to a clean state
     await page.goto("/");
-    await page.waitForSelector(".ag-root", { timeout: 10000 });
+    await page.waitForSelector(".ag-root-wrapper", { timeout: 10000 });
 
     // Verify no filters are active
     await expect(page.locator(".ag-filter-active")).not.toBeVisible();
 
     // Navigate to the shareable URL
     await page.goto(shareUrl);
-    await page.waitForSelector(".ag-root", { timeout: 10000 });
+    await page.waitForSelector(".ag-root-wrapper", { timeout: 10000 });
 
     // Verify filters are applied from URL
     await verifyFiltersApplied(page);
@@ -96,7 +96,7 @@ test.describe("Filter Presets - URL Sharing", () => {
     await page.goto("/?p=invalid-data-xyz");
 
     // Wait for page to load
-    await page.waitForSelector(".ag-root", { timeout: 10000 });
+    await page.waitForSelector(".ag-root-wrapper", { timeout: 10000 });
 
     // Should show error message
     await expect(
@@ -107,7 +107,7 @@ test.describe("Filter Presets - URL Sharing", () => {
     ).toContainText("Unable to load filters from URL");
 
     // Grid should still be functional
-    await expect(page.locator(".ag-root")).toBeVisible();
+    await expect(page.locator(".ag-root-wrapper")).toBeVisible();
   });
 
   test("should update URL when filters change", async () => {
@@ -192,9 +192,9 @@ test.describe("Filter Presets - URL Sharing", () => {
 
     // Verify it still works
     await page.goto("/");
-    await page.waitForSelector(".ag-root", { timeout: 10000 });
+    await page.waitForSelector(".ag-root-wrapper", { timeout: 10000 });
     await page.goto(shareUrl);
-    await page.waitForSelector(".ag-root", { timeout: 10000 });
+    await page.waitForSelector(".ag-root-wrapper", { timeout: 10000 });
 
     // Verify all filters are restored
     await verifyManyFiltersApplied(page);
