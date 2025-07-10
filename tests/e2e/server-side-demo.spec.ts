@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Server-Side Demo", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:5173/demo");
+    await page.goto("/demo");
   });
 
   test("should switch to server-side tab without errors", async ({ page }) => {

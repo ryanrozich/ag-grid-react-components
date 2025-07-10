@@ -11,7 +11,7 @@ test.describe("Debug Infinite Loop", () => {
     });
 
     // Navigate to the demo page
-    await page.goto("http://localhost:5173/demo");
+    await page.goto("/demo");
 
     // Wait for the page to load
     await page.waitForSelector(".ag-root-wrapper", { timeout: 10000 });
@@ -79,7 +79,7 @@ test.describe("Debug Infinite Loop", () => {
 
   test("profile component renders", async ({ page }) => {
     // Enable performance profiling
-    await page.goto("http://localhost:5173/demo");
+    await page.goto("/demo");
 
     // Start profiling
     await page.evaluate(() => {

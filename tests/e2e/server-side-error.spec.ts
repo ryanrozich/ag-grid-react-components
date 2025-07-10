@@ -14,7 +14,7 @@ test("captures console errors when switching to server-side tab", async ({
   });
 
   // Navigate to demo page
-  await page.goto("http://localhost:5173/demo");
+  await page.goto("/demo");
 
   // Wait for initial page load
   await page.waitForLoadState("networkidle");
