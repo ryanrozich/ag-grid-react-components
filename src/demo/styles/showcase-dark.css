@@ -1,7 +1,5 @@
-/* Import Tailwind CSS */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind CSS imports removed - they were causing styling conflicts */
+/* The demo already imports Tailwind through the main build process */
 
 /* Custom animations */
 @keyframes float {

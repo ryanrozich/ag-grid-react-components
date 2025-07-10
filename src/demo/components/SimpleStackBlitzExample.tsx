@@ -1,4 +1,5 @@
 import React from "react";
+import { getGitHubUrl } from "../../utils/deployment";
 
 interface SimpleStackBlitzExampleProps {
   componentName: string;
@@ -12,7 +13,6 @@ export const SimpleStackBlitzExample: React.FC<
   const handleOpenExample = () => {
     // Create a simple working example URL
     const baseUrl = "https://stackblitz.com/edit/";
-    const projectId = `ag-grid-react-components-${componentName.toLowerCase()}`;
 
     // For now, let's use a pre-configured StackBlitz project
     // This opens a simple template that users can fork
@@ -61,7 +61,7 @@ export const SimpleStackBlitzExample: React.FC<
           Try it on StackBlitz
         </button>
         <a
-          href={`https://github.com/ryanrozich/ag-grid-react-components/tree/main/src/components/${componentName}`}
+          href={getGitHubUrl(`/src/components/${componentName}`)}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"

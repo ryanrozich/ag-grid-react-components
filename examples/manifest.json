@@ -5,7 +5,7 @@
       "name": "DateFilter",
       "title": "DateFilter - Natural Language Example",
       "description": "AG Grid with natural language date filtering",
-      "stackblitzUrl": "https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/main/examples/datefilter",
+      "stackblitzUrl": "https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/[BRANCH]/examples/datefilter",
       "files": {
         "App.tsx": "examples/datefilter/App.tsx",
         "package.json": "examples/shared/package.json"
@@ -16,7 +16,7 @@
       "name": "QuickFilterDropdown",
       "title": "QuickFilterDropdown - Custom Presets",
       "description": "Quick filter dropdown with custom filter presets",
-      "stackblitzUrl": "https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/main/examples/quickfilterdropdown",
+      "stackblitzUrl": "https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/[BRANCH]/examples/quickfilterdropdown",
       "files": {
         "App.tsx": "examples/quickfilterdropdown/App.tsx",
         "package.json": "examples/shared/package.json"
@@ -27,7 +27,7 @@
       "name": "ActiveFilters",
       "title": "ActiveFilters - Interactive Pills",
       "description": "Display active filters as removable pills",
-      "stackblitzUrl": "https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/main/examples/activefilters",
+      "stackblitzUrl": "https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/[BRANCH]/examples/activefilters",
       "files": {
         "App.tsx": "examples/activefilters/App.tsx",
         "package.json": "examples/shared/package.json"
