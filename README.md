@@ -1077,18 +1077,23 @@ MIT
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our contributing guidelines before submitting PRs.
+Contributions are welcome! Please read our [contributing guidelines](./docs/development/contributing.md) before submitting PRs.
 
 ### 📋 Issues & Project Management
 
 - **[Open Issues](https://github.com/ryanrozich/ag-grid-react-components/issues)** - Report bugs or request features
 - **[Project Board](https://github.com/users/ryanrozich/projects/1)** - Track progress and priorities
-- **[Automation Guide](./docs/github-project-automation.md)** - How our label/project sync works
 
 When creating issues, our automation will sync labels to project fields for better organization.
 
+### 📚 Documentation
+
+- **[Documentation Index](./docs/README.md)** - Complete documentation overview
+- **[API Reference](./docs/api/README.md)** - Detailed API documentation
+- **[Development Setup](./docs/development/setup.md)** - Get started with development
+- **[Architecture Guide](./docs/development/architecture.md)** - System design and patterns
+
 ### For AI Agents & Automation
 
-- **[GitHub Project Automation](./docs/github-project-automation.md)** - How issue labels sync to project fields
 - **[CLAUDE.md](./CLAUDE.md)** - Instructions for AI assistants working with this codebase
 ````

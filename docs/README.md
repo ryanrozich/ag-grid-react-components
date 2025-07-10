@@ -1,89 +1,91 @@
-# AG Grid React Components Documentation
+# Documentation
 
-Welcome to the comprehensive documentation for AG Grid React Components. This directory contains detailed guides and references for using and customizing the components.
+Welcome to the ag-grid-react-components documentation. This guide will help you navigate through all available documentation.
 
-## 📚 Documentation Index
+## Quick Links
 
-### Component API References
+- [Getting Started](./development/setup.md) - Set up your development environment
+- [API Reference](./api/README.md) - Complete API documentation
+- [Examples](./examples/README.md) - Code examples and demos
+- [Component Guides](./components/) - Detailed component documentation
 
-- **[DateFilter API](./DATEFILTER_API.md)** - Complete API documentation for DateFilter
+## Documentation Structure
 
-  - Filter parameters and configuration
-  - Open-ended date ranges
-  - Inclusive/exclusive filtering
-  - TypeScript interfaces
-  - Code examples
+### 📦 Components
 
-- **[QuickFilterDropdown API](./QUICKFILTERDROPDOWN_API.md)** - Dropdown component for predefined filters
+Detailed documentation for each component:
 
-  - Component props and options
-  - Portal rendering modes
-  - Keyboard navigation
-  - Custom filter logic
+- [DateFilter](./components/date-filter.md) - Advanced date filtering with expressions
+- [QuickFilterDropdown](./components/quick-filter-dropdown.md) - Quick filter UI component
+- [ActiveFilters](./components/active-filters.md) - Display and manage active filters
+- [FilterPresets](./components/filter-presets.md) - Save and load filter configurations
+- [CategorySelector](./components/category-selector.md) - Organize presets by category (planned)
 
-- **[ActiveFilters API](./ACTIVEFILTERS_API.md)** - Visual display of active filters
+### 🛠️ Development
 
-  - Filter pill customization
-  - Display formatting
-  - Event callbacks
-  - Accessibility features
+Guides for developers:
 
-- **[Grid State Persistence API](./GRIDSTATE_API.md)** - URL state management with compression
-  - Automatic URL synchronization
-  - Manual state capture/restore
-  - Compression adapters
-  - Server-side persistence
+- [Setup Guide](./development/setup.md) - Get started with development
+- [Development Workflow](./development/workflow.md) - Development best practices
+- [Testing Guide](./development/testing.md) - Writing and running tests
+- [Contributing](./development/contributing.md) - How to contribute
+- [Architecture](./development/architecture.md) - System design and patterns
 
-### Feature Guides
+### 🚀 Deployment
 
-- **[Date Expressions Reference](./DATE_EXPRESSIONS.md)** - Complete guide to relative date expressions
+Deployment and release information:
 
-  - Supported expressions and syntax
-  - Common use cases and examples
-  - TypeScript types and interfaces
-  - Implementation details
+- [Demo Deployment](./deployment/demo-deployment.md) - Deploy the demo application
 
-- **[Styling Guide](./STYLING_GUIDE.md)** - Comprehensive styling and customization guide
-  - CSS variables and theming
-  - Component-specific styling
-  - Dark mode support
-  - Integration with CSS frameworks
+### 📚 API Reference
 
-### Architecture & Deployment
+Complete API documentation:
 
-- **[Architecture Decisions](./decisions/)** - Key architectural decisions and evaluations
+- [API Overview](./api/README.md) - Component APIs, hooks, and utilities
 
-  - Single package approach
-  - Technology evaluations
-  - Design rationale
+### 💡 Examples
 
-- **[Demo Deployment Guide](./DEMO-DEPLOYMENT.md)** - How the demo site is deployed
-  - Cloudflare Workers architecture
-  - GitHub Actions workflow
-  - Custom routing system
+Practical examples and demos:
 
-## 🚀 Quick Links
+- [Code Examples](./examples/README.md) - Usage examples and patterns
 
-- [Main README](../README.md) - Installation and basic usage
-- [Live Demo](<[https://demo.rozich.net/ag-grid-react-components](https://demo.rozich.net/ag-grid-react-components)/>) - Interactive examples
-- [GitHub Repository](<[https://github.com/ryanrozich/ag-grid-react-component](https://github.com/ryanrozich/ag-grid-react-component)s>) - Source code and issues
+## Additional Resources
 
-## 📖 Getting Started
+### Guides and Tutorials
 
-1. **Installation**: Start with the [main README](../README.md)
-2. **Basic Usage**: Check the code examples in the README
-3. **Date Expressions**: Learn about [relative date syntax](./DATE_EXPRESSIONS.md)
-4. **Styling**: Customize components using the [Styling Guide](./STYLING_GUIDE.md)
+- [Date Expressions Guide](./DATE_EXPRESSIONS.md) - Using date expressions in filters
+- [Styling Guide](./STYLING_GUIDE.md) - Customizing component appearance
+- [Grid State API](./GRIDSTATE_API.md) - Managing grid state
 
-## 🤝 Contributing
+### Process Documentation
 
-When contributing to the documentation:
+- [Release Process](./RELEASE_PROCESS.md) - How releases are managed
+- [Release Candidate Guide](./RELEASE_CANDIDATE_GUIDE.md) - RC process
+- [StackBlitz Integration](./STACKBLITZ_INTEGRATION.md) - Creating demos
 
-1. Keep examples practical and tested
-2. Include TypeScript types in all examples
-3. Link to relevant source code when appropriate
-4. Update the index when adding new documents
+### Technical Decisions
 
-## 📄 License
+- [Architecture Decisions](./decisions/) - ADRs and technical choices
+  - [Single Package Approach](./decisions/001-single-package-approach.md)
+  - [Zod Evaluation](./decisions/002-zod-evaluation.md)
+  - [Headless UI Evaluation](./decisions/003-headless-ui-evaluation.md)
 
-This documentation is part of the AG Grid React Components project, licensed under the MIT License.
+## Getting Help
+
+1. Check the relevant component documentation
+2. Review the [examples](./examples/README.md)
+3. Search existing [GitHub issues](https://github.com/ryanrozich/ag-grid-react-components/issues)
+4. Create a new issue with the appropriate labels
+
+## Contributing to Docs
+
+To improve documentation:
+
+1. Follow the [contributing guide](./development/contributing.md)
+2. Update relevant files
+3. Ensure all links work
+4. Submit a PR with prefix `docs:`
+
+## Version
+
+This documentation is for version 0.2.0 of ag-grid-react-components.
