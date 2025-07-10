@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { DateFilter } from "ag-grid-react-components";
 import { AgGridReact } from "ag-grid-react";
+
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 
 // Example implementation for DateFilter
 function App() {
+  const gridRef = useRef(null);
   const [rowData] = useState([
     {
       id: 1,
@@ -28,6 +30,20 @@ function App() {
       status: "Done",
       priority: "Low",
     },
+    {
+      id: 4,
+      name: "Task 4",
+      date: "2024-01-30",
+      status: "Open",
+      priority: "High",
+    },
+    {
+      id: 5,
+      name: "Task 5",
+      date: "2024-02-05",
+      status: "In Progress",
+      priority: "Low",
+    },
   ]);
 
   const [columnDefs] = useState([
@@ -36,6 +52,11 @@ function App() {
       field: "date",
       headerName: "Date",
       filter: DateFilter,
+      filterParams: {
+        naturalLanguageEnabled: true,
+        dateFormat: "yyyy-MM-dd",
+      },
+      floatingFilter: true,
     },
     { field: "status", headerName: "Status" },
     { field: "priority", headerName: "Priority" },
@@ -52,9 +73,13 @@ function App() {
         style={{ flex: 1, padding: "0 20px 20px" }}
       >
         <AgGridReact
+          ref={gridRef}
           rowData={rowData}
           columnDefs={columnDefs}
           floatingFilter={true}
+          onGridReady={(params) => {
+            gridRef.current = params;
+          }}
         />
       </div>
     </div>

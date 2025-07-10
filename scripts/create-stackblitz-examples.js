@@ -33,42 +33,110 @@ const components = [
 
 // Template for creating example apps
 const createExampleApp = (component) => {
-  return `import React, { useState } from 'react';
+  // Component-specific configurations
+  const configs = {
+    DateFilter: {
+      extraImports: '',
+      columnDefs: `[
+    { field: 'name', headerName: 'Name' },
+    {
+      field: 'date',
+      headerName: 'Date',
+      filter: DateFilter,
+      filterParams: {
+        naturalLanguageEnabled: true,
+        dateFormat: 'yyyy-MM-dd'
+      },
+      floatingFilter: true
+    },
+    { field: 'status', headerName: 'Status' },
+    { field: 'priority', headerName: 'Priority' },
+  ]`,
+      extraSetup: ''
+    },
+    QuickFilterDropdown: {
+      extraImports: '',
+      columnDefs: `[
+    { field: 'name', headerName: 'Name', filter: true },
+    { field: 'date', headerName: 'Date', filter: 'agDateColumnFilter' },
+    { field: 'status', headerName: 'Status', filter: true },
+    { field: 'priority', headerName: 'Priority', filter: true },
+  ]`,
+      extraSetup: `
+  const filterPresets = [
+    { id: 'high-priority', name: 'High Priority', filter: { priority: { values: ['High'] } } },
+    { id: 'recent', name: 'Recent Tasks', filter: { date: { dateFrom: '2024-01-20' } } },
+    { id: 'in-progress', name: 'In Progress', filter: { status: { values: ['In Progress'] } } },
+  ];`
+    },
+    ActiveFilters: {
+      extraImports: 'import { DateFilter } from "ag-grid-react-components";',
+      columnDefs: `[
+    { field: 'name', headerName: 'Name', filter: true },
+    {
+      field: 'date',
+      headerName: 'Date',
+      filter: DateFilter,
+      filterParams: {
+        naturalLanguageEnabled: true
+      }
+    },
+    { field: 'status', headerName: 'Status', filter: true },
+    { field: 'priority', headerName: 'Priority', filter: true },
+  ]`,
+      extraSetup: ''
+    }
+  };
+
+  const config = configs[component.name] || configs.DateFilter;
+
+  return `import React, { useState, useRef } from 'react';
 import { ${component.imports.join(', ')} } from 'ag-grid-react-components';
 import { AgGridReact } from 'ag-grid-react';
+${config.extraImports}
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 
 // Example implementation for ${component.name}
 function App() {
+  const gridRef = useRef(null);
   const [rowData] = useState([
     { id: 1, name: 'Task 1', date: '2024-01-15', status: 'Open', priority: 'High' },
     { id: 2, name: 'Task 2', date: '2024-01-20', status: 'In Progress', priority: 'Medium' },
     { id: 3, name: 'Task 3', date: '2024-01-25', status: 'Done', priority: 'Low' },
+    { id: 4, name: 'Task 4', date: '2024-01-30', status: 'Open', priority: 'High' },
+    { id: 5, name: 'Task 5', date: '2024-02-05', status: 'In Progress', priority: 'Low' },
   ]);
 
-  const [columnDefs] = useState([
-    { field: 'name', headerName: 'Name' },
-    {
-      field: 'date',
-      headerName: 'Date',
-      filter: ${component.name === 'DateFilter' ? 'DateFilter' : 'true'},
-    },
-    { field: 'status', headerName: 'Status' },
-    { field: 'priority', headerName: 'Priority' },
-  ]);
+  const [columnDefs] = useState(${config.columnDefs});
+${config.extraSetup}
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <div style={{ padding: '20px', flex: '0 0 auto' }}>
         <h1>${component.title}</h1>
         <p>${component.description}</p>
+        ${component.name === 'QuickFilterDropdown' ? `
+        <div style={{ marginTop: '16px' }}>
+          <QuickFilterDropdown
+            api={gridRef.current?.api}
+            filterPresets={filterPresets}
+          />
+        </div>` : ''}
+        ${component.name === 'ActiveFilters' ? `
+        <div style={{ marginTop: '16px' }}>
+          <ActiveFilters api={gridRef.current?.api} />
+        </div>` : ''}
       </div>
       <div className="ag-theme-quartz-dark" style={{ flex: 1, padding: '0 20px 20px' }}>
         <AgGridReact
+          ref={gridRef}
           rowData={rowData}
           columnDefs={columnDefs}
           floatingFilter={true}
+          onGridReady={(params) => {
+            gridRef.current = params;
+          }}
         />
       </div>
     </div>
@@ -86,7 +154,7 @@ const createManifest = () => {
       name: comp.name,
       title: comp.title,
       description: comp.description,
-      stackblitzUrl: `https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/main/examples/${comp.name.toLowerCase()}`,
+      stackblitzUrl: `https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/[BRANCH]/examples/${comp.name.toLowerCase()}`,
       files: {
         'App.tsx': `examples/${comp.name.toLowerCase()}/App.tsx`,
         'package.json': 'examples/shared/package.json',

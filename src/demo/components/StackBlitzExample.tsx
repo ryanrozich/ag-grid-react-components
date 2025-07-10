@@ -1,4 +1,5 @@
 import React from "react";
+import { getStackBlitzUrl, getGitHubUrl } from "../../utils/deployment";
 
 interface StackBlitzExampleProps {
   component: string;
@@ -13,36 +14,12 @@ export const StackBlitzExample: React.FC<StackBlitzExampleProps> = ({
   title,
   description,
   githubPath,
-  customCode,
 }) => {
   // Method 1: Direct GitHub import (most reliable)
   const openGitHubExample = () => {
-    const baseUrl =
-      "https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/feat/remove-react-datepicker";
     const path = githubPath || `/examples/${component.toLowerCase()}`;
-    window.open(`${baseUrl}${path}`, "_blank");
-  };
-
-  // Method 2: Fork existing StackBlitz project
-  const openStackBlitzProject = () => {
-    // You can create these base projects on StackBlitz and save them
-    const projectMap: Record<string, string> = {
-      datefilter: "ag-grid-datefilter-example",
-      quickfilterdropdown: "ag-grid-quickfilter-example",
-      activefilters: "ag-grid-activefilters-example",
-    };
-
-    const projectId = projectMap[component.toLowerCase()];
-    if (projectId) {
-      window.open(`https://stackblitz.com/edit/${projectId}`, "_blank");
-    }
-  };
-
-  // Method 3: Use StackBlitz embed API (for future use)
-  const createDynamicProject = async () => {
-    // This is where you could use the StackBlitz SDK
-    // For now, we'll use the GitHub import method
-    openGitHubExample();
+    const url = getStackBlitzUrl(path);
+    window.open(url, "_blank");
   };
 
   return (
@@ -90,7 +67,7 @@ export const StackBlitzExample: React.FC<StackBlitzExampleProps> = ({
         {/* Secondary actions */}
         <div className="flex gap-2">
           <a
-            href={`https://github.com/ryanrozich/ag-grid-react-components/tree/feat/remove-react-datepicker/examples/${component.toLowerCase()}`}
+            href={getGitHubUrl(`/examples/${component.toLowerCase()}`)}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors"
@@ -98,11 +75,11 @@ export const StackBlitzExample: React.FC<StackBlitzExampleProps> = ({
             View on GitHub
           </a>
           <button
-            onClick={() =>
-              navigator.clipboard.writeText(
-                `https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/feat/remove-react-datepicker/examples/${component.toLowerCase()}`,
-              )
-            }
+            onClick={() => {
+              const path = `/examples/${component.toLowerCase()}`;
+              const url = getStackBlitzUrl(path);
+              navigator.clipboard.writeText(url);
+            }}
             className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors"
           >
             Copy Link
