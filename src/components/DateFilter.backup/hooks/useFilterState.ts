@@ -1,9 +1,5 @@
 import { useState, useCallback } from "react";
-import {
-  DateFilterType,
-  DateFilterMode,
-  DateFilterModel,
-} from "../../interfaces";
+import { DateFilterType, DateFilterMode, DateFilterModel } from "../types";
 
 interface UseFilterStateReturn {
   // Filter state

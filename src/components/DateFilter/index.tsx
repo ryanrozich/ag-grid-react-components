@@ -1,524 +1,180 @@
-import React, { useCallback, useMemo } from "react";
-import { useGridFilter } from "ag-grid-react";
-import { IRowNode, IFilter } from "ag-grid-community";
-import { format } from "date-fns";
+import React, { forwardRef, useImperativeHandle } from "react";
+import { IDoesFilterPassParams, IFilterParams } from "ag-grid-community";
+import { DateFilterProvider } from "./context";
+import { DateFilterModel, DateFilterType } from "../interfaces";
+import * as Components from "./components";
+import { useGridFilter } from "./hooks/useGridFilter";
 
-import { DateFilterParams, DateFilterModel } from "./types";
-import { logger } from "../../utils/logger";
+export interface DateFilterProps extends IFilterParams {
+  children?: React.ReactNode;
+  dateParser?: (value: string) => Date | null;
+  className?: string;
+}
 
-import {
-  FilterModeToggle,
-  FilterTypeSelector,
-  TextDateInput,
-  RelativeExpressionInput,
-  FilterActions,
-} from "./components";
+export interface DateFilterCompound {
+  (props: DateFilterProps): JSX.Element;
+  Root: typeof Components.Root;
+  TypeSelector: typeof Components.TypeSelector;
+  ModeToggle: typeof Components.ModeToggle;
+  ModeButton: typeof Components.ModeButton;
+  RelativeSection: typeof Components.RelativeSection;
+  RelativeInput: typeof Components.RelativeInput;
+  AbsoluteSection: typeof Components.AbsoluteSection;
+  StartDateInput: typeof Components.StartDateInput;
+  EndDateInput: typeof Components.EndDateInput;
+  HelpText: typeof Components.HelpText;
+  ErrorMessage: typeof Components.ErrorMessage;
+  Actions: typeof Components.Actions;
+  ApplyButton: typeof Components.ApplyButton;
+  ResetButton: typeof Components.ResetButton;
+}
 
-import { useFilterState, useFilterValidation } from "./hooks";
-import { useDebouncedValidation } from "./hooks/useDebouncedValidation";
-import { withErrorBoundary, useErrorHandler } from "./utils/withErrorBoundary";
+const DateFilterComponent = forwardRef<any, DateFilterProps>((props, ref) => {
+  const { children, ...filterParams } = props;
 
-import styles from "./DateFilter.module.css";
+  // Use the AG Grid filter hook
+  const { model, setModel, applyFilter, resetFilter, isFilterActive } =
+    useGridFilter(filterParams);
 
-const DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+  // Implement AG Grid filter interface
+  useImperativeHandle(
+    ref,
+    () => ({
+      isFilterActive: () => isFilterActive(),
 
-const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
-  (props, ref) => {
-    const dateFormat = props.dateFormat || DEFAULT_DATE_FORMAT;
-    const { handleError } = useErrorHandler();
-    const filterRef = React.useRef<HTMLDivElement>(null);
+      doesFilterPass: (params: IDoesFilterPassParams) => {
+        if (!isFilterActive()) return true;
 
-    // Destructure props for useCallback dependencies
-    const {
-      filterChangedCallback,
-      onModelChange,
-      dateParser,
-      getValue,
-      rangeInclusive,
-      model: initialModel,
-      defaultMode,
-    } = props;
+        const value = filterParams.getValue(params.node);
+        if (value == null) return false;
 
-    // Use custom hooks for state management
-    const filterState = useFilterState(initialModel, defaultMode);
+        const date = value instanceof Date ? value : new Date(value);
+        if (isNaN(date.getTime())) return false;
 
-    // Filter type changes are now properly managed
-    const validation = useFilterValidation({
-      filterType: filterState.filterType,
-      filterMode: filterState.filterMode,
-      absoluteDateFrom: filterState.absoluteDateFrom,
-      absoluteDateTo: filterState.absoluteDateTo,
-      expressionFrom: filterState.expressionFrom,
-      expressionTo: filterState.expressionTo,
-      fromExpressionValid: filterState.fromExpressionValid,
-      toExpressionValid: filterState.toExpressionValid,
-    });
+        const filterModel = model as DateFilterModel;
 
-    // Use debounced validation for better performance (300ms delay)
-    useDebouncedValidation({
-      expressionFrom: filterState.expressionFrom,
-      expressionTo: filterState.expressionTo,
-      filterMode: filterState.filterMode,
-      onFromValidityChange: filterState.setFromExpressionValid,
-      onToValidityChange: filterState.setToExpressionValid,
-      onToErrorChange: filterState.setToExpressionError,
-      validateToExpression: validation.validateToExpression,
-      debounceDelay: 300, // 300ms debounce for optimal UX
-    });
-
-    // Parse cell values to date
-    const parseValue = useCallback(
-      (value: unknown): Date | null => {
-        if (dateParser) {
-          return dateParser(value);
-        }
-
-        if (value instanceof Date) {
-          return value;
-        }
-
-        if (typeof value === "string" || typeof value === "number") {
-          const date = new Date(value);
-          return isNaN(date.getTime()) ? null : date;
-        }
-
-        return null;
-      },
-      [dateParser],
-    );
-
-    // Build current filter model
-    const currentModel = useMemo((): DateFilterModel | null => {
-      if (!validation.isFilterValid) return null;
-
-      const model: DateFilterModel = {
-        type: filterState.filterType,
-        mode: filterState.filterMode,
-      };
-
-      if (filterState.filterMode === "absolute") {
-        model.dateFrom = filterState.absoluteDateFrom;
-        if (filterState.filterType === "inRange") {
-          model.dateTo = filterState.absoluteDateTo;
-        }
-      } else {
-        model.expressionFrom = filterState.expressionFrom;
-        if (filterState.filterType === "inRange") {
-          model.expressionTo = filterState.expressionTo;
-        }
-      }
-
-      // Add inclusivity settings - prefer state values, then model values, then prop defaults
-      model.fromInclusive =
-        filterState.fromInclusive ?? rangeInclusive?.from ?? false;
-      model.toInclusive =
-        filterState.toInclusive ?? rangeInclusive?.to ?? false;
-
-      return model;
-    }, [
-      validation.isFilterValid,
-      filterState.filterType,
-      filterState.filterMode,
-      filterState.absoluteDateFrom,
-      filterState.absoluteDateTo,
-      filterState.expressionFrom,
-      filterState.expressionTo,
-      filterState.fromInclusive,
-      filterState.toInclusive,
-      rangeInclusive?.from,
-      rangeInclusive?.to,
-    ]);
-
-    // Filter implementation
-    const doesFilterPass = useCallback(
-      ({ node }: { node: IRowNode }) => {
-        if (!validation.isFilterValid || !currentModel) {
-          return true;
-        }
-
-        const cellValue = getValue(node);
-        const cellDate = parseValue(cellValue);
-
-        if (!cellDate) {
-          return false;
-        }
-
-        // Normalize dates for comparison (remove time component)
-        const normalizedCellDate = new Date(cellDate);
-        normalizedCellDate.setHours(0, 0, 0, 0);
-
-        let normalizedDateFrom = null;
-        if (validation.effectiveDateFrom) {
-          normalizedDateFrom = new Date(validation.effectiveDateFrom);
-          normalizedDateFrom.setHours(0, 0, 0, 0);
-        }
-
-        let normalizedDateTo = null;
-        if (validation.effectiveDateTo) {
-          normalizedDateTo = new Date(validation.effectiveDateTo);
-          normalizedDateTo.setHours(0, 0, 0, 0);
-        }
-
-        // Get inclusivity settings from current model (which already includes filter state and prop defaults)
-        const fromInclusive = currentModel?.fromInclusive ?? false;
-        const toInclusive = currentModel?.toInclusive ?? false;
-
-        switch (filterState.filterType) {
+        switch (filterModel.filterType) {
           case "equals":
-            return normalizedDateFrom
-              ? normalizedCellDate.getTime() === normalizedDateFrom.getTime()
+            return filterModel.dateFrom
+              ? date.toDateString() ===
+                  new Date(filterModel.dateFrom).toDateString()
               : false;
           case "notEqual":
-            return normalizedDateFrom
-              ? normalizedCellDate.getTime() !== normalizedDateFrom.getTime()
+            return filterModel.dateFrom
+              ? date.toDateString() !==
+                  new Date(filterModel.dateFrom).toDateString()
               : true;
-          case "after":
-            if (!normalizedDateFrom) return false;
-            return fromInclusive
-              ? normalizedCellDate.getTime() >= normalizedDateFrom.getTime()
-              : normalizedCellDate.getTime() > normalizedDateFrom.getTime();
           case "before":
-            if (!normalizedDateFrom) return false;
-            return toInclusive
-              ? normalizedCellDate.getTime() <= normalizedDateFrom.getTime()
-              : normalizedCellDate.getTime() < normalizedDateFrom.getTime();
-          case "inRange": {
-            // Handle open-ended ranges
-            if (!normalizedDateFrom && !normalizedDateTo) return false;
-
-            // Only start date (open-ended to future)
-            if (normalizedDateFrom && !normalizedDateTo) {
-              return fromInclusive
-                ? normalizedCellDate.getTime() >= normalizedDateFrom.getTime()
-                : normalizedCellDate.getTime() > normalizedDateFrom.getTime();
-            }
-
-            // Only end date (open-ended from past)
-            if (!normalizedDateFrom && normalizedDateTo) {
-              return toInclusive
-                ? normalizedCellDate.getTime() <= normalizedDateTo.getTime()
-                : normalizedCellDate.getTime() < normalizedDateTo.getTime();
-            }
-
-            // Both dates present
-            if (!normalizedDateFrom || !normalizedDateTo) return false;
-            const afterStart = fromInclusive
-              ? normalizedCellDate.getTime() >= normalizedDateFrom.getTime()
-              : normalizedCellDate.getTime() > normalizedDateFrom.getTime();
-            const beforeEnd = toInclusive
-              ? normalizedCellDate.getTime() <= normalizedDateTo.getTime()
-              : normalizedCellDate.getTime() < normalizedDateTo.getTime();
-            return afterStart && beforeEnd;
-          }
+            return filterModel.dateFrom
+              ? date < new Date(filterModel.dateFrom)
+              : false;
+          case "after":
+            return filterModel.dateFrom
+              ? date > new Date(filterModel.dateFrom)
+              : false;
+          case "inRange":
+            if (!filterModel.dateFrom || !filterModel.dateTo) return false;
+            return (
+              date >= new Date(filterModel.dateFrom) &&
+              date <= new Date(filterModel.dateTo)
+            );
           default:
             return true;
         }
       },
-      [
-        validation.isFilterValid,
-        currentModel,
-        getValue,
-        parseValue,
-        validation.effectiveDateFrom,
-        validation.effectiveDateTo,
-        filterState.filterType,
-      ],
-    );
 
-    // Event handlers - Simplified since validation is now debounced
-    const handleExpressionFromChange = useCallback(
-      (value: string) => {
-        filterState.setExpressionFrom(value);
-        // Validation is handled by useDebouncedValidation hook with 300ms delay
+      getModel: () => model,
+
+      setModel: (newModel: DateFilterModel | null) => {
+        setModel(newModel);
       },
-      [filterState],
-    );
 
-    const handleExpressionToChange = useCallback(
-      (value: string) => {
-        filterState.setExpressionTo(value);
-        // Validation is handled by useDebouncedValidation hook with 300ms delay
+      getModelAsString: () => {
+        if (!model) return "";
+        const filterModel = model as DateFilterModel;
+        return filterModel.filterType || "";
       },
-      [filterState],
-    );
 
-    const applyFilter = useCallback(() => {
-      logger.debug(
-        "[DateFilter] applyFilter called with currentModel:",
-        currentModel,
-      );
-      if (onModelChange) {
-        onModelChange(currentModel);
-      }
-      if (filterChangedCallback) {
-        filterChangedCallback();
-      }
-      logger.debug("Applied filter:", currentModel);
-    }, [onModelChange, filterChangedCallback, currentModel]);
-
-    const handleKeyDown = useCallback(
-      (e: React.KeyboardEvent) => {
-        if (e.key === "Enter" && validation.isFilterValid) {
-          e.preventDefault();
-          applyFilter();
-        }
+      destroy: () => {
+        // Cleanup if needed
       },
-      [validation.isFilterValid, applyFilter],
-    );
+    }),
+    [model, setModel, isFilterActive, filterParams],
+  );
 
-    const resetFilter = useCallback(() => {
-      try {
-        filterState.resetState();
-        if (onModelChange) {
-          onModelChange(null);
-        }
-        if (filterChangedCallback) {
-          filterChangedCallback();
-        }
-        logger.debug("Reset filter");
-      } catch (error) {
-        logger.error("Failed to reset filter", {
-          error: error instanceof Error ? error.message : String(error),
-        });
-        handleError(error instanceof Error ? error : new Error(String(error)));
-      }
-    }, [filterState, onModelChange, filterChangedCallback, handleError]);
-
-    const getModel = useCallback(() => {
-      if (!currentModel) return null;
-
-      // Ensure dates are serializable for AG Grid
-      const serializableModel = {
-        ...currentModel,
-        dateFrom:
-          currentModel.dateFrom instanceof Date
-            ? currentModel.dateFrom.toISOString()
-            : currentModel.dateFrom,
-        dateTo:
-          currentModel.dateTo instanceof Date
-            ? currentModel.dateTo.toISOString()
-            : currentModel.dateTo,
-      };
-
-      return serializableModel;
-    }, [currentModel]);
-
-    const setModel = useCallback(
-      (model: DateFilterModel | null) => {
-        logger.debug("[DateFilter] setModel called with:", model);
-
-        // Set a global flag for testing
-        if (typeof window !== "undefined") {
-          (
-            window as Window & { setModelWasCalled?: boolean }
-          ).setModelWasCalled = true;
-        }
-
-        if (!model) {
-          resetFilter();
-          return;
-        }
-
-        // Deserialize dates if they are ISO strings
-        const deserializedModel = {
-          ...model,
-          dateFrom:
-            model.dateFrom && typeof model.dateFrom === "string"
-              ? new Date(model.dateFrom)
-              : model.dateFrom,
-          dateTo:
-            model.dateTo && typeof model.dateTo === "string"
-              ? new Date(model.dateTo)
-              : model.dateTo,
-        };
-
-        filterState.initializeFromModel(deserializedModel);
-
-        logger.debug("Filter state initialized from model:", model);
-
-        // IMPORTANT: For programmatic filter changes (like from QuickFilterDropdown),
-        // we need to ensure the grid is notified immediately
-        if (onModelChange) {
-          onModelChange(model);
-        }
-
-        // Use requestAnimationFrame to ensure state updates have been processed
-        // before triggering the filter changed callback
-        requestAnimationFrame(() => {
-          if (filterChangedCallback) {
-            filterChangedCallback();
-          }
-        });
-      },
-      [resetFilter, filterState, filterChangedCallback, onModelChange],
-    );
-
-    const isFilterActive = useCallback(() => {
-      const active = validation.isFilterValid && currentModel !== null;
-      return active;
-    }, [validation.isFilterValid, currentModel]);
-
-    const destroy = useCallback(() => {
-      // Clean up when destroyed
-    }, []);
-
-    // Register with AG Grid
-    const callbacks = useMemo(
-      () => ({
-        doesFilterPass,
-        getModelAsString: () => {
-          if (!currentModel) return "";
-
-          if (currentModel.mode === "absolute") {
-            if (currentModel.type === "inRange") {
-              const fromStr = currentModel.dateFrom
-                ? format(currentModel.dateFrom, dateFormat)
-                : "";
-              const toStr = currentModel.dateTo
-                ? format(currentModel.dateTo, dateFormat)
-                : "";
-              return `${fromStr} to ${toStr}`;
-            }
-            return currentModel.dateFrom
-              ? format(currentModel.dateFrom, dateFormat)
-              : "";
-          } else {
-            if (currentModel.type === "inRange") {
-              return `${currentModel.expressionFrom || ""} to ${currentModel.expressionTo || ""}`;
-            }
-            return currentModel.expressionFrom || "";
-          }
-        },
-        getModel,
-        setModel,
-        onNewRowsLoaded: () => {
-          // Handle new rows if needed
-        },
-        // AG Grid v33 requires this to know when the filter is active
-        isFilterActive,
-        // Log when callbacks are destroyed
-        destroy,
-      }),
-      [
-        doesFilterPass,
-        currentModel,
-        dateFormat,
-        getModel,
-        setModel,
-        isFilterActive,
-        destroy,
-      ],
-    );
-
-    useGridFilter(callbacks);
-
-    // Handle model changes from props (when AG Grid creates new instance)
-    React.useEffect(() => {
-      // Only reinitialize if we have a model and it's different from current state
-      if (initialModel) {
-        filterState.initializeFromModel(initialModel);
-      }
-    }, [initialModel, filterState]);
-
-    // Model is handled during initial state creation in useFilterState
-    // No ongoing synchronization to avoid state conflicts
-
-    // Expose component instance for AG Grid to handle popup positioning
-    React.useImperativeHandle(
-      ref,
-      () => ({
-        // Include all the filter methods from callbacks
-        doesFilterPass: callbacks.doesFilterPass,
-        getModel: callbacks.getModel,
-        setModel: callbacks.setModel,
-        isFilterActive: callbacks.isFilterActive,
-        afterGuiAttached: () => {
-          // Method called after the filter is attached to the DOM
-          // This helps AG Grid position popups correctly
-        },
-      }),
-      [callbacks],
-    );
-
+  if (!children) {
+    // Default structure for backward compatibility
     return (
-      <div
-        ref={filterRef}
-        className={`ag-filter ag-date-filter ${styles.dateFilter} ${
-          filterState.filterType === "inRange"
-            ? styles.dateFilterRange
-            : styles.dateFilterNormal
-        }`}
-        data-testid={props.testId}
-        role="form"
-        aria-label="Date Filter"
+      <DateFilterProvider
+        model={model}
+        setModel={setModel}
+        applyFilter={applyFilter}
+        resetFilter={resetFilter}
+        dateParser={props.dateParser}
       >
-        <FilterTypeSelector
-          filterType={filterState.filterType}
-          onTypeChange={filterState.setFilterType}
-        />
-
-        <FilterModeToggle
-          mode={filterState.filterMode}
-          onModeChange={filterState.toggleFilterMode}
-        />
-
-        <div className={`date-inputs-section ${styles.dateInputsSection}`}>
-          {filterState.filterMode === "absolute" ? (
-            <TextDateInput
-              filterType={filterState.filterType}
-              dateFrom={filterState.absoluteDateFrom}
-              dateTo={filterState.absoluteDateTo}
-              onDateFromChange={filterState.setAbsoluteDateFrom}
-              onDateToChange={filterState.setAbsoluteDateTo}
-              dateFormat={dateFormat}
-              minDate={props.minDate}
-              maxDate={props.maxDate}
-              onApply={applyFilter}
-              isFilterValid={validation.isFilterValid}
-            />
-          ) : (
-            <RelativeExpressionInput
-              filterType={filterState.filterType}
-              expressionFrom={filterState.expressionFrom}
-              expressionTo={filterState.expressionTo}
-              onExpressionFromChange={handleExpressionFromChange}
-              onExpressionToChange={handleExpressionToChange}
-              dateFormat={dateFormat}
-              resolvedDateFrom={validation.resolvedDateFrom}
-              resolvedDateTo={validation.resolvedDateTo}
-              fromValid={filterState.fromExpressionValid}
-              toValid={filterState.toExpressionValid}
-              toError={filterState.toExpressionError}
-              onKeyDown={handleKeyDown}
-            />
-          )}
-        </div>
-
-        <FilterActions
-          onReset={resetFilter}
-          onApply={applyFilter}
-          isValid={validation.isFilterValid}
-        />
-      </div>
+        <Components.Root className={props.className}>
+          <Components.TypeSelector />
+          <Components.ModeToggle>
+            <Components.ModeButton mode="relative">
+              Relative
+            </Components.ModeButton>
+            <Components.ModeButton mode="absolute">
+              Absolute
+            </Components.ModeButton>
+          </Components.ModeToggle>
+          <Components.RelativeSection>
+            <Components.RelativeInput placeholder="e.g., -7d, today, last week" />
+            <Components.ErrorMessage />
+          </Components.RelativeSection>
+          <Components.AbsoluteSection>
+            <Components.StartDateInput />
+            <Components.EndDateInput />
+          </Components.AbsoluteSection>
+          <Components.Actions>
+            <Components.ApplyButton>Apply</Components.ApplyButton>
+            <Components.ResetButton>Reset</Components.ResetButton>
+          </Components.Actions>
+        </Components.Root>
+      </DateFilterProvider>
     );
-  },
-);
+  }
 
-DateFilterComponent.displayName = "DateFilterComponent";
-
-// Wrap the component with error boundary
-const DateFilter = withErrorBoundary(DateFilterComponent, {
-  componentName: "DateFilter",
-  onError: (error, errorInfo) => {
-    logger.error("DateFilter Error Boundary", {
-      error: error.message,
-      stack: error.stack,
-      componentStack: errorInfo.componentStack,
-    });
-  },
+  return (
+    <DateFilterProvider
+      model={model}
+      setModel={setModel}
+      applyFilter={applyFilter}
+      resetFilter={resetFilter}
+      dateParser={props.dateParser}
+    >
+      {children}
+    </DateFilterProvider>
+  );
 });
 
-// For debugging - export the raw component
-export const DateFilterRaw = DateFilterComponent;
+DateFilterComponent.displayName = "DateFilter";
+
+// Create the compound component
+const DateFilter = DateFilterComponent as DateFilterCompound;
+
+// Attach all sub-components
+DateFilter.Root = Components.Root;
+DateFilter.TypeSelector = Components.TypeSelector;
+DateFilter.ModeToggle = Components.ModeToggle;
+DateFilter.ModeButton = Components.ModeButton;
+DateFilter.RelativeSection = Components.RelativeSection;
+DateFilter.RelativeInput = Components.RelativeInput;
+DateFilter.AbsoluteSection = Components.AbsoluteSection;
+DateFilter.StartDateInput = Components.StartDateInput;
+DateFilter.EndDateInput = Components.EndDateInput;
+DateFilter.HelpText = Components.HelpText;
+DateFilter.ErrorMessage = Components.ErrorMessage;
+DateFilter.Actions = Components.Actions;
+DateFilter.ApplyButton = Components.ApplyButton;
+DateFilter.ResetButton = Components.ResetButton;
+
+// Mark as AG Grid component
+(DateFilter as any).__AG_GRID_COMPONENT = true;
 
 export default DateFilter;
+export { DateFilter };

@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from "react";
-import { DateFilterType, DateFilterMode } from "../../interfaces";
+import { DateFilterType, DateFilterMode } from "../types";
 import {
   parseDateExpression,
   resolveDateExpression,

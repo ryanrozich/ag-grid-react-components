@@ -60,9 +60,6 @@ export {
 // AG Grid Workarounds
 export { applyFilterModelWithWorkaround } from "./components/QuickFilterDropdown/utils/agGridWorkaround";
 
-// Import CSS
-import "./styles.css";
-
 // For AG Grid v33 compatibility
 // @ts-expect-error - Add metadata for AG Grid to properly recognize components
 DateFilter.__AG_GRID_COMPONENT = true;

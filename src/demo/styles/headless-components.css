@@ -1,0 +1,406 @@
+/* Headless Component Styles for Demo App */
+
+/* DateFilter Component Styles */
+[data-component="date-filter-root"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: rgb(15, 23, 42, 0.8);
+  border-radius: 0.5rem;
+}
+
+[data-component="date-filter-type-selector"] {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: rgb(30, 41, 59, 0.5);
+  border: 1px solid rgb(71, 85, 105, 0.3);
+  border-radius: 0.375rem;
+  color: #e2e8f0;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+[data-component="date-filter-type-selector"]:hover {
+  background-color: rgb(30, 41, 59, 0.8);
+  border-color: rgb(71, 85, 105, 0.5);
+}
+
+[data-component="date-filter-type-selector"]:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+[data-component="date-filter-mode-toggle"] {
+  display: flex;
+  gap: 0.25rem;
+  background-color: rgb(30, 41, 59, 0.3);
+  padding: 0.25rem;
+  border-radius: 0.375rem;
+}
+
+[data-component="date-filter-mode-button"] {
+  flex: 1;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+[data-component="date-filter-mode-button"][data-active="true"] {
+  background-color: #6366f1;
+  color: white;
+}
+
+[data-component="date-filter-mode-button"]:hover:not([data-active="true"]) {
+  background-color: rgb(71, 85, 105, 0.3);
+  color: #e2e8f0;
+}
+
+[data-component="date-filter-date-inputs"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+[data-component="date-filter-date-input"],
+[data-component="date-filter-expression-input"] {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: rgb(30, 41, 59, 0.5);
+  border: 1px solid rgb(71, 85, 105, 0.3);
+  border-radius: 0.375rem;
+  color: #e2e8f0;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+[data-component="date-filter-date-input"]:hover,
+[data-component="date-filter-expression-input"]:hover {
+  background-color: rgb(30, 41, 59, 0.8);
+  border-color: rgb(71, 85, 105, 0.5);
+}
+
+[data-component="date-filter-date-input"]:focus,
+[data-component="date-filter-expression-input"]:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  background-color: rgb(30, 41, 59, 1);
+  border-color: #6366f1;
+}
+
+[data-component="date-filter-expression-input"][data-invalid="true"] {
+  border-color: #ef4444;
+}
+
+[data-component="date-filter-expression-hint"] {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+[data-component="date-filter-expression-hint"][data-error="true"] {
+  color: #ef4444;
+}
+
+[data-component="date-filter-actions"] {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+[data-component="date-filter-apply-button"],
+[data-component="date-filter-clear-button"] {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+[data-component="date-filter-apply-button"] {
+  background-color: #6366f1;
+  color: white;
+}
+
+[data-component="date-filter-apply-button"]:hover:not(:disabled) {
+  background-color: #4f46e5;
+}
+
+[data-component="date-filter-apply-button"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+[data-component="date-filter-clear-button"] {
+  background-color: transparent;
+  color: #94a3b8;
+  border: 1px solid rgb(71, 85, 105, 0.3);
+}
+
+[data-component="date-filter-clear-button"]:hover {
+  background-color: rgb(71, 85, 105, 0.2);
+  border-color: rgb(71, 85, 105, 0.5);
+  color: #e2e8f0;
+}
+
+/* ActiveFilters Component Styles */
+[data-component="active-filters"] {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+[data-component="active-filters-list"] {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+[data-component="active-filters-item"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background-color: rgb(99, 102, 241, 0.1);
+  border: 1px solid rgb(99, 102, 241, 0.3);
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  color: rgb(165, 180, 252);
+  transition: all 0.2s ease;
+}
+
+[data-component="active-filters-item"]:hover {
+  background-color: rgb(99, 102, 241, 0.2);
+  border-color: rgb(99, 102, 241, 0.5);
+}
+
+[data-component="active-filters-column-name"] {
+  font-weight: 500;
+  color: rgb(129, 140, 248);
+}
+
+[data-component="active-filters-value"] {
+  color: rgb(199, 210, 254);
+}
+
+[data-component="active-filters-remove-button"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: rgb(165, 180, 252);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+[data-component="active-filters-remove-button"]:hover {
+  background-color: rgb(239, 68, 68, 0.1);
+  color: rgb(248, 113, 113);
+}
+
+[data-component="active-filters-remove-button"]:focus {
+  outline: 2px solid rgb(99, 102, 241, 0.5);
+  outline-offset: 2px;
+}
+
+[data-component="active-filters-clear-all"] {
+  padding: 0.25rem 0.75rem;
+  background: transparent;
+  border: 1px solid rgb(156, 163, 175, 0.3);
+  border-radius: 0.375rem;
+  color: rgb(156, 163, 175);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+[data-component="active-filters-clear-all"]:hover {
+  background-color: rgb(156, 163, 175, 0.1);
+  border-color: rgb(156, 163, 175, 0.5);
+  color: rgb(209, 213, 219);
+}
+
+[data-component="active-filters-clear-all"]:focus {
+  outline: 2px solid rgb(99, 102, 241, 0.5);
+  outline-offset: 2px;
+}
+
+/* QuickFilterDropdown Component Styles */
+[data-component="quick-filter-dropdown"] {
+  position: relative;
+}
+
+[data-component="quick-filter-trigger"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: rgb(30, 41, 59, 0.5);
+  border: 1px solid rgb(71, 85, 105, 0.3);
+  border-radius: 0.5rem;
+  color: #e2e8f0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 200px;
+}
+
+[data-component="quick-filter-trigger"]:hover {
+  background-color: rgb(30, 41, 59, 0.8);
+  border-color: rgb(71, 85, 105, 0.5);
+}
+
+[data-component="quick-filter-trigger"]:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+[data-component="quick-filter-trigger"][data-active="true"] {
+  background-color: rgb(99, 102, 241, 0.1);
+  border-color: rgb(99, 102, 241, 0.5);
+  color: rgb(165, 180, 252);
+}
+
+[data-component="quick-filter-trigger"] svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: transform 0.2s;
+}
+
+[data-component="quick-filter-trigger"] svg[data-open="true"] {
+  transform: rotate(180deg);
+}
+
+[data-component="quick-filter-dropdown"] {
+  position: absolute;
+  z-index: 50;
+  margin-top: 0.5rem;
+  min-width: 320px;
+  max-width: 400px;
+  background-color: #0f172a;
+  border: 1px solid rgb(71, 85, 105, 0.5);
+  border-radius: 0.5rem;
+  box-shadow:
+    0 10px 15px -3px rgb(0, 0, 0, 0.3),
+    0 4px 6px -2px rgb(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+[data-component="quick-filter-dropdown"][data-position="bottom-left"] {
+  left: 0;
+}
+
+[data-component="quick-filter-dropdown"][data-position="bottom-right"] {
+  right: 0;
+}
+
+[data-component="quick-filter-dropdown"][data-position="top-left"] {
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 0.5rem;
+  margin-top: 0;
+}
+
+[data-component="quick-filter-dropdown"][data-position="top-right"] {
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 0.5rem;
+  margin-top: 0;
+}
+
+[data-component="quick-filter-search-container"] {
+  padding: 0.75rem;
+  border-bottom: 1px solid rgb(71, 85, 105, 0.3);
+}
+
+[data-component="quick-filter-search-input"] {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: rgb(30, 41, 59, 0.5);
+  border: 1px solid rgb(71, 85, 105, 0.3);
+  border-radius: 0.375rem;
+  color: #e2e8f0;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+[data-component="quick-filter-search-input"]:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  background-color: rgb(30, 41, 59, 1);
+  border-color: #6366f1;
+}
+
+[data-component="quick-filter-options-list"] {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+[data-component="quick-filter-option"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.375rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+[data-component="quick-filter-option"]:hover,
+[data-component="quick-filter-option"][data-highlighted="true"] {
+  background-color: rgb(99, 102, 241, 0.1);
+}
+
+[data-component="quick-filter-option"][data-selected="true"] {
+  background-color: rgb(99, 102, 241, 0.15);
+}
+
+[data-component="quick-filter-option-label"] {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+[data-component="quick-filter-option-description"] {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.125rem;
+}
+
+[data-component="quick-filter-option-checkmark"] {
+  margin-left: auto;
+  color: #6366f1;
+}
+
+[data-component="quick-filter-empty-state"] {
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.875rem;
+}
