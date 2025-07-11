@@ -11,15 +11,15 @@
 }
 
 .ag-grid-date-filter .toggle-button.inactive {
-  @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+  @apply bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600;
 }
 
 .ag-grid-date-filter .relative-date-input {
-  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200;
 }
 
 .ag-grid-date-filter .resolved-date {
-  @apply text-xs text-gray-500 mt-1;
+  @apply text-xs text-gray-500 mt-1 dark:text-gray-400;
 }
 
 .ag-grid-date-filter .input-wrapper {
@@ -39,7 +39,7 @@
 }
 
 .ag-grid-date-filter .reset-button {
-  @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+  @apply bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600;
 }
 
 .ag-grid-date-filter .error-message {
