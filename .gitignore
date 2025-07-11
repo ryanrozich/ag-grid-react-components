@@ -146,4 +146,12 @@ COALESCE_LABS_*.md
 # Cleanup and temporary automation files
 CLEANUP_*.md
 R2_CLEANUP_*.md
-test-framework-*.mdEXPOSED-CREDENTIALS-PRIVATE.txt
+test-framework-*.md
+
+# Documentation archives
+docs-archive/
+docs/archive/
+docs/internal/
+docs/github-automation/
+*.personal.md
+*_INTERNAL.md
