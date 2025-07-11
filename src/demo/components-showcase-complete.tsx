@@ -31,6 +31,7 @@ import { DemoToolbar, StatsBar } from "./config/commonUIConfig";
 // import { SimpleCodeBlock as CodeBlock } from "./components/SimpleCodeBlock";
 import "./styles/showcase-dark.css";
 import "./styles/code-override.css";
+import "./styles/quick-filter-overrides.css";
 
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);
@@ -7165,7 +7166,7 @@ const handleFilterSelect = async (option) => {
                   className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeDemoTab === "client"
                       ? "border-indigo-500 text-white"
-                      : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300 dark:hover:text-gray-200 dark:hover:border-gray-600"
+                      : "border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-600"
                   }`}
                 >
                   Client-Side Data
@@ -7175,7 +7176,7 @@ const handleFilterSelect = async (option) => {
                   className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeDemoTab === "server"
                       ? "border-indigo-500 text-white"
-                      : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300 dark:hover:text-gray-200 dark:hover:border-gray-600"
+                      : "border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-600"
                   }`}
                 >
                   Server-Side Data
@@ -7188,7 +7189,7 @@ const handleFilterSelect = async (option) => {
                   className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeDemoTab === "presets"
                       ? "border-indigo-500 text-white"
-                      : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300 dark:hover:text-gray-200 dark:hover:border-gray-600"
+                      : "border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-600"
                   }`}
                 >
                   Filter Presets

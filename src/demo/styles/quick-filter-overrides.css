@@ -1,0 +1,40 @@
+/* Temporary overrides for QuickFilterDropdown dark theme issues */
+/* This should be removed once QuickFilterDropdown is made truly headless */
+
+/* Override button styles for dark theme - using higher specificity */
+[data-testid="quick-filter-dropdown"] button[type="button"]:first-child {
+  color: #e5e7eb !important;
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+}
+
+[data-testid="quick-filter-dropdown"] button[type="button"]:first-child:hover {
+  background-color: #4b5563 !important;
+  border-color: #6b7280 !important;
+}
+
+/* Override dropdown panel styles */
+[data-testid="quick-filter-dropdown"] > div[role="listbox"] {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+  box-shadow:
+    0 10px 15px -3px rgb(0, 0, 0, 0.3),
+    0 4px 6px -2px rgb(0, 0, 0, 0.2) !important;
+}
+
+/* Override option hover states */
+[data-testid="quick-filter-dropdown"] button[role="option"]:hover {
+  background-color: #374151 !important;
+}
+
+/* Override search input */
+[data-testid="quick-filter-dropdown"] input[type="text"] {
+  color: #e5e7eb !important;
+  background-color: #111827 !important;
+  border-color: #374151 !important;
+}
+
+[data-testid="quick-filter-dropdown"] input[type="text"]:focus {
+  background-color: #1f2937 !important;
+  border-color: #3b82f6 !important;
+}
