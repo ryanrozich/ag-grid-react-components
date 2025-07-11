@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import styles from "./CategorySelector.module.css";
 
 export interface CategorySelectorProps {
   /** Current selected category value */
@@ -10,10 +9,40 @@ export interface CategorySelectorProps {
   existingCategories: string[];
   /** Placeholder text for the input */
   placeholder?: string;
-  /** Additional CSS class name */
+  /** Container className */
   className?: string;
   /** Input element id */
   id?: string;
+  /** Input field className */
+  inputClassName?: string;
+  /** Dropdown container className */
+  dropdownClassName?: string;
+  /** Option item className */
+  optionClassName?: string;
+  /** Create button className */
+  createButtonClassName?: string;
+  /** Cancel button className */
+  cancelButtonClassName?: string;
+  /** Input wrapper className */
+  inputWrapperClassName?: string;
+  /** Dropdown icon className */
+  dropdownIconClassName?: string;
+  /** Create option className */
+  createOptionClassName?: string;
+  /** Create icon className */
+  createIconClassName?: string;
+  /** No results className */
+  noResultsClassName?: string;
+  /** Create form className */
+  createFormClassName?: string;
+  /** Create input className */
+  createInputClassName?: string;
+  /** Error message className */
+  errorMessageClassName?: string;
+  /** Create actions className */
+  createActionsClassName?: string;
+  /** Highlighted option className */
+  highlightedClassName?: string;
 }
 
 export const CategorySelector: React.FC<CategorySelectorProps> = ({
@@ -23,6 +52,21 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
   placeholder = "Select or create category",
   className = "",
   id,
+  inputClassName = "",
+  dropdownClassName = "",
+  optionClassName = "",
+  createButtonClassName = "",
+  cancelButtonClassName = "",
+  inputWrapperClassName = "",
+  dropdownIconClassName = "",
+  createOptionClassName = "",
+  createIconClassName = "",
+  noResultsClassName = "",
+  createFormClassName = "",
+  createInputClassName = "",
+  errorMessageClassName = "",
+  createActionsClassName = "",
+  highlightedClassName = "",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -177,13 +221,13 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
   };
 
   return (
-    <div className={`${styles.container} ${className}`} ref={containerRef}>
-      <div className={styles.inputWrapper}>
+    <div className={className} ref={containerRef}>
+      <div className={inputWrapperClassName}>
         <input
           ref={inputRef}
           id={id}
           type="text"
-          className={styles.input}
+          className={inputClassName}
           value={searchTerm || value}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
@@ -194,7 +238,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
           aria-expanded={isOpen}
           aria-controls="category-dropdown"
         />
-        <span className={styles.dropdownIcon} data-testid="dropdown-icon">
+        <span className={dropdownIconClassName} data-testid="dropdown-icon">
           ▼
         </span>
       </div>
@@ -202,22 +246,22 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
       {isOpen && (
         <div
           id="category-dropdown"
-          className={styles.dropdown}
+          className={dropdownClassName}
           data-testid="category-dropdown"
           role="listbox"
         >
           {!isCreating ? (
             <>
               <div
-                className={`${styles.option} ${styles.createOption} ${
-                  highlightedIndex === 0 ? styles.highlighted : ""
+                className={`${optionClassName} ${createOptionClassName} ${
+                  highlightedIndex === 0 ? highlightedClassName : ""
                 }`}
                 onClick={handleCreateNew}
                 onMouseEnter={() => setHighlightedIndex(0)}
                 role="option"
                 aria-selected={highlightedIndex === 0}
               >
-                <span className={styles.createIcon}>+</span>
+                <span className={createIconClassName}>+</span>
                 Create new category
               </div>
 
@@ -225,8 +269,8 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
                 filteredCategories.map((category, index) => (
                   <div
                     key={category}
-                    className={`${styles.option} ${
-                      highlightedIndex === index + 1 ? styles.highlighted : ""
+                    className={`${optionClassName} ${
+                      highlightedIndex === index + 1 ? highlightedClassName : ""
                     }`}
                     onClick={() => handleCategorySelect(category)}
                     onMouseEnter={() => setHighlightedIndex(index + 1)}
@@ -237,35 +281,33 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
                   </div>
                 ))
               ) : (
-                <div className={styles.noResults}>No matching categories</div>
+                <div className={noResultsClassName}>No matching categories</div>
               )}
             </>
           ) : (
-            <div className={styles.createForm}>
+            <div className={createFormClassName}>
               <input
                 ref={createInputRef}
                 type="text"
-                className={`${styles.createInput} ${
-                  validationError ? styles.error : ""
-                }`}
+                className={createInputClassName}
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 onKeyDown={handleCreateKeyDown}
                 placeholder="Enter category name..."
               />
               {validationError && (
-                <div className={styles.errorMessage}>{validationError}</div>
+                <div className={errorMessageClassName}>{validationError}</div>
               )}
-              <div className={styles.createActions}>
+              <div className={createActionsClassName}>
                 <button
-                  className={styles.createButton}
+                  className={createButtonClassName}
                   onClick={handleCreateSubmit}
                   disabled={!newCategoryName.trim() || !!validationError}
                 >
                   Create
                 </button>
                 <button
-                  className={styles.cancelButton}
+                  className={cancelButtonClassName}
                   onClick={handleCreateCancel}
                 >
                   Cancel

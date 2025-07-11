@@ -3,8 +3,7 @@ import { AgGridReact } from "ag-grid-react";
 import { ColDef, GridReadyEvent, GridApi } from "ag-grid-community";
 import { AGGridTestHarness } from "../test-utils/AGGridTestHarness";
 import { TEST_RECORDS, TestRecord } from "../../tests/fixtures/testData";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-quartz.css";
+// AG Grid styles removed - using v33+ Theming API
 import "./TestDemo.css";
 import { TEST_GRID_ID } from "./constants";
 
@@ -187,10 +186,7 @@ export const TestDemo: React.FC = () => {
         </div>
       </div>
 
-      <div
-        className="ag-theme-quartz"
-        style={{ height: "600px", width: "100%" }}
-      >
+      <div style={{ height: "600px", width: "100%" }}>
         <AGGridTestHarness gridId={TEST_GRID_ID}>
           <AgGridReact<TestRecord>
             rowData={rowData}
