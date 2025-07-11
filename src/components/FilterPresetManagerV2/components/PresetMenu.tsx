@@ -273,6 +273,7 @@ export const PresetMenu: React.FC<PresetMenuProps> = ({
           onPresetsChange={onPresetsChange}
           onClose={() => setActiveModal(null)}
           allowedCategories={allowedCategories}
+          api={api}
         />
       )}
 
@@ -282,6 +283,7 @@ export const PresetMenu: React.FC<PresetMenuProps> = ({
           presets={presets}
           onPresetsChange={onPresetsChange}
           onClose={() => setActiveModal(null)}
+          api={api}
         />
       )}
     </>

@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { DateFilter } from "ag-grid-react-components";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-quartz.css";
+// AG Grid styles removed - using v33+ Theming API
 
 // Example implementation for DateFilter
 function App() {
@@ -47,10 +46,7 @@ function App() {
         <h1>DateFilter - Natural Language Example</h1>
         <p>AG Grid with natural language date filtering</p>
       </div>
-      <div
-        className="ag-theme-quartz-dark"
-        style={{ flex: 1, padding: "0 20px 20px" }}
-      >
+      <div style={{ flex: 1, padding: "0 20px 20px" }}>
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}

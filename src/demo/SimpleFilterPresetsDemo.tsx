@@ -209,7 +209,6 @@ export const SimpleFilterPresetsDemo: React.FC = () => {
           onGridReady={onGridReady}
           onFilterChanged={onFilterChanged}
           animateRows={true}
-          className="ag-theme-material"
           domLayout="normal"
         />
       </div>
