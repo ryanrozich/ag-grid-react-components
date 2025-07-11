@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ComponentsShowcaseComplete } from "./components-showcase-complete";
+import { TestDemo } from "./TestDemo";
 
 // Get base path from Vite configuration
 const getBasePath = () => {
@@ -30,6 +31,9 @@ export const AppRouter: React.FC = () => {
           path="/docs/:section"
           element={<ComponentsShowcaseComplete initialPage="docs" />}
         />
+
+        {/* Test demo route */}
+        <Route path="/test-demo" element={<TestDemo />} />
 
         {/* Redirect any unknown routes to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

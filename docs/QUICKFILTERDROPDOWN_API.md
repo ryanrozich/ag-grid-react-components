@@ -4,9 +4,9 @@ The QuickFilterDropdown component provides a dropdown interface for applying pre
 
 ## Installation
 
-```bash
+````bash
 npm install ag-grid-react-components
-```
+```text
 
 ## Basic Usage
 
@@ -29,7 +29,7 @@ import { QuickFilterDropdown } from "ag-grid-react-components";
     },
   ]}
 />;
-```
+````
 
 ## API
 
@@ -52,7 +52,7 @@ import { QuickFilterDropdown } from "ag-grid-react-components";
 
 ### QuickFilterOption Interface
 
-```typescript
+````typescript
 interface QuickFilterOption {
   id: string; // Unique identifier
   label: string; // Display label
@@ -61,7 +61,7 @@ interface QuickFilterOption {
   filterModel?: Record<string, unknown>; // AG Grid filter model
   onSelect?: (api: GridApi) => void; // Custom handler (overrides filterModel)
 }
-```
+```text
 
 ## Examples
 
@@ -99,7 +99,7 @@ const dateFilterOptions: QuickFilterOption[] = [
     },
   },
 ];
-```
+```text
 
 ### Custom Filter Logic
 
@@ -124,7 +124,7 @@ const customOptions: QuickFilterOption[] = [
     },
   },
 ];
-```
+```text
 
 ### With Search (for large lists)
 
@@ -136,16 +136,16 @@ const customOptions: QuickFilterOption[] = [
   searchable={true}
   placeholder="Search categories..."
 />
-```
+````
 
 ### Portal Rendering
 
 Use portal rendering when the dropdown is inside a container with `overflow: hidden`:
 
-```tsx
+````tsx
 // Inside a modal or constrained container
 <QuickFilterDropdown api={gridApi} columnId="status" options={statusOptions} usePortal="always" />
-```
+```text
 
 ## Styling
 
@@ -163,7 +163,7 @@ The component uses CSS modules with these customizable classes:
   background: #007bff;
   color: white;
 }
-```
+````
 
 ## Keyboard Navigation
 

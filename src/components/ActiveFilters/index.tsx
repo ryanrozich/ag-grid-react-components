@@ -2,11 +2,17 @@ import React from "react";
 import type { GridApi, FilterModel } from "ag-grid-community";
 import styles from "./ActiveFilters.module.css";
 import type { DateFilterModel } from "../interfaces";
+// import { FilterPresetManager } from "../FilterPresetManager"; // TODO: Update to use new FilterPresetManagerV2
 
 export interface ActiveFiltersProps {
   api: GridApi;
   filterModel: FilterModel;
   className?: string;
+  enablePresets?: boolean;
+  onPresetApplied?: (preset: {
+    name: string;
+    filterModel: FilterModel;
+  }) => void;
 }
 
 interface FilterPill {
@@ -133,6 +139,8 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   api,
   filterModel,
   className = "",
+  enablePresets: _enablePresets = false,
+  onPresetApplied: _onPresetApplied,
 }) => {
   const filterPills: FilterPill[] = React.useMemo(() => {
     const pills: FilterPill[] = [];
@@ -189,13 +197,19 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           </div>
         ))}
       </div>
-      <button
-        className={styles.clearAllButton}
-        onClick={clearAllFilters}
-        aria-label="Clear all filters"
-      >
-        Clear all
-      </button>
+      <div className={styles.actions}>
+        <button
+          className={styles.clearAllButton}
+          onClick={clearAllFilters}
+          aria-label="Clear all filters"
+        >
+          Clear all
+        </button>
+        {/* TODO: Update to use new FilterPresetManagerV2
+        {enablePresets && (
+          <FilterPresetManager api={api} onPresetApplied={onPresetApplied} />
+        )} */}
+      </div>
     </div>
   );
 };

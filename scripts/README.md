@@ -1,105 +1,103 @@
-# Project Management Scripts
+# Scripts Directory
 
-This directory contains scripts for managing GitHub issues and project synchronization.
+This directory contains scripts essential for the development and maintenance of ag-grid-react-components.
 
-## 🚀 Quick Start
+## Directory Structure
 
-To bootstrap everything at once:
-
-```bash
-npm run bootstrap:project
+```
+scripts/
+├── dev/                    # Development utilities
+├── quality/               # Code quality tools
+├── build/                 # Build and release utilities
+├── release/               # Release management
+└── utils/                 # Shared utilities
 ```
 
-Or run the shell script directly:
+## Scripts by Category
 
-```bash
-./scripts/bootstrap-all.sh
-```
+### Development Scripts (`/dev`)
 
-## 📜 Available Scripts
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `pre-push.sh` | Comprehensive pre-push validation | Automatically run by git pre-push hook |
+| `pre-push-quick.sh` | Quick pre-push validation (skips tests) | `npm run pre-push:quick` |
+| `validate-demo.js` | Validates demo functionality | `npm run test:browser` |
+| `thorough-demo-check.js` | Comprehensive demo validation | `npm run test:thorough` |
+| `test-filter-click.js` | Tests filter click functionality | `npm run test:filter-click` |
 
-### bootstrap-all.sh
-Complete bootstrap that runs all scripts in the correct order:
-1. Adds missing required labels to issues
-2. Syncs project fields to issue labels
-3. Triggers GitHub Actions for final sync
+### Code Quality Scripts (`/quality`)
 
-### add-missing-labels.js
-Ensures all issues have required labels:
-- Adds default type label if missing (enhancement)
-- Adds default priority label if missing (medium)
-- Adds default area label if missing (components)
-- Adds default status label if missing (needs-triage)
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `check-whitespace.sh` | Checks for whitespace issues | `npm run check:whitespace` |
+| `fix-whitespace.sh` | Fixes whitespace issues | `npm run fix:whitespace` |
+| `check-codeql.js` | Validates CodeQL configuration | `npm run check:codeql` |
+| `check-fonts.js` | Checks font usage in code blocks | Direct execution |
+| `test-code-block-fonts.js` | Tests font rendering in code blocks | Direct execution |
 
-```bash
-node scripts/add-missing-labels.js
-```
+### Build Scripts (`/build`)
 
-### bootstrap-project-sync.js
-Syncs all project field values to issue labels:
-- Reads current project field values
-- Updates issue labels to match
-- Removes conflicting labels
-- Handles all field types (Priority, Area, Type, Component, Status)
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `generate-version-info.js` | Generates version info for demos | Automatically run during build |
+| `generate-og-image.js` | Generates Open Graph images | Direct execution |
+| `publish-local.sh` | Publishes package locally for testing | Direct execution |
 
-```bash
-node scripts/bootstrap-project-sync.js
-```
+### Release Scripts (`/release`)
 
-## 🔄 How Sync Works
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `bump-version.js` | Bumps package version | Part of release workflow |
+| `generate-changelog.js` | Generates changelog entries | Part of release workflow |
+| `prepare-release.js` | Prepares release artifacts | Part of release workflow |
 
-1. **Project → Labels**: When you change a field in the project, labels update automatically
-2. **Labels → Project**: When you change labels on an issue, project fields update automatically
-3. **Bidirectional**: Changes in either place stay synchronized
+### Utility Scripts (`/utils`)
 
-## 📋 Label Categories
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `run-tsx.js` | Runs TypeScript files directly | `npm run run-tsx <file>` |
+| `loader.js` | TypeScript loader for Node.js | Used by run-tsx.js |
+| `ensure-project-root.mjs` | Ensures scripts run from project root | Imported by other scripts |
 
-### Required Labels (one from each):
-- **Type**: bug, enhancement, documentation, question
-- **Priority**: priority: critical/high/medium/low
-- **Area**: area: components/demo/build/ci-cd/testing/docs
+## Script Requirements
 
-### Optional Labels:
-- **Status**: status: needs-triage/triaging/backlog/in-progress/in-review/done
-- **Component**: component: date-filter/quick-filter-dropdown/active-filters/etc
+### Environment Variables
 
-## 🛠️ Troubleshooting
+Most scripts don't require environment variables, but some GitHub-related scripts (now archived) required:
+- `GITHUB_TOKEN`: For GitHub API access
+- `NODE_ENV`: Development/production environment
 
-### "Command not found" error
-Make sure you have Node.js installed and the GitHub CLI:
-```bash
-# Install GitHub CLI
-brew install gh
+### Dependencies
 
-# Authenticate
-gh auth login
-```
+Scripts assume the following tools are installed:
+- Node.js (v18+)
+- npm (v10+)
+- Git
+- GitHub CLI (`gh`) for release scripts
 
-### "GraphQL request failed" error
-Your GitHub token might not have the right permissions:
-```bash
-# Check current auth status
-gh auth status
+## Best Practices
 
-# Re-authenticate with proper scopes
-gh auth login --scopes "repo,project"
-```
+1. **Always run scripts from project root**: Most scripts use `ensure-project-root.mjs` to enforce this
+2. **Use npm scripts when available**: Prefer `npm run <script>` over direct execution
+3. **Check script headers**: Each script has a header comment explaining its purpose
+4. **Test locally first**: Especially for scripts that modify files or interact with GitHub
 
-### Issues not updating
-1. Check that the issue is in the project
-2. Verify field values are set in the project
-3. Run `gh issue view <number>` to see current labels
+## Archived Scripts
 
-## 🤖 Automation
+Many scripts have been moved to `scripts-archive/` (git-ignored) for historical reference:
 
-After bootstrap, the system maintains itself:
-- GitHub Actions run every 5 minutes
-- Changes sync automatically
-- Manual trigger available in Actions tab
+- **Bot Automation** (`scripts-archive/bot-automation/`): GitHub project sync, bot workflows
+- **One-Time Scripts** (`scripts-archive/one-time/`): Setup scripts, migrations, fixes
 
-## 📊 Monitoring
+These scripts are preserved but not actively maintained. If you need functionality from an archived script, consider if it should be restored and updated.
 
-View sync status:
-- [GitHub Actions](https://github.com/ryanrozich/ag-grid-react-components/actions)
-- [Project Board](https://github.com/users/ryanrozich/projects/1)
-- [Issues List](https://github.com/ryanrozich/ag-grid-react-components/issues)
+## Adding New Scripts
+
+When adding new scripts:
+
+1. Place in the appropriate subdirectory
+2. Add a header comment with purpose and usage
+3. Update this README
+4. Consider if it needs to be added to package.json
+5. Use `ensure-project-root.mjs` for scripts that modify files
+6. Follow existing patterns for error handling and logging

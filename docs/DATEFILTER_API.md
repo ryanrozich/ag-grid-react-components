@@ -47,7 +47,7 @@ The DateFilter accepts the following parameters through `filterParams`:
 
 ### Example with Parameters
 
-```tsx
+````tsx
 const columnDefs = [
   {
     field: "date",
@@ -66,7 +66,7 @@ const columnDefs = [
     },
   },
 ];
-```
+```text
 
 ## Filter Model
 
@@ -89,7 +89,7 @@ interface DateFilterModel {
   fromInclusive?: boolean;
   toInclusive?: boolean;
 }
-```
+```text
 
 ## Open-Ended Ranges
 
@@ -106,7 +106,7 @@ api.setFilterModel({
     dateTo: null, // Open-ended to future
   },
 });
-```
+```text
 
 ### Filter up to a date (no start date)
 
@@ -119,7 +119,7 @@ api.setFilterModel({
     dateTo: new Date("2024-12-31"),
   },
 });
-```
+```text
 
 ### With relative expressions
 
@@ -132,7 +132,7 @@ api.setFilterModel({
     expressionTo: null, // All dates from 30 days ago onwards
   },
 });
-```
+````
 
 ## Inclusive/Exclusive Filtering
 
@@ -148,7 +148,7 @@ Control whether date boundaries are included or excluded from the filter results
 
 Configure through `filterParams`:
 
-```tsx
+````tsx
 filterParams: {
   afterInclusive: true,    // 'after' becomes >= (greater than or equal)
   beforeInclusive: true,   // 'before' becomes <= (less than or equal)
@@ -157,7 +157,7 @@ filterParams: {
     to: true,    // Range end becomes <=
   },
 }
-```
+```text
 
 ### Per-Filter Inclusivity
 
@@ -174,7 +174,7 @@ api.setFilterModel({
     toInclusive: false, // Exclude December 31st
   },
 });
-```
+````
 
 ## Relative Date Expressions
 
@@ -211,7 +211,7 @@ The DateFilter supports powerful relative date expressions:
 
 ### Last 7 Days (Inclusive)
 
-```tsx
+````tsx
 api.setFilterModel({
   dateColumn: {
     type: "inRange",
@@ -222,7 +222,7 @@ api.setFilterModel({
     toInclusive: true,
   },
 });
-```
+```text
 
 ### Current Month
 
@@ -237,7 +237,7 @@ api.setFilterModel({
     toInclusive: true,
   },
 });
-```
+```text
 
 ### All Future Dates
 
@@ -250,7 +250,7 @@ api.setFilterModel({
     fromInclusive: false, // Exclude today
   },
 });
-```
+```text
 
 ### Dates Before 2024
 
@@ -263,7 +263,7 @@ api.setFilterModel({
     toInclusive: false, // Exclude Jan 1, 2024
   },
 });
-```
+```text
 
 ### Complex Date Range with Mixed Inclusivity
 
@@ -279,7 +279,7 @@ api.setFilterModel({
     toInclusive: false,
   },
 });
-```
+```text
 
 ## Integration with QuickFilterDropdown
 
@@ -322,7 +322,7 @@ const dateFilterPresets = [
 ];
 
 <QuickFilterDropdown api={gridApi} columnId="dueDate" options={dateFilterPresets} />;
-```
+```text
 
 ## TypeScript Support
 
@@ -344,4 +344,4 @@ const model: DateFilterModel = {
   fromInclusive: true,
   toInclusive: true,
 };
-```
+````

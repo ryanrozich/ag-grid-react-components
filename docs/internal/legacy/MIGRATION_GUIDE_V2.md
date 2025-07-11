@@ -21,12 +21,12 @@ Install the compatibility package that maintains v1 API:
 npm install @ag-grid-react-components/compat
 ```
 
-```typescript
+````typescript
 // No code changes needed!
 import { DateFilter, QuickFilterDropdown } from "@ag-grid-react-components/compat";
 
 // Works exactly like v1
-```
+```text
 
 ### Option 2: Gradual Migration (Recommended)
 
@@ -38,7 +38,7 @@ import { QuickFilterDropdown } from "ag-grid-react-components";
 
 // New import (for migrated components)
 import { createDateFilter } from "@ag-grid-react-components/core";
-```
+```text
 
 ### Option 3: Full Migration (Best Performance)
 
@@ -63,7 +63,7 @@ const columnDefs = [
     },
   },
 ];
-```
+```text
 
 #### After (v2) - Option A: Native Date Picker (Smallest)
 
@@ -81,7 +81,7 @@ const columnDefs = [
     },
   },
 ];
-```
+```text
 
 #### After (v2) - Option B: With React DatePicker
 
@@ -92,7 +92,7 @@ import { reactDatePickerAdapter } from "@ag-grid-react-components/adapters/react
 const DateFilter = createDateFilter({
   datePickerAdapter: reactDatePickerAdapter,
 });
-```
+```text
 
 #### After (v2) - Option C: Custom Date Picker
 
@@ -109,11 +109,11 @@ const customAdapter = {
 const DateFilter = createDateFilter({
   datePickerAdapter: customAdapter
 });
-```
+```text
 
 ### QuickFilterDropdown
 
-#### Before (v1)
+#### Before (v1) (2)
 
 ```typescript
 import { QuickFilterDropdown } from 'ag-grid-react-components';
@@ -123,7 +123,7 @@ import { QuickFilterDropdown } from 'ag-grid-react-components';
   columnId="date"
   filters={quickFilters}
 />
-```
+```text
 
 #### After (v2)
 
@@ -136,18 +136,18 @@ import { QuickFilterDropdown } from '@ag-grid-react-components/core/quick-filter
   columnId="date"
   filters={quickFilters}
 />
-```
+```text
 
 ### Grid State Persistence
 
-#### Before (v1)
+#### Before (v1) (3)
 
 ```typescript
 import { setupGridStatePersistence } from "ag-grid-react-components";
 
 // Always includes lz-string compression
 setupGridStatePersistence(gridApi);
-```
+```text
 
 #### After (v2) - No Compression
 
@@ -156,7 +156,7 @@ import { setupGridStatePersistence } from "@ag-grid-react-components/utils/persi
 
 // No compression by default (smaller bundle)
 setupGridStatePersistence(gridApi);
-```
+```text
 
 #### After (v2) - With Compression
 
@@ -168,25 +168,25 @@ import { createLZStringAdapter } from "@ag-grid-react-components/adapters/compre
 setupGridStatePersistence(gridApi, {
   compressionAdapter: createLZStringAdapter(),
 });
-```
+```text
 
 ## Styling Migration
 
-### Before (v1)
+### Before (v1) (4)
 
 ```typescript
 // Styled by default
 import 'ag-grid-react-components/dist/styles.css';
 
 <DateFilter /> // Has built-in styles
-```
+```text
 
 ### After (v2) - Option A: Unstyled
 
 ```typescript
 // No styles imported
 <DateFilter className="my-custom-date-filter" />
-```
+```text
 
 ### After (v2) - Option B: Provided Styles
 
@@ -194,7 +194,7 @@ import 'ag-grid-react-components/dist/styles.css';
 import '@ag-grid-react-components/styles/date-filter.css';
 
 <DateFilter /> // Styled like v1
-```
+```text
 
 ### After (v2) - Option C: Tailwind
 
@@ -207,7 +207,7 @@ const DateFilter = createDateFilter({
     actions: "flex gap-2 mt-4",
   },
 });
-```
+```text
 
 ## Automated Migration
 
@@ -217,7 +217,7 @@ We provide a codemod to automate most of the migration:
 
 ```bash
 npx @ag-grid-react-components/codemod v1-to-v2 ./src
-```
+```javascript
 
 The codemod will:
 
@@ -255,36 +255,43 @@ module.exports = function transformer(fileInfo, api) {
 
   return root.toSource();
 };
-```
+```text
 
 ## Bundle Size Comparison
 
-### Before (v1)
+### Before (v1) (5)
 
-```
+````
+
 ag-grid-react-components: 329KB (66KB gzipped)
 ├── DateFilter: ~150KB (includes react-datepicker)
 ├── QuickFilterDropdown: ~50KB
 ├── ActiveFilters: ~30KB
 └── Utils: ~100KB (includes lz-string)
-```
+
+```text
 
 ### After (v2) - Minimal
 
 ```
+
 @ag-grid-react-components/core: 20KB (5KB gzipped)
 ├── date-filter: 10KB (using native date picker)
 └── quick-filter: 8KB
-```
+
+```text
 
 ### After (v2) - With Optional Features
 
 ```
+
 @ag-grid-react-components/core: 20KB
-+ react-datepicker adapter: +40KB (loaded on demand)
-+ compression adapter: +15KB (loaded on demand)
-= Total: 75KB (only when features are used)
-```
+
+- react-datepicker adapter: +40KB (loaded on demand)
+- compression adapter: +15KB (loaded on demand)
+  = Total: 75KB (only when features are used)
+
+````text
 
 ## Common Migration Patterns
 
@@ -294,7 +301,7 @@ ag-grid-react-components: 329KB (66KB gzipped)
 // Use compatibility package
 import { DateFilter } from "@ag-grid-react-components/compat";
 // No other changes needed
-```
+```text
 
 ### Pattern 2: Optimal Bundle Size
 
@@ -305,7 +312,7 @@ import { QuickFilterDropdown } from "@ag-grid-react-components/core/quick-filter
 
 // Use native date picker
 const DateFilter = createDateFilter();
-```
+```text
 
 ### Pattern 3: Feature Parity with v1
 
@@ -323,7 +330,7 @@ const DateFilter = createDateFilter({
 setupGridStatePersistence(gridApi, {
   compressionAdapter: createLZStringAdapter(),
 });
-```
+```text
 
 ## Troubleshooting
 
@@ -334,7 +341,7 @@ If you see TypeScript errors after migration:
 ```typescript
 // Add type imports
 import type { DateFilterConfig } from "@ag-grid-react-components/core";
-```
+```text
 
 ### Missing Styles
 
@@ -348,7 +355,7 @@ import "@ag-grid-react-components/styles/core.css";
 const DateFilter = createDateFilter({
   className: "my-date-filter",
 });
-```
+```text
 
 ### Lazy Loading Issues
 
@@ -363,14 +370,14 @@ output: {
 
 // For older browsers, use the sync adapter:
 import { lzStringSyncAdapter } from "@ag-grid-react-components/adapters/compression/sync";
-```
+````
 
 ## Support
 
-- **Documentation**: https://github.com/ryanrozich/ag-grid-react-components/v2
-- **Examples**: https://github.com/ryanrozich/ag-grid-react-components/examples
-- **Issues**: https://github.com/ryanrozich/ag-grid-react-components/issues
-- **Discord**: https://discord.gg/ag-grid-components
+- **Documentation**: [https://github.com/ryanrozich/ag-grid-react-components/v2](https://github.com/ryanrozich/ag-grid-react-components/v2)
+- **Examples**: [https://github.com/ryanrozich/ag-grid-react-components/examples](https://github.com/ryanrozich/ag-grid-react-components/examples)
+- **Issues**: [https://github.com/ryanrozich/ag-grid-react-components/issues](https://github.com/ryanrozich/ag-grid-react-components/issues)
+- **Discord**: [https://discord.gg/ag-grid-components](https://discord.gg/ag-grid-components)
 
 ## Timeline
 

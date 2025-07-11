@@ -1,0 +1,17 @@
+# Markdownlint configuration
+config:
+  default: true
+  MD013: false # Disable line length limit
+  MD029: false # Disable ordered list prefix (allows flexible numbering)
+  MD030: false # Disable spaces after list markers
+  MD031: false # Disable blanks around fences (too strict)
+  MD033: false # Allow inline HTML in legacy docs
+  MD036: false # Allow emphasis for metadata (dates, etc)
+  MD051: false # Disable link fragment validation (false positives)
+
+# Ignore patterns
+ignores:
+  - ".trunk/**/*.md" # Ignore trunk plugin documentation
+  - "node_modules/**/*.md" # Ignore node_modules
+  - "test-results/**/*.md" # Ignore test results
+  - ".bot/**/*.md" # Ignore bot memory files

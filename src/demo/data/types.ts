@@ -1,5 +1,5 @@
 export interface RowData {
-  id: number;
+  id: string; // Changed from number to string for task IDs like "UI-1234"
   name: string;
   date: Date;
   dateString: string;

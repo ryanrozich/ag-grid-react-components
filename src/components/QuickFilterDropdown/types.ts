@@ -1,5 +1,10 @@
 import type { GridApi, FilterModel } from "ag-grid-community";
 import type { ReactNode } from "react";
+import type {
+  FilterPreset,
+  PresetStorage,
+  PresetSelectorProps,
+} from "../FilterPresets/types";
 
 /**
  * Represents a single quick filter option
@@ -17,6 +22,32 @@ export interface QuickFilterOption {
   filterModel: FilterModel | null;
   /** Optional custom filter builder function */
   buildFilterModel?: (api: GridApi, columnId: string) => FilterModel | null;
+  /** Whether this is a system preset (read-only) */
+  isSystemPreset?: boolean;
+  /** Optional tags for organization (user presets only) */
+  tags?: string[];
+}
+
+/**
+ * Configuration for filter preset functionality
+ */
+export interface EnablePresetsConfig {
+  /** Storage adapter for persisting presets */
+  storage: PresetStorage;
+  /** System-defined presets that cannot be modified */
+  systemPresets?: FilterPreset[];
+  /** Callback when a preset is selected */
+  onPresetChange?: (preset: FilterPreset | null) => void;
+  /** Whether to allow saving new presets */
+  allowSave?: boolean;
+  /** Whether to show manage presets link */
+  allowManage?: boolean;
+  /** Callback when manage presets is clicked */
+  onManageClick?: () => void;
+  /** Custom preset selector renderer */
+  renderPresetSelector?: (props: PresetSelectorProps) => ReactNode;
+  /** Maximum number of presets allowed */
+  maxPresets?: number;
 }
 
 /**
@@ -29,6 +60,14 @@ export interface QuickFilterDropdownProps {
   columnId: string;
   /** Array of filter options to display */
   options: QuickFilterOption[];
+  /** System presets (read-only) */
+  systemPresets?: QuickFilterOption[];
+  /** Whether to enable preset management (save/edit/delete) */
+  enablePresetManagement?: boolean;
+  /** Callback when a preset is saved */
+  onPresetSave?: (preset: QuickFilterOption) => void;
+  /** Callback when a preset is deleted */
+  onPresetDelete?: (presetId: string) => void;
   /** Placeholder text for the dropdown trigger */
   placeholder?: string;
   /** Additional CSS class for the container */
@@ -51,6 +90,8 @@ export interface QuickFilterDropdownProps {
    * @default 'never'
    */
   usePortal?: "auto" | "always" | "never";
+  /** Enable filter preset functionality */
+  enablePresets?: EnablePresetsConfig;
 }
 
 /**

@@ -2,7 +2,7 @@
 
 **Date**: December 2024
 **Status**: Accepted
-**Issue**: [#2](https://github.com/ryanrozich/ag-grid-react-components/issues/2)
+**Issue**: [#2](<[https://github.com/ryanrozich/ag-grid-react-components/issues/](https://github.com/ryanrozich/ag-grid-react-components/issues/)2>)
 
 ## Context
 
@@ -108,6 +108,6 @@ If we need to split packages in the future:
 
 ## References
 
-- [Bundlephobia](https://bundlephobia.com/) - for verifying bundle sizes
-- [npm Best Practices](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry)
-- Similar decisions: [Chakra UI](https://github.com/chakra-ui/chakra-ui), [Ant Design](https://github.com/ant-design/ant-design)
+- [Bundlephobia](<[https://bundlephobia.com](https://bundlephobia.com)/>) - for verifying bundle sizes
+- [npm Best Practices](<[https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registr](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registr)y>)
+- Similar decisions: [Chakra UI](<[https://github.com/chakra-ui/chakra-u](https://github.com/chakra-ui/chakra-u)i>), [Ant Design](<[https://github.com/ant-design/ant-desig](https://github.com/ant-design/ant-desig)n>)

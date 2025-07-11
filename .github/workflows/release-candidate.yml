@@ -1,0 +1,252 @@
+name: Release Candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "RC version (e.g., 0.2.0-rc.1)"
+        required: true
+        type: string
+      milestone:
+        description: "Associated milestone number"
+        required: false
+        type: string
+      dry_run:
+        description: "Perform a dry run without publishing"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: read
+  issues: read
+
+jobs:
+  prepare-rc:
+    name: Prepare Release Candidate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+          cache: "npm"
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          if ! echo "$VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$'; then
+            echo "❌ Invalid RC version format. Expected: X.Y.Z-rc.N (e.g., 0.2.0-rc.1)"
+            exit 1
+          fi
+          echo "✅ Valid RC version: $VERSION"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate release notes
+        id: release-notes
+        run: |
+          echo "📝 Generating release notes for RC ${{ github.event.inputs.version }}"
+
+          # Get the previous tag
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          CURRENT_VERSION="${{ github.event.inputs.version }}"
+
+          # Generate changelog
+          node scripts/release/generate-changelog.js \
+            --from="$PREVIOUS_TAG" \
+            --to="HEAD" \
+            --version="$CURRENT_VERSION" \
+            --rc=true \
+            --milestone="${{ github.event.inputs.milestone }}" \
+            > RELEASE_NOTES.md
+
+          # Output for summary
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          cat RELEASE_NOTES.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Run comprehensive tests
+        run: |
+          echo "🧪 Running comprehensive test suite for RC..."
+          npm run test:unit
+          npm run test:e2e
+          npm run typecheck
+          npm run lint
+
+      - name: Build package
+        run: |
+          echo "📦 Building release candidate package..."
+          npm run build
+
+          # Verify build output
+          if [ ! -d "dist" ]; then
+            echo "❌ Build failed - no dist directory"
+            exit 1
+          fi
+
+          echo "✅ Build successful"
+
+      - name: Update version
+        if: github.event.inputs.dry_run == 'false'
+        run: |
+          npm version ${{ github.event.inputs.version }} --no-git-tag-version
+
+          # Commit version bump
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "chore: bump version to ${{ github.event.inputs.version }}"
+
+      - name: Create git tag
+        if: github.event.inputs.dry_run == 'false'
+        run: |
+          git tag -a "v${{ github.event.inputs.version }}" -m "Release candidate ${{ github.event.inputs.version }}"
+
+      - name: Push changes
+        if: github.event.inputs.dry_run == 'false'
+        run: |
+          git push origin HEAD
+          git push origin "v${{ github.event.inputs.version }}"
+
+      - name: Publish to NPM
+        if: github.event.inputs.dry_run == 'false'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "📤 Publishing RC to NPM with 'next' tag..."
+          npm publish --tag next --access public
+
+          echo "✅ Published to NPM"
+          echo "Install with: npm install ag-grid-react-components@next"
+
+      - name: Create GitHub pre-release
+        if: github.event.inputs.dry_run == 'false'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          release_name: v${{ github.event.inputs.version }}
+          body: |
+            # Release Candidate ${{ github.event.inputs.version }}
+
+            This is a pre-release version for testing. Please report any issues found.
+
+            ## Installation
+            ```bash
+            npm install ag-grid-react-components@next
+            # or
+            npm install ag-grid-react-components@${{ github.event.inputs.version }}
+            ```
+
+            ## What's Changed
+            ${{ steps.release-notes.outputs.changelog }}
+
+            ## Testing Instructions
+            1. Install the RC version in your project
+            2. Test all existing functionality
+            3. Pay special attention to new features
+            4. Report issues with the `rc-feedback` label
+
+            **Note**: This is a pre-release version and should not be used in production.
+          draft: false
+          prerelease: true
+
+      - name: Create testing issue
+        if: github.event.inputs.dry_run == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = '${{ github.event.inputs.version }}';
+            const milestone = '${{ github.event.inputs.milestone }}';
+
+            const issueBody = `# Release Candidate Testing: ${version}
+
+            ## 📋 Testing Checklist
+
+            ### Installation
+            - [ ] \`npm install ag-grid-react-components@next\` works correctly
+            - [ ] Package size is reasonable
+            - [ ] All dependencies are resolved
+
+            ### Core Functionality
+            - [ ] DateFilter component works as expected
+            - [ ] RelativeDateFilter functions properly
+            - [ ] QuickFilterDropdown operates correctly
+            - [ ] ActiveFilters display works
+            - [ ] Grid state utilities function properly
+
+            ### New Features (if any)
+            _List specific new features to test based on the changelog_
+
+            ### Integration
+            - [ ] Works with AG Grid v33+
+            - [ ] TypeScript types are correct
+            - [ ] Tree-shaking works properly
+            - [ ] No console errors or warnings
+
+            ### Demo Application
+            - [ ] Demo builds successfully
+            - [ ] All examples work
+            - [ ] Performance is acceptable
+
+            ## 🐛 Issues Found
+            _Report any issues found during testing_
+
+            ## 📝 Feedback
+            _General feedback about the RC_
+
+            ---
+
+            **RC Details**:
+            - Version: ${version}
+            - NPM Tag: \`next\`
+            - Install: \`npm install ag-grid-react-components@next\`
+            ${milestone ? `- Milestone: #${milestone}` : ''}
+
+            cc @${context.repo.owner}`;
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Test Release Candidate ${version}`,
+              body: issueBody,
+              labels: ['rc-testing', 'priority: high']
+            });
+
+            console.log(`Created testing issue #${issue.data.number}`);
+
+      - name: Summary
+        run: |
+          echo "## 🎉 Release Candidate Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ github.event.inputs.dry_run }}" == "true" ]; then
+            echo "### 🔍 Dry Run Completed" >> $GITHUB_STEP_SUMMARY
+            echo "This was a dry run - no changes were published" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ✅ RC Published Successfully!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Version**: ${{ github.event.inputs.version }}" >> $GITHUB_STEP_SUMMARY
+            echo "**NPM Package**: [ag-grid-react-components@next](https://www.npmjs.com/package/ag-grid-react-components/v/${{ github.event.inputs.version }})" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Installation" >> $GITHUB_STEP_SUMMARY
+            echo '```bash' >> $GITHUB_STEP_SUMMARY
+            echo "npm install ag-grid-react-components@next" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Release Notes" >> $GITHUB_STEP_SUMMARY
+          cat RELEASE_NOTES.md >> $GITHUB_STEP_SUMMARY

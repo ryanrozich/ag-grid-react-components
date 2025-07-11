@@ -1,0 +1,223 @@
+name: Deploy RC Preview
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to deploy (e.g., feature/filter-presets-integration)"
+        required: true
+        type: string
+        default: "main"
+      environment:
+        description: "Environment name for the preview"
+        required: false
+        type: string
+        default: "rc-preview"
+
+permissions:
+  contents: read
+  deployments: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  deploy-rc-preview:
+    name: Deploy Release Candidate Preview
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment }}
+      url: ${{ steps.deployment.outputs.preview-url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install API dependencies
+        run: cd api && npm install
+
+      - name: Generate version info
+        run: |
+          BRANCH="${{ github.event.inputs.branch }}"
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          cat > src/demo/version-info.json << EOF
+          {
+            "version": "RC-Preview",
+            "branch": "$BRANCH",
+            "commit": "$SHORT_SHA",
+            "timestamp": "$TIMESTAMP",
+            "isRCPreview": true
+          }
+          EOF
+
+      - name: Build demo
+        env:
+          VITE_PREVIEW_MODE: "true"
+          VITE_RC_PREVIEW: "true"
+        run: |
+          echo "📦 Building RC preview..."
+          npm run build:demo
+
+          # Verify build
+          if [ ! -d "dist-demo" ]; then
+            echo "❌ Demo build failed"
+            exit 1
+          fi
+
+      - name: Setup Cloudflare account
+        run: |
+          echo "CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" >> $GITHUB_ENV
+
+      - name: Deploy to Cloudflare Pages
+        id: deployment
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist-demo --project-name=ag-grid-react-components --branch=rc-${{ github.event.inputs.branch }}
+          wranglerVersion: "3"
+
+      - name: Get deployment URL
+        id: get-url
+        run: |
+          # Extract URL from deployment output
+          PREVIEW_URL=$(echo "${{ steps.deployment.outputs.deployment-url }}" | grep -oE 'https://[^ ]+' | head -1)
+
+          # Fallback URL construction
+          if [ -z "$PREVIEW_URL" ]; then
+            BRANCH_SLUG=$(echo "${{ github.event.inputs.branch }}" | sed 's/[^a-zA-Z0-9-]/-/g' | tr '[:upper:]' '[:lower:]')
+            PREVIEW_URL="https://rc-${BRANCH_SLUG}.ag-grid-react-components.pages.dev"
+          fi
+
+          echo "preview-url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+          echo "branch-slug=$BRANCH_SLUG" >> $GITHUB_OUTPUT
+
+      - name: Create deployment record
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deployment = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: '${{ github.event.inputs.branch }}',
+              environment: '${{ github.event.inputs.environment }}',
+              description: 'RC Preview Deployment',
+              auto_merge: false,
+              required_contexts: []
+            });
+
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: deployment.data.id,
+              state: 'success',
+              environment_url: '${{ steps.get-url.outputs.preview-url }}',
+              description: 'RC Preview deployed successfully'
+            });
+
+      - name: Find related issues
+        id: find-issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Find issues related to filter presets milestone
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              milestone: '*',
+              state: 'open',
+              labels: 'milestone: filter-presets'
+            });
+
+            const issueNumbers = issues.data.map(i => i.number);
+            core.setOutput('issue-numbers', issueNumbers.join(','));
+
+      - name: Post preview links
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const previewUrl = '${{ steps.get-url.outputs.preview-url }}';
+            const branch = '${{ github.event.inputs.branch }}';
+            const issueNumbers = '${{ steps.find-issues.outputs.issue-numbers }}'.split(',').filter(n => n);
+
+            const comment = `## 🚀 Release Candidate Preview Ready!
+
+            A release candidate preview has been deployed for testing the integrated features.
+
+            **Preview URL**: ${previewUrl}
+            **Branch**: \`${branch}\`
+            **Environment**: \`${{ github.event.inputs.environment }}\`
+
+            ### What's Included
+            This preview includes all integrated features from the filter presets milestone:
+            - ✅ Core storage engine (PR #53)
+            - ✅ UI components (PR #58)
+            - ✅ Sharing system (PR #55)
+            - ✅ System/user presets (PR #56)
+            - ✅ Demo showcase (PR #54)
+            - ✅ Documentation (PR #57)
+
+            ### Testing Instructions
+            1. Visit the preview URL above
+            2. Test all filter preset features:
+               - Save and load filter presets
+               - Share presets via URL
+               - Import/export presets
+               - System vs user presets
+               - QuickFilterDropdown integration
+            3. Check the demo examples
+            4. Test cross-browser compatibility
+
+            ### Feedback
+            Please report any issues found during testing. This preview will remain available until the next deployment.
+
+            ---
+            *This is an automated preview deployment for release candidate testing.*`;
+
+            // Post to all related issues
+            for (const issueNumber of issueNumbers) {
+              if (issueNumber) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: parseInt(issueNumber),
+                  body: comment
+                });
+              }
+            }
+
+            // Also create a dedicated RC testing issue
+            const rcIssue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `RC Preview: Test Filter Presets Integration`,
+              body: comment + `\n\n### Checklist\n- [ ] All features working\n- [ ] No console errors\n- [ ] Performance acceptable\n- [ ] Mobile responsive\n- [ ] Documentation accurate`,
+              labels: ['rc-testing', 'priority: high']
+            });
+
+            console.log(`Created RC testing issue #${rcIssue.data.number}`);
+
+      - name: Summary
+        run: |
+          echo "## 🎉 RC Preview Deployed!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Preview URL**: ${{ steps.get-url.outputs.preview-url }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch**: ${{ github.event.inputs.branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment**: ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Visit the preview URL to test all integrated features" >> $GITHUB_STEP_SUMMARY
+          echo "2. Report any issues in the created testing issue" >> $GITHUB_STEP_SUMMARY
+          echo "3. Once approved, create an official release candidate" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,37 @@
+{
+  "examples": [
+    {
+      "id": "datefilter",
+      "name": "DateFilter",
+      "title": "DateFilter - Natural Language Example",
+      "description": "AG Grid with natural language date filtering",
+      "stackblitzUrl": "https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/main/examples/datefilter",
+      "files": {
+        "App.tsx": "examples/datefilter/App.tsx",
+        "package.json": "examples/shared/package.json"
+      }
+    },
+    {
+      "id": "quickfilterdropdown",
+      "name": "QuickFilterDropdown",
+      "title": "QuickFilterDropdown - Custom Presets",
+      "description": "Quick filter dropdown with custom filter presets",
+      "stackblitzUrl": "https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/main/examples/quickfilterdropdown",
+      "files": {
+        "App.tsx": "examples/quickfilterdropdown/App.tsx",
+        "package.json": "examples/shared/package.json"
+      }
+    },
+    {
+      "id": "activefilters",
+      "name": "ActiveFilters",
+      "title": "ActiveFilters - Interactive Pills",
+      "description": "Display active filters as removable pills",
+      "stackblitzUrl": "https://stackblitz.com/github/ryanrozich/ag-grid-react-components/tree/main/examples/activefilters",
+      "files": {
+        "App.tsx": "examples/activefilters/App.tsx",
+        "package.json": "examples/shared/package.json"
+      }
+    }
+  ]
+}

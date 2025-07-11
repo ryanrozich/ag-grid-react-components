@@ -100,15 +100,15 @@ export const getColumnDefs = (isServerSide = false): ColDef[] => [
   {
     field: "id",
     headerName: "ID",
-    width: 120,
+    width: 100,
     pinned: "left",
     enableRowGroup: !isServerSide,
-    hide: !isServerSide,
+    cellClass: "font-mono text-sm",
   },
   {
     field: "name",
     headerName: "Task",
-    width: 300,
+    width: 320,
     filter: "agTextColumnFilter",
   },
   {
@@ -167,8 +167,8 @@ export const getColumnDefs = (isServerSide = false): ColDef[] => [
   {
     field: "assignee",
     headerName: "Assignee",
-    width: 180,
-    cellRenderer: isServerSide ? "avatarRenderer" : undefined,
+    width: 200,
+    cellRenderer: "avatarRenderer",
     filter: "agTextColumnFilter",
     enableRowGroup: true,
   },

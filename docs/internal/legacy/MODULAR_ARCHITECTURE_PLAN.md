@@ -8,7 +8,7 @@ Transform the library from a monolithic 329KB bundle to a modular, composable sy
 
 ### Current State (329KB / 66KB gzipped)
 
-```
+```text
 ag-grid-react-components
 ├── DateFilter (with react-datepicker) - 150KB
 ├── QuickFilterDropdown - 50KB
@@ -18,7 +18,7 @@ ag-grid-react-components
 
 ### Target State (<100KB / <25KB gzipped)
 
-```
+```text
 @ag-grid-react-components/core - 5KB
 ├── /date-filter - 10KB (headless)
 ├── /quick-filter - 8KB
@@ -34,7 +34,7 @@ ag-grid-react-components
 
 ### 1.1 Create Headless Core
 
-```typescript
+````typescript
 // packages/core/src/date-filter/types.ts
 export interface DatePickerAdapter {
   render: (props: DatePickerProps) => React.ReactElement;
@@ -58,7 +58,7 @@ export function createDateFilter(config: DateFilterConfig = {}) {
     // Lazy load compression if enabled
   };
 }
-```
+```text
 
 ### 1.2 Adapter Pattern Implementation
 
@@ -91,7 +91,7 @@ export const nativeDateAdapter: DatePickerAdapter = {
   parseValue: (value) => new Date(value),
   formatValue: (date) => date.toISOString().split('T')[0]
 };
-```
+```text
 
 ## Phase 2: Bundle Splitting (Week 2)
 
@@ -125,7 +125,7 @@ export const nativeDateAdapter: DatePickerAdapter = {
   },
   "sideEffects": false
 }
-```
+```text
 
 ### 2.2 Tree-Shakeable Utils
 
@@ -136,7 +136,7 @@ import { setupGridStatePersistence, captureGridState } from "ag-grid-react-compo
 // Allow:
 import { setupGridStatePersistence } from "@ag-grid-react-components/utils/persistence";
 import { captureGridState } from "@ag-grid-react-components/utils/state";
-```
+```text
 
 ## Phase 3: Compression as Optional Feature
 
@@ -173,7 +173,7 @@ export function createCompressionAdapter(): CompressionAdapter {
 const gridState = await setupGridStatePersistence(api, {
   compression: createCompressionAdapter(), // Optional
 });
-```
+```text
 
 ## Phase 4: CSS Strategy
 
@@ -198,7 +198,7 @@ import styles from '@ag-grid-react-components/core/styles/date-filter.module.css
 
 // Option 3: Styled wrapper (separate package)
 import { StyledDateFilter } from '@ag-grid-react-components/styled';
-```
+```text
 
 ## Phase 5: Migration Strategy
 
@@ -220,7 +220,7 @@ export { DateFilter } from "./DateFilter";
 export { QuickFilterDropdown } from "./QuickFilterDropdown";
 export { ActiveFilters } from "./ActiveFilters";
 export * from "./utils";
-```
+```text
 
 ### 5.2 Progressive Migration
 
@@ -239,7 +239,7 @@ const DateFilter = createDateFilter({
 // Step 3: Tree-shake unused features
 import { QuickFilterDropdown } from "@ag-grid-react-components/core/quick-filter";
 // Don't import what you don't use
-```
+```text
 
 ## Implementation Timeline
 
@@ -295,7 +295,7 @@ import { QuickFilterDropdown } from "@ag-grid-react-components/core/quick-filter
 ```typescript
 import { DateFilter, setupGridStatePersistence } from "ag-grid-react-components";
 // Imports everything: 329KB
-```
+```text
 
 ### After (v2)
 
@@ -311,7 +311,7 @@ const DateFilter = createDateFilter({ datePickerAdapter: reactDatePickerAdapter 
 
 // Option 3: Just what you need (8KB)
 import { QuickFilterDropdown } from "@ag-grid-react-components/core/quick-filter";
-```
+````
 
 ## Inspiration from Best-in-Class Libraries
 

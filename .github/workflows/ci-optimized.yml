@@ -1,0 +1,341 @@
+name: CI (Optimized)
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+# Cancel in-progress runs for the same PR
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Quick checks that can fail fast
+  quick-checks:
+    name: Quick Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: npm-cache
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Install dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Check TypeScript
+        run: npm run typecheck
+
+      - name: Check formatting
+        run: npm run check:format || true
+
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    needs: quick-checks
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies (if needed)
+        run: |
+          if [ ! -d "node_modules" ]; then
+            npm ci
+          fi
+
+      - name: Cache Trunk
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trunk
+          key: ${{ runner.os }}-trunk-${{ hashFiles('.trunk/trunk.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-trunk-
+
+      - name: Install Trunk
+        run: npm install -g @trunkio/launcher
+
+      - name: Run Trunk check
+        run: trunk check --no-fix --ci --upstream=origin/main
+
+      - name: Check whitespace
+        run: npm run check:whitespace
+        continue-on-error: true
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: quick-checks
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies (if needed)
+        run: |
+          if [ ! -d "node_modules" ]; then
+            npm ci
+          fi
+
+      - name: Cache test results
+        uses: actions/cache@v4
+        with:
+          path: |
+            coverage
+            .vitest-cache
+          key: ${{ runner.os }}-test-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-test-
+
+      - name: Run unit tests with coverage
+        run: npm run test:coverage
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/coverage-final.json
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: quick-checks
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies (if needed)
+        run: |
+          if [ ! -d "node_modules" ]; then
+            npm ci
+          fi
+
+      - name: Cache build output
+        uses: actions/cache@v4
+        with:
+          path: |
+            dist
+            .rollup.cache
+          key: ${{ runner.os }}-build-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
+      - name: Build library
+        run: npm run build
+
+      - name: Check bundle size
+        run: |
+          # Report bundle size
+          echo "📦 Bundle Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          find dist -name "*.js" -o -name "*.css" | xargs du -h | sort -h >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Total: $(du -sh dist | cut -f1)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+
+  # Matrix job for parallel checks
+  parallel-checks:
+    name: ${{ matrix.check }}
+    runs-on: ubuntu-latest
+    needs: quick-checks
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - check: "Security Scan"
+            cmd: "npm audit --audit-level=moderate"
+          - check: "License Check"
+            cmd: "npx license-checker --onlyAllow 'MIT;Apache-2.0;BSD;ISC;CC0-1.0' || true"
+          - check: "Bundle Analysis"
+            cmd: "npm run analyze || true"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies (if needed)
+        run: |
+          if [ ! -d "node_modules" ]; then
+            npm ci
+          fi
+
+      - name: Run ${{ matrix.check }}
+        run: ${{ matrix.cmd }}
+
+  # Summary job to ensure all checks pass
+  ci-summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [quality, test, build, parallel-checks]
+    if: always()
+    timeout-minutes: 2
+
+    steps:
+      - name: Check results
+        run: |
+          echo "## CI Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check job results
+          QUALITY="${{ needs.quality.result }}"
+          TEST="${{ needs.test.result }}"
+          BUILD="${{ needs.build.result }}"
+          CHECKS="${{ needs.parallel-checks.result }}"
+
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Quality | $([[ "$QUALITY" == "success" ]] && echo "✅" || echo "❌") $QUALITY |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests | $([[ "$TEST" == "success" ]] && echo "✅" || echo "❌") $TEST |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | $([[ "$BUILD" == "success" ]] && echo "✅" || echo "❌") $BUILD |" >> $GITHUB_STEP_SUMMARY
+          echo "| Additional Checks | $([[ "$CHECKS" == "success" ]] && echo "✅" || echo "❌") $CHECKS |" >> $GITHUB_STEP_SUMMARY
+
+          # Overall result
+          if [[ "$QUALITY" == "success" && "$TEST" == "success" && "$BUILD" == "success" ]]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ✅ All required checks passed!" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ❌ Some checks failed" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+  publish-preview:
+    name: Publish Preview
+    runs-on: ubuntu-latest
+    needs: [ci-summary]
+    if: github.event_name == 'pull_request' && needs.ci-summary.result == 'success'
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Version preview package
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          npm version prerelease --preid=pr${PR_NUMBER}.$(date +%s) --no-git-tag-version
+
+      - name: Publish preview to npm
+        run: npm publish --tag preview --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

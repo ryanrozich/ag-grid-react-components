@@ -4,7 +4,7 @@ This guide helps you set up the GitHub Project for optimal workflow with both AI
 
 ## Creating the Project
 
-1. Go to https://github.com/ryanrozich/ag-grid-react-components/projects
+1. Go to [https://github.com/ryanrozich/ag-grid-react-components/projects](https://github.com/ryanrozich/ag-grid-react-components/projects)
 2. Click "New project" → Choose "Board" template
 3. Name: "AG Grid React Components Roadmap"
 
@@ -73,14 +73,14 @@ Set up these workflows in Project Settings → Workflows:
 
 ### 1. Issue Created
 
-```
+```text
 When: Issue is created
 Then: Move to "Backlog"
 ```
 
 ### 2. Issue Assigned
 
-```
+```text
 When: Issue is assigned
 If: Status is "Ready"
 Then: Move to "In Progress"
@@ -88,21 +88,21 @@ Then: Move to "In Progress"
 
 ### 3. PR Opened
 
-```
+```text
 When: Pull request is opened
 Then: Move linked issues to "In Review"
 ```
 
 ### 4. PR Merged
 
-```
+```text
 When: Pull request is merged
 Then: Move linked issues to "Done"
 ```
 
 ### 5. Issue Closed (No PR)
 
-```
+```text
 When: Issue is closed
 If: No linked PR
 Then: Move to "Done"
@@ -205,7 +205,7 @@ For new issues in Backlog:
 
 ### Weekly Metrics Dashboard
 
-```markdown
+`````markdown
 ## Week of [Date]
 
 ### Velocity
@@ -232,7 +232,8 @@ For new issues in Backlog:
 - Issues Created by AI: X
 - Quality Score: Y/10
 - Accuracy Rate: Z%
-```
+
+````text
 
 ## Best Practices
 
@@ -276,11 +277,11 @@ For new issues in Backlog:
 
 ## Quick Links
 
-- [Create Bug Report](https://github.com/ryanrozich/ag-grid-react-components/issues/new?template=01-bug-report.yml)
-- [Create Feature Request](https://github.com/ryanrozich/ag-grid-react-components/issues/new?template=02-feature-request.yml)
-- [Create Discovery Task](https://github.com/ryanrozich/ag-grid-react-components/issues/new?template=03-discovery-task.yml)
+- [Create Bug Report]([https://github.com/ryanrozich/ag-grid-react-components/issues/new?template=01-bug-report.ym](https://github.com/ryanrozich/ag-grid-react-components/issues/new?template=01-bug-report.ym)l)
+- [Create Feature Request]([https://github.com/ryanrozich/ag-grid-react-components/issues/new?template=02-feature-request.ym](https://github.com/ryanrozich/ag-grid-react-components/issues/new?template=02-feature-request.ym)l)
+- [Create Discovery Task]([https://github.com/ryanrozich/ag-grid-react-components/issues/new?template=03-discovery-task.ym](https://github.com/ryanrozich/ag-grid-react-components/issues/new?template=03-discovery-task.ym)l)
 - [View Project Board](#) <!-- Add link when created -->
-- [View Milestones](https://github.com/ryanrozich/ag-grid-react-components/milestones)
+- [View Milestones]([https://github.com/ryanrozich/ag-grid-react-components/milestone](https://github.com/ryanrozich/ag-grid-react-components/milestone)s)
 
 ## Automation Scripts
 
@@ -304,6 +305,10 @@ gh api graphql -f query='
 gh issue list --label "status: needs-triage" --json number \
   | jq -r '.[].number' \
   | xargs -I {} gh issue edit {} --add-label "area: components"
-```
+````
+`````
+
+```bash
 
 This project board setup ensures smooth collaboration between AI agents and human developers while maintaining high code quality and clear priorities.
+```

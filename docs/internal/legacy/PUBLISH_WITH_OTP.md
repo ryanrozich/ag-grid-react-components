@@ -12,7 +12,7 @@ NPM requires a one-time password for publishing. Here's how to provide it:
 
 Run this command, replacing `123456` with your actual 6-digit code:
 
-```bash
+````bash
 # For core package
 cd packages/core
 npm publish --access public --tag beta --otp=123456
@@ -28,7 +28,7 @@ npm publish --access public --tag beta --otp=123456
 # For compat
 cd ../compat
 npm publish --access public --tag beta --otp=123456
-```
+```text
 
 ## Or use the script with OTP
 
@@ -37,16 +37,16 @@ From the root directory:
 ```bash
 # Example with your OTP
 npm run publish:core -- --otp=123456
-```
+```text
 
-## Success!
+## Success
 
 Once published, your packages will be live at:
 
-- https://www.npmjs.com/package/@agrc/core
-- https://www.npmjs.com/package/@agrc/adapters
-- https://www.npmjs.com/package/@agrc/styles
-- https://www.npmjs.com/package/@agrc/compat
+- [https://www.npmjs.com/package/@agrc/core](https://www.npmjs.com/package/@agrc/core)
+- [https://www.npmjs.com/package/@agrc/adapters](https://www.npmjs.com/package/@agrc/adapters)
+- [https://www.npmjs.com/package/@agrc/styles](https://www.npmjs.com/package/@agrc/styles)
+- [https://www.npmjs.com/package/@agrc/compat](https://www.npmjs.com/package/@agrc/compat)
 
 ## Test installation
 
@@ -55,4 +55,4 @@ Once published, your packages will be live at:
 mkdir test-agrc && cd test-agrc
 npm init -y
 npm install @agrc/core@beta
-```
+````

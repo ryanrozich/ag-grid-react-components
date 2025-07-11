@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { AgGridReact } from "ag-grid-react";
 import { GridApi, GridReadyEvent } from "ag-grid-community";
 
@@ -23,49 +23,26 @@ export const AGGridTestHarness: React.FC<AGGridTestHarnessProps> = ({
   children,
   onGridReady,
 }) => {
-  const gridRef = useRef<AgGridReact>(null);
-
-  useEffect(() => {
-    if (gridRef.current) {
-      // Initialize the global test object if it doesn't exist
-      if (!window.__AG_GRID_TEST__) {
-        window.__AG_GRID_TEST__ = {};
-      }
-
-      // Store the grid API
-      window.__AG_GRID_TEST__[gridId] = {
-        api: gridRef.current.api,
-      };
-
-      // Call the original onGridReady if provided
-      if (onGridReady) {
-        onGridReady({
-          api: gridRef.current.api,
-        } as GridReadyEvent);
-      }
+  const handleGridReady = (params: GridReadyEvent) => {
+    // Initialize the global test object if it doesn't exist
+    if (!window.__AG_GRID_TEST__) {
+      window.__AG_GRID_TEST__ = {};
     }
 
-    // Cleanup
-    return () => {
-      if (window.__AG_GRID_TEST__) {
-        delete window.__AG_GRID_TEST__[gridId];
-      }
+    // Store the grid API
+    window.__AG_GRID_TEST__[gridId] = {
+      api: params.api,
     };
-  }, [gridId, onGridReady]);
 
-  // Clone the child and add our ref
+    // Call the original onGridReady if provided
+    if (onGridReady) {
+      onGridReady(params);
+    }
+  };
+
+  // Clone the child and intercept onGridReady
   return React.cloneElement(children, {
-    // ref: (r: AgGridReact | null) => {
-    //   gridRef.current = r;
-    //   // Call the original ref if it exists
-    //   if (children.ref) {
-    //     if (typeof children.ref === 'function') {
-    //       children.ref(r);
-    //     } else if (children.ref.hasOwnProperty('current')) {
-    //       (children.ref as React.MutableRefObject<AgGridReact | null>).current = r;
-    //     }
-    //   }
-    // },
+    onGridReady: handleGridReady,
   });
 };
 

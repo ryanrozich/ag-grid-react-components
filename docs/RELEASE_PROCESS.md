@@ -30,17 +30,18 @@ This document describes the release process for AG Grid React Components.
    ```
 
 3. **All tests passing**:
-   ```bash
+   ````bash
    npm test
    npm run lint
    npm run typecheck
-   ```
+   ```text
+   ````
 
 ## Manual Release Process
 
 ### Option 1: GitHub Actions (Recommended)
 
-1. Go to [Actions → Release](https://github.com/ryanrozich/ag-grid-react-components/actions/workflows/release.yml)
+1. Go to [Actions → Release](<[https://github.com/ryanrozich/ag-grid-react-components/actions/workflows/release.ym](https://github.com/ryanrozich/ag-grid-react-components/actions/workflows/release.ym)l>)
 2. Click "Run workflow"
 3. Select release type (patch/minor/major/prerelease)
 4. Click "Run workflow"
@@ -116,14 +117,15 @@ Install with: `npm install ag-grid-react-components@beta`
 
 After each release:
 
-- [ ] Verify npm package: https://www.npmjs.com/package/ag-grid-react-components
+- [ ] Verify npm package: [https://www.npmjs.com/package/ag-grid-react-components](https://www.npmjs.com/package/ag-grid-react-components)
 - [ ] Check bundle size: `npm install ag-grid-react-components@latest && npm list`
 - [ ] Test in fresh project:
-  ```bash
+  ````bash
   npx create-react-app test-release
   cd test-release
   npm install ag-grid-react-components@latest
-  ```
+  ```text
+  ````
 - [ ] Update demo site if needed
 - [ ] Announce release:
   - [ ] GitHub Discussions
@@ -132,7 +134,7 @@ After each release:
 
 ## Version Strategy
 
-We follow [Semantic Versioning](https://semver.org/):
+We follow [Semantic Versioning](<[https://semver.org](https://semver.org)/>):
 
 - **0.x.y**: Pre-1.0 releases (current phase)
   - Breaking changes allowed in minor versions
@@ -145,7 +147,7 @@ We follow [Semantic Versioning](https://semver.org/):
 
 ### npm publish fails
 
-```bash
+````bash
 # Check authentication
 npm whoami
 
@@ -154,7 +156,7 @@ npm login
 
 # Verify package contents
 npm pack --dry-run
-```
+```text
 
 ### Git push fails
 
@@ -165,7 +167,7 @@ git rebase origin/main
 
 # Force push if needed (careful!)
 git push --force-with-lease origin main
-```
+````
 
 ### Release workflow fails
 
@@ -177,5 +179,5 @@ git push --force-with-lease origin main
 
 - Current version: 0.1.0
 - Next release: First official release
-- npm package: https://www.npmjs.com/package/ag-grid-react-components
+- npm package: [https://www.npmjs.com/package/ag-grid-react-components](https://www.npmjs.com/package/ag-grid-react-components)
 - Latest tag: Will be created with first release

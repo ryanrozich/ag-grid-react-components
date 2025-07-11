@@ -1,0 +1,378 @@
+.container {
+  display: inline-flex;
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Action buttons */
+.saveButton,
+.shareButton,
+.manageButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid rgb(156, 163, 175, 0.3);
+  border-radius: 0.375rem;
+  background: transparent;
+  color: rgb(156, 163, 175);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.saveButton:hover,
+.shareButton:hover,
+.manageButton:hover {
+  background-color: rgb(156, 163, 175, 0.1);
+  border-color: rgb(156, 163, 175, 0.5);
+  color: rgb(209, 213, 219);
+}
+
+.saveButton:focus,
+.shareButton:focus,
+.manageButton:focus {
+  outline: 2px solid rgb(99, 102, 241, 0.5);
+  outline-offset: 2px;
+}
+
+.applyDropdown {
+  min-width: 120px;
+}
+
+/* Modal styles */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+}
+
+.modal {
+  background: #1f2937;
+  border: 1px solid rgb(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 25px -5px rgb(0, 0, 0, 0.5);
+  max-width: 32rem;
+  width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  color: #e2e8f0;
+}
+
+.modal.large {
+  max-width: 48rem;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgb(255, 255, 255, 0.1);
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.15s ease;
+}
+
+.closeButton:hover {
+  background: rgb(255, 255, 255, 0.1);
+  color: #f3f4f6;
+}
+
+.modalBody {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.modalActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+/* Form styles */
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.input,
+.select {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid rgb(255, 255, 255, 0.2);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background: rgb(0, 0, 0, 0.3);
+  color: #e2e8f0;
+  transition: all 0.15s ease;
+}
+
+.input:focus,
+.select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59, 130, 246, 0.1);
+}
+
+.categoryToggle {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.categoryToggle label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.813rem;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.categoryToggle input[type="radio"] {
+  margin: 0;
+}
+
+/* Button styles */
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1.25rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.primaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  padding: 0.625rem 1.25rem;
+  background: transparent;
+  color: #e2e8f0;
+  border: 1px solid rgb(255, 255, 255, 0.2);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cancelButton:hover {
+  background: rgb(255, 255, 255, 0.1);
+  border-color: rgb(255, 255, 255, 0.3);
+}
+
+/* Manage modal styles */
+.presetManageList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.manageItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgb(255, 255, 255, 0.05);
+  border: 1px solid rgb(255, 255, 255, 0.1);
+  border-radius: 0.375rem;
+  transition: all 0.15s ease;
+  cursor: move;
+}
+
+.manageItem:hover {
+  background: rgb(255, 255, 255, 0.08);
+  border-color: rgb(255, 255, 255, 0.2);
+}
+
+.dragHandle {
+  color: #6b7280;
+  font-size: 0.75rem;
+  user-select: none;
+}
+
+.presetDetails {
+  flex: 1;
+}
+
+.presetName {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: #e2e8f0;
+}
+
+.presetCategory {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.125rem;
+}
+
+.manageActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editButton,
+.deleteButton {
+  padding: 0.375rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editButton {
+  color: #3b82f6;
+}
+
+.editButton:hover {
+  background: rgb(59, 130, 246, 0.1);
+}
+
+.deleteButton {
+  color: #ef4444;
+}
+
+.deleteButton:hover {
+  background: rgb(239, 68, 68, 0.1);
+}
+
+.emptyMessage {
+  text-align: center;
+  color: #6b7280;
+  padding: 2rem 0;
+}
+
+.manageFooter {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(255, 255, 255, 0.1);
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: center;
+  margin: 0;
+}
+
+/* Edit form styles */
+.editForm {
+  flex: 1;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.editInput {
+  flex: 1;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid rgb(255, 255, 255, 0.2);
+  border-radius: 0.25rem;
+  background: rgb(0, 0, 0, 0.3);
+  color: #e2e8f0;
+  font-size: 0.813rem;
+}
+
+.editInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.editActions {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.editActions .cancelButton,
+.editActions .saveButton {
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+}
+
+/* Share modal styles */
+.shareSection {
+  margin-bottom: 1.5rem;
+}
+
+.shareSection:last-child {
+  margin-bottom: 0;
+}
+
+.shareSection h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.shareDescription {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.divider {
+  height: 1px;
+  background: rgb(255, 255, 255, 0.1);
+  margin: 1.5rem 0;
+}

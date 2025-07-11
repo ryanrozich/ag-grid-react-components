@@ -20,7 +20,7 @@ That's it! The demo will hot-reload as you make changes.
 
 ## Online Demo Deployment
 
-The live demo is available at: <https://demo.rozich.net/ag-grid-react-components/>
+The live demo is available at: <[https://demo.rozich.net/ag-grid-react-components/>](https://demo.rozich.net/ag-grid-react-components/>)
 
 This deployment uses a custom Cloudflare Workers architecture that allows hosting multiple project demos under a single domain. The deployment is automated via GitHub Actions when changes are pushed to the main branch.
 
@@ -29,7 +29,7 @@ This deployment uses a custom Cloudflare Workers architecture that allows hostin
 For those interested in the deployment details:
 
 - **Demo Router Worker**: A centralized Cloudflare Worker that routes requests to different demo projects
-- **Router Repository**: <https://github.com/ryanrozich/demo-router-worker>
+- **Router Repository**: <[https://github.com/ryanrozich/demo-router-worker>](https://github.com/ryanrozich/demo-router-worker>)
 - **Storage**: Uses Cloudflare R2 for static assets and KV for metadata
 - **Cost**: Everything fits within Cloudflare's free tier
 
@@ -62,14 +62,14 @@ Automatically builds and deploys the demo when changes are pushed to main.
 
 ### 3. NPM Scripts
 
-```bash
+````bash
 # Build the demo for deployment
 npm run build:demo
 
 # Build and preview locally with production base path
 VITE_BASE_PATH=/ag-grid-react-components/ npm run build:demo
 npm run preview:demo
-```
+```text
 
 ## Manual Deployment (For Maintainers)
 
@@ -91,10 +91,10 @@ wrangler kv:key put \
   "ag-grid-react-components" \
   '{"name": "AG Grid React Components", "updated": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' \
   --account-id=YOUR_ACCOUNT_ID
-```
+````
 
 ## Additional Resources
 
-- **Live Demo**: <https://demo.rozich.net/ag-grid-react-components/>
-- **Demo Router Repository**: <https://github.com/ryanrozich/demo-router-worker>
-- **Main Project Repository**: <https://github.com/ryanrozich/ag-grid-react-components>
+- **Live Demo**: <[https://demo.rozich.net/ag-grid-react-components/>](https://demo.rozich.net/ag-grid-react-components/>)
+- **Demo Router Repository**: <[https://github.com/ryanrozich/demo-router-worker>](https://github.com/ryanrozich/demo-router-worker>)
+- **Main Project Repository**: <[https://github.com/ryanrozich/ag-grid-react-components>](https://github.com/ryanrozich/ag-grid-react-components>)

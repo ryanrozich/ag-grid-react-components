@@ -19,7 +19,7 @@
 
 #### 1. Make react-datepicker Optional (Impact: -40KB gzipped)
 
-```typescript
+````typescript
 // Current: Direct import
 import DatePicker from "react-datepicker";
 
@@ -40,7 +40,7 @@ const DatePickerComponent = lazy(() =>
 interface DateFilterProps {
   datePickerComponent?: React.ComponentType<DatePickerProps>;
 }
-```
+```text
 
 #### 2. Optimize lz-string Import (Impact: -5KB gzipped)
 
@@ -53,7 +53,7 @@ const compress = async (data: string): Promise<string> => {
   const LZString = await import("lz-string");
   return LZString.default.compressToEncodedURIComponent(data);
 };
-```
+```text
 
 #### 3. Remove CSS Bundle Duplication
 
@@ -69,7 +69,7 @@ export { QuickFilterDropdown } from "./components/QuickFilterDropdown";
 export { ActiveFilters } from "./components/ActiveFilters";
 // Utils as separate chunk
 export * as gridUtils from "./utils/gridStateUtils";
-```
+```text
 
 ### Medium Priority
 
@@ -94,7 +94,7 @@ export * as gridUtils from "./utils/gridStateUtils";
     }
   }
 }
-```
+````
 
 ### Bundle Size Targets by Component
 

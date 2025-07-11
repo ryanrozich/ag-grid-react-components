@@ -22,7 +22,7 @@ The QuickFilterDropdown component renders beautifully but selecting options does
 
 Current implementation sends:
 
-```typescript
+````typescript
 {
   date: {
     mode: "relative",
@@ -30,7 +30,7 @@ Current implementation sends:
     expression: "Today"
   }
 }
-```
+```text
 
 But DateFilter might expect:
 
@@ -44,7 +44,7 @@ But DateFilter might expect:
     }
   }
 }
-```
+````
 
 ### 4. Debug Steps
 

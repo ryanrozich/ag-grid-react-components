@@ -8,7 +8,7 @@ This analysis examines the dependencies and bundle composition of ag-grid-react-
 
 ### DateFilter Component
 
-**External Dependencies:**
+### External Dependencies
 
 - `react` - Essential (React hooks: useState, useCallback, useMemo, useRef, useEffect)
 - `ag-grid-react` - Essential (useGridFilter hook)
@@ -16,14 +16,14 @@ This analysis examines the dependencies and bundle composition of ag-grid-react-
 - `date-fns` - Essential (format function and date manipulation)
 - `react-datepicker` - **REMOVABLE/INJECTABLE** (only used in AbsoluteDatePicker)
 
-**Internal Dependencies:**
+### Internal Dependencies
 
 - Multiple sub-components (FilterModeToggle, FilterTypeSelector, etc.)
 - Custom hooks (useFilterState, useFilterValidation)
 - Utils (logger, withErrorBoundary)
 - CSS Module: `DateFilter.module.css`
 
-**Sub-components CSS:**
+### Sub-components CSS
 
 - FilterActions.module.css
 - FilterTypeSelector.module.css
@@ -32,25 +32,25 @@ This analysis examines the dependencies and bundle composition of ag-grid-react-
 
 ### QuickFilterDropdown Component
 
-**External Dependencies:**
+### External Dependencies: (2)
 
 - `react` - Essential (hooks)
 - `react-dom` - Optional (only for portal rendering when usePortal is enabled)
 - No date libraries needed
 
-**Internal Dependencies:**
+### Internal Dependencies: (2)
 
 - Utils (filterModelBuilder, agGridWorkaround)
 - CSS Module: `QuickFilterDropdown.module.css`
 
 ### ActiveFilters Component
 
-**External Dependencies:**
+### External Dependencies: (3)
 
 - `react` - Essential
 - `ag-grid-community` - Essential (GridApi, FilterModel types)
 
-**Internal Dependencies:**
+### Internal Dependencies: (3)
 
 - Interfaces from DateFilter
 - CSS Module: `ActiveFilters.module.css`
@@ -78,7 +78,7 @@ This analysis examines the dependencies and bundle composition of ag-grid-react-
 
 ## 3. Dependency Graph
 
-```
+```text
 ag-grid-react-components
 ├── DateFilter
 │   ├── react (essential)
@@ -251,13 +251,13 @@ The library uses the following date-fns functions:
 
 ## 8. Actual Bundle Sizes
 
-**Built Output:**
+### Built Output
 
 - ES Module: 321KB (65.58KB gzipped)
 - UMD: 222KB (54.31KB gzipped)
 - CSS: 48KB (7.47KB gzipped)
 
-**Breakdown Estimate:**
+### Breakdown Estimate
 
 - react-datepicker: ~100KB of the ES bundle
 - lz-string: ~15KB

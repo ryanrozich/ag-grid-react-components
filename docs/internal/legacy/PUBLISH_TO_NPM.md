@@ -1,29 +1,29 @@
 # Publishing AG Grid React Components to NPM
 
-## 🚀 Ready to Publish!
+## 🚀 Ready to Publish
 
 All packages are implemented and ready to be published to npm. Here's how to proceed:
 
 ## Step 1: Create NPM Account (if needed)
 
-1. Go to https://www.npmjs.com/signup
+1. Go to [https://www.npmjs.com/signup](https://www.npmjs.com/signup)
 2. Create an account
 3. Verify your email
 
 ## Step 2: Login to NPM
 
-```bash
+````bash
 npm login
 # Enter your username, password, and email
 # You'll receive a one-time password via email
-```
+```text
 
 ## Step 3: Verify Login
 
 ```bash
 npm whoami
 # Should show your npm username
-```
+```text
 
 ## Step 4: Test the Build
 
@@ -33,14 +33,14 @@ npx turbo run build
 
 # Dry run to see what would be published
 npm run publish:dry
-```
+```text
 
 ## Step 5: Publish Beta Version
 
 ```bash
 # Publish all packages with beta tag
 npm run publish:beta
-```
+````
 
 This will publish:
 
@@ -53,7 +53,7 @@ This will publish:
 
 In a new project:
 
-```bash
+````bash
 # Test minimal install
 npm install @agrc/core@beta
 
@@ -62,7 +62,7 @@ npm install @agrc/core@beta @agrc/adapters@beta
 
 # Test compatibility layer
 npm install @agrc/compat@beta
-```
+```text
 
 ## Step 7: Create Example Project
 
@@ -93,7 +93,7 @@ function App() {
     />
   );
 }
-```
+````
 
 ## Step 8: GitHub Release
 
@@ -113,10 +113,10 @@ Share on:
 
 ## Package URLs (after publishing)
 
-- Core: https://www.npmjs.com/package/@agrc/core
-- Adapters: https://www.npmjs.com/package/@agrc/adapters
-- Styles: https://www.npmjs.com/package/@agrc/styles
-- Compat: https://www.npmjs.com/package/@agrc/compat
+- Core: [https://www.npmjs.com/package/@agrc/core](https://www.npmjs.com/package/@agrc/core)
+- Adapters: [https://www.npmjs.com/package/@agrc/adapters](https://www.npmjs.com/package/@agrc/adapters)
+- Styles: [https://www.npmjs.com/package/@agrc/styles](https://www.npmjs.com/package/@agrc/styles)
+- Compat: [https://www.npmjs.com/package/@agrc/compat](https://www.npmjs.com/package/@agrc/compat)
 
 ## Monitoring
 
@@ -132,7 +132,7 @@ For stable release:
 
 ```bash
 # Update version in all package.json files to 2.0.0
-# Then:
+# Then
 npm run publish:latest
 ```
 

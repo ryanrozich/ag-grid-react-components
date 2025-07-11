@@ -49,9 +49,9 @@ You MUST:
 
 You MUST run:
 
-```bash
+````bash
 npm run pre-commit    # This runs format, lint, typecheck, and tests
-```
+```text
 
 ### 5. Before Pushing to GitHub
 
@@ -59,7 +59,7 @@ You MUST run:
 
 ```bash
 npm run pre-push     # This runs ALL tests including E2E (locally only)
-```
+````
 
 **Important**: E2E tests are temporarily disabled in CI for performance reasons. You MUST run them locally before pushing.
 
@@ -179,21 +179,21 @@ When creating GitHub issues, you MUST ALWAYS apply these labels to ensure proper
 
 4. **Status Label** (OPTIONAL - only if not "Needs Triage"):
 
-   **Issue Statuses:**
+### Issue Statuses
 
-   - `status: needs-triage` - Default for new issues (add if unsure)
-   - `status: triaging` - Being evaluated
-   - `status: backlog` - Ready for development
-   - `status: in-progress` - Being worked on
-   - `status: in-product-review` - Feature deployed, awaiting product review
-   - `status: done` - Completed and verified
+- `status: needs-triage` - Default for new issues (add if unsure)
+- `status: triaging` - Being evaluated
+- `status: backlog` - Ready for development
+- `status: in-progress` - Being worked on
+- `status: in-product-review` - Feature deployed, awaiting product review
+- `status: done` - Completed and verified
 
-   **PR Statuses (auto-managed):**
+### PR Statuses (auto-managed)
 
-   - `status: pr-in-progress` - Draft PR, not ready for review
-   - `status: in-code-review` - Ready for code review
-   - `status: code-review-complete` - Code approved, ready to merge
-   - `status: merged` - PR merged
+- `status: pr-in-progress` - Draft PR, not ready for review
+- `status: in-code-review` - Ready for code review
+- `status: code-review-complete` - Code approved, ready to merge
+- `status: merged` - PR merged
 
 5. **Component Label** (OPTIONAL - only if issue is component-specific):
 
@@ -233,8 +233,8 @@ gh issue create \
 
 ### Project Management
 
-- **[View Issues](https://github.com/ryanrozich/ag-grid-react-components/issues)** - All open issues
-- **[Project Board](https://github.com/users/ryanrozich/projects/1)** - Track status and priorities
+- **[View Issues](<[https://github.com/ryanrozich/ag-grid-react-components/issue](https://github.com/ryanrozich/ag-grid-react-components/issue)s>)** - All open issues
+- **[Project Board](<[https://github.com/users/ryanrozich/projects/](https://github.com/users/ryanrozich/projects/)1>)** - Track status and priorities
 - Labels automatically sync to project fields via GitHub Actions
 
 ### When Working on Issues
@@ -256,12 +256,12 @@ gh pr create --title "Fix date filter bug" \
 # The PR will automatically get all labels from issue #123 (except status)
 ```
 
-**Recognized linking patterns:**
+### Recognized linking patterns
 
 - `fixes #123`, `closes #123`, `resolves #123`
 - Also works with full URLs
 
-**Manual sync if needed:**
+### Manual sync if needed
 
 ```bash
 npm run sync:pr-labels  # Sync all PRs with their linked issues

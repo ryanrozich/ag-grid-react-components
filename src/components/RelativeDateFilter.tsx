@@ -19,18 +19,31 @@ import { logger } from "../utils/logger";
 
 // CSS is imported at the root level
 
-const DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
-
 const RelativeDateFilter = (props: DateFilterParams) => {
+  const {
+    model,
+    dateFormat = "yyyy-MM-dd",
+    dateParser,
+    getValue,
+    onModelChange,
+    defaultMode,
+    afterInclusive,
+    beforeInclusive,
+    rangeInclusive,
+    testId,
+    minDate,
+    maxDate,
+  } = props;
+
   // Use the model from props or create initial state
-  const initialModel = props.model || null;
+  const initialModel = model || null;
 
   // Filter state
   const [filterType, setFilterType] = useState<DateFilterType>(
     initialModel?.type || "equals",
   );
   const [filterMode, setFilterMode] = useState<DateFilterMode>(
-    initialModel?.mode || props.defaultMode || "absolute",
+    initialModel?.mode || defaultMode || "absolute",
   );
 
   // Date values
@@ -62,14 +75,11 @@ const RelativeDateFilter = (props: DateFilterParams) => {
   const [toExpressionValid, setToExpressionValid] = useState<boolean>(true);
   const [toExpressionError, setToExpressionError] = useState<string>("");
 
-  // Date format from props or default
-  const dateFormat = props.dateFormat || DEFAULT_DATE_FORMAT;
-
   // Parse cell values to date
   const parseValue = useCallback(
     (value: unknown): Date | null => {
-      if (props.dateParser) {
-        return props.dateParser(value);
+      if (dateParser) {
+        return dateParser(value);
       }
 
       if (value instanceof Date) {
@@ -83,7 +93,7 @@ const RelativeDateFilter = (props: DateFilterParams) => {
 
       return null;
     },
-    [props.dateParser],
+    [dateParser],
   );
 
   // Resolved dates based on expressions
@@ -160,14 +170,10 @@ const RelativeDateFilter = (props: DateFilterParams) => {
 
     // Get default inclusivity settings from props
     const fromInclusive =
-      filterType === "after"
-        ? props.afterInclusive
-        : props.rangeInclusive?.from;
+      filterType === "after" ? afterInclusive : rangeInclusive?.from;
 
     const toInclusive =
-      filterType === "before"
-        ? props.beforeInclusive
-        : props.rangeInclusive?.to;
+      filterType === "before" ? beforeInclusive : rangeInclusive?.to;
 
     return {
       type: filterType,
@@ -189,9 +195,9 @@ const RelativeDateFilter = (props: DateFilterParams) => {
     resolvedDateTo,
     expressionFrom,
     expressionTo,
-    props.afterInclusive,
-    props.beforeInclusive,
-    props.rangeInclusive,
+    afterInclusive,
+    beforeInclusive,
+    rangeInclusive,
   ]);
 
   // Model as string for floating filter
@@ -295,7 +301,7 @@ const RelativeDateFilter = (props: DateFilterParams) => {
     ({ node }: { node: IRowNode }) => {
       if (!isFilterValid || !currentModel) return true;
 
-      const cellValue = props.getValue(node);
+      const cellValue = getValue(node);
       const cellDate = parseValue(cellValue);
 
       if (!cellDate) return false;
@@ -368,7 +374,7 @@ const RelativeDateFilter = (props: DateFilterParams) => {
     [
       isFilterValid,
       currentModel,
-      props.getValue,
+      getValue,
       filterType,
       effectiveDateFrom,
       effectiveDateTo,
@@ -376,7 +382,7 @@ const RelativeDateFilter = (props: DateFilterParams) => {
     ],
   );
 
-  // This function is no longer needed since we directly call props.onModelChange
+  // This function is no longer needed since we directly call onModelChange
   // in the applyFilter function
 
   // Handle expression changes - only validate, don't apply filter automatically
@@ -412,11 +418,11 @@ const RelativeDateFilter = (props: DateFilterParams) => {
     if (!isFilterValid) return;
 
     // In v33, we call onModelChange directly with our model
-    if (props.onModelChange) {
-      props.onModelChange(currentModel);
+    if (onModelChange) {
+      onModelChange(currentModel);
       logger.log("Filter model applied:", currentModel);
     }
-  }, [isFilterValid, currentModel, props.onModelChange]);
+  }, [isFilterValid, currentModel, onModelChange]);
 
   // Handle key press to apply filter on Enter - moved here to have access to applyFilter
   const handleKeyDown = useCallback(
@@ -441,31 +447,31 @@ const RelativeDateFilter = (props: DateFilterParams) => {
     setToExpressionError("");
 
     // Notify with null model
-    if (props.onModelChange) {
-      props.onModelChange(null);
+    if (onModelChange) {
+      onModelChange(null);
       logger.log("Filter reset");
     }
-  }, [props.onModelChange]);
+  }, [onModelChange]);
 
   // React to model changes from AG Grid
   useEffect(() => {
     // Add debug log to help troubleshoot
-    logger.log("Filter props received:", props);
+    logger.log("Filter model received:", model);
 
-    if (props.model) {
+    if (model) {
       // Update filter state based on model
-      setFilterType(props.model.type || "equals");
-      setFilterMode(props.model.mode || "absolute");
+      setFilterType(model.type || "equals");
+      setFilterMode(model.mode || "absolute");
 
-      if (props.model.mode === "absolute") {
-        setAbsoluteDateFrom(props.model.dateFrom || null);
-        setAbsoluteDateTo(props.model.dateTo || null);
+      if (model.mode === "absolute") {
+        setAbsoluteDateFrom(model.dateFrom || null);
+        setAbsoluteDateTo(model.dateTo || null);
       } else {
-        setExpressionFrom(props.model.expressionFrom || "");
-        setExpressionTo(props.model.expressionTo || "");
+        setExpressionFrom(model.expressionFrom || "");
+        setExpressionTo(model.expressionTo || "");
       }
     }
-  }, [props.model]);
+  }, [model]);
 
   // Handle rows being loaded or changed
   const onNewRowsLoaded = useCallback(() => {
@@ -612,11 +618,11 @@ const RelativeDateFilter = (props: DateFilterParams) => {
   // In v33, filter button clicks should automatically trigger our filter
   // adding extra logging to help debug
   useEffect(() => {
-    logger.log("RelativeDateFilter mounted with props:", props);
+    logger.log("RelativeDateFilter mounted");
   }, []);
 
   // Log when component renders
-  logger.debug("RelativeDateFilter rendering, props:", props);
+  logger.debug("RelativeDateFilter rendering");
   logger.debug("Current filter mode:", filterMode);
   logger.debug("Current filter type:", filterType);
 
@@ -624,7 +630,7 @@ const RelativeDateFilter = (props: DateFilterParams) => {
     <div
       className="ag-grid-date-filter p-4"
       data-test-id="relative-date-filter"
-      {...(props.testId ? { "data-testid": props.testId } : {})}
+      {...(testId ? { "data-testid": testId } : {})}
     >
       <div className="filter-type-section" style={{ marginBottom: "1rem" }}>
         <label
@@ -762,8 +768,8 @@ const RelativeDateFilter = (props: DateFilterParams) => {
                   dateFormat={dateFormat}
                   placeholderText="Select date"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  minDate={props.minDate}
-                  maxDate={props.maxDate}
+                  minDate={minDate}
+                  maxDate={maxDate}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && isFilterValid) {
                       e.preventDefault();

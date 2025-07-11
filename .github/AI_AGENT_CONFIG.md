@@ -86,7 +86,7 @@ When analyzing code, always check:
 
 ## Priority Assessment Matrix
 
-```
+```text
 CRITICAL (🔴):
 - Breaks core functionality
 - Security vulnerability
@@ -137,7 +137,7 @@ To find the next priority tasks, run:
 
 ```bash
 bash .github/scripts/get-next-tasks.sh
-```
+```text
 
 Or query directly:
 
@@ -172,7 +172,7 @@ Always check and update status labels:
 ## Templates Quick Reference
 
 ```yaml
-# Bug Report must include:
+# Bug Report must include
 area: [Components|Demo|Build|Docs|Tests]
 component: [DateFilter|QuickFilterDropdown|ActiveFilters|etc]
 description: Clear problem statement
@@ -181,7 +181,7 @@ technical-context: File:line analysis
 priority-suggestion: [Critical|High|Medium|Low]
 complexity: [Simple|Medium|Complex]
 
-# Feature Request must include:
+# Feature Request must include
 feature-type: [New Component|Enhancement|DX|Performance|etc]
 problem-statement: Why needed
 proposed-solution: How to implement
@@ -189,13 +189,13 @@ api-design: TypeScript interfaces
 breaking-change: [No|Minor|Major]
 effort-estimate: [XS|S|M|L|XL]
 
-# Discovery must include:
+# Discovery must include
 discovery-type: [Performance|Code Smell|Security|etc]
 what-found: Specific issue
 current-state: Code + analysis
 questions: What to research
 investigation-plan: Steps to validate
-```
+```text
 
 ## Example: Good Issue Creation by AI
 

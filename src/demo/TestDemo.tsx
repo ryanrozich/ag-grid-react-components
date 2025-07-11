@@ -3,8 +3,7 @@ import { AgGridReact } from "ag-grid-react";
 import { ColDef, GridReadyEvent, GridApi } from "ag-grid-community";
 import { AGGridTestHarness } from "../test-utils/AGGridTestHarness";
 import { TEST_RECORDS, TestRecord } from "../../tests/fixtures/testData";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-quartz.css";
+// AG Grid styles removed - using v33+ Theming API
 import "./TestDemo.css";
 import { TEST_GRID_ID } from "./constants";
 
@@ -90,18 +89,15 @@ export const TestDemo: React.FC = () => {
         valueFormatter: (params) => (params.value ? "Yes" : "No"),
       },
     ],
-    [isPaginationEnabled],
+    [],
   );
 
   // Handle grid ready event
-  const onGridReady = useCallback(
-    (params: GridReadyEvent<TestRecord>) => {
-      setGridRefs({ api: params.api });
-      params.api.sizeColumnsToFit();
-      // Grid ready
-    },
-    [rowData.length],
-  );
+  const onGridReady = useCallback((params: GridReadyEvent<TestRecord>) => {
+    setGridRefs({ api: params.api });
+    params.api.sizeColumnsToFit();
+    // Grid ready
+  }, []);
 
   // Handle filter changes
   const onFilterChanged = useCallback(() => {
@@ -130,7 +126,7 @@ export const TestDemo: React.FC = () => {
   // Get the current row count
   const rowCount = useMemo(() => {
     return gridRefs.api ? gridRefs.api.getDisplayedRowCount() : 0;
-  }, [gridRefs.api, rowData, filterModel]);
+  }, [gridRefs.api]);
 
   return (
     <div className="test-demo-container">
@@ -190,10 +186,7 @@ export const TestDemo: React.FC = () => {
         </div>
       </div>
 
-      <div
-        className="ag-theme-quartz"
-        style={{ height: "600px", width: "100%" }}
-      >
+      <div style={{ height: "600px", width: "100%" }}>
         <AGGridTestHarness gridId={TEST_GRID_ID}>
           <AgGridReact<TestRecord>
             rowData={rowData}

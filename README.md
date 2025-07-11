@@ -38,6 +38,17 @@ A component that displays active filters as removable pills:
 - **Filter Types**: Handles date, text, and set filters
 - **Customizable**: Style with CSS classes
 
+### 💾 Filter Preset Sharing
+
+Save and share filter configurations with others:
+
+- **URL Sharing**: Share presets via compressed URLs
+- **Export/Import**: Download presets as JSON files
+- **Compression**: Achieves >50% size reduction with LZ-String
+- **Two Modes**: Embedded (full data) or Reference (ID only)
+- **ShareButton Component**: Ready-to-use UI for sharing
+- **Auto-load from URL**: Automatically apply shared presets
+
 ### 🔗 URL State Persistence
 
 Comprehensive grid state persistence with URL synchronization:
@@ -49,30 +60,45 @@ Comprehensive grid state persistence with URL synchronization:
 - **Selective Persistence**: Choose which state to include
 - **Date Serialization**: Properly handles Date objects
 
+### 💾 Filter Presets (New!)
+
+Save, load, and share filter configurations with the new preset system:
+
+- **User Presets**: Save personal filter combinations in localStorage
+- **System Presets**: Pre-configured filters provided by developers
+- **Import/Export**: Share presets via JSON files
+- **Shareable URLs**: Generate links for specific filter configurations
+- **QuickFilterDropdown Integration**: Built-in preset support
+- **Storage Management**: Automatic compression and quota handling
+- **Cross-Tab Sync**: Presets update across browser tabs
+- **Version Migration**: Automatic updates when filter models change
+
+📖 **[Filter Presets Documentation →](./docs/filter-presets/)**
+
 ## 📦 Installation
 
 Choose your installation based on your needs:
 
 ### Minimal Installation (25KB)
 
-```bash
+````bash
 # Install the complete package (tree-shakeable)
 npm install ag-grid-react-components
-```
+```text
 
 ### With React DatePicker (65KB)
 
 ```bash
 # Install with peer dependencies for date picker
 npm install ag-grid-react-components react-datepicker
-```
+```text
 
 ### Full Installation (85KB)
 
 ```bash
 # Install with all optional dependencies
 npm install ag-grid-react-components react-datepicker lz-string
-```
+```text
 
 ## 📋 Requirements
 
@@ -80,9 +106,9 @@ npm install ag-grid-react-components react-datepicker lz-string
 - React 18 or later
 - date-fns v4 or later
 
-## 🔧 Usage
+## 🔧 Basic Usage
 
-### Minimal Setup (25KB)
+### Basic Setup (25KB)
 
 ```tsx
 import { AgGridReact } from "ag-grid-react";
@@ -98,9 +124,9 @@ const columnDefs = [
     floatingFilter: true,
   },
 ];
-```
+```text
 
-### With React DatePicker (65KB)
+### React DatePicker Integration
 
 ```tsx
 import { createDateFilter, reactDatePickerAdapter } from "ag-grid-react-components";
@@ -109,7 +135,7 @@ import { createDateFilter, reactDatePickerAdapter } from "ag-grid-react-componen
 const DateFilter = createDateFilter({
   datePickerAdapter: reactDatePickerAdapter,
 });
-```
+```text
 
 ### Full Setup Example (85KB)
 
@@ -151,7 +177,72 @@ function App() {
     </div>
   );
 }
-```
+```text
+
+### Filter Presets Example
+
+```tsx
+import { QuickFilterDropdown, useFilterPresets } from "ag-grid-react-components";
+
+function App() {
+  const [gridApi, setGridApi] = useState(null);
+
+  return (
+    <div>
+      {/* QuickFilterDropdown with preset support */}
+      <QuickFilterDropdown
+        api={gridApi}
+        columnId="date"
+        enablePresets={{
+          systemPresets: [
+            {
+              id: "recent",
+              name: "Recent Activity",
+              gridState: {
+                filterModel: {
+                  date: { type: "after", mode: "relative", expressionFrom: "Today-7d" },
+                },
+              },
+            },
+            {
+              id: "high-priority",
+              name: "High Priority",
+              gridState: {
+                filterModel: {
+                  priority: { type: "equals", filter: "high" },
+                  status: { type: "notEqual", filter: "completed" },
+                },
+              },
+            },
+          ],
+          allowUserPresets: true,
+          defaultPresetId: "recent",
+        }}
+      />
+
+      <AgGridReact columnDefs={columnDefs} onGridReady={onGridReady} rowData={rowData} />
+    </div>
+  );
+}
+
+// Or use the hook directly for custom UI
+function CustomPresetUI({ gridApi }) {
+  const { presets, savePreset, loadPreset } = useFilterPresets({ gridApi });
+
+  return (
+    <div>
+      <select onChange={(e) => loadPreset(e.target.value)}>
+        {presets.map((preset) => (
+          <option key={preset.id} value={preset.id}>
+            {preset.name}
+          </option>
+        ))}
+      </select>
+      <button onClick={() => savePreset({ name: "My Filters" })}>Save Current Filters</button>
+    </div>
+  );
+}
+````
 
 ## 🌟 Bundle Sizes
 
@@ -159,6 +250,7 @@ function App() {
 | ------------------------ | ----------- |
 | Just DateFilter (native) | **25KB**    |
 | With React DatePicker    | **65KB**    |
+| With Preset Sharing      | **35KB**    |
 | All components           | **85KB**    |
 
 ## 🎯 Key Features
@@ -172,12 +264,12 @@ function App() {
 
 ### Optional Features (loaded on demand)
 
+- 💾 Filter Preset Sharing (+10KB when used)
 - 📅 React DatePicker integration (+40KB when used)
 - 🗜️ LZ-String URL compression (+20KB when used)
+- 💾 Filter Presets with localStorage/IndexedDB support
 - 🎨 Pre-built styles (optional)
 - 🔌 Full TypeScript support
-
-````
 
 #### Portal Rendering
 
@@ -187,7 +279,7 @@ The dropdown supports three rendering modes via the `usePortal` prop:
 - **`"always"`**: Always renders using React Portal. Use when the dropdown is inside containers with `overflow: hidden`.
 - **`"auto"`**: Automatically detects if portal is needed (experimental).
 
-```tsx
+````tsx
 // Example: Dropdown inside a scrollable container
 <div style={{ overflow: "auto", height: "300px" }}>
   <QuickFilterDropdown
@@ -197,7 +289,7 @@ The dropdown supports three rendering modes via the `usePortal` prop:
     usePortal="always" // Prevents clipping in scrollable container
   />
 </div>
-````
+```text
 
 ## 📚 API Documentation
 
@@ -226,7 +318,7 @@ filterParams: {
     to?: boolean
   }
 }
-```
+```text
 
 ### Quick Filter Dropdown
 
@@ -249,8 +341,74 @@ const QuickFilterDropdown = createQuickFilterDropdown();
   placeholder="Select filter"
   showDescriptions={true}
   usePortal="never" | "always" | "auto"
+
+  // Optional: Enable filter presets
+  enablePresets={{
+    storage: presetStorage,
+    systemPresets: systemPresets,
+    onPresetChange: handlePresetChange,
+    allowSave: true,
+    allowManage: true,
+    onManageClick: handleManageClick,
+    maxPresets: 20
+  }}
 />
-```
+```text
+
+### Filter Presets
+
+```typescript
+// Storage adapter interface
+interface PresetStorage {
+  load: () => Promise<FilterPreset[]>;
+  save: (presets: FilterPreset[]) => Promise<void>;
+  remove: (id: string) => Promise<void>;
+  getStorageInfo?: () => Promise<StorageInfo>;
+}
+
+// Use the preset hook
+const presets = usePresets({
+  storage: localStorageAdapter,
+  systemPresets: [
+    {
+      id: 'recent',
+      name: 'Recent Items',
+      filterModel: { /* ... */ },
+      isSystem: true
+    }
+  ],
+  onPresetChange: (preset) => console.log('Preset changed:', preset),
+  maxPresets: 50
+});
+
+// Save preset dialog
+<SavePresetDialog
+  isOpen={showDialog}
+  onClose={() => setShowDialog(false)}
+  onSave={(name, description, tags) => {
+    presets.addPreset({
+      name,
+      description,
+      tags,
+      filterModel: gridApi.getFilterModel()
+    });
+  }}
+  existingNames={presets.presets.map(p => p.name)}
+  currentFilterModel={gridApi.getFilterModel()}
+  storageInfo={presets.storageInfo}
+/>
+
+// Preset manager component
+<PresetManager
+  presets={presets.presets}
+  activePresetId={presets.activePresetId}
+  onSetDefault={presets.setDefaultPreset}
+  onEdit={handleEditPreset}
+  onDelete={presets.deletePresets}
+  onExport={presets.exportPresets}
+  onImport={presets.importPresets}
+/>
+```text
 
 ### Grid State Persistence
 
@@ -270,7 +428,7 @@ const cleanup = setupGridStatePersistence(gridApi, {
   onStateLoad: (state) => console.log("Loaded:", state),
   onStateSave: (state) => console.log("Saved:", state),
 });
-```
+```text
 
 #### Advanced Examples
 
@@ -284,9 +442,75 @@ const cleanup = setupGridStatePersistence(gridApi, {
   includeSort: true,
   includeRowGrouping: false, // Don't persist grouping
 });
-```
+```text
 
-##### Manual State Management
+### Filter Presets (2)
+
+```typescript
+// Using with QuickFilterDropdown
+<QuickFilterDropdown
+  api={gridApi}
+  columnId="date"
+  enablePresets={{
+    // System-defined presets
+    systemPresets: [
+      {
+        id: 'recent',
+        name: 'Recent Activity',
+        gridState: { filterModel: {...} }
+      }
+    ],
+
+    // User preset settings
+    allowUserPresets: true,
+    maxUserPresets: 20,
+    defaultPresetId: 'recent',
+
+    // Callbacks
+    onPresetSaved: (preset) => console.log('Saved:', preset),
+    onPresetLoaded: (preset) => console.log('Loaded:', preset)
+  }}
+/>
+
+// Using the hook directly
+const {
+  presets,          // All presets (system + user)
+  userPresets,      // User presets only
+  systemPresets,    // System presets only
+  activePreset,     // Currently active preset
+
+  savePreset,       // Save current filters as preset
+  loadPreset,       // Load a preset by ID
+  deletePreset,     // Delete a user preset
+  updatePreset,     // Update existing preset
+
+  exportPresets,    // Export to JSON
+  importPresets,    // Import from JSON
+  getShareableUrl,  // Generate shareable URL
+
+  canSavePreset,    // Check if can save more
+  isLoading,        // Loading state
+  error            // Error state
+} = useFilterPresets({
+  gridApi,
+  storageKey: 'my-app-presets',
+  systemPresets: [...],
+  autoSave: true,
+  autoSaveDelay: 2000
+});
+
+// Example: Save current filters
+await savePreset({
+  name: 'Q4 Analysis',
+  description: 'Filters for Q4 report',
+  tags: ['quarterly', 'report']
+});
+
+// Example: Generate shareable URL
+const shareUrl = getShareableUrl(preset.id);
+```text
+
+#### Manual State Management
 
 ```tsx
 import { captureGridState, applyGridState } from "ag-grid-react-components";
@@ -315,7 +539,7 @@ const saveToServer = async () => {
     body: JSON.stringify(state),
   });
 };
-```
+```text
 
 #### Compression Effectiveness
 
@@ -331,7 +555,7 @@ Example compressed URL:
 
 ```text
 https://app.com/?gridState=N4IgZgpgLghgbgUwHZQKYQPYFMCeEB0IA5gMYD2AdAK4C2E...
-```
+```text
 
 #### State Persistence Options
 
@@ -350,7 +574,7 @@ setupGridStatePersistence(params.api, {
   includeColumns: true,
   includeSort: true,
 });
-```
+```text
 
 #### Custom State Handlers
 
@@ -395,7 +619,100 @@ const setupServerStatePersistence = (gridApi) => {
     },
   });
 };
-```
+```text
+
+### Filter Preset Sharing
+
+```typescript
+// ShareButton Component
+interface ShareButtonProps {
+  preset: FilterPreset;
+  baseUrl?: string;
+  onCopy?: () => void;
+  renderTrigger?: (props: TriggerProps) => React.ReactNode;
+}
+
+<ShareButton
+  preset={currentPreset}
+  baseUrl="https://app.example.com"
+  onCopy={() => console.log('Copied!')}
+/>
+
+// usePresetFromUrl Hook
+interface UsePresetFromUrlOptions {
+  loadPresetById?: (id: string) => Promise<FilterPreset>;
+  autoLoad?: boolean;
+}
+
+const { preset, presetId, loading, error, loadPreset, clearPreset } = usePresetFromUrl({
+  loadPresetById: async (id) => fetchPresetFromAPI(id),
+  autoLoad: true
+});
+
+// Import/Export Functions
+import { exportPresets, importPresets } from "ag-grid-react-components";
+
+// Export presets
+const exportData = exportPresets(savedPresets);
+// Returns: { version: "1.0.0", exportDate: string, source: string, presets: FilterPreset[] }
+
+// Import presets with different modes
+const result = importPresets(data, existingPresets, 'merge');
+// Modes: 'replace' | 'merge' | 'add'
+// Returns: { imported: FilterPreset[], skipped: FilterPreset[], errors: ImportError[] }
+
+// URL Serialization
+import { createShareableUrl, extractPresetFromUrl } from "ag-grid-react-components";
+
+// Create shareable URL
+const shareResult = createShareableUrl(preset, {
+  mode: 'embedded', // or 'reference'
+  baseUrl: 'https://app.example.com',
+  compress: true
+});
+// Returns: { url: string, compressed: boolean, originalSize: number, finalSize: number }
+
+// Extract preset from current URL
+const extractResult = extractPresetFromUrl();
+// Returns: { preset?: FilterPreset, presetId?: string, compressed: boolean, error?: string }
+```text
+
+#### Preset Format
+
+```typescript
+interface FilterPreset {
+  id: string;
+  name: string;
+  description?: string;
+  gridState: any; // AG Grid filter model
+  createdAt: string;
+  updatedAt?: string;
+  tags?: string[];
+  author?: string;
+}
+````
+
+#### Sharing Modes
+
+- **Embedded Mode**: Entire preset data is compressed and included in the URL
+  - Best for: Sharing via email, chat, or when no backend is available
+  - URL length: ~200-500 characters for typical presets
+- **Reference Mode**: Only the preset ID is included in the URL
+  - Best for: When you have a backend to store presets
+  - URL length: ~50 characters
+  - Requires: `loadPresetById` function in `usePresetFromUrl`
+
+#### Compression Details
+
+The sharing system uses LZ-String compression to achieve >50% size reduction:
+
+````typescript
+// Compression utilities are also exported
+import { compress, decompress } from "ag-grid-react-components";
+
+const compressed = compress(JSON.stringify(data)); // Returns compressed string
+const original = JSON.parse(decompress(compressed)); // Returns original data
+```text
 
 ## 📅 Advanced DateFilter Features
 
@@ -427,7 +744,7 @@ const filterModel = {
   expressionFrom: "Today-30d",
   expressionTo: null, // All dates from 30 days ago onwards
 };
-```
+```text
 
 ### Inclusive/Exclusive Date Filtering
 
@@ -453,7 +770,7 @@ const columnDefs = [
     },
   },
 ];
-```
+```text
 
 You can also set inclusivity per filter instance:
 
@@ -469,7 +786,7 @@ api.setFilterModel({
     toInclusive: false, // Exclude December 31st
   },
 });
-```
+````
 
 #### Inclusivity Examples
 
@@ -497,6 +814,168 @@ The Relative Date Filter supports powerful expressions for dynamic date filterin
 
 📖 [Full Documentation →](./docs/DATE_EXPRESSIONS.md)
 
+## 🎯 Preset System
+
+The preset system provides a two-tier architecture for managing and applying predefined filter configurations:
+
+### System Presets
+
+Read-only presets defined by developers for common filtering patterns:
+
+````tsx
+import { PresetManager, DEFAULT_SYSTEM_PRESETS } from "ag-grid-react-components";
+
+// Initialize preset manager with system presets
+const presetManager = new PresetManager();
+presetManager.registerSystemPresets(DEFAULT_SYSTEM_PRESETS);
+```text
+
+### User Presets
+
+Full CRUD support for user-defined presets with tags and default selection:
+
+```tsx
+// Save current filters as a user preset
+const preset = presetManager.saveUserPreset({
+  name: "My Custom View",
+  description: "Filters for my workflow",
+  gridState: { filters: api.getFilterModel() },
+  tags: ["custom", "workflow"],
+});
+
+// Set as default preset (auto-loads on page refresh)
+presetManager.setDefaultPreset(preset.id);
+
+// Update an existing preset
+presetManager.updateUserPreset(preset.id, {
+  name: "Updated View Name",
+});
+
+// Delete a preset
+presetManager.deleteUserPreset(preset.id);
+```text
+
+### Template Variables
+
+Dynamic values that resolve at runtime:
+
+```tsx
+// Available template variables:
+// {{today}} - Current date at midnight
+// {{yesterday}} - Yesterday at midnight
+// {{tomorrow}} - Tomorrow at midnight
+// {{last7Days}} - 7 days ago
+// {{last30Days}} - 30 days ago
+// {{last90Days}} - 90 days ago
+// {{startOfWeek}} - Start of current week
+// {{endOfWeek}} - End of current week
+// {{startOfMonth}} - Start of current month
+// {{endOfMonth}} - End of current month
+// {{startOfQuarter}} - Start of current quarter
+// {{endOfQuarter}} - End of current quarter
+// {{startOfYear}} - Start of current year
+// {{endOfYear}} - End of current year
+// {{currentUser}} - Current user (requires context)
+
+// Example preset with templates
+const systemPreset = {
+  id: "recent-changes",
+  name: "Recent Changes",
+  gridState: {
+    filters: {
+      updatedAt: {
+        filterType: "date",
+        type: "after",
+        filter: "{{last7Days}}",
+      },
+    },
+  },
+};
+```text
+
+### Integration with QuickFilterDropdown
+
+```tsx
+const [presetManager] = useState(() => new PresetManager());
+
+// Convert presets to dropdown options
+const presetOptions = presetManager.getAllPresets().user.map((preset) => ({
+  id: preset.id,
+  label: preset.name,
+  description: preset.description,
+  filterModel: preset.gridState.filters,
+  tags: preset.tags,
+}));
+
+const systemPresetOptions = presetManager.getAllPresets().system.map((preset) => ({
+  id: preset.id,
+  label: preset.name,
+  description: preset.description,
+  filterModel: preset.gridState.filters,
+  isSystemPreset: true,
+}));
+
+<QuickFilterDropdown
+  api={gridApi}
+  columnId="_all" // Use "_all" for grid-wide presets
+  options={presetOptions}
+  systemPresets={systemPresetOptions}
+  enablePresetManagement={true}
+  onPresetSave={(preset) => {
+    presetManager.saveUserPreset(preset);
+  }}
+  onPresetDelete={(presetId) => {
+    presetManager.deleteUserPreset(presetId);
+  }}
+/>;
+```text
+
+### Preset Storage
+
+User presets are automatically persisted to localStorage and synchronized across browser tabs:
+
+```tsx
+// Listen for preset changes
+const unsubscribe = presetManager.onPresetsChange((presets) => {
+  console.log("System presets:", presets.system);
+  console.log("User presets:", presets.user);
+  console.log("Active preset ID:", presets.activeId);
+});
+
+// Listen for default preset changes
+const unsubscribeDefault = presetManager.onDefaultChange((preset) => {
+  if (preset) {
+    // Apply default preset on load
+    const resolvedState = resolveTemplateInGridState(preset.gridState);
+    api.setFilterModel(resolvedState.filters);
+  }
+});
+```text
+
+### Creating Custom System Presets
+
+```tsx
+import { createSystemPreset, combineSystemPresets } from "ag-grid-react-components";
+
+// Create domain-specific presets
+const mySystemPresets = [
+  createSystemPreset({
+    id: "critical-issues",
+    name: "Critical Issues",
+    description: "High priority items needing attention",
+    gridState: {
+      filters: {
+        priority: { filterType: "text", type: "equals", filter: "critical" },
+        status: { filterType: "text", type: "notEqual", filter: "resolved" },
+      },
+    },
+  }),
+];
+
+// Combine with default presets
+const allSystemPresets = combineSystemPresets(DEFAULT_SYSTEM_PRESETS, mySystemPresets);
+```text
+
 ## 🎨 Customization
 
 See the [comprehensive Styling Guide](./docs/STYLING_GUIDE.md) for detailed customization options.
@@ -511,7 +990,7 @@ The components use CSS variables for easy theming:
   --agrc-border: #e5e7eb;
   --agrc-hover: #f3f4f6;
 }
-```
+```text
 
 ### Custom Quick Filter Options
 
@@ -533,7 +1012,7 @@ const customOptions = [
     },
   },
 ];
-```
+```text
 
 ### Styling
 
@@ -545,7 +1024,7 @@ The components use CSS modules and can be customized via CSS variables:
   --agrc-border: #e5e7eb;
   --agrc-hover: #f3f4f6;
 }
-```
+````
 
 ## 🧪 Testing
 
@@ -561,17 +1040,17 @@ Components are thoroughly tested with:
 
 When calling `api.setFilterModel()` programmatically on custom React filter components in AG Grid v33, the filter doesn't properly initialize. This is a known AG Grid bug affecting all v33.x versions.
 
-**Related Issues:**
+### Related Issues
 
 - [ag-grid/ag-grid#2256](https://github.com/ag-grid/ag-grid/issues/2256)
 - [ag-grid/ag-grid#2709](https://github.com/ag-grid/ag-grid/issues/2709)
 - [ag-grid/ag-grid#4870](https://github.com/ag-grid/ag-grid/issues/4870)
 
-**Workaround:**
+### Workaround
 
 Use the provided `applyFilterModelWithWorkaround` function:
 
-```tsx
+````tsx
 import { applyFilterModelWithWorkaround } from "ag-grid-react-components";
 
 // Instead of:
@@ -579,7 +1058,7 @@ api.setFilterModel({ dateColumn: filterModel });
 
 // Use:
 await applyFilterModelWithWorkaround(api, "dateColumn", filterModel);
-```
+```text
 
 This workaround handles AG Grid v33's Promise-based filter instances and ensures the filter state is properly initialized. It should be removed once AG Grid fixes the underlying issue.
 
@@ -612,3 +1091,4 @@ When creating issues, our automation will sync labels to project fields for bett
 
 - **[GitHub Project Automation](./docs/github-project-automation.md)** - How issue labels sync to project fields
 - **[CLAUDE.md](./CLAUDE.md)** - Instructions for AI assistants working with this codebase
+````

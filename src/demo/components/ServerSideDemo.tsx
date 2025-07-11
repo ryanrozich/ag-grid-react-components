@@ -14,7 +14,11 @@ import type {
   FilterChangedEvent,
 } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
-import { ActiveFilters } from "../../index";
+import {
+  ActiveFilters,
+  QuickFilterDropdown,
+  FilterPresetManager,
+} from "../../index";
 import {
   darkTheme,
   getColumnDefs,
@@ -28,6 +32,156 @@ import { DemoToolbar, StatsBar } from "../config/commonUIConfig";
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);
 
+// Time-based quick filters - matching client-side demo
+const dateQuickFilters = [
+  {
+    id: "all",
+    label: "All Time",
+    filterModel: null,
+    icon: "🌍",
+    description: "Show all records",
+  },
+  {
+    id: "last7days",
+    label: "Last 7 Days",
+    filterModel: {
+      mode: "relative",
+      type: "inRange",
+      expressionFrom: "Today-7d",
+      expressionTo: "Today",
+    },
+    icon: "📅",
+    description: "Records from the past week",
+  },
+  {
+    id: "thisMonth",
+    label: "This Month",
+    filterModel: {
+      mode: "relative",
+      type: "inRange",
+      expressionFrom: "StartOfMonth",
+      expressionTo: "EndOfMonth",
+    },
+    icon: "📆",
+    description: "All records from current month",
+  },
+  {
+    id: "overdue",
+    label: "Overdue",
+    filterModel: null,
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        dueDate: {
+          mode: "relative",
+          type: "before",
+          expressionFrom: "Today",
+        },
+        status: {
+          values: [
+            "Backlog",
+            "Todo",
+            "In Progress",
+            "In Review",
+            "Testing",
+            "Blocked",
+          ],
+        },
+      };
+    },
+    icon: "🚨",
+    description: "Tasks past their due date (not done)",
+  },
+  {
+    id: "notStarted",
+    label: "Not Started",
+    filterModel: null,
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        dueDate: {
+          mode: "relative",
+          type: "before",
+          expressionFrom: "Today",
+        },
+        status: {
+          values: ["Backlog", "Todo"],
+        },
+      };
+    },
+    icon: "⚠️",
+    description: "Tasks that should have started",
+  },
+];
+
+// Task type filters - matching client-side demo
+const taskTypeFilters = [
+  {
+    id: "allTasks",
+    label: "All Tasks",
+    filterModel: null,
+    icon: "📋",
+    description: "Show all task types",
+  },
+  {
+    id: "criticalBugs",
+    label: "Critical Bugs",
+    icon: "🐛",
+    description: "High priority bug fixes",
+    filterModel: null,
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        category: {
+          values: ["Bug"],
+        },
+        priority: {
+          values: ["Critical", "High"],
+        },
+      };
+    },
+  },
+  {
+    id: "features",
+    label: "Features",
+    icon: "✨",
+    description: "New feature development",
+    filterModel: null,
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        category: {
+          values: ["Feature"],
+        },
+      };
+    },
+  },
+  {
+    id: "inProgress",
+    label: "In Progress",
+    icon: "🚀",
+    description: "Active work items",
+    filterModel: null,
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        status: {
+          values: ["In Progress", "In Review", "Testing"],
+        },
+      };
+    },
+  },
+  {
+    id: "blocked",
+    label: "Blocked",
+    icon: "🛑",
+    description: "Blocked tasks",
+    filterModel: null,
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        status: {
+          values: ["Blocked"],
+        },
+      };
+    },
+  },
+];
+
 // Stats display component - using server data
 const ServerStats: React.FC<{
   apiUrl: string;
@@ -37,6 +191,12 @@ const ServerStats: React.FC<{
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
+  // Memoize the filter model string to prevent infinite re-renders
+  const filterModelString = useMemo(
+    () => JSON.stringify(filterModel),
+    [filterModel],
+  );
+
   useEffect(() => {
     const fetchStats = async () => {
       setLoading(true);
@@ -44,7 +204,10 @@ const ServerStats: React.FC<{
         const response = await fetch(`${apiUrl}/stats`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ filterModel, searchText }),
+          body: JSON.stringify({
+            filterModel: JSON.parse(filterModelString),
+            searchText,
+          }),
         });
         const data = await response.json();
         // Transform server stats to match our common format
@@ -69,7 +232,7 @@ const ServerStats: React.FC<{
     };
 
     fetchStats();
-  }, [apiUrl, filterModel, searchText]);
+  }, [apiUrl, filterModelString, searchText]);
 
   if (loading || !stats) {
     return (
@@ -220,8 +383,16 @@ export const ServerSideDemo: React.FC = () => {
         },
       };
 
-      // Set the datasource
-      params.api.setGridOption("serverSideDatasource", datasource);
+      // Set the datasource with error handling for license issues
+      try {
+        params.api.setGridOption("serverSideDatasource", datasource);
+      } catch (error) {
+        console.error("Error setting server-side datasource:", error);
+        // Fall back to client-side if server-side fails due to licensing
+        alert(
+          "Server-side features require AG Grid Enterprise license. Please use the Client-Side Data tab for testing.",
+        );
+      }
     },
     [apiUrl, fetchAggregations],
   );
@@ -292,19 +463,49 @@ export const ServerSideDemo: React.FC = () => {
           }, 300); // 300ms debounce
         }}
       >
-        <div className="text-sm text-gray-400 flex items-center">
-          {loading && <span className="mr-2">🔍 Searching...</span>}
-          {rowCount !== null && (
-            <span>{rowCount.toLocaleString()} results</span>
-          )}
-        </div>
+        {/* Quick Filters - matching client-side demo */}
+        {gridApi && (
+          <>
+            <QuickFilterDropdown
+              key="server-date-filter"
+              api={gridApi}
+              columnId="dueDate"
+              options={dateQuickFilters}
+              placeholder="Time period"
+              showDescriptions={false}
+              className="min-w-[140px]"
+              usePortal="always"
+            />
+            <QuickFilterDropdown
+              key="server-task-filter"
+              api={gridApi}
+              columnId="_multi"
+              options={taskTypeFilters}
+              placeholder="Task type"
+              showDescriptions={false}
+              className="min-w-[140px]"
+              usePortal="always"
+            />
+          </>
+        )}
       </DemoToolbar>
 
-      {/* Active Filters */}
-      {gridApi && Object.keys(filterModel).length > 0 && (
+      {/* Active Filters Row and Filter Preset Actions - matching client-side demo */}
+      {gridApi && (
         <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg mt-3">
           <div className="border-t border-gray-700/50 bg-gray-800/20 p-3">
-            <ActiveFilters api={gridApi} filterModel={filterModel} />
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              {Object.keys(filterModel).length > 0 && (
+                <ActiveFilters api={gridApi} filterModel={filterModel} />
+              )}
+              <FilterPresetManager
+                api={gridApi}
+                gridId="server-side-demo"
+                onPresetApplied={(preset) => {
+                  console.log("Applied preset:", preset.name);
+                }}
+              />
+            </div>
           </div>
         </div>
       )}

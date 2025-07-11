@@ -20,9 +20,7 @@ import "./styles/showcase-dark.css";
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);
 
-// Import AG Grid styles
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-quartz.css";
+// AG Grid styles removed - using v33+ Theming API
 
 // interface ShowcaseSection {
 //   id: string;
@@ -792,7 +790,7 @@ const columnDefs = [
           </p>
 
           <div
-            className="ag-theme-quartz-dark rounded-lg overflow-hidden"
+            className="rounded-lg overflow-hidden"
             style={{ height: 600, width: "100%" }}
           >
             <AgGridReact

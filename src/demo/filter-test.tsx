@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { GridReadyEvent, GridApi } from "ag-grid-community";
-import "ag-grid-community/styles/ag-theme-quartz.css";
+// AG Grid styles removed - using v33+ Theming API
 import DateFilter from "../components/DateFilter";
 import { DATE_FILTER_PRESETS } from "../components/QuickFilterDropdown";
 
@@ -97,10 +97,7 @@ export const FilterTest: React.FC = () => {
         ))}
       </div>
 
-      <div
-        style={{ height: "300px", marginBottom: "20px" }}
-        className="ag-theme-quartz"
-      >
+      <div style={{ height: "300px", marginBottom: "20px" }}>
         <AgGridReact
           ref={gridRef}
           rowData={testData}

@@ -51,13 +51,13 @@ You can perform date arithmetic using the pattern: `Today[+/-][number][unit]`
 
 ### Equals / Not Equals
 
-```typescript
+````typescript
 {
   type: "equals",
   mode: "relative",
   expressionFrom: "Today"
 }
-```
+```text
 
 ### After / Before
 
@@ -67,7 +67,7 @@ You can perform date arithmetic using the pattern: `Today[+/-][number][unit]`
   mode: "relative",
   expressionFrom: "Today-7d"
 }
-```
+```text
 
 ### In Range
 
@@ -78,7 +78,7 @@ You can perform date arithmetic using the pattern: `Today[+/-][number][unit]`
   expressionFrom: "Today-7d",
   expressionTo: "Today"
 }
-```
+````
 
 ## Common Use Cases
 
@@ -112,7 +112,7 @@ The date expression parser is implemented in [`src/utils/dateExpressionParser.ts
 
 ### Key Functions
 
-```typescript
+````typescript
 // Parse and validate an expression
 parseDateExpression(expression: string): DateExpression
 
@@ -121,7 +121,7 @@ isValidDateExpression(expression: string): boolean
 
 // Resolve an expression to a Date object
 resolveDateExpression(expression: string): Date | null
-```
+```text
 
 ### Security Features
 
@@ -155,7 +155,7 @@ export interface DateFilterModel {
   expressionFrom?: string;
   expressionTo?: string;
 }
-```
+````
 
 ## Validation Rules
 
@@ -212,7 +212,7 @@ export const DATE_FILTER_PRESETS: QuickFilterOption[] = [
 
 ## Browser Compatibility
 
-The date expressions use the [date-fns](https://date-fns.org/) library for date manipulation, which supports all modern browsers and IE 11+.
+The date expressions use the [date-fns](<[https://date-fns.org](https://date-fns.org)/>) library for date manipulation, which supports all modern browsers and IE 11+.
 
 ## Testing
 
@@ -225,4 +225,4 @@ Comprehensive tests for date expressions are located in:
 
 - [Main README](../README.md) - General usage and installation
 - [Date Filter Component](../src/components/DateFilter/README.md) - Component-specific documentation
-- [Demo Application](https://demo.rozich.net/ag-grid-react-components/) - Live examples
+- [Demo Application](<[https://demo.rozich.net/ag-grid-react-components](https://demo.rozich.net/ag-grid-react-components)/>) - Live examples

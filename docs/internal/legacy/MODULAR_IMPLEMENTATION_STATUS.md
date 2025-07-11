@@ -6,7 +6,7 @@
 
 - Set up npm workspaces
 - Created package structure:
-  ```
+  ```text
   packages/
   ├── core/       # Headless components
   ├── adapters/   # Date picker & compression adapters
@@ -104,7 +104,7 @@
 
 3. **Testing**:
 
-   ```bash
+   ````bash
    # Test build
    npx turbo run build
 
@@ -113,7 +113,8 @@
 
    # Test in example project
    cd examples && npm link ../packages/core
-   ```
+   ```text
+   ````
 
 ### Publishing Checklist
 
@@ -137,7 +138,7 @@
 
 ## Publishing Commands
 
-```bash
+````bash
 # Local testing
 npm run publish:dry
 
@@ -150,7 +151,7 @@ npm run publish:beta
 # Check published packages
 npm view @agrc/core
 npm view @agrc/adapters
-```
+```text
 
 ## Migration Impact
 
@@ -168,7 +169,7 @@ const DateFilter = createDateFilter();
 import { createDateFilter } from "@agrc/core";
 import { reactDatePickerAdapter } from "@agrc/adapters/react-datepicker";
 const DateFilter = createDateFilter({ datePickerAdapter: reactDatePickerAdapter });
-```
+````
 
 ## Success Metrics
 

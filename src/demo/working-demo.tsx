@@ -20,8 +20,7 @@ ModuleRegistry.registerModules([AllEnterpriseModule]);
 // Create custom theme
 const myWarmTheme = themeQuartz.withPart(colorSchemeLightWarm);
 
-// Import AG Grid CSS
-import "ag-grid-community/styles/ag-theme-quartz.css";
+// AG Grid styles removed - using v33+ Theming API
 
 // Import our components and utilities
 import DateFilter from "../components/DateFilter";
@@ -153,7 +152,7 @@ const App: React.FC = () => {
           )}
         </div>
 
-        <div className="grid-container ag-theme-quartz">
+        <div className="grid-container">
           <AgGridReact
             ref={gridRef}
             theme={myWarmTheme}

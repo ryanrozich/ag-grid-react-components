@@ -2,7 +2,7 @@
 
 Headless, composable React components for AG Grid with minimal bundle size. Build powerful data grids with date filtering, quick filters, and more - all in a tiny, modular package.
 
-## 🎯 Why v2?
+## 🎯 Why v2
 
 Version 2 is a complete rewrite focused on:
 
@@ -25,7 +25,7 @@ Version 2 is a complete rewrite focused on:
 
 ### Installation
 
-```bash
+````bash
 # Minimal install (native date picker)
 npm install @agrc/core
 
@@ -37,7 +37,7 @@ npm install @agrc/core @agrc/styles
 
 # Easy migration from v1
 npm install @agrc/compat
-```
+```text
 
 ### Basic Usage
 
@@ -54,9 +54,9 @@ const columnDefs = [
     filter: DateFilter,
   },
 ];
-```
+```text
 
-### With React DatePicker
+### With React DatePicker (2)
 
 ```typescript
 import { createDateFilter } from "@agrc/core";
@@ -65,7 +65,7 @@ import { reactDatePickerAdapter } from "@agrc/adapters/react-datepicker";
 const DateFilter = createDateFilter({
   datePickerAdapter: reactDatePickerAdapter,
 });
-```
+```text
 
 ### Custom Styling
 
@@ -91,7 +91,7 @@ const DateFilter = createDateFilter({
     gap: 8px;
   `,
 });
-```
+```text
 
 ## 📚 Components
 
@@ -109,9 +109,9 @@ const DateFilter = createDateFilter({
   className: 'my-date-filter',      // Custom class
   styles: { ... }                   // Style overrides
 });
-```
+```text
 
-**Features:**
+### Features
 
 - Equals, Not Equal, Before, After, In Range
 - Blank/Not Blank
@@ -143,7 +143,7 @@ const quickFilters = [
   columnId="date"
   filters={quickFilters}
 />
-```
+```text
 
 ### ActiveFilters
 
@@ -160,7 +160,7 @@ import { ActiveFilters } from '@agrc/core';
     return `${column.getColDef().headerName}: ${model.filter}`;
   }}
 />
-```
+```text
 
 ### Grid State Persistence
 
@@ -181,7 +181,7 @@ setupGridStatePersistence(gridApi, {
   includeColumns: true,
   includeSort: true,
 });
-```
+```text
 
 ## 🔄 Migration from v1
 
@@ -189,12 +189,12 @@ setupGridStatePersistence(gridApi, {
 
 ```bash
 npm install @agrc/compat
-```
+````
 
-```typescript
+````typescript
 // Your existing code works unchanged!
 import { DateFilter, QuickFilterDropdown } from "@agrc/compat";
-```
+```text
 
 ### Option 2: Gradual Migration
 
@@ -205,7 +205,7 @@ import { DateFilter } from "ag-grid-react-components";
 // New (v2) - 90% smaller!
 import { createDateFilter } from "@agrc/core";
 const DateFilter = createDateFilter();
-```
+```text
 
 ### Option 3: Full Optimization
 
@@ -221,7 +221,7 @@ const DateFilter = createDateFilter();
 const DateFilter = createDateFilter({
   datePickerAdapter: myCustomAdapter,
 });
-```
+```text
 
 ## 📊 Bundle Size Comparison
 
@@ -240,7 +240,7 @@ Components come with minimal structure, no visual styles.
 
 ```typescript
 const DateFilter = createDateFilter(); // BYO styles
-```
+```text
 
 ### 2. Provided Styles
 
@@ -252,7 +252,7 @@ const DateFilter = createDateFilter(); // BYO styles
 
 /* Or everything */
 @import "@agrc/styles/core.css";
-```
+```text
 
 ### 3. Tailwind Ready
 
@@ -265,7 +265,7 @@ const DateFilter = createDateFilter({
     actions: "flex gap-2",
   },
 });
-```
+```text
 
 ## 🔌 Adapters
 
@@ -284,7 +284,7 @@ const customAdapter = {
   parseValue: (val) => new Date(val),
   formatValue: (date) => date.toISOString(),
 };
-```
+```text
 
 ### Compression Adapters
 
@@ -303,7 +303,7 @@ import { base64CompressionAdapter } from "@agrc/adapters/compression";
 setupGridStatePersistence(api, {
   compressionAdapter: base64CompressionAdapter,
 });
-```
+```text
 
 ## 🛠️ Advanced Usage
 
@@ -325,7 +325,7 @@ const myAdapter = {
 const DateFilter = createDateFilter({
   datePickerAdapter: myAdapter
 });
-```
+```text
 
 ### Server-Side Persistence
 
@@ -345,7 +345,7 @@ setupGridStatePersistence(api, {
     },
   },
 });
-```
+````
 
 ## 📄 License
 

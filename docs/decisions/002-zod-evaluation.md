@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document evaluates whether introducing [Zod](https://github.com/colinhacks/zod) for runtime validation would benefit the AG Grid React Components library.
+This document evaluates whether introducing [Zod](<[https://github.com/colinhacks/zo](https://github.com/colinhacks/zo)d>) for runtime validation would benefit the AG Grid React Components library.
 
 ## Current Validation Approach
 
@@ -16,21 +16,21 @@ The library currently uses:
 
 ### 1. Runtime Type Safety
 
-```typescript
+````typescript
 import { z } from "zod";
 
 const DateExpressionSchema = z.union([z.literal("Today"), z.literal("StartOfWeek"), z.literal("EndOfWeek"), z.literal("StartOfMonth"), z.literal("EndOfMonth"), z.literal("StartOfYear"), z.literal("EndOfYear"), z.string().regex(/^Today[+-]\d+[dwmy]$/)]);
 
 // Runtime validation
 const result = DateExpressionSchema.safeParse("Today+7d");
-```
+```text
 
 ### 2. Automatic TypeScript Type Generation
 
 ```typescript
 // Derive types from schemas
 type DateExpression = z.infer<typeof DateExpressionSchema>;
-```
+```text
 
 ### 3. Better Error Messages
 
@@ -47,7 +47,7 @@ const result = FilterModelSchema.safeParse(data);
 if (!result.success) {
   console.log(result.error.format());
 }
-```
+```text
 
 ### 4. Composable Validation
 
@@ -58,7 +58,7 @@ const QuickFilterOptionSchema = z.object({
   description: z.string().optional(),
   filterModel: FilterModelSchema.nullable(),
 });
-```
+```text
 
 ## Cons of Adding Zod
 
@@ -114,7 +114,7 @@ export const filterModelSchema = z.object({
   dateFrom: z.date().nullable().optional(),
   expressionFrom: z.string().optional(),
 });
-```
+```text
 
 2. **Export Validation Constants** that users can use with their validation library of choice:
 
@@ -122,7 +122,7 @@ export const filterModelSchema = z.object({
 export const DATE_EXPRESSION_REGEX = /^Today[+-]\d+[dwmy]$/;
 export const FILTER_TYPES = ["equals", "notEqual", "after", "before", "inRange"] as const;
 export const FILTER_MODES = ["absolute", "relative"] as const;
-```
+````
 
 3. **Keep Current Approach** with improvements:
 

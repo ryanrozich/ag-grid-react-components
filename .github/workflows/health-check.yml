@@ -1,0 +1,179 @@
+name: System Health Check
+
+on:
+  schedule:
+    # Run daily at 9 AM UTC
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+    inputs:
+      verbose:
+        description: "Show detailed metrics"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  health-check:
+    name: Run Health Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run health check
+        id: health
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERBOSE_FLAG="${{ github.event.inputs.verbose == 'true' && '--verbose' || '' }}"
+
+          # Run health check and capture output
+          node scripts/automation/monitoring/health-check.js $VERBOSE_FLAG --json > health-report.json || true
+
+          # Extract overall status
+          OVERALL_STATUS=$(jq -r '.overall.text' health-report.json)
+          echo "status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
+
+          # Generate summary
+          echo "## 🏥 System Health Check Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Date**: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "**Overall Status**: $(jq -r '.overall.symbol + " " + .overall.text' health-report.json)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Add individual checks
+          echo "### Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          jq -r '.checks | to_entries[] | "- **" + .key + "**: " + .value.status.symbol + " " + .value.message' health-report.json >> $GITHUB_STEP_SUMMARY
+
+          # Add recommendations if any
+          if [ $(jq '.recommendations | length' health-report.json) -gt 0 ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📋 Recommendations" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            jq -r '.recommendations[] | "- " + .' health-report.json >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Add metrics if verbose
+          if [ "${{ github.event.inputs.verbose }}" == "true" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📊 Metrics" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+            jq -r '.metrics | to_entries[] | "| " + .key + " | " + (.value | tostring) + " |"' health-report.json >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload health report
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-report-${{ github.run_id }}
+          path: health-report.json
+          retention-days: 30
+
+      - name: Create issue if critical
+        if: steps.health.outputs.status == 'Critical'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const report = require('./health-report.json');
+
+            // Check if there's already an open health issue
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'health-check,priority: critical',
+              state: 'open'
+            });
+
+            if (issues.data.length === 0) {
+              // Create new issue
+              const issueBody = `# 🚨 Critical System Health Issues Detected
+
+              The automated health check has detected critical issues that require immediate attention.
+
+              ## Health Check Summary
+
+              **Date**: ${new Date().toISOString()}
+              **Overall Status**: ${report.overall.symbol} ${report.overall.text}
+
+              ## Failed Checks
+
+              ${Object.entries(report.checks)
+                .filter(([_, check]) => check.status.value > 0)
+                .map(([name, check]) => `### ${check.status.symbol} ${name}
+              ${check.message}
+              ${check.details ? '\n**Details**: ' + JSON.stringify(check.details, null, 2) : ''}`)
+                .join('\n\n')}
+
+              ## Recommendations
+
+              ${report.recommendations.map(r => `- ${r}`).join('\n')}
+
+              ## Action Required
+
+              Please review and address these issues as soon as possible to restore system health.
+
+              ---
+              *This issue was automatically created by the health check workflow.*`;
+
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '🚨 Critical System Health Issues',
+                body: issueBody,
+                labels: ['health-check', 'priority: critical', 'automation']
+              });
+
+              console.log('Created critical health issue');
+            } else {
+              console.log('Critical health issue already exists');
+            }
+
+      - name: Post to Slack (if configured)
+        if: steps.health.outputs.status != 'Healthy' && env.SLACK_WEBHOOK_URL
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          STATUS="${{ steps.health.outputs.status }}"
+          COLOR="good"
+          if [ "$STATUS" == "Warning" ]; then COLOR="warning"; fi
+          if [ "$STATUS" == "Critical" ]; then COLOR="danger"; fi
+
+          PAYLOAD=$(jq -n \
+            --arg status "$STATUS" \
+            --arg color "$COLOR" \
+            --argjson report "$(cat health-report.json)" \
+            '{
+              attachments: [{
+                color: $color,
+                title: "GitHub Automation Health Check",
+                text: ("Overall Status: " + $report.overall.symbol + " " + $status),
+                fields: ($report.recommendations | map({
+                  title: "Recommendation",
+                  value: .,
+                  short: false
+                }))
+              }]
+            }')
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data "$PAYLOAD" \
+            "$SLACK_WEBHOOK_URL" || true

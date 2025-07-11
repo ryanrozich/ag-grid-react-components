@@ -1,0 +1,407 @@
+/* Sales Dashboard Styles */
+.sales-dashboard {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.dashboard-header h3 {
+  margin: 0;
+  color: #212529;
+}
+
+.preset-filters {
+  display: flex;
+  gap: 1rem;
+}
+
+.kpi-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.kpi-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgb(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.kpi-card h4 {
+  margin: 0 0 0.5rem;
+  color: #6c757d;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kpi-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #212529;
+  margin: 0.5rem 0;
+}
+
+.kpi-trend {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.kpi-trend.positive {
+  color: #28a745;
+}
+
+.kpi-trend.negative {
+  color: #dc3545;
+}
+
+/* Task Manager Styles */
+.task-manager {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.task-header h3 {
+  margin: 0;
+}
+
+.task-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.view-toggle {
+  display: flex;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #dee2e6;
+}
+
+.view-toggle button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-toggle button.active {
+  background: #007bff;
+  color: white;
+}
+
+.task-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  flex: 1;
+  padding: 1rem;
+  background: white;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #e9ecef;
+}
+
+.stat-card.overdue {
+  border-color: #dc3545;
+  background: #fff5f5;
+}
+
+.stat-label {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #212529;
+}
+
+.task-id-cell {
+  font-family: monospace;
+  color: #6c757d;
+}
+
+.task-title {
+  font-weight: 500;
+}
+
+.priority-high {
+  border-left: 3px solid #dc3545;
+  padding-left: 0.5rem;
+}
+
+.priority-medium {
+  border-left: 3px solid #ffc107;
+  padding-left: 0.5rem;
+}
+
+.priority-low {
+  border-left: 3px solid #28a745;
+  padding-left: 0.5rem;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-to-do {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.status-in-progress {
+  background: #cfe2ff;
+  color: #084298;
+}
+
+.status-completed {
+  background: #d1e7dd;
+  color: #0f5132;
+}
+
+.status-on-hold {
+  background: #fff3cd;
+  color: #664d03;
+}
+
+.overdue {
+  background: #fff5f5;
+  color: #dc3545;
+}
+
+.due-soon {
+  background: #fff8e1;
+  color: #f57c00;
+}
+
+.task-tag {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background: #e9ecef;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  margin-right: 0.25rem;
+}
+
+/* Kanban View */
+.kanban-view {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.kanban-column {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.kanban-column h4 {
+  margin: 0 0 1rem;
+  color: #495057;
+}
+
+.kanban-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.kanban-card {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgb(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.kanban-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgb(0, 0, 0, 0.1);
+}
+
+.kanban-card.completed {
+  opacity: 0.7;
+}
+
+.kanban-card .task-title {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.task-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* Analytics Platform Styles */
+.analytics-platform {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.analytics-header h3 {
+  margin: 0;
+}
+
+.analytics-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.metric-selector {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background: white;
+}
+
+.metrics-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgb(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.metric-card.primary h4 {
+  color: rgb(255, 255, 255, 0.9);
+}
+
+.metric-card.accent {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+.metric-card.accent h4 {
+  color: rgb(255, 255, 255, 0.9);
+}
+
+.metric-card h4 {
+  margin: 0 0 0.5rem;
+  color: #6c757d;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.metric-change {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.metric-change.positive {
+  color: #28a745;
+}
+
+.metric-change.negative {
+  color: #dc3545;
+}
+
+.metric-chart {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  font-size: 3rem;
+  opacity: 0.2;
+}
+
+.high-conversion {
+  background: #d4edda;
+  color: #155724;
+}
+
+.low-conversion {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-header,
+  .task-header,
+  .analytics-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .preset-filters,
+  .task-controls,
+  .analytics-controls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .kpi-section,
+  .metrics-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .kanban-view {
+    grid-template-columns: 1fr;
+  }
+}

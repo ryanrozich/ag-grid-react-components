@@ -18,7 +18,7 @@
 
 ### Architecture Overview
 
-```
+```text
 Before: Monolithic Bundle (329KB)
 ┌─────────────────────────────────────┐
 │  ag-grid-react-components           │
@@ -42,14 +42,14 @@ After: Modular System (<25KB base)
 
 #### 1. Headless DateFilter Core
 
-```typescript
+````typescript
 // Before: 150KB with react-datepicker baked in
 import { DateFilter } from "ag-grid-react-components";
 
 // After: 10KB headless core
 import { createDateFilter } from "@agrc/core";
 const DateFilter = createDateFilter(); // Uses native date input
-```
+```text
 
 #### 2. Pluggable Adapters
 
@@ -59,7 +59,7 @@ import { reactDatePickerAdapter } from "@agrc/adapters/react-datepicker";
 const DateFilter = createDateFilter({
   datePickerAdapter: reactDatePickerAdapter, // +40KB only when used
 });
-```
+```text
 
 #### 3. Optional Compression
 
@@ -71,7 +71,7 @@ setupGridStatePersistence(api);
 setupGridStatePersistence(api, {
   compressionAdapter: createLZStringAdapter(),
 });
-```
+````
 
 ## Bundle Size Impact
 

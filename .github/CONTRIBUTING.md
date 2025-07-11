@@ -60,7 +60,7 @@ npm run test:e2e
 
 1. **Pick an Issue**
 
-   - Check the [Project Board](https://github.com/ryanrozich/ag-grid-react-components/projects)
+   - Check the [Project Board](<[https://github.com/ryanrozich/ag-grid-react-components/project](https://github.com/ryanrozich/ag-grid-react-components/project)s>)
    - Look for issues labeled `status: ready`
    - Comment on the issue to claim it
 
@@ -117,7 +117,7 @@ npm run test:e2e
 - `investigation` - Needs research
 - `documentation` - Docs only
 
-## 🎯 What Makes a Good Issue?
+## 🎯 What Makes a Good Issue
 
 ### Great Bug Report Example
 
@@ -135,15 +135,17 @@ useEffect(() => {
   setFilterState(props.value);
 }, []); // Missing props.value dependency
 ```
-````
+
+```text
 
 **Fix**: Add props.value to dependency array
 **Impact**: Medium - affects dynamic filters
 **Complexity**: Simple - one line change
-
+```
 ````
 
 ### Great Feature Request Example
+
 ```markdown
 **Feature**: Add keyboard navigation to QuickFilterDropdown
 
@@ -152,6 +154,7 @@ useEffect(() => {
 **Proposed API**: No API change needed, just behavior
 
 **Implementation**:
+
 1. Add keydown handler to dropdown
 2. Track highlighted index in state
 3. Enter/Space to select
@@ -159,12 +162,13 @@ useEffect(() => {
 5. Arrow keys to navigate
 
 **Files to modify**:
+
 - src/components/QuickFilterDropdown/index.tsx
 - Add new hook: useKeyboardNavigation.ts
 
 **Effort**: S (1-2 days)
 **Breaking**: No
-````
+```
 
 ## 🔍 Code Review Guidelines
 
@@ -222,7 +226,7 @@ Issues flow through these stages:
 ## 🤝 Community
 
 - **Discussions**: Use GitHub Discussions for questions
-- **Discord**: [Join our Discord](#) for real-time chat
+- **Discord**: Join our Discord for real-time chat
 - **Issues**: For bugs and features only
 - **PRs**: Include tests and follow the template
 
