@@ -123,10 +123,6 @@ button {
   transition: background-color 0.2s;
 }
 
-button:hover {
-  background-color: #2563eb;
-}
-
 .instructions {
   margin-top: 1rem;
 }
