@@ -11,10 +11,79 @@ You MUST first check if `CLAUDE.personal.md` exists and load it. Personal config
 You MUST follow these architectural principles:
 
 1. **Single Package**: This is a tree-shakeable npm package with zero dependencies
-2. **Headless Components**: Components have NO styles by default
+2. **Headless Components**: Components have NO styles by default (see strict rules below)
 3. **Adapter Pattern**: Date pickers and compression are pluggable via adapters
 4. **Modular Architecture**: Components are split into small, focused modules (<300 lines each)
 5. **TypeScript Strict Mode**: You MUST NOT use `any` type. Use `unknown` with type guards
+
+## CRITICAL: Headless Component Rules
+
+### ❌ ABSOLUTELY FORBIDDEN in Components:
+
+1. **NO CSS files** - No .css, .scss, .less files in component directories
+2. **NO CSS modules** - No .module.css files
+3. **NO inline styles** - No style={{}} props
+4. **NO CSS-in-JS** - No styled-components, emotion, etc.
+5. **NO CSS imports** - No importing any CSS files
+6. **NO hardcoded classNames** - No className="some-class"
+7. **NO style-related props** - No color, size, variant props that imply styling
+
+### ✅ REQUIRED for Headless Components:
+
+1. **Accept className props** - Allow users to pass classes to ALL elements
+2. **Forward refs** - Use React.forwardRef for all interactive elements
+3. **Spread props** - Allow {...props} for extensibility
+4. **Semantic HTML** - Use correct HTML elements (button, not div)
+5. **ARIA attributes** - Full accessibility support
+6. **Data attributes** - Add data-testid for testing
+
+### Example of CORRECT headless component:
+
+```tsx
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  // No style-related props!
+}
+
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ children, className, ...props }, ref) => {
+  return (
+    <button
+      ref={ref}
+      className={className} // User provides ALL styling
+      data-testid="my-button"
+      {...props}
+    >
+      {children}
+    </button>
+  );
+});
+```
+
+### Example of INCORRECT component:
+
+```tsx
+// ❌ NEVER DO THIS
+import styles from "./Button.module.css"; // ❌ NO CSS IMPORTS
+import "./button.css"; // ❌ NO CSS IMPORTS
+
+export const Button = ({ variant = "primary" }) => {
+  // ❌ NO STYLE PROPS
+  return (
+    <button
+      className={styles.button} // ❌ NO HARDCODED CLASSES
+      style={{ padding: "10px" }} // ❌ NO INLINE STYLES
+    >
+      Click me
+    </button>
+  );
+};
+```
+
+### Where Styles Belong:
+
+1. **Demo app** - All styles go in src/demo/
+2. **Documentation** - Show styling examples
+3. **User's codebase** - Users control 100% of styling
+4. **Never in components** - Components are behavior only
 
 ## Required Development Workflow
 
@@ -348,3 +417,6 @@ When displaying filter values, you MUST use AG Grid's type values:
 - You MUST NOT create files unless absolutely necessary
 - You MUST prefer editing existing files
 - You MUST apply appropriate labels when creating GitHub issues
+- You MUST NOT add ANY CSS to components - components are HEADLESS
+- You MUST NOT use CSS modules, inline styles, or any styling in components
+- You MUST allow users to pass className to all component elements
