@@ -19,6 +19,7 @@ import heroScreenshot from "./assets/screenshots/hero-screenshot.png";
 import { ServerSideDemo } from "./components/ServerSideDemo";
 import { SimpleFilterPresetsDemo } from "./SimpleFilterPresetsDemo";
 import { StackBlitzExample } from "./components/StackBlitzExample";
+import { V2HeadlessExamples } from "./v2-headless-examples";
 import {
   darkTheme,
   getColumnDefs,
@@ -1129,6 +1130,11 @@ const columnDefs = [{
       { id: "activefilters", label: "ActiveFilters", indent: true },
       { id: "filterpresets", label: "Filter Presets", indent: true },
       { id: "urlstate", label: "URL State Persistence", indent: true },
+
+      // Headless UI Components Section
+      { id: "headless", label: "Headless UI Components", isSection: true },
+      { id: "what-are-headless", label: "What Are Headless UI?", indent: true },
+      { id: "headless-examples", label: "Examples", indent: true },
 
       // Demo Guide Section
       { id: "demo-guide", label: "Demo Guide", isSection: true },
@@ -6272,6 +6278,316 @@ const mockColumn = createMockColumn({ field: 'date' });`}
                             </dl>
                           </div>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* What Are Headless Components */}
+                {activeDocSection === "what-are-headless" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="what-are-headless">
+                        What Are Headless UI Components?
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        Headless UI components provide behavior without styles.
+                        Think of them as the "brain" of the component without
+                        the "appearance". This approach gives you complete
+                        control over styling while the React component handles
+                        all the complex logic.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="traditional-vs-headless">
+                            Traditional vs Headless Components
+                          </AnchorHeading>
+
+                          <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                              <h4 className="text-lg font-semibold mb-3 text-gray-200">
+                                Traditional Components
+                              </h4>
+                              <CodeBlock
+                                code={`// Component comes with built-in styles
+import { DatePicker } from 'some-ui-library';
+import 'some-ui-library/dist/styles.css'; // Required CSS
+
+<DatePicker /> // Looks styled out of the box`}
+                                language="tsx"
+                              />
+                              <ul className="mt-4 space-y-2 text-sm text-gray-400">
+                                <li>• Ships with pre-built CSS</li>
+                                <li>• Limited customization options</li>
+                                <li>• May conflict with your styles</li>
+                                <li>• Larger bundle size</li>
+                              </ul>
+                            </div>
+
+                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                              <h4 className="text-lg font-semibold mb-3 text-gray-200">
+                                Headless Components
+                              </h4>
+                              <CodeBlock
+                                code={`// Component has NO styles
+import { DateFilter } from 'ag-grid-react-components';
+
+<DateFilter /> // Just HTML - you style it`}
+                                language="tsx"
+                              />
+                              <ul className="mt-4 space-y-2 text-sm text-gray-400">
+                                <li>• Zero CSS included</li>
+                                <li>• Complete control over styling</li>
+                                <li>• Works with any CSS solution</li>
+                                <li>• Minimal bundle size</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="what-headless-provides">
+                            What Headless Components Provide
+                          </AnchorHeading>
+
+                          <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-green-900/20 rounded-lg p-6 border border-green-800/50">
+                              <h4 className="text-lg font-semibold mb-3 text-green-400">
+                                ✅ DO Provide
+                              </h4>
+                              <div className="space-y-4">
+                                <div>
+                                  <h5 className="font-semibold text-green-300">
+                                    State Management
+                                  </h5>
+                                  <ul className="mt-1 space-y-1 text-sm text-gray-400">
+                                    <li>
+                                      • Internal state (open/closed, selected
+                                      values)
+                                    </li>
+                                    <li>• State synchronization</li>
+                                    <li>• Controlled/uncontrolled modes</li>
+                                  </ul>
+                                </div>
+                                <div>
+                                  <h5 className="font-semibold text-green-300">
+                                    Business Logic
+                                  </h5>
+                                  <ul className="mt-1 space-y-1 text-sm text-gray-400">
+                                    <li>• Date parsing and validation</li>
+                                    <li>• Filtering algorithms</li>
+                                    <li>• Data transformations</li>
+                                  </ul>
+                                </div>
+                                <div>
+                                  <h5 className="font-semibold text-green-300">
+                                    Accessibility
+                                  </h5>
+                                  <ul className="mt-1 space-y-1 text-sm text-gray-400">
+                                    <li>• ARIA attributes</li>
+                                    <li>• Keyboard navigation</li>
+                                    <li>• Focus management</li>
+                                    <li>• Screen reader support</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="bg-red-900/20 rounded-lg p-6 border border-red-800/50">
+                              <h4 className="text-lg font-semibold mb-3 text-red-400">
+                                ❌ DON'T Provide
+                              </h4>
+                              <div className="space-y-4">
+                                <div>
+                                  <h5 className="font-semibold text-red-300">
+                                    Visual Styles
+                                  </h5>
+                                  <ul className="mt-1 space-y-1 text-sm text-gray-400">
+                                    <li>• No CSS files</li>
+                                    <li>• No inline styles</li>
+                                    <li>• No CSS-in-JS</li>
+                                    <li>• No default theme</li>
+                                  </ul>
+                                </div>
+                                <div>
+                                  <h5 className="font-semibold text-red-300">
+                                    Layout Opinions
+                                  </h5>
+                                  <ul className="mt-1 space-y-1 text-sm text-gray-400">
+                                    <li>• No positioning</li>
+                                    <li>• No spacing</li>
+                                    <li>• No sizing</li>
+                                    <li>• No responsive breakpoints</li>
+                                  </ul>
+                                </div>
+                                <div>
+                                  <h5 className="font-semibold text-red-300">
+                                    Visual Effects
+                                  </h5>
+                                  <ul className="mt-1 space-y-1 text-sm text-gray-400">
+                                    <li>• No hover effects</li>
+                                    <li>• No focus rings</li>
+                                    <li>• No transitions</li>
+                                    <li>• No animations</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="data-attributes">
+                            Data Attributes for State-Based Styling
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-4">
+                            Headless components expose their state through data
+                            attributes, allowing you to style based on component
+                            state using CSS:
+                          </p>
+
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b border-gray-700">
+                                  <th className="text-left py-2 text-gray-300">
+                                    Data Attribute
+                                  </th>
+                                  <th className="text-left py-2 text-gray-300">
+                                    Description
+                                  </th>
+                                  <th className="text-left py-2 text-gray-300">
+                                    CSS Example
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="text-gray-400">
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3 font-mono">
+                                    data-active
+                                  </td>
+                                  <td className="py-3">
+                                    Element is active/selected
+                                  </td>
+                                  <td className="py-3 font-mono text-xs">
+                                    [data-active="true"]{" "}
+                                    {`{ background: blue; }`}
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3 font-mono">
+                                    data-invalid
+                                  </td>
+                                  <td className="py-3">
+                                    Input validation failed
+                                  </td>
+                                  <td className="py-3 font-mono text-xs">
+                                    [data-invalid="true"]{" "}
+                                    {`{ border-color: red; }`}
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3 font-mono">
+                                    data-disabled
+                                  </td>
+                                  <td className="py-3">Element is disabled</td>
+                                  <td className="py-3 font-mono text-xs">
+                                    [data-disabled="true"] {`{ opacity: 0.5; }`}
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3 font-mono">data-open</td>
+                                  <td className="py-3">
+                                    Dropdown/panel is open
+                                  </td>
+                                  <td className="py-3 font-mono text-xs">
+                                    [data-open="true"]{" "}
+                                    {`{ transform: rotate(180deg); }`}
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+
+                          <div className="mt-4">
+                            <p className="text-sm text-gray-400 mb-2">
+                              Using with Tailwind CSS:
+                            </p>
+                            <CodeBlock
+                              code={`<button className="data-[active]:bg-blue-500 data-[active]:text-white">
+  Click me
+</button>`}
+                              language="tsx"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="benefits-headless">
+                            Benefits of Headless Components
+                          </AnchorHeading>
+
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <h4 className="font-semibold text-indigo-400 mb-2">
+                                Complete Control
+                              </h4>
+                              <p className="text-sm text-gray-400">
+                                You own every pixel. No fighting with !important
+                                or deeply nested selectors.
+                              </p>
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <h4 className="font-semibold text-indigo-400 mb-2">
+                                Consistency
+                              </h4>
+                              <p className="text-sm text-gray-400">
+                                Use your existing design system without
+                                compromise. The component adapts to your styles.
+                              </p>
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <h4 className="font-semibold text-indigo-400 mb-2">
+                                Performance
+                              </h4>
+                              <p className="text-sm text-gray-400">
+                                No unused CSS shipped to users. Tree-shakeable
+                                components mean smaller bundle sizes.
+                              </p>
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <h4 className="font-semibold text-indigo-400 mb-2">
+                                No Style Conflicts
+                              </h4>
+                              <p className="text-sm text-gray-400">
+                                Since there are no default styles, there's
+                                nothing to override or conflict with your app.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Headless Examples */}
+                {activeDocSection === "headless-examples" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="headless-examples">
+                        Headless UI Component Examples
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        See how the same DateFilter React component looks with
+                        different styling approaches. The headless UI component
+                        provides the behavior - you provide the looks!
+                      </p>
+
+                      {/* Embed the headless examples component */}
+                      <div className="-mx-8 bg-gray-50 p-8">
+                        <V2HeadlessExamples />
                       </div>
                     </div>
                   </div>

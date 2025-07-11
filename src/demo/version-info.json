@@ -1,13 +1,13 @@
 {
   "version": "0.2.0-rc1",
   "git": {
-    "commitHash": "4012ad96e64dbb97b19236524979b0cee1a4e6a8",
-    "shortHash": "4012ad9",
+    "commitHash": "e7f5d6800eca68a268fa6c7e6f224b10a618de33",
+    "shortHash": "e7f5d68",
     "branch": "feat/v2-headless-components",
-    "commitDate": "2025-07-11 07:21:18 -0500",
+    "commitDate": "2025-07-11 07:27:30 -0500",
     "latestTag": "v0.1.1-rc1",
-    "commitsSinceTag": 36,
-    "isDirty": false
+    "commitsSinceTag": 37,
+    "isDirty": true
   },
   "deployment": {
     "isPR": false,
@@ -15,7 +15,7 @@
     "isMainBranch": false,
     "deployPath": "ag-grid-react-components"
   },
-  "buildTime": "2025-07-11T12:22:45.212Z",
-  "displayVersion": "v0.2.0-rc1+36",
+  "buildTime": "2025-07-11T14:04:12.982Z",
+  "displayVersion": "v0.2.0-rc1+37",
   "displayLabel": "feat/v2-headless-components"
 }
