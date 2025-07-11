@@ -27,7 +27,7 @@ jobs:
         run: npm ci
 
       - name: Generate examples
-        run: node scripts/create-stackblitz-examples.js
+        run: node scripts/build/create-stackblitz-examples.js
 
       - name: Commit and push if changed
         run: |

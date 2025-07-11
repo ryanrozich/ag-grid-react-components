@@ -58,7 +58,7 @@ function getGitInfo() {
 
 function getPackageVersion() {
   const packageJson = JSON.parse(
-    fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf8')
+    fs.readFileSync(path.resolve(__dirname, '../package.json'), 'utf8')
   );
   return packageJson.version;
 }
@@ -103,7 +103,7 @@ function generateVersionInfo() {
   };
 
   // Write to file
-  const outputPath = path.resolve(__dirname, '../../src/demo/version-info.json');
+  const outputPath = path.resolve(__dirname, '../src/demo/version-info.json');
   fs.writeFileSync(outputPath, JSON.stringify(versionInfo, null, 2) + '\n');
 
   console.log('✅ Version info generated:', versionInfo.displayVersion, `(${versionInfo.displayLabel})`);

@@ -147,3 +147,6 @@ COALESCE_LABS_*.md
 CLEANUP_*.md
 R2_CLEANUP_*.md
 test-framework-*.mdEXPOSED-CREDENTIALS-PRIVATE.txt
+
+# Scripts archive (preserved but not in version control)
+scripts-archive/

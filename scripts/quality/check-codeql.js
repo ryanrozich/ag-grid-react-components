@@ -8,10 +8,6 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { ensureProjectRoot } from '../utils/ensure-project-root.mjs';
-
-// Ensure we're in the project root
-ensureProjectRoot('check-codeql.js');
 
 const securityPatterns = [
   {
