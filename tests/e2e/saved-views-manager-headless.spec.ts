@@ -189,7 +189,9 @@ test.describe("SavedViewsManager Headless Component E2E Tests", () => {
 
     // Reload to clear any state
     await page.reload();
-    await page.waitForSelector(".ag-theme-custom", { timeout: 10000 });
+    await page.waitForLoadState("networkidle");
+    // Wait for the demo to load
+    await page.waitForSelector('button:has-text("Server-Side Data")', { timeout: 10000 });
     await page.click("text=Server-Side Data");
     await page.waitForSelector("[data-saved-views-trigger]", { timeout: 5000 });
 
@@ -256,8 +258,11 @@ test.describe("SavedViewsManager Headless Component E2E Tests", () => {
     await dialog.locator("[data-field-input]").fill("Export Test View");
     await dialog.locator('[data-action="save"][data-primary="true"]').click();
 
-    // Test export button
-    await page.click("[data-saved-views-trigger]");
+    // Wait for dialog to close
+    await expect(dialog).not.toBeVisible();
+    await page.waitForTimeout(1000); // Give time for the view to be saved
+
+    // The panel should still be open after saving, so just find the export button
     const exportButton = page.locator('[data-action="export"]');
     await expect(exportButton).toBeEnabled();
 
