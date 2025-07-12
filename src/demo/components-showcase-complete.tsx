@@ -27,6 +27,7 @@ import { DemoToolbar, StatsBar } from "./config/commonUIConfig";
 // import { SimpleCodeBlock as CodeBlock } from "./components/SimpleCodeBlock";
 import "./styles/showcase-dark.css";
 import "./styles/code-override.css";
+import "./styles/headless-components.css";
 
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);
