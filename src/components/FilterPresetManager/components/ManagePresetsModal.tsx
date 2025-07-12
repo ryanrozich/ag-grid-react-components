@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import type { FilterPreset } from "../types";
-import { CategorySelector } from "../../CategorySelector";
+import { CategorySelector } from "../../CategorySelector/index";
 import styles from "../FilterPresetManager.module.css";
 
 interface ManagePresetsModalProps {

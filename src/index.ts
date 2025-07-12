@@ -32,9 +32,9 @@ export type {
 } from "./components/SavedViewsManager";
 
 // Category Selector Component
-import { CategorySelector } from "./components/CategorySelector";
+import { CategorySelector } from "./components/CategorySelector/index";
 export { CategorySelector };
-export type { CategorySelectorProps } from "./components/CategorySelector";
+export type { CategorySelectorProps } from "./components/CategorySelector/index";
 
 // Export all types from central location
 export * from "./types";

@@ -1,7 +1,7 @@
 import React, { useState, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { SaveViewDialogProps, SavedViewCategory } from "./types";
-import { CategorySelector } from "../CategorySelector";
+import { CategorySelector } from "../CategorySelector/index";
 
 interface HeadlessSaveViewDialogProps
   extends Omit<SaveViewDialogProps, "onClose"> {
