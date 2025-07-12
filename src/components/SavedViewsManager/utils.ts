@@ -1,6 +1,12 @@
 import type { SavedView, SavedViewCategory, ExportData } from "./types";
 
-export const DEFAULT_CATEGORIES: SavedViewCategory[] = [];
+export const DEFAULT_CATEGORIES: SavedViewCategory[] = [
+  { id: "general", name: "General", icon: "📁", color: "gray" },
+  { id: "reports", name: "Reports", icon: "📊", color: "blue" },
+  { id: "analysis", name: "Analysis", icon: "🔍", color: "green" },
+  { id: "team", name: "Team Views", icon: "👥", color: "purple" },
+  { id: "personal", name: "Personal", icon: "👤", color: "orange" },
+];
 
 export function generateId(): string {
   return `view_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
