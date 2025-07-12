@@ -153,11 +153,11 @@
 }
 
 /* ActiveFilters Component Styles */
-[data-component="active-filters"] {
+[data-testid="active-filters"] {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 [data-component="active-filters-list"] {
@@ -165,6 +165,7 @@
   gap: 0.5rem;
   flex-wrap: wrap;
   flex: 1;
+  min-width: 0;
 }
 
 [data-component="active-filters-item"] {

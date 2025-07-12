@@ -10,16 +10,9 @@ export type DateFilterType =
 export type DateFilterMode = "absolute" | "relative";
 
 export interface DateFilterModel {
-  type: DateFilterType;
-  mode: DateFilterMode;
-  dateFrom?: Date | null;
-  dateTo?: Date | null;
-  expressionFrom?: string;
-  expressionTo?: string;
-  /** Whether the range start is inclusive */
-  fromInclusive?: boolean;
-  /** Whether the range end is inclusive */
-  toInclusive?: boolean;
+  filterType: DateFilterType;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export interface DateFilterParams extends IFilterParams {

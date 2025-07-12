@@ -14,7 +14,8 @@ import type {
   FilterChangedEvent,
 } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
-import { ActiveFilters } from "../../index";
+import { ActiveFilters, QuickFilterDropdown } from "../../index";
+import SavedViewsManager from "../../components/SavedViewsManager";
 import {
   darkTheme,
   getColumnDefs,
@@ -24,9 +25,248 @@ import {
   getStatusBarConfig,
 } from "../config/sharedGridConfig";
 import { DemoToolbar, StatsBar } from "../config/commonUIConfig";
+import "../styles/SavedViewsManager.css";
 
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);
+
+// Time-based quick filters - same as client-side demo
+const dateQuickFilters = [
+  {
+    id: "all",
+    label: "All Time",
+    filterModel: null,
+    icon: "🌍",
+    description: "Show all records",
+  },
+  {
+    id: "last7days",
+    label: "Last 7 Days",
+    filterModel: {
+      mode: "relative",
+      type: "inRange",
+      expressionFrom: "Today-7d",
+      expressionTo: "Today",
+    },
+    icon: "📅",
+    description: "Records from the past week",
+  },
+  {
+    id: "thisMonth",
+    label: "This Month",
+    filterModel: {
+      mode: "relative",
+      type: "inRange",
+      expressionFrom: "StartOfMonth",
+      expressionTo: "EndOfMonth",
+    },
+    icon: "📆",
+    description: "All records from current month",
+  },
+  {
+    id: "overdue",
+    label: "Overdue",
+    filterModel: null,
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        dueDate: {
+          mode: "relative",
+          type: "before",
+          expressionFrom: "Today",
+        },
+        status: {
+          values: [
+            "Backlog",
+            "Todo",
+            "In Progress",
+            "In Review",
+            "Testing",
+            "Blocked",
+          ],
+        },
+      };
+    },
+    icon: "🚨",
+    description: "Tasks past their due date (not done)",
+  },
+];
+
+// Task type filters - same as client-side demo
+const taskTypeFilters = [
+  {
+    id: "allTasks",
+    label: "All Tasks",
+    filterModel: null,
+    icon: "📋",
+    description: "Show all task types",
+  },
+  {
+    id: "criticalBugs",
+    label: "Critical Bugs",
+    icon: "🐛",
+    description: "High priority bug fixes",
+    filterModel: null,
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        category: {
+          values: ["Bug"],
+        },
+        priority: {
+          values: ["Critical", "High"],
+        },
+      };
+    },
+  },
+  {
+    id: "features",
+    label: "Features",
+    icon: "✨",
+    description: "New feature development",
+    filterModel: null,
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        category: {
+          values: ["Feature"],
+        },
+      };
+    },
+  },
+  {
+    id: "inProgress",
+    label: "In Progress",
+    icon: "🚀",
+    description: "Active work items",
+    filterModel: null,
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        status: {
+          values: ["In Progress", "In Review", "Testing"],
+        },
+      };
+    },
+  },
+];
+
+// Preset filters - complex filter combinations
+const presetFilters = [
+  {
+    id: "all",
+    label: "All Tasks",
+    icon: "📋",
+    description: "Show all tasks",
+    filterModel: null,
+  },
+  {
+    id: "myOpenTasks",
+    label: "My Open Tasks",
+    icon: "👤",
+    description: "Assigned to me, not completed",
+    buildFilterModel: (_api: GridApi) => {
+      // In a real app, you'd get current user from context
+      const currentUser = "Sam Cassin"; // Example user
+      return {
+        assignee: {
+          values: [currentUser],
+        },
+        status: {
+          values: ["Todo", "In Progress", "In Review", "Testing", "Blocked"],
+        },
+      };
+    },
+  },
+  {
+    id: "criticalOverdue",
+    label: "Critical & Overdue",
+    icon: "🚨",
+    description: "High priority tasks past due date",
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        priority: {
+          values: ["Critical", "High"],
+        },
+        dueDate: {
+          mode: "relative",
+          type: "before",
+          expressionFrom: "Today",
+        },
+        status: {
+          values: [
+            "Backlog",
+            "Todo",
+            "In Progress",
+            "In Review",
+            "Testing",
+            "Blocked",
+          ],
+        },
+      };
+    },
+  },
+  {
+    id: "highPriority",
+    label: "High Priority",
+    icon: "⚡",
+    description: "Critical and high priority items",
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        priority: {
+          values: ["Critical", "High"],
+        },
+      };
+    },
+  },
+  {
+    id: "upcomingDeadlines",
+    label: "Upcoming Deadlines",
+    icon: "⏰",
+    description: "Due in the next 7 days",
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        dueDate: {
+          mode: "relative",
+          type: "inRange",
+          expressionFrom: "Today",
+          expressionTo: "Today+7d",
+        },
+        status: {
+          values: ["Todo", "In Progress", "In Review", "Testing"],
+        },
+      };
+    },
+  },
+  {
+    id: "recentlyCompleted",
+    label: "Recently Completed",
+    icon: "✅",
+    description: "Completed in the last 7 days",
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        status: {
+          values: ["Done"],
+        },
+        completedDate: {
+          mode: "relative",
+          type: "inRange",
+          expressionFrom: "Today-7d",
+          expressionTo: "Today",
+        },
+      };
+    },
+  },
+  {
+    id: "blockedTasks",
+    label: "Blocked Tasks",
+    icon: "🛑",
+    description: "Tasks that are currently blocked",
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        status: {
+          values: ["Blocked"],
+        },
+      };
+    },
+  },
+];
 
 // Stats display component - using server data
 const ServerStats: React.FC<{
@@ -228,6 +468,8 @@ export const ServerSideDemo: React.FC = () => {
 
   const onFilterChanged = useCallback((event: FilterChangedEvent) => {
     setFilterModel(event.api.getFilterModel());
+    // For server-side row model, we need to refresh the data when filters change
+    event.api.refreshServerSide({ purge: true });
   }, []);
 
   return (
@@ -292,6 +534,123 @@ export const ServerSideDemo: React.FC = () => {
           }, 300); // 300ms debounce
         }}
       >
+        {/* Quick Filters */}
+        {gridApi && (
+          <>
+            <QuickFilterDropdown
+              key="server-date-filter"
+              api={gridApi}
+              columnId="dueDate"
+              options={dateQuickFilters}
+              placeholder="Time period"
+              showDescriptions={false}
+              className="min-w-[140px]"
+              usePortal="always"
+            />
+            <QuickFilterDropdown
+              key="server-task-filter"
+              api={gridApi}
+              columnId="_multi"
+              options={taskTypeFilters}
+              placeholder="Task type"
+              showDescriptions={false}
+              className="min-w-[140px]"
+              usePortal="always"
+            />
+            <QuickFilterDropdown
+              key="server-preset-filter"
+              api={gridApi}
+              columnId="_multi"
+              options={presetFilters}
+              placeholder="Preset filters"
+              showDescriptions={false}
+              className="min-w-[160px]"
+              usePortal="always"
+            />
+            <SavedViewsManager
+              api={gridApi}
+              storageKey="demo-saved-views-server"
+            >
+              <SavedViewsManager.Trigger className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-gray-300 hover:bg-gray-700 transition-colors flex items-center gap-2" />
+
+              <SavedViewsManager.Panel className="w-80 bg-gray-900 border border-gray-700 rounded-lg shadow-xl">
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <SavedViewsManager.Title className="text-lg font-semibold text-white" />
+                    <SavedViewsManager.CloseButton className="text-gray-400 hover:text-white transition-colors" />
+                  </div>
+
+                  <SavedViewsManager.Actions className="flex gap-2 mb-4">
+                    <button
+                      data-action="save"
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V2"
+                        />
+                      </svg>
+                      Save Current
+                    </button>
+                    <button
+                      data-action="export"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-600 transition-colors text-sm"
+                      title="Export all saved views"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                      Export
+                    </button>
+                    <button
+                      data-action="import"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors text-sm"
+                      title="Import saved views"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        />
+                      </svg>
+                      Import
+                    </button>
+                  </SavedViewsManager.Actions>
+
+                  <SavedViewsManager.List className="max-h-96 overflow-y-auto" />
+                </div>
+              </SavedViewsManager.Panel>
+
+              <SavedViewsManager.Dialog className="save-view-dialog-styles" />
+            </SavedViewsManager>
+          </>
+        )}
+
         <div className="text-sm text-gray-400 flex items-center">
           {loading && <span className="mr-2">🔍 Searching...</span>}
           {rowCount !== null && (

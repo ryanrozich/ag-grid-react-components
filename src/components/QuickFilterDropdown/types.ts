@@ -51,6 +51,8 @@ export interface QuickFilterDropdownProps {
    * @default 'never'
    */
   usePortal?: "auto" | "always" | "never";
+  /** Children for compound component pattern */
+  children?: ReactNode;
 }
 
 /**

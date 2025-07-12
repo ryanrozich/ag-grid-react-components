@@ -1,6 +1,6 @@
 import React, { forwardRef, useMemo } from "react";
 import { GridApi } from "ag-grid-community";
-import { ActiveFiltersProvider, useActiveFiltersContext } from "./context";
+import { ActiveFiltersProvider } from "./context";
 import * as Components from "./components";
 
 export interface ActiveFiltersProps {
@@ -11,7 +11,7 @@ export interface ActiveFiltersProps {
 }
 
 export interface ActiveFiltersCompound {
-  (props: ActiveFiltersProps): JSX.Element | null;
+  (props: ActiveFiltersProps): React.ReactElement | null;
   Root: typeof Components.Root;
   List: typeof Components.List;
   Item: typeof Components.Item;
@@ -79,16 +79,19 @@ const ActiveFiltersComponent = forwardRef<HTMLDivElement, ActiveFiltersProps>(
 ActiveFiltersComponent.displayName = "ActiveFilters";
 
 // Create the compound component
-const ActiveFilters = ActiveFiltersComponent as ActiveFiltersCompound;
+const ActiveFilters =
+  ActiveFiltersComponent as unknown as ActiveFiltersCompound;
 
 // Attach all sub-components
-ActiveFilters.Root = Components.Root;
-ActiveFilters.List = Components.List;
-ActiveFilters.Item = Components.Item;
-ActiveFilters.ColumnName = Components.ColumnName;
-ActiveFilters.FilterValue = Components.FilterValue;
-ActiveFilters.RemoveButton = Components.RemoveButton;
-ActiveFilters.ClearAllButton = Components.ClearAllButton;
+Object.assign(ActiveFilters, {
+  Root: Components.Root,
+  List: Components.List,
+  Item: Components.Item,
+  ColumnName: Components.ColumnName,
+  FilterValue: Components.FilterValue,
+  RemoveButton: Components.RemoveButton,
+  ClearAllButton: Components.ClearAllButton,
+});
 
 export default ActiveFilters;
 export { ActiveFilters };

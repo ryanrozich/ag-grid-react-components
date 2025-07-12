@@ -1,7 +1,7 @@
-import React, { forwardRef, useImperativeHandle } from "react";
-import { IDoesFilterPassParams, IFilterParams } from "ag-grid-community";
+import React, { forwardRef, useCallback } from "react";
+import { IFilterParams } from "ag-grid-community";
 import { DateFilterProvider } from "./context";
-import { DateFilterModel, DateFilterType } from "../interfaces";
+import { DateFilterModel } from "../interfaces";
 import * as Components from "./components";
 import { useGridFilter } from "./hooks/useGridFilter";
 
@@ -9,10 +9,12 @@ export interface DateFilterProps extends IFilterParams {
   children?: React.ReactNode;
   dateParser?: (value: string) => Date | null;
   className?: string;
+  model?: DateFilterModel | null;
+  onModelChange?: (model: DateFilterModel | null) => void;
 }
 
 export interface DateFilterCompound {
-  (props: DateFilterProps): JSX.Element;
+  (props: DateFilterProps): React.ReactElement;
   Root: typeof Components.Root;
   TypeSelector: typeof Components.TypeSelector;
   ModeToggle: typeof Components.ModeToggle;
@@ -30,84 +32,42 @@ export interface DateFilterCompound {
 }
 
 const DateFilterComponent = forwardRef<any, DateFilterProps>((props, ref) => {
-  const { children, ...filterParams } = props;
+  const { children, model, onModelChange, ...filterParams } = props;
 
-  // Use the AG Grid filter hook
-  const { model, setModel, applyFilter, resetFilter, isFilterActive } =
-    useGridFilter(filterParams);
+  // Use the AG Grid filter hook only if not controlled by external model
+  const { getModel, setModel } = useGridFilter(ref, filterParams);
 
-  // Implement AG Grid filter interface
-  useImperativeHandle(
-    ref,
-    () => ({
-      isFilterActive: () => isFilterActive(),
+  // Use external model if provided, otherwise use internal state
+  const currentModel = model !== undefined ? model : getModel();
 
-      doesFilterPass: (params: IDoesFilterPassParams) => {
-        if (!isFilterActive()) return true;
-
-        const value = filterParams.getValue(params.node);
-        if (value == null) return false;
-
-        const date = value instanceof Date ? value : new Date(value);
-        if (isNaN(date.getTime())) return false;
-
-        const filterModel = model as DateFilterModel;
-
-        switch (filterModel.filterType) {
-          case "equals":
-            return filterModel.dateFrom
-              ? date.toDateString() ===
-                  new Date(filterModel.dateFrom).toDateString()
-              : false;
-          case "notEqual":
-            return filterModel.dateFrom
-              ? date.toDateString() !==
-                  new Date(filterModel.dateFrom).toDateString()
-              : true;
-          case "before":
-            return filterModel.dateFrom
-              ? date < new Date(filterModel.dateFrom)
-              : false;
-          case "after":
-            return filterModel.dateFrom
-              ? date > new Date(filterModel.dateFrom)
-              : false;
-          case "inRange":
-            if (!filterModel.dateFrom || !filterModel.dateTo) return false;
-            return (
-              date >= new Date(filterModel.dateFrom) &&
-              date <= new Date(filterModel.dateTo)
-            );
-          default:
-            return true;
-        }
-      },
-
-      getModel: () => model,
-
-      setModel: (newModel: DateFilterModel | null) => {
+  // Create wrapper functions for the provider
+  const handleSetModel = useCallback(
+    (newModel: DateFilterModel | null) => {
+      if (onModelChange) {
+        onModelChange(newModel);
+      } else {
         setModel(newModel);
-      },
-
-      getModelAsString: () => {
-        if (!model) return "";
-        const filterModel = model as DateFilterModel;
-        return filterModel.filterType || "";
-      },
-
-      destroy: () => {
-        // Cleanup if needed
-      },
-    }),
-    [model, setModel, isFilterActive, filterParams],
+      }
+    },
+    [setModel, onModelChange],
   );
+
+  const applyFilter = useCallback(() => {
+    // The context will call handleSetModel which updates the grid filter
+    // AG Grid will be notified through the setModel callback
+  }, []);
+
+  const resetFilter = useCallback(() => {
+    // The context will call handleSetModel(null) which updates the grid filter
+    // AG Grid will be notified through the setModel callback
+  }, []);
 
   if (!children) {
     // Default structure for backward compatibility
     return (
       <DateFilterProvider
-        model={model}
-        setModel={setModel}
+        model={currentModel}
+        setModel={handleSetModel}
         applyFilter={applyFilter}
         resetFilter={resetFilter}
         dateParser={props.dateParser}
@@ -141,8 +101,8 @@ const DateFilterComponent = forwardRef<any, DateFilterProps>((props, ref) => {
 
   return (
     <DateFilterProvider
-      model={model}
-      setModel={setModel}
+      model={currentModel}
+      setModel={handleSetModel}
       applyFilter={applyFilter}
       resetFilter={resetFilter}
       dateParser={props.dateParser}
@@ -155,23 +115,25 @@ const DateFilterComponent = forwardRef<any, DateFilterProps>((props, ref) => {
 DateFilterComponent.displayName = "DateFilter";
 
 // Create the compound component
-const DateFilter = DateFilterComponent as DateFilterCompound;
+const DateFilter = DateFilterComponent as unknown as DateFilterCompound;
 
 // Attach all sub-components
-DateFilter.Root = Components.Root;
-DateFilter.TypeSelector = Components.TypeSelector;
-DateFilter.ModeToggle = Components.ModeToggle;
-DateFilter.ModeButton = Components.ModeButton;
-DateFilter.RelativeSection = Components.RelativeSection;
-DateFilter.RelativeInput = Components.RelativeInput;
-DateFilter.AbsoluteSection = Components.AbsoluteSection;
-DateFilter.StartDateInput = Components.StartDateInput;
-DateFilter.EndDateInput = Components.EndDateInput;
-DateFilter.HelpText = Components.HelpText;
-DateFilter.ErrorMessage = Components.ErrorMessage;
-DateFilter.Actions = Components.Actions;
-DateFilter.ApplyButton = Components.ApplyButton;
-DateFilter.ResetButton = Components.ResetButton;
+Object.assign(DateFilter, {
+  Root: Components.Root,
+  TypeSelector: Components.TypeSelector,
+  ModeToggle: Components.ModeToggle,
+  ModeButton: Components.ModeButton,
+  RelativeSection: Components.RelativeSection,
+  RelativeInput: Components.RelativeInput,
+  AbsoluteSection: Components.AbsoluteSection,
+  StartDateInput: Components.StartDateInput,
+  EndDateInput: Components.EndDateInput,
+  HelpText: Components.HelpText,
+  ErrorMessage: Components.ErrorMessage,
+  Actions: Components.Actions,
+  ApplyButton: Components.ApplyButton,
+  ResetButton: Components.ResetButton,
+});
 
 // Mark as AG Grid component
 (DateFilter as any).__AG_GRID_COMPONENT = true;

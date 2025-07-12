@@ -31,10 +31,10 @@ interface QuickFilterDropdownContextValue {
   usePortal: QuickFilterDropdownProps["usePortal"];
 
   // Refs
-  containerRef: React.RefObject<HTMLDivElement>;
-  triggerRef: React.RefObject<HTMLButtonElement>;
-  dropdownRef: React.RefObject<HTMLDivElement>;
-  searchInputRef: React.RefObject<HTMLInputElement>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  dropdownRef: React.RefObject<HTMLDivElement | null>;
+  searchInputRef: React.RefObject<HTMLInputElement | null>;
   optionRefs: React.MutableRefObject<(HTMLButtonElement | null)[]>;
 
   // Computed values
@@ -315,13 +315,13 @@ export const QuickFilterDropdownProvider: React.FC<
     state,
     setState,
     filteredOptions,
-    placeholder,
+    placeholder: placeholder!,
     onFilterChange,
-    position,
-    showDescriptions,
+    position: position!,
+    showDescriptions: showDescriptions!,
     triggerContent,
-    ariaLabel,
-    usePortal,
+    ariaLabel: ariaLabel!,
+    usePortal: usePortal!,
     containerRef,
     triggerRef,
     dropdownRef,

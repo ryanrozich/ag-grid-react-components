@@ -1,31 +1,36 @@
 import { useCallback, useImperativeHandle, useRef } from "react";
 import type { IDoesFilterPassParams, IFilterParams } from "ag-grid-community";
 import type { DateFilterModel } from "../../interfaces";
-import { useDateFilterContext } from "../context";
+import { parseRelativeDate } from "../utils";
 
 /**
  * Hook to integrate the date filter with AG Grid's filter API
  */
 export const useGridFilter = (ref: React.Ref<any>, params: IFilterParams) => {
-  const { state, actions } = useDateFilterContext();
   const filterRef = useRef<any>({});
 
   // Check if a value passes the filter
   const doesFilterPass = useCallback(
     (params: IDoesFilterPassParams): boolean => {
-      const {
-        filterType,
-        filterMode,
-        effectiveDateFrom,
-        effectiveDateTo,
-        isFilterValid,
-      } = state;
+      const model = filterRef.current.model as DateFilterModel | null;
 
-      if (!isFilterValid || !filterType) {
+      console.log("[DateFilter] doesFilterPass called with model:", model);
+
+      if (!model || !model.filterType) {
         return true; // No filter applied
       }
 
-      const cellValue = params.node.data[params.column.getColId()];
+      const columnId =
+        (params as any).column?.getColId() || (params as any).colDef?.field;
+      const cellValue = params.data[columnId];
+
+      console.log(
+        "[DateFilter] Checking cell value:",
+        cellValue,
+        "for column:",
+        columnId,
+      );
+
       if (!cellValue) {
         return false; // No value fails all filters except when no filter is applied
       }
@@ -40,32 +45,62 @@ export const useGridFilter = (ref: React.Ref<any>, params: IFilterParams) => {
         return false;
       }
 
+      // Parse dates from model
+      let dateFrom: Date | null = null;
+      let dateTo: Date | null = null;
+
+      if (model.dateFrom) {
+        if (
+          model.dateFrom.includes("-") ||
+          model.dateFrom.toLowerCase().includes("today")
+        ) {
+          // Relative date
+          dateFrom = parseRelativeDate(model.dateFrom);
+        } else {
+          // Absolute date
+          dateFrom = new Date(model.dateFrom);
+        }
+      }
+
+      if (model.dateTo) {
+        if (
+          model.dateTo.includes("-") ||
+          model.dateTo.toLowerCase().includes("today")
+        ) {
+          // Relative date
+          dateTo = parseRelativeDate(model.dateTo);
+        } else {
+          // Absolute date
+          dateTo = new Date(model.dateTo);
+        }
+      }
+
       // Apply filter logic based on type
-      switch (filterType) {
+      switch (model.filterType) {
         case "equals":
-          if (!effectiveDateFrom) return false;
-          return cellDate.toDateString() === effectiveDateFrom.toDateString();
+          if (!dateFrom) return false;
+          return cellDate.toDateString() === dateFrom.toDateString();
 
         case "notEqual":
-          if (!effectiveDateFrom) return false;
-          return cellDate.toDateString() !== effectiveDateFrom.toDateString();
+          if (!dateFrom) return false;
+          return cellDate.toDateString() !== dateFrom.toDateString();
 
         case "before":
-          if (!effectiveDateFrom) return false;
-          return cellDate < effectiveDateFrom;
+          if (!dateFrom) return false;
+          return cellDate < dateFrom;
 
         case "after":
-          if (!effectiveDateFrom) return false;
-          return cellDate > effectiveDateFrom;
+          if (!dateFrom) return false;
+          return cellDate > dateFrom;
 
         case "inRange":
           // Handle open-ended ranges
-          if (effectiveDateFrom && effectiveDateTo) {
-            return cellDate >= effectiveDateFrom && cellDate <= effectiveDateTo;
-          } else if (effectiveDateFrom) {
-            return cellDate >= effectiveDateFrom;
-          } else if (effectiveDateTo) {
-            return cellDate <= effectiveDateTo;
+          if (dateFrom && dateTo) {
+            return cellDate >= dateFrom && cellDate <= dateTo;
+          } else if (dateFrom) {
+            return cellDate >= dateFrom;
+          } else if (dateTo) {
+            return cellDate <= dateTo;
           }
           return false;
 
@@ -73,84 +108,37 @@ export const useGridFilter = (ref: React.Ref<any>, params: IFilterParams) => {
           return true;
       }
     },
-    [state],
+    [],
   );
 
   // Get the current filter model
   const getModel = useCallback((): DateFilterModel | null => {
-    const {
-      filterType,
-      filterMode,
-      absoluteDateFrom,
-      absoluteDateTo,
-      expressionFrom,
-      expressionTo,
-      isFilterValid,
-    } = state;
-
-    if (!isFilterValid || !filterType) {
-      return null;
-    }
-
-    const model: DateFilterModel = {
-      type: filterType,
-      mode: filterMode,
-    };
-
-    if (filterMode === "absolute") {
-      model.dateFrom = absoluteDateFrom;
-      model.dateTo = absoluteDateTo;
-    } else {
-      model.expressionFrom = expressionFrom;
-      model.expressionTo = expressionTo;
-    }
-
-    return model;
-  }, [state]);
+    return filterRef.current.model || null;
+  }, []);
 
   // Set the filter model
   const setModel = useCallback(
     (model: DateFilterModel | null): void => {
-      if (!model) {
-        actions.resetFilter();
-        return;
-      }
+      console.log("[DateFilter] setModel called with:", model);
+      filterRef.current.model = model;
 
-      // Update filter state from model
-      if (model.type) {
-        actions.setFilterType(model.type);
-      }
-      if (model.mode) {
-        actions.setFilterMode(model.mode);
-      }
-      if (model.mode === "absolute") {
-        if (model.dateFrom) {
-          actions.setAbsoluteDateFrom(model.dateFrom);
-        }
-        if (model.dateTo) {
-          actions.setAbsoluteDateTo(model.dateTo);
-        }
-      } else {
-        if (model.expressionFrom) {
-          actions.setExpressionFrom(model.expressionFrom);
-        }
-        if (model.expressionTo) {
-          actions.setExpressionTo(model.expressionTo);
-        }
+      // Notify parent component if callback provided
+      if (params.filterChangedCallback) {
+        params.filterChangedCallback();
       }
     },
-    [actions],
+    [params],
   );
 
   // Is the filter active?
   const isFilterActive = useCallback((): boolean => {
-    return state.isFilterValid;
-  }, [state.isFilterValid]);
+    return filterRef.current.model !== null;
+  }, []);
 
   // Expose filter API to AG Grid
-  useImperativeHandle(
-    ref,
-    () => ({
+  useImperativeHandle(ref, () => {
+    console.log("[DateFilter] Creating imperative handle");
+    const filterApi = {
       ...filterRef.current,
       doesFilterPass,
       getModel,
@@ -158,9 +146,13 @@ export const useGridFilter = (ref: React.Ref<any>, params: IFilterParams) => {
       isFilterActive,
       // AG Grid v33 compatibility
       __AG_GRID_COMPONENT: true,
-    }),
-    [doesFilterPass, getModel, setModel, isFilterActive],
-  );
+    };
+
+    // Store the API on the ref so the workaround can access it
+    filterRef.current = filterApi;
+
+    return filterApi;
+  }, [doesFilterPass, getModel, setModel, isFilterActive]);
 
   return {
     doesFilterPass,

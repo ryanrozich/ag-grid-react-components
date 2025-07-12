@@ -91,6 +91,60 @@ function getFullDataset() {
   return cachedData;
 }
 
+// Helper function to convert relative date expressions to actual dates
+function parseRelativeDateExpression(expression) {
+  if (!expression || typeof expression !== "string") return null;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Handle relative expressions
+  if (expression === "Today") {
+    return today;
+  }
+
+  if (expression === "StartOfMonth") {
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  }
+
+  if (expression === "EndOfMonth") {
+    return new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  }
+
+  if (expression === "StartOfYear") {
+    return new Date(today.getFullYear(), 0, 1);
+  }
+
+  if (expression === "EndOfYear") {
+    return new Date(today.getFullYear(), 11, 31);
+  }
+
+  // Handle Today+X or Today-X format
+  const todayPlusMinusMatch = expression.match(/^Today([+-])(\d+)([dmy])$/);
+  if (todayPlusMinusMatch) {
+    const [, operator, value, unit] = todayPlusMinusMatch;
+    const date = new Date(today);
+    const num = parseInt(value, 10) * (operator === "-" ? -1 : 1);
+
+    switch (unit) {
+      case "d":
+        date.setDate(date.getDate() + num);
+        break;
+      case "m":
+        date.setMonth(date.getMonth() + num);
+        break;
+      case "y":
+        date.setFullYear(date.getFullYear() + num);
+        break;
+    }
+    return date;
+  }
+
+  // If not a relative expression, try to parse as date
+  const parsed = new Date(expression);
+  return isNaN(parsed.getTime()) ? null : parsed;
+}
+
 // Apply filters to the dataset
 function applyFilters(data, filterModel) {
   if (!filterModel || Object.keys(filterModel).length === 0) {
@@ -107,26 +161,39 @@ function applyFilters(data, filterModel) {
       ) {
         const dateValue = new Date(row[field]);
 
+        // Check if we have relative expressions
+        let dateFrom = filter.dateFrom;
+        let dateTo = filter.dateTo;
+
+        if (filter.expressionFrom) {
+          dateFrom = parseRelativeDateExpression(filter.expressionFrom);
+        } else if (dateFrom) {
+          dateFrom = new Date(dateFrom);
+        }
+
+        if (filter.expressionTo) {
+          dateTo = parseRelativeDateExpression(filter.expressionTo);
+        } else if (dateTo) {
+          dateTo = new Date(dateTo);
+        }
+
         if (filter.type === "equals") {
-          const filterDate = new Date(filter.dateFrom);
-          if (dateValue.toDateString() !== filterDate.toDateString())
+          if (!dateFrom) return false;
+          if (dateValue.toDateString() !== dateFrom.toDateString())
             return false;
         } else if (filter.type === "notEqual") {
-          const filterDate = new Date(filter.dateFrom);
-          if (dateValue.toDateString() === filterDate.toDateString())
+          if (!dateFrom) return false;
+          if (dateValue.toDateString() === dateFrom.toDateString())
             return false;
         } else if (filter.type === "lessThan" || filter.type === "before") {
-          const filterDate = new Date(filter.dateFrom);
-          if (dateValue >= filterDate) return false;
+          if (!dateFrom) return false;
+          if (dateValue >= dateFrom) return false;
         } else if (filter.type === "greaterThan" || filter.type === "after") {
-          const filterDate = new Date(filter.dateFrom);
-          if (dateValue <= filterDate) return false;
+          if (!dateFrom) return false;
+          if (dateValue <= dateFrom) return false;
         } else if (filter.type === "inRange") {
-          const startDate = filter.dateFrom ? new Date(filter.dateFrom) : null;
-          const endDate = filter.dateTo ? new Date(filter.dateTo) : null;
-
-          if (startDate && dateValue < startDate) return false;
-          if (endDate && dateValue > endDate) return false;
+          if (dateFrom && dateValue < dateFrom) return false;
+          if (dateTo && dateValue > dateTo) return false;
         }
       }
       // Handle text filters

@@ -1,20 +1,11 @@
-import React, {
-  forwardRef,
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-} from "react";
-import {
-  QuickFilterDropdownProvider,
-  useQuickFilterDropdownContext,
-} from "./context";
+import React, { forwardRef, useState, useEffect, useMemo } from "react";
+import { QuickFilterDropdownProvider } from "./context";
 import * as Components from "./components";
 import type { QuickFilterDropdownProps, DropdownState } from "./types";
 import { getActiveFilterOption } from "./utils/filterModelBuilder";
 
 export interface QuickFilterDropdownCompound {
-  (props: QuickFilterDropdownProps): JSX.Element;
+  (props: QuickFilterDropdownProps): React.ReactElement;
   Root: typeof Components.Root;
   Trigger: typeof Components.Trigger;
   Dropdown: typeof Components.Dropdown;
@@ -160,19 +151,21 @@ QuickFilterDropdownComponent.displayName = "QuickFilterDropdown";
 
 // Create the compound component
 const QuickFilterDropdown =
-  QuickFilterDropdownComponent as QuickFilterDropdownCompound;
+  QuickFilterDropdownComponent as unknown as QuickFilterDropdownCompound;
 
 // Attach all sub-components
-QuickFilterDropdown.Root = Components.Root;
-QuickFilterDropdown.Trigger = Components.Trigger;
-QuickFilterDropdown.Dropdown = Components.Dropdown;
-QuickFilterDropdown.SearchInput = Components.SearchInput;
-QuickFilterDropdown.OptionsList = Components.OptionsList;
-QuickFilterDropdown.Option = Components.Option;
-QuickFilterDropdown.OptionLabel = Components.OptionLabel;
-QuickFilterDropdown.OptionDescription = Components.OptionDescription;
-QuickFilterDropdown.OptionCheckmark = Components.OptionCheckmark;
-QuickFilterDropdown.EmptyState = Components.EmptyState;
+Object.assign(QuickFilterDropdown, {
+  Root: Components.Root,
+  Trigger: Components.Trigger,
+  Dropdown: Components.Dropdown,
+  SearchInput: Components.SearchInput,
+  OptionsList: Components.OptionsList,
+  Option: Components.Option,
+  OptionLabel: Components.OptionLabel,
+  OptionDescription: Components.OptionDescription,
+  OptionCheckmark: Components.OptionCheckmark,
+  EmptyState: Components.EmptyState,
+});
 
 export default QuickFilterDropdown;
 export { QuickFilterDropdown };

@@ -5,6 +5,12 @@ export { DateFilter };
 // Export RelativeDateFilter as alias (alternative name)
 export { DateFilter as RelativeDateFilter };
 
+// Export AG Grid adapter for the DateFilter
+export {
+  AGGridFilterAdapter,
+  AGGridDateFilter,
+} from "./components/DateFilter/AGGridFilterAdapter";
+
 // Quick Filter Dropdown
 import {
   QuickFilterDropdown,
@@ -15,6 +21,20 @@ export { QuickFilterDropdown, DATE_FILTER_PRESETS };
 // Active Filters Component
 import ActiveFilters from "./components/ActiveFilters";
 export { ActiveFilters };
+
+// Saved Views Manager Component
+import SavedViewsManager from "./components/SavedViewsManager";
+export { SavedViewsManager };
+export type {
+  SavedView,
+  SavedViewCategory,
+  SavedViewsManagerProps,
+} from "./components/SavedViewsManager";
+
+// Category Selector Component
+import { CategorySelector } from "./components/CategorySelector";
+export { CategorySelector };
+export type { CategorySelectorProps } from "./components/CategorySelector";
 
 // Export all types from central location
 export * from "./types";
