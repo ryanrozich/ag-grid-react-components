@@ -1,0 +1,14 @@
+/* Saved Views Dropdown Container */
+.saved-views-dropdown-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.saved-views-dropdown {
+  flex: 1;
+}
+
+.saved-views-menu {
+  flex-shrink: 0;
+}
