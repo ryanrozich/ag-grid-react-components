@@ -254,3 +254,144 @@
   background-color: rgb(99 102 241);
   border-radius: 9999px;
 }
+
+/* CategorySelector Styles */
+#view-category {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  padding-right: 2.5rem;
+  background-color: rgb(31 41 55);
+  border: 1px solid rgb(55 65 81);
+  border-radius: 0.375rem;
+  color: white;
+  outline: none;
+}
+
+#view-category:focus {
+  box-shadow: 0 0 0 2px rgb(99 102 241);
+  border-color: rgb(99 102 241);
+}
+
+/* CategorySelector wrapper */
+[data-form-field] > div {
+  position: relative;
+}
+
+/* Dropdown icon */
+[data-testid="dropdown-icon"] {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: rgb(156 163 175);
+  font-size: 0.75rem;
+}
+
+/* CategorySelector dropdown */
+#category-dropdown {
+  background-color: rgb(17 24 39);
+  border: 1px solid rgb(55 65 81);
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* Category options */
+#category-dropdown > div {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  color: rgb(209 213 219);
+}
+
+#category-dropdown > div:hover {
+  background-color: rgb(31 41 55);
+}
+
+/* Create new category option */
+#category-dropdown > div:first-child {
+  border-bottom: 1px solid rgb(55 65 81);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgb(99 102 241);
+  font-weight: 500;
+}
+
+#category-dropdown > div:first-child span {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* No results message */
+#category-dropdown > div:last-child:not(:first-child) {
+  color: rgb(107 114 128);
+  text-align: center;
+  padding: 1rem;
+}
+
+/* Create form */
+#category-dropdown > div > input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background-color: rgb(31 41 55);
+  border: 1px solid rgb(55 65 81);
+  border-radius: 0.375rem;
+  color: white;
+  outline: none;
+  margin-bottom: 0.5rem;
+}
+
+#category-dropdown > div > input:focus {
+  box-shadow: 0 0 0 2px rgb(99 102 241);
+  border-color: rgb(99 102 241);
+}
+
+/* Create form buttons */
+#category-dropdown > div > div:last-child {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#category-dropdown > div > div:last-child button {
+  flex: 1;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  transition: background-color 0.15s;
+  border: none;
+  cursor: pointer;
+}
+
+#category-dropdown > div > div:last-child button:first-child {
+  background-color: rgb(99 102 241);
+  color: white;
+}
+
+#category-dropdown > div > div:last-child button:first-child:hover {
+  background-color: rgb(79 70 229);
+}
+
+#category-dropdown > div > div:last-child button:first-child:disabled {
+  background-color: rgb(55 65 81);
+  color: rgb(107 114 128);
+  cursor: not-allowed;
+}
+
+#category-dropdown > div > div:last-child button:last-child {
+  background-color: rgb(55 65 81);
+  color: rgb(209 213 219);
+}
+
+#category-dropdown > div > div:last-child button:last-child:hover {
+  background-color: rgb(75 85 99);
+}
+
+/* Error message */
+#category-dropdown > div > div[class*="error"] {
+  color: rgb(248 113 113);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}

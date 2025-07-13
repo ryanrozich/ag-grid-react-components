@@ -650,13 +650,6 @@ export const ServerSideDemo: React.FC = () => {
             </SavedViewsManager>
           </>
         )}
-
-        <div className="text-sm text-gray-400 flex items-center">
-          {loading && <span className="mr-2">🔍 Searching...</span>}
-          {rowCount !== null && (
-            <span>{rowCount.toLocaleString()} results</span>
-          )}
-        </div>
       </DemoToolbar>
 
       {/* Active Filters */}
@@ -667,6 +660,16 @@ export const ServerSideDemo: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Results Count and Loading Status */}
+      <div className="text-sm text-gray-400 flex items-center justify-between mt-3">
+        <div className="flex items-center">
+          {loading && <span className="mr-2">🔍 Loading...</span>}
+          {rowCount !== null && !loading && (
+            <span>{rowCount.toLocaleString()} results</span>
+          )}
+        </div>
+      </div>
 
       {/* Grid Container - fills remaining height */}
       <div className="flex-1 bg-gray-900/50 rounded-xl border border-gray-800 flex flex-col mt-4">
