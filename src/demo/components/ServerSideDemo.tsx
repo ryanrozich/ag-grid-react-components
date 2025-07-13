@@ -16,6 +16,7 @@ import type {
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
 import { ActiveFilters, QuickFilterDropdown } from "../../index";
 import SavedViewsManager from "../../components/SavedViewsManager";
+import { ViewManagementMenu } from "../../components/ViewManagementMenu";
 import {
   darkTheme,
   getColumnDefs,
@@ -26,6 +27,7 @@ import {
 } from "../config/sharedGridConfig";
 import { DemoToolbar, StatsBar } from "../config/commonUIConfig";
 import "../styles/SavedViewsManager.css";
+import "../styles/ViewManagementMenu.css";
 
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);
@@ -671,6 +673,29 @@ export const ServerSideDemo: React.FC = () => {
 
               <SavedViewsManager.Dialog className="save-view-dialog-styles" />
             </SavedViewsManager>
+
+            {/* Separator */}
+            <div className="h-8 w-px bg-gray-700"></div>
+
+            {/* View Management Menu */}
+            <ViewManagementMenu
+              api={gridApi}
+              onSaveView={() => {
+                // This would typically open the SavedViewsManager save dialog
+                console.log("Save view clicked");
+              }}
+              onManageViews={() => {
+                // This would typically open the SavedViewsManager panel
+                console.log("Manage views clicked");
+              }}
+              onImport={() => {
+                console.log("Import clicked");
+              }}
+              onExport={() => {
+                console.log("Export clicked");
+              }}
+              className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-gray-300 hover:bg-gray-700 transition-colors"
+            />
           </>
         )}
       </DemoToolbar>
