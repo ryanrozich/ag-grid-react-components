@@ -6709,7 +6709,7 @@ const handleFilterSelect = async (option) => {
                         api={gridApi}
                         columnId="_multi"
                         options={presetFilters}
-                        placeholder="Preset filters"
+                        placeholder="My Views"
                         showDescriptions={false}
                         className="min-w-[160px]"
                         usePortal="always"
