@@ -48,41 +48,7 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
   const [isManageModalOpen, setIsManageModalOpen] = useState(false);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
 
-  // Load views from the loader
-  const loadViews = useCallback(async () => {
-    try {
-      const loadedViews = await loader.loadOptions();
-      setViews(loadedViews);
-
-      // Load default view
-      const defaultId = await loader.getDefaultViewId?.();
-      setDefaultViewId(defaultId);
-
-      // Apply default view if available and no view is selected
-      if (defaultId && !selectedViewId && api) {
-        const defaultView = loadedViews.find((v) => v.id === defaultId);
-        if (defaultView) {
-          applyView(defaultView);
-        }
-      }
-    } catch (error) {
-      console.error("Error loading views:", error);
-    }
-  }, [loader, selectedViewId, api, applyView]);
-
-  // Subscribe to loader changes
-  useEffect(() => {
-    loadViews();
-
-    if (loader.subscribe) {
-      const unsubscribe = loader.subscribe(() => {
-        loadViews();
-      });
-      return unsubscribe;
-    }
-  }, [loader, loadViews]);
-
-  // Apply a saved view to the grid
+  // Apply a saved view to the grid - defined early to avoid circular dependency
   const applyView = useCallback(
     (view: SavedViewOption) => {
       if (!api) return;
@@ -125,6 +91,42 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
     [api, onViewChange],
   );
 
+  // Load views from the loader
+  const loadViews = useCallback(async () => {
+    try {
+      const loadedViews = await loader.loadOptions();
+      setViews(loadedViews);
+
+      // Load default view
+      const defaultId = loader.getDefaultViewId
+        ? await loader.getDefaultViewId()
+        : null;
+      setDefaultViewId(defaultId);
+
+      // Apply default view if available and no view is selected
+      if (defaultId && !selectedViewId && api) {
+        const defaultView = loadedViews.find((v) => v.id === defaultId);
+        if (defaultView) {
+          applyView(defaultView);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading views:", error);
+    }
+  }, [loader, selectedViewId, api, applyView]);
+
+  // Subscribe to loader changes
+  useEffect(() => {
+    loadViews();
+
+    if (loader.subscribe) {
+      const unsubscribe = loader.subscribe(() => {
+        loadViews();
+      });
+      return unsubscribe;
+    }
+  }, [loader, loadViews]);
+
   // Convert saved views to quick filter options
   const quickFilterOptions: QuickFilterOption[] = useMemo(() => {
     // Add "Clear filters" option
@@ -137,50 +139,23 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
       },
     ];
 
-    // Group views by category
-    const viewsByCategory = new Map<string, SavedViewOption[]>();
-    const uncategorized: SavedViewOption[] = [];
-
+    // Add all saved views as options in the dropdown
     views.forEach((view) => {
-      const category = view.metadata?.category;
-      if (category) {
-        if (!viewsByCategory.has(category)) {
-          viewsByCategory.set(category, []);
-        }
-        viewsByCategory.get(category)!.push(view);
-      } else {
-        uncategorized.push(view);
-      }
-    });
-
-    // Add categorized views
-    viewsByCategory.forEach((categoryViews, category) => {
-      categoryViews.forEach((view) => {
-        options.push({
-          id: view.id,
-          label: view.label,
-          filterModel: view.filterModel || {},
-          description: view.metadata?.description,
-          metadata: {
-            ...view.metadata,
-            category,
-            isDefault: view.id === defaultViewId,
-          } as Record<string, unknown>,
-        });
-      });
-    });
-
-    // Add uncategorized views
-    uncategorized.forEach((view) => {
       options.push({
         id: view.id,
         label: view.label,
         filterModel: view.filterModel || {},
-        description: view.metadata?.description,
-        metadata: {
-          ...view.metadata,
-          isDefault: view.id === defaultViewId,
-        } as Record<string, unknown>,
+        description:
+          view.metadata?.description ||
+          (view.saveType === "full-view"
+            ? "Full view (columns, sort, filters)"
+            : "Filters only"),
+        icon:
+          view.id === defaultViewId
+            ? "⭐"
+            : view.metadata?.category
+              ? "📁"
+              : undefined,
       });
     });
 
@@ -318,10 +293,15 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
     return Array.from(cats);
   }, [views]);
 
+  // Don't render until we have the loader initialized
+  if (!loader) {
+    return null;
+  }
+
   return (
     <div className={`saved-views-dropdown-container ${className || ""}`}>
       <QuickFilterDropdown
-        api={api!}
+        api={api}
         columnId={columnId}
         options={quickFilterOptions}
         placeholder={placeholder}

@@ -31,6 +31,23 @@ export type {
   SavedViewsManagerProps,
 } from "./components/SavedViewsManager";
 
+// Saved Views Dropdown Component
+import SavedViewsDropdown from "./components/SavedViewsDropdown";
+export { SavedViewsDropdown };
+export type { SavedViewsDropdownProps } from "./components/SavedViewsDropdown";
+
+// View Management Components
+export { ViewManagementMenu } from "./components/ViewManagementMenu";
+export { ViewManagementModal } from "./components/ViewManagementModal";
+export { SaveViewModal } from "./components/SaveViewModal";
+
+// View Dropdown Loader
+export { LocalStorageLoader } from "./components/QuickFilterDropdown/loaders/LocalStorageLoader";
+export type {
+  ViewDropdownLoader,
+  SavedViewOption,
+} from "./components/QuickFilterDropdown/loaders/types";
+
 // Category Selector Component
 import { CategorySelector } from "./components/CategorySelector/index";
 export { CategorySelector };

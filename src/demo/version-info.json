@@ -1,12 +1,12 @@
 {
   "version": "0.1.0",
   "git": {
-    "commitHash": "339c7bbee62ed73f6856dbd678c4047399c32ae6",
-    "shortHash": "339c7bb",
+    "commitHash": "5ca502526d42e86474617e2a50440ea7539f62ab",
+    "shortHash": "5ca5025",
     "branch": "feat/headless-refactor",
-    "commitDate": "2025-07-12 19:51:36 -0500",
+    "commitDate": "2025-07-12 22:04:48 -0500",
     "latestTag": "v0.1.0",
-    "commitsSinceTag": 40,
+    "commitsSinceTag": 46,
     "isDirty": true
   },
   "deployment": {
@@ -15,7 +15,7 @@
     "isMainBranch": false,
     "deployPath": "ag-grid-react-components"
   },
-  "buildTime": "2025-07-13T01:13:08.211Z",
-  "displayVersion": "v0.1.0+40",
+  "buildTime": "2025-07-13T16:15:04.102Z",
+  "displayVersion": "v0.1.0+46",
   "displayLabel": "feat/headless-refactor"
 }

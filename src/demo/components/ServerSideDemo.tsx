@@ -14,8 +14,11 @@ import type {
   FilterChangedEvent,
 } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
-import { ActiveFilters, QuickFilterDropdown } from "../../index";
-import { SavedViewsDropdown } from "../../components/SavedViewsDropdown";
+import {
+  ActiveFilters,
+  QuickFilterDropdown,
+  SavedViewsDropdown,
+} from "../../index";
 import {
   darkTheme,
   getColumnDefs,
@@ -91,62 +94,6 @@ const dateQuickFilters = [
     },
     icon: "🚨",
     description: "Tasks past their due date (not done)",
-  },
-];
-
-// Task type filters - same as client-side demo
-const taskTypeFilters = [
-  {
-    id: "allTasks",
-    label: "All Tasks",
-    filterModel: null,
-    icon: "📋",
-    description: "Show all task types",
-  },
-  {
-    id: "criticalBugs",
-    label: "Critical Bugs",
-    icon: "🐛",
-    description: "High priority bug fixes",
-    filterModel: null,
-    buildFilterModel: (_api: GridApi) => {
-      return {
-        category: {
-          values: ["Bug"],
-        },
-        priority: {
-          values: ["Critical", "High"],
-        },
-      };
-    },
-  },
-  {
-    id: "features",
-    label: "Features",
-    icon: "✨",
-    description: "New feature development",
-    filterModel: null,
-    buildFilterModel: (_api: GridApi) => {
-      return {
-        category: {
-          values: ["Feature"],
-        },
-      };
-    },
-  },
-  {
-    id: "inProgress",
-    label: "In Progress",
-    icon: "🚀",
-    description: "Active work items",
-    filterModel: null,
-    buildFilterModel: (_api: GridApi) => {
-      return {
-        status: {
-          values: ["In Progress", "In Review", "Testing"],
-        },
-      };
-    },
   },
 ];
 
@@ -448,16 +395,6 @@ export const ServerSideDemo: React.FC = () => {
               columnId="dueDate"
               options={dateQuickFilters}
               placeholder="Time period"
-              showDescriptions={false}
-              className="min-w-[140px]"
-              usePortal="always"
-            />
-            <QuickFilterDropdown
-              key="server-task-filter"
-              api={gridApi}
-              columnId="_multi"
-              options={taskTypeFilters}
-              placeholder="Task type"
               showDescriptions={false}
               className="min-w-[140px]"
               usePortal="always"
