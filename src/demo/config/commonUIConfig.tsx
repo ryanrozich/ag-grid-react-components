@@ -108,7 +108,12 @@ export const StatsCard: React.FC<{
   stats: any;
 }> = ({ card, stats }) => {
   const value = card.getValue(stats);
-  const formattedValue = card.formatValue ? card.formatValue(value) : value;
+  const isLoading = value === "—";
+  const formattedValue = isLoading
+    ? "—"
+    : card.formatValue
+      ? card.formatValue(value)
+      : value;
 
   return (
     <div className="px-6 py-5">
@@ -120,7 +125,9 @@ export const StatsCard: React.FC<{
           <p className="text-xs text-gray-500 uppercase tracking-wider">
             {card.label}
           </p>
-          <p className="text-2xl font-semibold text-white mt-0.5">
+          <p
+            className={`text-2xl font-semibold mt-0.5 ${isLoading ? "text-gray-600" : "text-white"}`}
+          >
             {formattedValue}
           </p>
         </div>

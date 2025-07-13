@@ -311,29 +311,52 @@ const ServerStats: React.FC<{
     fetchStats();
   }, [apiUrl, filterModel, searchText]);
 
-  if (loading || !stats) {
-    return (
-      <div className="border-b border-gray-700/50 bg-gray-900/30">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x divide-gray-700/50">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="px-6 py-5">
-              <div className="flex items-center gap-4">
-                <div className="p-2.5 bg-gray-700/50 rounded-lg animate-pulse">
-                  <div className="w-5 h-5"></div>
-                </div>
-                <div className="flex-1">
-                  <div className="h-3 bg-gray-700 rounded w-1/2 mb-2 animate-pulse"></div>
-                  <div className="h-6 bg-gray-700 rounded animate-pulse"></div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+  // Show stats with loading indicator
+  const displayStats = loading
+    ? {
+        taskCount: "—",
+        totalBudget: "—",
+        avgProgress: "—",
+        budgetRemaining: "—",
+      }
+    : stats || {
+        taskCount: 0,
+        totalBudget: 0,
+        avgProgress: 0,
+        budgetRemaining: 0,
+      };
 
-  return <StatsBar stats={stats} />;
+  return (
+    <div className="relative">
+      <StatsBar stats={displayStats} />
+      {loading && (
+        <div className="absolute inset-0 bg-gray-900/20 backdrop-blur-[1px] flex items-center justify-center">
+          <div className="text-xs text-gray-400 flex items-center gap-2">
+            <svg
+              className="animate-spin h-3 w-3"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            <span>Updating...</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export const ServerSideDemo: React.FC = () => {
@@ -602,7 +625,7 @@ export const ServerSideDemo: React.FC = () => {
                     </button>
                     <button
                       data-action="export"
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-600 transition-colors text-sm"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 aria-disabled:bg-gray-800 aria-disabled:text-gray-600 aria-disabled:cursor-not-allowed transition-colors text-sm"
                       title="Export all saved views"
                     >
                       <svg

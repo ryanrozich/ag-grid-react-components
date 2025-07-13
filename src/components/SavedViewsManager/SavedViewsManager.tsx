@@ -43,6 +43,7 @@ interface SavedViewsContextValue {
   getCurrentState: () => any;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   categories: SavedViewCategory[];
+  hasViews?: boolean;
 }
 
 const SavedViewsContext = createContext<SavedViewsContextValue | null>(null);
@@ -299,6 +300,7 @@ const SavedViewsManagerBase: React.FC<
     state,
     isOpen,
     setIsOpen,
+    hasViews: state.views.length > 0,
     showSaveDialog,
     setShowSaveDialog,
     applyView,
@@ -497,6 +499,18 @@ const Actions: React.FC<ActionsProps> = ({
     const button = target.closest("[data-action]") as HTMLElement;
 
     if (button) {
+      // Check if button is disabled
+      const isDisabled =
+        button.hasAttribute("disabled") ||
+        button.getAttribute("aria-disabled") === "true" ||
+        button.classList.contains("disabled");
+
+      if (isDisabled) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
       const action = button.getAttribute("data-action");
 
       switch (action) {
@@ -514,6 +528,20 @@ const Actions: React.FC<ActionsProps> = ({
       }
     }
   };
+
+  // Pass disabled state to children via data attribute
+  React.useEffect(() => {
+    const exportButtons = document.querySelectorAll(
+      '[data-saved-views-actions] [data-action="export"]',
+    );
+    exportButtons.forEach((button) => {
+      if (state.views.length === 0) {
+        button.setAttribute("aria-disabled", "true");
+      } else {
+        button.removeAttribute("aria-disabled");
+      }
+    });
+  }, [state.views.length]);
 
   return (
     <div {...props} data-saved-views-actions onClick={handleActionClick}>

@@ -6749,7 +6749,7 @@ const handleFilterSelect = async (option) => {
                               </button>
                               <button
                                 data-action="export"
-                                className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-600 transition-colors text-sm"
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 aria-disabled:bg-gray-800 aria-disabled:text-gray-600 aria-disabled:cursor-not-allowed transition-colors text-sm"
                                 title="Export all saved views"
                               >
                                 <svg
