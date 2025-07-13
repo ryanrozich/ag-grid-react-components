@@ -168,7 +168,7 @@ export const getColumnDefs = (isServerSide = false): ColDef[] => [
     field: "assignee",
     headerName: "Assignee",
     width: 180,
-    cellRenderer: isServerSide ? "avatarRenderer" : undefined,
+    cellRenderer: "avatarRenderer",
     filter: "agTextColumnFilter",
     enableRowGroup: true,
   },

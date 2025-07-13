@@ -116,9 +116,9 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
     const spaceAbove = rect.top;
     const dropdownHeight = 320; // Approximate height
 
-    let top = rect.bottom + 4;
+    let top = rect.bottom + 2; // Reduced gap from 4px to 2px
     if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
-      top = rect.top - dropdownHeight - 4;
+      top = rect.top - dropdownHeight - 2;
     }
 
     return {

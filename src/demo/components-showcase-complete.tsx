@@ -6619,261 +6619,260 @@ const handleFilterSelect = async (option) => {
   }
 
   // Demo page - real application layout
-  if (currentPage !== "demo") {
-    // Return empty div with navigation for non-demo pages
-    // This should not happen as hero and docs are handled above
+  if (currentPage === "demo") {
     return (
       <div className="h-screen bg-gray-950 text-white flex flex-col overflow-hidden">
         <Navigation currentPage={currentPage} />
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-gray-400">Page not found</p>
+
+        {/* Main Content - fills remaining height */}
+        <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6">
+            {/* Compact Header Section */}
+            <div className="mb-4">
+              {/* Title Row */}
+              <div className="mb-4">
+                <h1 className="text-2xl font-semibold text-white">
+                  Project Tasks
+                </h1>
+                <p className="text-sm text-gray-400 mt-1">
+                  Manage and track your team&apos;s progress
+                </p>
+              </div>
+
+              {/* Demo Tabs */}
+              <div className="border-b border-gray-700 mb-4">
+                <nav className="-mb-px flex space-x-8">
+                  <button
+                    onClick={() => setActiveDemoTab("client")}
+                    className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeDemoTab === "client"
+                        ? "border-indigo-500 text-white"
+                        : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
+                    }`}
+                  >
+                    Client-Side Data
+                  </button>
+                  <button
+                    onClick={() => setActiveDemoTab("server")}
+                    className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeDemoTab === "server"
+                        ? "border-indigo-500 text-white"
+                        : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
+                    }`}
+                  >
+                    Server-Side Data
+                    <span className="ml-2 px-2 py-0.5 text-xs bg-indigo-600 text-white rounded-full">
+                      API
+                    </span>
+                  </button>
+                </nav>
+              </div>
+            </div>
+
+            {/* Client-Side Demo */}
+            {activeDemoTab === "client" && (
+              <div key="client-demo" className="flex-1 flex flex-col">
+                {/* Integrated Toolbar */}
+                <DemoToolbar
+                  searchPlaceholder="Search tasks..."
+                  onSearchChange={(value) => {
+                    if (gridApi) {
+                      gridApi.setGridOption("quickFilterText", value);
+                    }
+                  }}
+                >
+                  {/* Quick Filters */}
+                  {gridApi && (
+                    <>
+                      <QuickFilterDropdown
+                        key={`${activeDemoTab}-date-filter`}
+                        api={gridApi}
+                        columnId="dueDate"
+                        options={dateQuickFilters}
+                        placeholder="Time period"
+                        showDescriptions={false}
+                        className="min-w-[140px]"
+                        usePortal="always"
+                      />
+                      <QuickFilterDropdown
+                        key={`${activeDemoTab}-task-filter`}
+                        api={gridApi}
+                        columnId="_multi"
+                        options={taskTypeFilters}
+                        placeholder="Task type"
+                        showDescriptions={false}
+                        className="min-w-[140px]"
+                        usePortal="always"
+                      />
+                      <QuickFilterDropdown
+                        key={`${activeDemoTab}-preset-filter`}
+                        api={gridApi}
+                        columnId="_multi"
+                        options={presetFilters}
+                        placeholder="Preset filters"
+                        showDescriptions={false}
+                        className="min-w-[160px]"
+                        usePortal="always"
+                      />
+                      <SavedViewsManager
+                        api={gridApi}
+                        storageKey="demo-saved-views-client"
+                      >
+                        <SavedViewsManager.Trigger className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-gray-300 hover:bg-gray-700 transition-colors flex items-center gap-2" />
+
+                        <SavedViewsManager.Panel className="w-80 bg-gray-900 border border-gray-700 rounded-lg shadow-xl">
+                          <div className="p-4">
+                            <div className="flex items-center justify-between mb-4">
+                              <SavedViewsManager.Title className="text-lg font-semibold text-white" />
+                              <SavedViewsManager.CloseButton className="text-gray-400 hover:text-white transition-colors" />
+                            </div>
+
+                            <SavedViewsManager.Actions className="flex gap-2 mb-4">
+                              <button
+                                data-action="save"
+                                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm"
+                              >
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V2"
+                                  />
+                                </svg>
+                                Save Current
+                              </button>
+                              <button
+                                data-action="export"
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-600 transition-colors text-sm"
+                                title="Export all saved views"
+                              >
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                  />
+                                </svg>
+                                Export
+                              </button>
+                              <button
+                                data-action="import"
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors text-sm"
+                                title="Import saved views"
+                              >
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                  />
+                                </svg>
+                                Import
+                              </button>
+                            </SavedViewsManager.Actions>
+
+                            <SavedViewsManager.List className="max-h-96 overflow-y-auto" />
+                          </div>
+                        </SavedViewsManager.Panel>
+
+                        <SavedViewsManager.Dialog className="save-view-dialog-styles" />
+                      </SavedViewsManager>
+                    </>
+                  )}
+                </DemoToolbar>
+
+                {/* Active Filters Row (when present) */}
+                {gridApi && Object.keys(filterModel).length > 0 && (
+                  <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg mt-3">
+                    <div className="border-t border-gray-700/50 bg-gray-800/20 p-3">
+                      <ActiveFilters api={gridApi} filterModel={filterModel} />
+                    </div>
+                  </div>
+                )}
+
+                {/* Grid Container - fills remaining height */}
+                <div className="flex-1 bg-gray-900/50 rounded-xl border border-gray-800 flex flex-col mt-4">
+                  {/* Hero Stats Bar */}
+                  <StatsBar stats={stats} />
+
+                  {/* AG Grid - fills remaining height */}
+                  <div
+                    className="flex-1 relative overflow-hidden"
+                    style={{ minHeight: "400px", height: "100%" }}
+                  >
+                    <AgGridReact
+                      theme={darkTheme}
+                      columnDefs={columnDefs}
+                      defaultColDef={defaultColDef}
+                      rowData={rowData}
+                      animateRows={true}
+                      pagination={false}
+                      suppressMenuHide={true}
+                      cellSelection={true}
+                      grandTotalRow="bottom"
+                      rowSelection={{
+                        mode: "multiRow",
+                        enableClickSelection: false,
+                      }}
+                      suppressCellFocus={false}
+                      statusBar={getStatusBarConfig(false)}
+                      enableCellTextSelection={true}
+                      ensureDomOrder={true}
+                      getRowStyle={(params) => {
+                        if (params.node.footer) {
+                          return {
+                            fontWeight: "bold",
+                            backgroundColor: "rgba(59, 130, 246, 0.1)",
+                          };
+                        }
+                        return undefined;
+                      }}
+                      onGridReady={onGridReady}
+                      domLayout="normal"
+                      components={components}
+                      sideBar={sideBarConfig}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Server-Side Demo */}
+            {activeDemoTab === "server" && (
+              <div className="flex-1 flex flex-col">
+                <ServerSideDemo />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
   }
 
+  // Fallback for unhandled pages
   return (
     <div className="h-screen bg-gray-950 text-white flex flex-col overflow-hidden">
       <Navigation currentPage={currentPage} />
-
-      {/* Main Content - fills remaining height */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 flex flex-col mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6">
-          {/* Compact Header Section */}
-          <div className="mb-4">
-            {/* Title Row */}
-            <div className="mb-4">
-              <h1 className="text-2xl font-semibold text-white">
-                Project Tasks
-              </h1>
-              <p className="text-sm text-gray-400 mt-1">
-                Manage and track your team&apos;s progress
-              </p>
-            </div>
-
-            {/* Demo Tabs */}
-            <div className="border-b border-gray-700 mb-4">
-              <nav className="-mb-px flex space-x-8">
-                <button
-                  onClick={() => setActiveDemoTab("client")}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    activeDemoTab === "client"
-                      ? "border-indigo-500 text-white"
-                      : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
-                  }`}
-                >
-                  Client-Side Data
-                </button>
-                <button
-                  onClick={() => setActiveDemoTab("server")}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    activeDemoTab === "server"
-                      ? "border-indigo-500 text-white"
-                      : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
-                  }`}
-                >
-                  Server-Side Data
-                  <span className="ml-2 px-2 py-0.5 text-xs bg-indigo-600 text-white rounded-full">
-                    API
-                  </span>
-                </button>
-              </nav>
-            </div>
-          </div>
-
-          {/* Client-Side Demo */}
-          {activeDemoTab === "client" && (
-            <div key="client-demo" className="flex-1 flex flex-col">
-              {/* Integrated Toolbar */}
-              <DemoToolbar
-                searchPlaceholder="Search tasks..."
-                onSearchChange={(value) => {
-                  if (gridApi) {
-                    gridApi.setGridOption("quickFilterText", value);
-                  }
-                }}
-              >
-                {/* Quick Filters */}
-                {gridApi && (
-                  <>
-                    <QuickFilterDropdown
-                      key={`${activeDemoTab}-date-filter`}
-                      api={gridApi}
-                      columnId="dueDate"
-                      options={dateQuickFilters}
-                      placeholder="Time period"
-                      showDescriptions={false}
-                      className="min-w-[140px]"
-                      usePortal="always"
-                    />
-                    <QuickFilterDropdown
-                      key={`${activeDemoTab}-task-filter`}
-                      api={gridApi}
-                      columnId="_multi"
-                      options={taskTypeFilters}
-                      placeholder="Task type"
-                      showDescriptions={false}
-                      className="min-w-[140px]"
-                      usePortal="always"
-                    />
-                    <QuickFilterDropdown
-                      key={`${activeDemoTab}-preset-filter`}
-                      api={gridApi}
-                      columnId="_multi"
-                      options={presetFilters}
-                      placeholder="Preset filters"
-                      showDescriptions={false}
-                      className="min-w-[160px]"
-                      usePortal="always"
-                    />
-                    <SavedViewsManager
-                      api={gridApi}
-                      storageKey="demo-saved-views-client"
-                    >
-                      <SavedViewsManager.Trigger className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-gray-300 hover:bg-gray-700 transition-colors flex items-center gap-2" />
-
-                      <SavedViewsManager.Panel className="w-80 bg-gray-900 border border-gray-700 rounded-lg shadow-xl">
-                        <div className="p-4">
-                          <div className="flex items-center justify-between mb-4">
-                            <SavedViewsManager.Title className="text-lg font-semibold text-white" />
-                            <SavedViewsManager.CloseButton className="text-gray-400 hover:text-white transition-colors" />
-                          </div>
-
-                          <SavedViewsManager.Actions className="flex gap-2 mb-4">
-                            <button
-                              data-action="save"
-                              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm"
-                            >
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V2"
-                                />
-                              </svg>
-                              Save Current
-                            </button>
-                            <button
-                              data-action="export"
-                              className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-600 transition-colors text-sm"
-                              title="Export all saved views"
-                            >
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                />
-                              </svg>
-                              Export
-                            </button>
-                            <button
-                              data-action="import"
-                              className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors text-sm"
-                              title="Import saved views"
-                            >
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                                />
-                              </svg>
-                              Import
-                            </button>
-                          </SavedViewsManager.Actions>
-
-                          <SavedViewsManager.List className="max-h-96 overflow-y-auto" />
-                        </div>
-                      </SavedViewsManager.Panel>
-
-                      <SavedViewsManager.Dialog className="save-view-dialog-styles" />
-                    </SavedViewsManager>
-                  </>
-                )}
-              </DemoToolbar>
-
-              {/* Active Filters Row (when present) */}
-              {gridApi && Object.keys(filterModel).length > 0 && (
-                <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg mt-3">
-                  <div className="border-t border-gray-700/50 bg-gray-800/20 p-3">
-                    <ActiveFilters api={gridApi} filterModel={filterModel} />
-                  </div>
-                </div>
-              )}
-
-              {/* Grid Container - fills remaining height */}
-              <div className="flex-1 bg-gray-900/50 rounded-xl border border-gray-800 flex flex-col mt-4">
-                {/* Hero Stats Bar */}
-                <StatsBar stats={stats} />
-
-                {/* AG Grid - fills remaining height */}
-                <div
-                  className="flex-1 relative overflow-hidden"
-                  style={{ minHeight: "400px", height: "100%" }}
-                >
-                  <AgGridReact
-                    theme={darkTheme}
-                    columnDefs={columnDefs}
-                    defaultColDef={defaultColDef}
-                    rowData={rowData}
-                    animateRows={true}
-                    pagination={false}
-                    suppressMenuHide={true}
-                    cellSelection={true}
-                    grandTotalRow="bottom"
-                    rowSelection={{
-                      mode: "multiRow",
-                      enableClickSelection: false,
-                    }}
-                    suppressCellFocus={false}
-                    statusBar={getStatusBarConfig(false)}
-                    enableCellTextSelection={true}
-                    ensureDomOrder={true}
-                    getRowStyle={(params) => {
-                      if (params.node.footer) {
-                        return {
-                          fontWeight: "bold",
-                          backgroundColor: "rgba(59, 130, 246, 0.1)",
-                        };
-                      }
-                      return undefined;
-                    }}
-                    onGridReady={onGridReady}
-                    domLayout="normal"
-                    components={components}
-                    sideBar={sideBarConfig}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Server-Side Demo */}
-          {activeDemoTab === "server" && (
-            <div className="flex-1 flex flex-col">
-              <ServerSideDemo />
-            </div>
-          )}
-        </div>
+      <div className="flex-1 flex items-center justify-center">
+        <p className="text-gray-400">Page not found</p>
       </div>
     </div>
   );

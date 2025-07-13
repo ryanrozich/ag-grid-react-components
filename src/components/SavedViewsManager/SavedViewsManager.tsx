@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useCallback,
   useRef,
+  useMemo,
   ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
@@ -276,6 +277,24 @@ const SavedViewsManagerBase: React.FC<
     };
   }, [api]);
 
+  // Derive categories from existing saved views
+  const derivedCategories = useMemo(() => {
+    const categoriesFromViews = new Map<string, SavedViewCategory>();
+
+    // First, add all categories that are referenced by views
+    state.views.forEach((view) => {
+      const existingCategory = state.categories.find(
+        (c) => c.id === view.category,
+      );
+      if (existingCategory) {
+        categoriesFromViews.set(existingCategory.id, existingCategory);
+      }
+    });
+
+    // Return array of unique categories that are actually used
+    return Array.from(categoriesFromViews.values());
+  }, [state.views, state.categories]);
+
   const contextValue: SavedViewsContextValue = {
     state,
     isOpen,
@@ -291,7 +310,7 @@ const SavedViewsManagerBase: React.FC<
     handleImport,
     getCurrentState,
     fileInputRef,
-    categories: state.categories,
+    categories: derivedCategories,
   };
 
   return (

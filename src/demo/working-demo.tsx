@@ -40,6 +40,7 @@ import {
   createSideBar,
 } from "./config/gridConfig";
 import { DocumentationPanel } from "./components/DocumentationPanel";
+import { components } from "./config/sharedGridConfig";
 
 // Import the production QuickFilterDropdown component
 import {
@@ -297,6 +298,7 @@ const App: React.FC = () => {
             sideBar={sideBar}
             suppressMenuHide={true}
             components={{
+              ...components,
               agDateColumnFilter: DateFilter,
             }}
             // Style the group footer rows
