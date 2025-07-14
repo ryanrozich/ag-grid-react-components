@@ -1,7 +1,7 @@
 import React from "react";
 import { themeQuartz } from "ag-grid-community";
 import type { ColDef, ICellRendererParams } from "ag-grid-community";
-import { AGGridFilterWrapper } from "../../components/DateFilter/AGGridFilterWrapper";
+import { AGGridDateFilter } from "../../components/DateFilter/AGGridDateFilter";
 import AvatarCellRenderer from "../components/AvatarCellRenderer";
 import CategoryCellRenderer from "../components/CategoryCellRenderer";
 import PercentBarRenderer from "../components/PercentBarRenderer";
@@ -235,7 +235,7 @@ export const components = {
   categoryRenderer: CategoryCellRenderer,
   avatarRenderer: AvatarCellRenderer,
   progressRenderer: PercentBarRenderer,
-  agDateColumnFilter: AGGridFilterWrapper,
+  agDateColumnFilter: AGGridDateFilter,
 };
 
 // Sidebar configuration (for Enterprise)

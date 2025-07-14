@@ -44,6 +44,8 @@ export interface SavedViewOption {
     createdBy?: string;
     /** Category for organization */
     category?: string;
+    /** Description of the view */
+    description?: string;
     /** Whether this is a default view */
     isDefault?: boolean;
     /** Whether this is a system/preset view (read-only) */

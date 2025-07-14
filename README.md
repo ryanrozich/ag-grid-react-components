@@ -2,7 +2,7 @@
 
 🎉 **Pre-release: Modular Architecture with Minimal Bundle Size!**
 
-A collection of powerful, tree-shakeable React components for AG Grid (v33.3.0+) that enhance your data grid with advanced filtering and state management capabilities. Start with just 25KB or add features as needed.
+A collection of powerful, headless React components for AG Grid (v33.3.0+) built on top of Headless UI. Enhance your data grid with advanced filtering and state management capabilities while maintaining complete control over styling. Tree-shakeable architecture lets you use only what you need.
 
 📖 **[Full Documentation →](./docs/)**
 🚀 **[Live Demo →](https://demo.rozich.net/ag-grid-react-components/)**
@@ -38,6 +38,17 @@ A component that displays active filters as removable pills:
 - **Filter Types**: Handles date, text, and set filters
 - **Customizable**: Style with CSS classes
 
+### 💾 Saved Views Management
+
+Complete saved views system with categories and defaults:
+
+- **Save Views**: Save filters-only or full grid state
+- **Categories**: Organize views with custom categories
+- **Default View**: Set a default view that loads on startup
+- **Import/Export**: Share views between users
+- **Management UI**: Full CRUD operations on saved views
+- **Grid Reset**: Reset to default view or factory settings
+
 ### 🔗 URL State Persistence
 
 Comprehensive grid state persistence with URL synchronization:
@@ -51,27 +62,19 @@ Comprehensive grid state persistence with URL synchronization:
 
 ## 📦 Installation
 
-Choose your installation based on your needs:
-
-### Minimal Installation (25KB)
-
 ```bash
 # Install the complete package (tree-shakeable)
 npm install ag-grid-react-components
 ```
 
-### With React DatePicker (65KB)
+### Optional Dependencies
 
 ```bash
-# Install with peer dependencies for date picker
-npm install ag-grid-react-components react-datepicker
-```
+# For enhanced date picker UI (adds ~40KB)
+npm install react-datepicker
 
-### Full Installation (85KB)
-
-```bash
-# Install with all optional dependencies
-npm install ag-grid-react-components react-datepicker lz-string
+# For URL compression support (adds ~20KB)
+npm install lz-string
 ```
 
 ## 📋 Requirements
@@ -138,16 +141,21 @@ function App() {
 
   return (
     <div>
-      <QuickFilterDropdown
-        api={gridApi}
-        columnId="date"
-        options={[
-          { id: "today", label: "Today" },
-          { id: "week", label: "This Week" },
-        ]}
-      />
+      {/* Filter toolbar */}
+      <div className="toolbar">
+        <QuickFilterDropdown
+          api={gridApi}
+          columnId="date"
+          options={[
+            { id: "today", label: "Today" },
+            { id: "week", label: "This Week" },
+          ]}
+        />
 
-      <AgGridReact columnDefs={columnDefs} onGridReady={onGridReady} rowData={rowData} />
+        <ActiveFilters api={gridApi} filterModel={filterModel} />
+      </div>
+
+      <AgGridReact columnDefs={columnDefs} onGridReady={onGridReady} onFilterChanged={() => setFilterModel(gridApi?.getFilterModel() || {})} rowData={rowData} />
     </div>
   );
 }
@@ -251,6 +259,35 @@ const QuickFilterDropdown = createQuickFilterDropdown();
   usePortal="never" | "always" | "auto"
 />
 ```
+
+### Saved Views Dropdown
+
+Complete saved views management with categories:
+
+```typescript
+import { SavedViewsDropdown } from "ag-grid-react-components";
+
+<SavedViewsDropdown
+  api={gridApi}
+  columnId="dateCreated"
+  placeholder="My Views"
+  showManagementMenu={true}
+  onViewChange={(view) => {
+    console.log('Applied view:', view);
+  }}
+/>
+```
+
+This single component provides:
+
+- Dropdown to select saved views
+- Three-dots menu with actions
+- Save/manage views modals
+- Import/export functionality
+- Default view support
+- Grid reset options
+
+See [Saved Views Documentation](./docs/SAVEDVIEWS_API.md) for full API.
 
 ### Grid State Persistence
 
@@ -537,15 +574,72 @@ const customOptions = [
 
 ### Styling
 
-The components use CSS modules and can be customized via CSS variables:
+All components are **headless** - they ship with no styles, giving you complete control over appearance while providing excellent accessibility through Headless UI.
+
+#### Option 1: Tailwind CSS (Used in Demo)
+
+Our demo showcases styling with Tailwind CSS:
+
+```tsx
+<SaveViewModal
+  panelClassName="bg-gray-900 border border-gray-700/50 rounded-xl shadow-2xl"
+  titleClassName="text-xl font-semibold text-gray-100"
+  buttonClassName="px-4 py-2 text-sm font-medium rounded-md"
+/>
+
+<CategorySelector
+  inputClassName="w-full rounded-lg border border-gray-300"
+  dropdownClassName="absolute mt-1 bg-white shadow-lg"
+/>
+```
+
+See the [Tailwind Styling Guide](./docs/TAILWIND_STYLING_EXAMPLES.md) for examples.
+
+#### Option 2: Custom CSS
 
 ```css
-:root {
-  --agrc-primary: #2563eb;
-  --agrc-border: #e5e7eb;
-  --agrc-hover: #f3f4f6;
+/* Your custom styles */
+.my-dropdown {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.my-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
 }
 ```
+
+```tsx
+<QuickFilterDropdown className="my-dropdown" triggerClassName="my-input" />
+```
+
+#### Option 3: CSS-in-JS
+
+```tsx
+import styled from "styled-components";
+
+// Style the components with your CSS-in-JS solution
+<SaveViewModal panelClassName={styledPanelClass} titleClassName={styledTitleClass} />;
+```
+
+## 🎨 Styling Philosophy
+
+We ship **zero CSS** - you have complete control:
+
+1. **Headless by Design**: No built-in styles or opinions
+2. **Built on Headless UI**: Accessible, keyboard-navigable components
+3. **Framework Agnostic**: Use CSS, Sass, Tailwind, CSS-in-JS, etc.
+4. **Demo Uses Tailwind**: Shows one way to style components
+
+This approach ensures:
+
+- No style conflicts with your design system
+- Smaller bundle size (no unused CSS)
+- Complete customization freedom
+- Built-in accessibility features
 
 ## 🧪 Testing
 

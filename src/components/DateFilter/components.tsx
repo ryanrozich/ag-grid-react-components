@@ -8,7 +8,12 @@ export const Root = forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ children, ...props }, ref) => {
   return (
-    <div ref={ref} data-testid="date-filter-root" {...props}>
+    <div
+      ref={ref}
+      data-component="date-filter-root"
+      data-testid="date-filter-root"
+      {...props}
+    >
       {children}
     </div>
   );
@@ -29,6 +34,7 @@ export const TypeSelector = forwardRef<
       value={filterType}
       onChange={(e) => setFilterType(e.target.value as DateFilterType)}
       className={className}
+      data-component="date-filter-type-selector"
       data-testid="date-filter-type-selector"
       {...props}
     >
@@ -52,6 +58,7 @@ export const ModeToggle = forwardRef<
     <div
       ref={ref}
       role="group"
+      data-component="date-filter-mode-toggle"
       data-testid="date-filter-mode-toggle"
       {...props}
     >
@@ -84,6 +91,7 @@ export const ModeButton = forwardRef<HTMLButtonElement, ModeButtonProps>(
         data-mode={mode}
         onClick={() => setMode(mode)}
         className={className}
+        data-component="date-filter-mode-button"
         data-testid={`date-filter-mode-${mode}`}
         {...props}
       >
@@ -138,6 +146,7 @@ export const RelativeInput = forwardRef<
       aria-invalid={hasError}
       data-invalid={hasError}
       className={className}
+      data-component="date-filter-expression-input"
       data-testid="date-filter-relative-input"
       {...props}
     />
@@ -163,7 +172,7 @@ export const AbsoluteSection = forwardRef<
       data-testid="date-filter-absolute-section"
       {...props}
     >
-      {children}
+      <div data-component="date-filter-date-inputs">{children}</div>
     </div>
   );
 });
@@ -188,6 +197,7 @@ export const StartDateInput = forwardRef<
         onChange?.(e);
       }}
       className={className}
+      data-component="date-filter-date-input"
       data-testid="date-filter-start-date"
       {...props}
     />
@@ -216,6 +226,7 @@ export const EndDateInput = forwardRef<
           setEndDate(date);
         }}
         className={className}
+        data-component="date-filter-date-input"
         data-testid="date-filter-end-date"
       />
     </div>
@@ -229,7 +240,7 @@ export const HelpText = forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ children, ...props }, ref) => {
-  const { mode } = useDateFilterContext();
+  const { mode, errorMessage } = useDateFilterContext();
 
   if (!children) return null;
 
@@ -237,6 +248,8 @@ export const HelpText = forwardRef<
     <p
       ref={ref}
       data-mode={mode}
+      data-component="date-filter-expression-hint"
+      data-error={!!errorMessage}
       data-testid="date-filter-help-text"
       {...props}
     >
@@ -271,7 +284,12 @@ export const Actions = forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ children, ...props }, ref) => {
   return (
-    <div ref={ref} data-testid="date-filter-actions" {...props}>
+    <div
+      ref={ref}
+      data-component="date-filter-actions"
+      data-testid="date-filter-actions"
+      {...props}
+    >
       {children}
     </div>
   );
@@ -297,6 +315,7 @@ export const ApplyButton = forwardRef<
       }}
       disabled={isDisabled}
       data-disabled={isDisabled}
+      data-component="date-filter-apply-button"
       data-testid="date-filter-apply"
       {...props}
     >
@@ -322,6 +341,7 @@ export const ResetButton = forwardRef<
         resetFilter();
         onClick?.(e);
       }}
+      data-component="date-filter-clear-button"
       data-testid="date-filter-reset"
       {...props}
     >

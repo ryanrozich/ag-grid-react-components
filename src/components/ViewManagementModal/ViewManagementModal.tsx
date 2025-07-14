@@ -49,6 +49,7 @@ export const ViewManagementModal: React.FC<ViewManagementModalProps> = ({
 }) => {
   const [editingState, setEditingState] = useState<EditingState | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [selectedViews, setSelectedViews] = useState<Set<string>>(new Set());
   const modalRef = useRef<HTMLDivElement>(null);
   const editInputRef = useRef<HTMLInputElement>(null);
 
@@ -59,6 +60,13 @@ export const ViewManagementModal: React.FC<ViewManagementModalProps> = ({
       editInputRef.current.select();
     }
   }, [editingState]);
+
+  // Clear selected views when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedViews(new Set());
+    }
+  }, [isOpen]);
 
   // Handle escape key
   useEffect(() => {
@@ -85,10 +93,15 @@ export const ViewManagementModal: React.FC<ViewManagementModalProps> = ({
     if (!isOpen) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
+      const target = event.target as Node;
+
+      // Don't close if clicking inside the modal or any portal
+      const isInsideModal = modalRef.current?.contains(target);
+      const isInsideCategoryPortal = document
+        .getElementById("category-selector-portal")
+        ?.contains(target);
+
+      if (!isInsideModal && !isInsideCategoryPortal) {
         onClose();
       }
     };
@@ -134,6 +147,42 @@ export const ViewManagementModal: React.FC<ViewManagementModalProps> = ({
     setDeleteConfirm(null);
   };
 
+  const handleToggleSelect = (viewId: string) => {
+    setSelectedViews((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(viewId)) {
+        newSet.delete(viewId);
+      } else {
+        newSet.add(viewId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedViews.size === views.length) {
+      // If all selected, deselect all
+      setSelectedViews(new Set());
+    } else {
+      // Select all
+      setSelectedViews(new Set(views.map((v) => v.id)));
+    }
+  };
+
+  const handleExportSelected = () => {
+    const selectedViewsArray = views.filter((v) => selectedViews.has(v.id));
+    const json = JSON.stringify(selectedViewsArray, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `selected-views-${new Date().toISOString().split("T")[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const modalContent = (
     <div className="view-management-modal-overlay">
       <div
@@ -143,26 +192,38 @@ export const ViewManagementModal: React.FC<ViewManagementModalProps> = ({
         aria-modal="true"
       >
         <div className="view-management-modal-header">
-          <h2 className="view-management-modal-title">Manage Saved Views</h2>
-          <button
-            className="view-management-modal-close"
-            onClick={onClose}
-            aria-label="Close modal"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+          <div className="flex items-center justify-between w-full">
+            <h2 className="view-management-modal-title">Manage Saved Views</h2>
+            <div className="flex items-center gap-3">
+              {selectedViews.size > 0 && (
+                <button
+                  onClick={handleExportSelected}
+                  className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors"
+                >
+                  Export Selected ({selectedViews.size})
+                </button>
+              )}
+              <button
+                className="view-management-modal-close"
+                onClick={onClose}
+                aria-label="Close modal"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="view-management-modal-content">
@@ -177,6 +238,22 @@ export const ViewManagementModal: React.FC<ViewManagementModalProps> = ({
             <table className="view-management-table">
               <thead>
                 <tr>
+                  <th>
+                    <input
+                      type="checkbox"
+                      checked={
+                        selectedViews.size > 0 &&
+                        selectedViews.size === views.length
+                      }
+                      onChange={handleSelectAll}
+                      className="view-management-checkbox"
+                      title={
+                        selectedViews.size === views.length
+                          ? "Deselect all"
+                          : "Select all"
+                      }
+                    />
+                  </th>
                   <th>Default</th>
                   <th>Name</th>
                   <th>Category</th>
@@ -189,11 +266,24 @@ export const ViewManagementModal: React.FC<ViewManagementModalProps> = ({
                   <tr key={view.id}>
                     <td>
                       <input
-                        type="radio"
-                        name="default-view"
+                        type="checkbox"
+                        checked={selectedViews.has(view.id)}
+                        onChange={() => handleToggleSelect(view.id)}
+                        className="view-management-checkbox"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
                         checked={view.id === defaultViewId}
-                        onChange={() => onSetDefault?.(view.id)}
-                        className="view-management-radio"
+                        onChange={() => {
+                          // If currently checked, uncheck it (allow no default)
+                          // If unchecked, check it (and others will be unchecked automatically)
+                          onSetDefault?.(
+                            view.id === defaultViewId ? "" : view.id,
+                          );
+                        }}
+                        className="view-management-checkbox"
                       />
                     </td>
                     <td>
@@ -241,7 +331,22 @@ export const ViewManagementModal: React.FC<ViewManagementModalProps> = ({
                             onChangeCategory?.(view.id, value);
                           }}
                           existingCategories={categories}
-                          className="view-management-category-selector"
+                          className="relative"
+                          inputClassName="w-full px-2 py-1 bg-gray-800/50 border border-gray-700/30 rounded text-gray-200 text-sm placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/10"
+                          inputWrapperClassName="relative"
+                          dropdownIconClassName="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none"
+                          dropdownClassName="absolute z-50 w-full mt-1 bg-gray-800 border border-gray-700/50 rounded-md shadow-xl overflow-hidden"
+                          optionClassName="px-3 py-2 text-sm text-gray-200 hover:bg-gray-700/50 cursor-pointer transition-colors"
+                          createOptionClassName="px-3 py-2 text-sm text-indigo-400 hover:bg-gray-700/50 cursor-pointer transition-colors border-b border-gray-700/50 font-medium flex items-center gap-2"
+                          noResultsClassName="px-3 py-8 text-sm text-gray-500 text-center"
+                          createFormClassName="p-3 border-t border-gray-700/50"
+                          createInputClassName="w-full px-3 py-2 bg-gray-900/50 border border-indigo-500 rounded text-gray-200 text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/20"
+                          createButtonClassName="px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          cancelButtonClassName="px-3 py-1.5 bg-transparent text-gray-400 text-xs font-medium rounded border border-gray-700/50 hover:bg-gray-800/50 hover:text-gray-300 transition-colors"
+                          createActionsClassName="flex gap-2 mt-2"
+                          errorMessageClassName="text-red-400 text-xs mt-1"
+                          highlightedClassName="bg-gray-700/50"
+                          createIconClassName="text-indigo-400 font-bold"
                         />
                       ) : (
                         <button

@@ -191,7 +191,9 @@ test.describe("SavedViewsManager Headless Component E2E Tests", () => {
     await page.reload();
     await page.waitForLoadState("networkidle");
     // Wait for the demo to load
-    await page.waitForSelector('button:has-text("Server-Side Data")', { timeout: 10000 });
+    await page.waitForSelector('button:has-text("Server-Side Data")', {
+      timeout: 10000,
+    });
     await page.click("text=Server-Side Data");
     await page.waitForSelector("[data-saved-views-trigger]", { timeout: 5000 });
 

@@ -18,7 +18,7 @@ import {
   ActiveFilters,
   QuickFilterDropdown,
   SavedViewsDropdown,
-} from "../../index";
+} from "./TailwindStyledComponents";
 import {
   darkTheme,
   getColumnDefs,
@@ -28,10 +28,7 @@ import {
   getStatusBarConfig,
 } from "../config/sharedGridConfig";
 import { DemoToolbar, StatsBar } from "../config/commonUIConfig";
-import "../styles/ViewManagementMenu.css";
-import "../styles/ViewManagementModal.css";
-import "../styles/SaveViewModal.css";
-import "../styles/SavedViewsDropdown.css";
+import "../styles/tailwind-overrides.css";
 
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);

@@ -3,8 +3,6 @@ import type { ViewDropdownLoader, SavedViewOption } from "./types";
 export interface LocalStorageLoaderConfig {
   /** Storage key prefix */
   storageKey?: string;
-  /** Whether to auto-save on changes */
-  autoSave?: boolean;
 }
 
 /**
@@ -13,12 +11,10 @@ export interface LocalStorageLoaderConfig {
  */
 export class LocalStorageLoader implements ViewDropdownLoader {
   private storageKey: string;
-  private autoSave: boolean;
   private subscribers: Set<() => void> = new Set();
 
   constructor(config: LocalStorageLoaderConfig = {}) {
     this.storageKey = config.storageKey || "quickfilter-saved-views";
-    this.autoSave = config.autoSave ?? true;
   }
 
   async loadOptions(): Promise<SavedViewOption[]> {
@@ -109,17 +105,33 @@ export class LocalStorageLoader implements ViewDropdownLoader {
 
   async setDefaultView(id: string): Promise<void> {
     const data = this.loadStorageData();
-    data.defaultViewId = id;
 
-    // Update the view's metadata
-    const views = data.views || [];
-    views.forEach((view) => {
-      if (view.metadata) {
-        view.metadata.isDefault = view.id === id;
-      } else {
-        view.metadata = { isDefault: view.id === id };
-      }
-    });
+    // If empty string, remove default view
+    if (id === "") {
+      data.defaultViewId = null;
+
+      // Update all views to not be default
+      const views = data.views || [];
+      views.forEach((view) => {
+        if (view.metadata) {
+          view.metadata.isDefault = false;
+        } else {
+          view.metadata = { isDefault: false };
+        }
+      });
+    } else {
+      data.defaultViewId = id;
+
+      // Update the view's metadata
+      const views = data.views || [];
+      views.forEach((view) => {
+        if (view.metadata) {
+          view.metadata.isDefault = view.id === id;
+        } else {
+          view.metadata = { isDefault: view.id === id };
+        }
+      });
+    }
 
     this.saveToStorage(data);
     this.notifySubscribers();

@@ -17,6 +17,20 @@ export interface QuickFilterOption {
   filterModel: FilterModel | null;
   /** Optional custom filter builder function */
   buildFilterModel?: (api: GridApi, columnId: string) => FilterModel | null;
+  /** Optional category for grouping */
+  category?: string;
+}
+
+/**
+ * Represents a group of options with a header
+ */
+export interface QuickFilterGroup {
+  /** Group identifier */
+  id: string;
+  /** Group label */
+  label: string;
+  /** Options in this group */
+  options: QuickFilterOption[];
 }
 
 /**

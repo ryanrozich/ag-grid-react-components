@@ -29,6 +29,7 @@ interface QuickFilterDropdownContextValue {
   triggerContent?: QuickFilterDropdownProps["triggerContent"];
   ariaLabel: string;
   usePortal: QuickFilterDropdownProps["usePortal"];
+  dropdownId: string;
 
   // Refs
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -86,6 +87,12 @@ export const QuickFilterDropdownProvider: React.FC<
   const searchInputRef = useRef<HTMLInputElement>(null);
   const optionRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
+  // Generate unique ID for this dropdown instance
+  const dropdownId = useMemo(
+    () => `quick-filter-dropdown-${Math.random().toString(36).slice(2, 9)}`,
+    [],
+  );
+
   const [dropdownPosition, setDropdownPosition] = React.useState<{
     top: number;
     left: number;
@@ -115,10 +122,27 @@ export const QuickFilterDropdownProvider: React.FC<
       top = rect.top - dropdownHeight - 4;
     }
 
-    // Ensure dropdown doesn't go off-screen horizontally
-    const dropdownWidth = 320; // Approximate width
-    if (left + dropdownWidth > window.innerWidth) {
-      left = window.innerWidth - dropdownWidth - 10;
+    // For initial positioning, align with button left edge
+    // The dropdown will handle its own width constraints via CSS
+    // Only adjust if the button itself is very close to the right edge
+    const minSpaceFromEdge = 50; // Minimum space needed for dropdown to appear
+    if (rect.left > window.innerWidth - minSpaceFromEdge) {
+      // Button is too close to right edge, align dropdown to right edge of button
+      left = rect.right - 200; // Assume minimum dropdown width of 200px
+    }
+
+    // Debug logging in development
+    if (process.env.NODE_ENV === "development") {
+      console.log("[QuickFilterDropdown] Position calculation:", {
+        triggerText: triggerRef.current.textContent,
+        rect: {
+          left: rect.left,
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+        },
+        calculated: { top, left },
+      });
     }
 
     return { top, left };
@@ -249,7 +273,7 @@ export const QuickFilterDropdownProvider: React.FC<
       const isClickInside =
         containerRef.current?.contains(target) ||
         (shouldUsePortal &&
-          document.getElementById("quick-filter-dropdown")?.contains(target));
+          document.getElementById(dropdownId)?.contains(target));
 
       if (!isClickInside) {
         setState((prev) => ({
@@ -268,7 +292,7 @@ export const QuickFilterDropdownProvider: React.FC<
         document.removeEventListener("mousedown", handleClickOutside);
       };
     }
-  }, [state.isOpen, shouldUsePortal, setState]);
+  }, [state.isOpen, shouldUsePortal, setState, dropdownId]);
 
   // Scroll highlighted option into view
   useEffect(() => {
@@ -289,6 +313,19 @@ export const QuickFilterDropdownProvider: React.FC<
       searchInputRef.current.focus();
     }
   }, [state.isOpen]);
+
+  // Calculate position when dropdown opens (for portal)
+  useEffect(() => {
+    if (state.isOpen && shouldUsePortal && !dropdownPosition) {
+      const position = calculateDropdownPosition();
+      setDropdownPosition(position);
+    }
+  }, [
+    state.isOpen,
+    shouldUsePortal,
+    dropdownPosition,
+    calculateDropdownPosition,
+  ]);
 
   // Update position on window resize (only when using portal)
   useEffect(() => {
@@ -322,6 +359,7 @@ export const QuickFilterDropdownProvider: React.FC<
     triggerContent,
     ariaLabel: ariaLabel!,
     usePortal: usePortal!,
+    dropdownId,
     containerRef,
     triggerRef,
     dropdownRef,

@@ -11,6 +11,7 @@ export interface QuickFilterDropdownCompound {
   Dropdown: typeof Components.Dropdown;
   SearchInput: typeof Components.SearchInput;
   OptionsList: typeof Components.OptionsList;
+  GroupHeader: typeof Components.GroupHeader;
   Option: typeof Components.Option;
   OptionLabel: typeof Components.OptionLabel;
   OptionDescription: typeof Components.OptionDescription;
@@ -160,6 +161,7 @@ Object.assign(QuickFilterDropdown, {
   Dropdown: Components.Dropdown,
   SearchInput: Components.SearchInput,
   OptionsList: Components.OptionsList,
+  GroupHeader: Components.GroupHeader,
   Option: Components.Option,
   OptionLabel: Components.OptionLabel,
   OptionDescription: Components.OptionDescription,

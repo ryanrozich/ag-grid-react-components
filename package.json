@@ -89,6 +89,7 @@
     "prepare": "husky"
   },
   "peerDependencies": {
+    "@headlessui/react": "^2.0.0",
     "ag-grid-community": "^33.3.0",
     "ag-grid-react": "^33.3.0",
     "date-fns": "^4.0.0",
@@ -175,6 +176,9 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.0.0"
   },
   "optionalDependencies": {
     "lz-string": "^1.5.0",

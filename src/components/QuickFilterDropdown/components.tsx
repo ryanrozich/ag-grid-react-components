@@ -43,6 +43,7 @@ export const Trigger = forwardRef<
     shouldUsePortal,
     calculateDropdownPosition,
     setDropdownPosition,
+    dropdownId,
   } = useQuickFilterDropdownContext();
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -75,7 +76,7 @@ export const Trigger = forwardRef<
       aria-label={ariaLabel}
       aria-expanded={state.isOpen}
       aria-haspopup="listbox"
-      aria-controls="quick-filter-dropdown"
+      aria-controls={dropdownId}
       {...props}
     >
       {children ||
@@ -104,6 +105,7 @@ export const Dropdown = forwardRef<
     dropdownPosition,
     position,
     ariaLabel,
+    dropdownId,
   } = useQuickFilterDropdownContext();
 
   if (!state.isOpen) return null;
@@ -116,7 +118,7 @@ export const Dropdown = forwardRef<
         else if (ref) ref.current = node;
         (dropdownRef as any).current = node;
       }}
-      id="quick-filter-dropdown"
+      id={dropdownId}
       data-component="quick-filter-dropdown"
       data-position={position}
       data-open={state.isOpen ? "true" : "false"}
@@ -205,6 +207,26 @@ export const OptionsList = forwardRef<
   );
 });
 OptionsList.displayName = "QuickFilterDropdown.OptionsList";
+
+// Group header component
+export const GroupHeader = forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & { label: string }
+>(({ label, children, ...props }, ref) => {
+  return (
+    <div
+      ref={ref}
+      data-component="quick-filter-group-header"
+      role="group"
+      aria-label={label}
+      {...props}
+    >
+      <div data-component="quick-filter-group-label">{label}</div>
+      {children}
+    </div>
+  );
+});
+GroupHeader.displayName = "QuickFilterDropdown.GroupHeader";
 
 // Individual option component
 interface OptionProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

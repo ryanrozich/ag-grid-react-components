@@ -3,12 +3,15 @@ import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 import { AgGridReact } from "ag-grid-react";
 import type { GridApi, GridReadyEvent } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
+import { setupGridStatePersistence } from "../index";
 import {
   QuickFilterDropdown,
   ActiveFilters,
-  setupGridStatePersistence,
   SavedViewsDropdown,
-} from "../index";
+  ViewManagementMenu,
+  ViewManagementModal,
+  SaveViewModal,
+} from "./components/TailwindStyledComponents";
 import { generateData } from "./data/generator";
 import { CodeBlock } from "./components/CodeBlock";
 import { AnchorHeading } from "./components/AnchorHeading";
@@ -29,6 +32,7 @@ import { DemoToolbar, StatsBar } from "./config/commonUIConfig";
 import "./styles/showcase-dark.css";
 import "./styles/code-override.css";
 import "./styles/headless-components.css";
+import "./styles/tailwind-overrides.css";
 
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);
@@ -1239,7 +1243,16 @@ const columnDefs = [{
       { id: "relativedatefilter", label: "DateFilter", indent: true },
       { id: "quickfilterdropdown", label: "QuickFilterDropdown", indent: true },
       { id: "activefilters", label: "ActiveFilters", indent: true },
+      { id: "savedviews", label: "SavedViewsDropdown", indent: true },
+      { id: "viewmanagement", label: "View Management", indent: true },
+      { id: "categoryselector", label: "CategorySelector", indent: true },
       { id: "urlstate", label: "URL State Persistence", indent: true },
+
+      // Styling Section
+      { id: "styling", label: "Styling", isSection: true },
+      { id: "headless-approach", label: "Headless Components", indent: true },
+      { id: "tailwind-styling", label: "Styling with Tailwind", indent: true },
+      { id: "headless-ui", label: "Headless UI Integration", indent: true },
 
       // Demo Guide Section
       { id: "demo-guide", label: "Demo Guide", isSection: true },
@@ -3299,6 +3312,165 @@ function MyGrid() {
                           </div>
                         </div>
 
+                        {/* Tailwind CSS Styling Section */}
+                        <div>
+                          <AnchorHeading level={2} id="styling-with-tailwind">
+                            Styling with Tailwind CSS
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-6">
+                            This demo uses <strong>Tailwind CSS</strong> to
+                            style the headless components, demonstrating how
+                            flexible they are. You can use any styling approach
+                            - Tailwind, CSS Modules, styled-components, or plain
+                            CSS.
+                          </p>
+
+                          <div className="mb-8">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-4">
+                              How We Style CategorySelector with Tailwind
+                            </h4>
+                            <p className="text-gray-400 mb-4">
+                              Here's the actual Tailwind classes we're using in
+                              this demo for the CategorySelector component:
+                            </p>
+                            <CodeBlock
+                              code={`<CategorySelector
+  // Container
+  className="relative"
+
+  // Input field
+  inputClassName="w-full px-3 py-2.5 bg-gray-800/50 border border-gray-700/30
+    rounded-md text-gray-200 text-sm placeholder-gray-500
+    focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/10"
+
+  // Dropdown icon
+  dropdownIconClassName="absolute right-3 top-1/2 -translate-y-1/2
+    text-gray-500 text-xs pointer-events-none"
+
+  // Dropdown container
+  dropdownClassName="absolute z-50 w-full mt-1 bg-gray-800
+    border border-gray-700/50 rounded-md shadow-xl overflow-hidden"
+
+  // Options
+  optionClassName="px-3 py-2 text-sm text-gray-200 hover:bg-gray-700/50
+    cursor-pointer transition-colors"
+
+  // Create new option
+  createOptionClassName="px-3 py-2 text-sm text-indigo-400 hover:bg-gray-700/50
+    cursor-pointer transition-colors border-b border-gray-700/50 font-medium
+    flex items-center gap-2"
+
+  // And more...
+/>`}
+                              language="tsx"
+                            />
+                          </div>
+
+                          <div className="mb-8">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-4">
+                              Tailwind vs Custom CSS
+                            </h4>
+                            <p className="text-gray-400 mb-4">
+                              Compare the approaches - both work perfectly with
+                              our headless components:
+                            </p>
+                            <div className="grid md:grid-cols-2 gap-6">
+                              <div>
+                                <h5 className="text-base font-semibold text-indigo-400 mb-3">
+                                  With Tailwind Classes
+                                </h5>
+                                <CodeBlock
+                                  code={`<QuickFilterDropdown
+  triggerClassName="
+    px-4 py-2 bg-gray-800
+    hover:bg-gray-700
+    border border-gray-700
+    rounded-md text-gray-200
+    transition-colors
+  "
+  dropdownClassName="
+    mt-1 bg-gray-800
+    border border-gray-700
+    rounded-md shadow-xl
+  "
+/>`}
+                                  language="tsx"
+                                />
+                              </div>
+                              <div>
+                                <h5 className="text-base font-semibold text-indigo-400 mb-3">
+                                  With Custom CSS
+                                </h5>
+                                <CodeBlock
+                                  code={`<QuickFilterDropdown
+  triggerClassName="
+    quick-filter-trigger
+  "
+  dropdownClassName="
+    quick-filter-dropdown
+  "
+/>
+
+/* In your CSS file */
+.quick-filter-trigger {
+  padding: 0.5rem 1rem;
+  background: #1f2937;
+  /* ... more styles */
+}`}
+                                  language="tsx"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="mb-8">
+                            <h4 className="text-lg font-semibold text-gray-200 mb-4">
+                              Benefits of Using Tailwind with Headless
+                              Components
+                            </h4>
+                            <ul className="space-y-2 text-gray-300">
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>No Style Conflicts:</strong>{" "}
+                                  Components have no built-in styles, so
+                                  Tailwind classes apply cleanly
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Rapid Iteration:</strong> Change
+                                  styles instantly without writing CSS files
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Consistent Design:</strong> Use your
+                                  existing Tailwind design system
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Tree-Shakeable:</strong> Only the
+                                  classes you use are included in your bundle
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
+
+                          <div className="bg-indigo-900/20 border border-indigo-700 rounded-lg p-4 mb-8">
+                            <p className="text-indigo-400 text-sm">
+                              <strong>Pro Tip:</strong> You can mix approaches!
+                              Use Tailwind for rapid prototyping and layout,
+                              then create custom CSS classes for complex
+                              component-specific styles.
+                            </p>
+                          </div>
+                        </div>
+
                         <div>
                           <AnchorHeading
                             level={3}
@@ -4044,6 +4216,951 @@ npm run dev:safe`}
                               </button>
                             </li>
                           </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SavedViewsDropdown */}
+                {activeDocSection === "savedviews" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="saved-views-dropdown">
+                        SavedViewsDropdown
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        A comprehensive saved views management system that lets
+                        users save, organize, and apply grid configurations.
+                        Includes categories, default views, import/export, and a
+                        complete management UI.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="saved-views-basic-usage">
+                            Basic Usage
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`import { SavedViewsDropdown } from 'ag-grid-react-components';
+
+function MyGrid() {
+  const [gridApi, setGridApi] = useState(null);
+
+  return (
+    <div className="toolbar">
+      <SavedViewsDropdown
+        api={gridApi}
+        columnId="dateCreated"
+        placeholder="My Views"
+        showManagementMenu={true}
+        onViewChange={(view) => {
+          console.log('Applied view:', view);
+        }}
+      />
+    </div>
+  );
+}`}
+                            language="tsx"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="saved-views-features">
+                            Key Features
+                          </AnchorHeading>
+                          <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                              <h4 className="font-semibold text-white mb-3">
+                                Core Features
+                              </h4>
+                              <ul className="space-y-2 text-sm text-gray-300">
+                                <li>✓ Save filters-only or full grid state</li>
+                                <li>✓ Organize views with categories</li>
+                                <li>✓ Set a default view on startup</li>
+                                <li>✓ Rename and delete views</li>
+                                <li>✓ Import/export view configurations</li>
+                                <li>✓ Reset to defaults functionality</li>
+                              </ul>
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                              <h4 className="font-semibold text-white mb-3">
+                                What Gets Saved
+                              </h4>
+                              <ul className="space-y-2 text-sm text-gray-300">
+                                <li>
+                                  <strong>Filters Only:</strong>
+                                </li>
+                                <li className="ml-4">• Column filters</li>
+                                <li className="ml-4">• Quick filters</li>
+                                <li>
+                                  <strong>Full View:</strong>
+                                </li>
+                                <li className="ml-4">• All filters</li>
+                                <li className="ml-4">
+                                  • Column state (width, order, visibility)
+                                </li>
+                                <li className="ml-4">• Sort model</li>
+                                <li className="ml-4">• Row grouping</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="saved-views-components">
+                            Component Architecture
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            SavedViewsDropdown orchestrates several
+                            sub-components:
+                          </p>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <ul className="space-y-3 text-sm">
+                              <li>
+                                <code className="text-blue-400">
+                                  SavedViewsDropdown
+                                </code>
+                                <span className="text-gray-400">
+                                  {" "}
+                                  - Main orchestrator component
+                                </span>
+                              </li>
+                              <li className="ml-4">
+                                <code className="text-blue-400">
+                                  ViewManagementMenu
+                                </code>
+                                <span className="text-gray-400">
+                                  {" "}
+                                  - Three-dots menu with actions
+                                </span>
+                              </li>
+                              <li className="ml-4">
+                                <code className="text-blue-400">
+                                  ViewManagementModal
+                                </code>
+                                <span className="text-gray-400">
+                                  {" "}
+                                  - Modal for managing saved views
+                                </span>
+                              </li>
+                              <li className="ml-4">
+                                <code className="text-blue-400">
+                                  SaveViewModal
+                                </code>
+                                <span className="text-gray-400">
+                                  {" "}
+                                  - Modal for saving new views
+                                </span>
+                              </li>
+                              <li className="ml-8">
+                                <code className="text-blue-400">
+                                  CategorySelector
+                                </code>
+                                <span className="text-gray-400">
+                                  {" "}
+                                  - Dropdown with search and create
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="saved-views-styling">
+                            Styling (Headless)
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            All components are headless - they ship without
+                            styles. Apply your own CSS:
+                          </p>
+                          <CodeBlock
+                            code={`// With Tailwind CSS (like this demo)
+<SavedViewsDropdown
+  className="flex items-center gap-2"
+/>
+
+// With custom CSS
+<SavedViewsDropdown
+  className="my-saved-views"
+/>
+
+/* styles.css */
+.my-saved-views {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}`}
+                            language="tsx"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* View Management Components */}
+                {activeDocSection === "viewmanagement" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="view-management">
+                        View Management Components
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        Individual components that make up the saved views
+                        system. Use these directly for custom implementations.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="view-management-menu">
+                            ViewManagementMenu
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            Three-dots menu for view management actions.
+                          </p>
+                          <CodeBlock
+                            code={`<ViewManagementMenu
+  api={gridApi}
+  onSaveView={() => setShowSaveModal(true)}
+  onManageViews={() => setShowManageModal(true)}
+  onResetToDefaults={handleReset}
+  onImport={handleImport}
+  onExport={handleExport}
+/>`}
+                            language="tsx"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="view-management-modal">
+                            ViewManagementModal
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            Full-featured modal for managing saved views.
+                          </p>
+                          <CodeBlock
+                            code={`<ViewManagementModal
+  isOpen={isModalOpen}
+  onClose={() => setIsModalOpen(false)}
+  views={savedViews}
+  categories={['Sales', 'Marketing', 'Support']}
+  defaultViewId={defaultView}
+  onRename={(id, name) => handleRename(id, name)}
+  onDelete={(id) => handleDelete(id)}
+  onChangeCategory={(id, category) => handleChangeCategory(id, category)}
+  onSetDefault={(id) => handleSetDefault(id)}
+  onExportView={(id) => handleExportView(id)}
+/>`}
+                            language="tsx"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="save-view-modal">
+                            SaveViewModal
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            Modal for saving the current grid state as a view.
+                          </p>
+                          <CodeBlock
+                            code={`<SaveViewModal
+  isOpen={isSaveModalOpen}
+  onClose={() => setIsSaveModalOpen(false)}
+  api={gridApi}
+  categories={['Sales', 'Marketing', 'Support']}
+  onSave={(viewData) => {
+    console.log('Saving:', viewData);
+    // viewData contains:
+    // - label: string
+    // - saveType: 'filters-only' | 'full-view'
+    // - category?: string
+    // - description?: string
+  }}
+/>`}
+                            language="tsx"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="grid-reset-button">
+                            GridResetButton
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            Standalone button for resetting grid state.
+                          </p>
+                          <CodeBlock
+                            code={`<GridResetButton
+  api={gridApi}
+  defaultViewId={defaultView}
+  loader={viewLoader}
+  confirmReset={true}
+  label="Reset Grid"
+  onReset={(resetType) => {
+    console.log('Reset type:', resetType);
+    // resetType: 'default-view' | 'factory'
+  }}
+/>`}
+                            language="tsx"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* CategorySelector */}
+                {activeDocSection === "categoryselector" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="category-selector">
+                        CategorySelector
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        A searchable dropdown with create functionality. Used in
+                        SaveViewModal and ViewManagementModal for category
+                        selection.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="category-selector-usage">
+                            Basic Usage
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`import { CategorySelector } from 'ag-grid-react-components';
+
+function MyForm() {
+  const [category, setCategory] = useState('');
+  const categories = ['Sales', 'Marketing', 'Development', 'Support'];
+
+  return (
+    <CategorySelector
+      value={category}
+      onChange={setCategory}
+      existingCategories={categories}
+      placeholder="Select or create category"
+    />
+  );
+}`}
+                            language="tsx"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="category-selector-features"
+                          >
+                            Features
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <ul className="space-y-2 text-sm text-gray-300">
+                              <li>✓ Search through existing categories</li>
+                              <li>✓ Create new categories on the fly</li>
+                              <li>✓ Keyboard navigation support</li>
+                              <li>✓ Click outside to close</li>
+                              <li>✓ Portal rendering for z-index issues</li>
+                              <li>✓ Fully customizable with className props</li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="category-selector-styling"
+                          >
+                            Styling with className Props
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            CategorySelector accepts 15+ className props for
+                            complete control:
+                          </p>
+                          <CodeBlock
+                            code={`<CategorySelector
+  // Container
+  className="relative"
+  
+  // Input field
+  inputClassName="w-full px-3 py-2 border rounded-md"
+  inputWrapperClassName="relative"
+  
+  // Dropdown
+  dropdownClassName="absolute mt-1 bg-white shadow-lg"
+  dropdownIconClassName="absolute right-2 top-1/2"
+  
+  // Options
+  optionClassName="px-3 py-2 hover:bg-gray-100"
+  highlightedClassName="bg-blue-100"
+  
+  // Create new
+  createOptionClassName="px-3 py-2 text-blue-600"
+  createFormClassName="p-3 border-t"
+  createInputClassName="w-full px-2 py-1 border rounded"
+  createButtonClassName="px-3 py-1 bg-blue-500 text-white"
+  cancelButtonClassName="px-3 py-1 border"
+  
+  // Other states
+  noResultsClassName="p-3 text-gray-500"
+  errorMessageClassName="text-red-500 text-sm"
+/>`}
+                            language="tsx"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Headless Approach */}
+                {activeDocSection === "headless-approach" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="headless-components">
+                        Headless Components
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        All components in this library are{" "}
+                        <strong>headless</strong> - they ship with zero CSS.
+                        Built on top of <strong>Headless UI</strong>, they
+                        provide excellent accessibility and interactions while
+                        giving you complete control over styling.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="what-is-headless">
+                            What Does Headless Mean?
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <ul className="space-y-3 text-sm text-gray-300">
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>No Built-in Styles:</strong>{" "}
+                                  Components have no CSS, only behavior
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Framework Agnostic:</strong> Use any
+                                  CSS approach (CSS, Sass, Tailwind, CSS-in-JS)
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>No Conflicts:</strong> Won't clash
+                                  with your existing styles
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Smaller Bundle:</strong> No unused CSS
+                                  shipped to users
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Complete Control:</strong> Style
+                                  exactly how you want
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Built on Headless UI:</strong>{" "}
+                                  Accessible, keyboard-navigable components
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="styling-approaches">
+                            Styling Approaches
+                          </AnchorHeading>
+                          <div className="grid md:grid-cols-2 gap-6">
+                            <div>
+                              <h4 className="font-semibold text-white mb-3">
+                                1. Custom CSS Classes
+                              </h4>
+                              <CodeBlock
+                                code={`/* styles.css */
+.my-dropdown {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Component */
+<SavedViewsDropdown
+  className="my-dropdown"
+/>`}
+                                language="css"
+                              />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-white mb-3">
+                                2. Tailwind CSS (This Demo)
+                              </h4>
+                              <CodeBlock
+                                code={`<SavedViewsDropdown
+  className="flex items-center gap-2"
+/>
+
+<SaveViewModal
+  panelClassName="bg-gray-900 rounded-xl"
+  titleClassName="text-xl font-semibold"
+/>`}
+                                language="tsx"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Tailwind Styling */}
+                {activeDocSection === "tailwind-styling" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="styling-with-tailwind">
+                        Styling with Tailwind CSS
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        This demo uses <strong>Tailwind CSS</strong> to style
+                        the headless components, demonstrating how flexible they
+                        are. You can use any styling approach.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="tailwind-approach">
+                            How We Use Tailwind
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            We apply Tailwind classes via CSS{" "}
+                            <code>@apply</code> directives:
+                          </p>
+                          <CodeBlock
+                            code={`/* tailwind-overrides.css */
+.view-management-menu-trigger {
+  @apply p-2 bg-gray-800/50 border border-gray-700/30 
+         rounded-md text-gray-200 hover:bg-gray-700/50;
+}
+
+.save-view-modal {
+  @apply bg-gray-900 border border-gray-700/50 
+         rounded-xl shadow-2xl max-w-md w-full;
+}
+
+.active-filter-pill {
+  @apply inline-flex items-center gap-1.5 px-3 py-1.5 
+         bg-indigo-900/20 border border-indigo-800/30 
+         rounded-full text-sm;
+}`}
+                            language="css"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="tailwind-benefits">
+                            Benefits for Headless Components
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <ul className="space-y-2 text-sm text-gray-300">
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>No Style Conflicts:</strong>{" "}
+                                  Components have no built-in styles to override
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Rapid Development:</strong> Apply
+                                  utility classes quickly
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Consistent Design:</strong> Use your
+                                  existing Tailwind config
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Dark Mode:</strong> Easy with
+                                  Tailwind's dark: prefix
+                                </span>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <span>
+                                  <strong>Responsive:</strong> Use Tailwind's
+                                  responsive utilities
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="tailwind-example">
+                            Real Example from This Demo
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            Here's how CategorySelector is styled in this demo:
+                          </p>
+                          <CodeBlock
+                            code={`<CategorySelector
+  className="relative"
+  
+  inputClassName="w-full px-3 py-2.5 bg-gray-800/50 
+    border border-gray-700/30 rounded-md text-gray-200 
+    text-sm placeholder-gray-500 focus:outline-none 
+    focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/10"
+  
+  dropdownClassName="absolute z-50 w-full mt-1 bg-gray-800 
+    border border-gray-700/50 rounded-md shadow-xl overflow-hidden"
+  
+  optionClassName="px-3 py-2 text-sm text-gray-200 
+    hover:bg-gray-700/50 cursor-pointer transition-colors"
+  
+  createOptionClassName="px-3 py-2 text-sm text-indigo-400 
+    hover:bg-gray-700/50 cursor-pointer transition-colors 
+    border-b border-gray-700/50 font-medium flex items-center gap-2"
+/>`}
+                            language="tsx"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Headless UI Integration */}
+                {activeDocSection === "headless-ui" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="headless-ui-integration">
+                        Built with Headless UI
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        Our components are built on top of Headless UI,
+                        providing excellent accessibility, keyboard navigation,
+                        and focus management out of the box while remaining
+                        completely unstyled.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="what-is-headless-ui">
+                            What is Headless UI?
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            <a
+                              href="https://headlessui.com"
+                              className="text-indigo-400 hover:text-indigo-300"
+                            >
+                              Headless UI
+                            </a>{" "}
+                            is the official unstyled component library from the
+                            makers of Tailwind CSS. It provides accessible UI
+                            components without any styling.
+                          </p>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <h4 className="font-semibold text-white mb-3">
+                              Benefits
+                            </h4>
+                            <ul className="space-y-2 text-sm text-gray-300">
+                              <li>
+                                ✓ Built-in accessibility (ARIA attributes,
+                                keyboard navigation)
+                              </li>
+                              <li>
+                                ✓ Handles complex interactions (focus
+                                management, positioning)
+                              </li>
+                              <li>✓ 50-78% less code to maintain</li>
+                              <li>✓ Well-tested across browsers</li>
+                              <li>✓ Regular updates from Tailwind team</li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="headless-ui-components">
+                            Components Using Headless UI
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b border-gray-700">
+                                  <th className="text-left py-2 text-gray-300">
+                                    Component
+                                  </th>
+                                  <th className="text-left py-2 text-gray-300">
+                                    Headless UI Components Used
+                                  </th>
+                                  <th className="text-left py-2 text-gray-300">
+                                    Key Benefits
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="text-gray-400">
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">CategorySelector</td>
+                                  <td className="py-3">Combobox, Transition</td>
+                                  <td className="py-3">
+                                    Autocomplete, keyboard navigation
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">ViewManagementMenu</td>
+                                  <td className="py-3">Menu, Transition</td>
+                                  <td className="py-3">
+                                    Accessible dropdowns, focus trap
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3">ViewManagementModal</td>
+                                  <td className="py-3">Dialog, Transition</td>
+                                  <td className="py-3">
+                                    Modal focus management, ESC key
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="py-3">SaveViewModal</td>
+                                  <td className="py-3">
+                                    Dialog, Fieldset, Field, RadioGroup
+                                  </td>
+                                  <td className="py-3">
+                                    Form semantics, ARIA labels
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="fieldset-example">
+                            New: Fieldset for Better Forms
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            SaveViewModal now uses Headless UI's Fieldset
+                            components for better form structure:
+                          </p>
+                          <CodeBlock
+                            code={`// SaveViewModal with Fieldset
+import { Dialog, Fieldset, Field, Label, Input, Textarea, Legend } from '@headlessui/react';
+
+<Fieldset className="space-y-4">
+  <Legend className="sr-only">View Configuration</Legend>
+  
+  <Field>
+    <Label>View Name <span className="text-red-500">*</span></Label>
+    <Input
+      type="text"
+      value={viewName}
+      onChange={(e) => setViewName(e.target.value)}
+      className="w-full px-3 py-2 border rounded-md"
+    />
+  </Field>
+
+  <Fieldset>
+    <Legend>Save Type</Legend>
+    <RadioGroup value={saveType} onChange={setSaveType}>
+      {/* Radio options */}
+    </RadioGroup>
+  </Fieldset>
+
+  <Field>
+    <Label>Category</Label>
+    <Input type="text" list="categories" />
+  </Field>
+
+  <Field>
+    <Label>Description</Label>
+    <Textarea rows={3} />
+  </Field>
+</Fieldset>`}
+                            language="tsx"
+                          />
+                          <div className="bg-gray-900 rounded-lg p-4 border border-gray-800 mt-4">
+                            <h4 className="font-semibold text-white mb-2">
+                              Benefits of Fieldset
+                            </h4>
+                            <ul className="space-y-1 text-sm text-gray-300">
+                              <li>✓ Semantic HTML structure for forms</li>
+                              <li>
+                                ✓ Better accessibility with proper field
+                                grouping
+                              </li>
+                              <li>✓ Automatic ARIA associations</li>
+                              <li>
+                                ✓ Disabled state cascading to all child fields
+                              </li>
+                              <li>
+                                ✓ Data attributes for styling disabled states
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="recommended-components">
+                            Recommended Headless UI Components
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            Based on our analysis, here are components that
+                            would benefit from Headless UI:
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <h4 className="font-semibold text-white mb-2">
+                                High Priority
+                              </h4>
+                              <ul className="space-y-2 text-sm text-gray-300">
+                                <li>
+                                  <strong>QuickFilterDropdown</strong> → Listbox
+                                  <span className="block text-gray-500 text-xs">
+                                    Better keyboard navigation
+                                  </span>
+                                </li>
+                                <li>
+                                  <strong>DateFilter Mode Toggle</strong> →
+                                  RadioGroup
+                                  <span className="block text-gray-500 text-xs">
+                                    Proper radio semantics
+                                  </span>
+                                </li>
+                                <li>
+                                  <strong>SavedViewsDropdown Panel</strong> →
+                                  Popover
+                                  <span className="block text-gray-500 text-xs">
+                                    Better positioning & focus trap
+                                  </span>
+                                </li>
+                              </ul>
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <h4 className="font-semibold text-white mb-2">
+                                Medium Priority
+                              </h4>
+                              <ul className="space-y-2 text-sm text-gray-300">
+                                <li>
+                                  <strong>Date Range Inputs</strong> → Field
+                                  components
+                                  <span className="block text-gray-500 text-xs">
+                                    Better form semantics
+                                  </span>
+                                </li>
+                                <li>
+                                  <strong>GridResetButton Confirm</strong> →
+                                  Dialog
+                                  <span className="block text-gray-500 text-xs">
+                                    Replace window.confirm
+                                  </span>
+                                </li>
+                                <li>
+                                  <strong>ActiveFilters</strong> → Disclosure
+                                  <span className="block text-gray-500 text-xs">
+                                    Collapsible filter groups
+                                  </span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="using-components">
+                            Using the Components
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            All components are built with Headless UI and ship
+                            with zero styles:
+                          </p>
+                          <CodeBlock
+                            code={`import { 
+  CategorySelector,
+  SaveViewModal,
+  ViewManagementMenu,
+  SavedViewsDropdown 
+} from 'ag-grid-react-components';
+
+// Components are headless - add your own styles
+<CategorySelector
+  value={category}
+  onChange={setCategory}
+  existingCategories={categories}
+  // Style with Tailwind, CSS, or any styling solution
+  inputClassName="w-full rounded-lg border border-gray-300"
+  dropdownClassName="absolute mt-1 bg-white shadow-lg"
+/>`}
+                            language="tsx"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="styling-flexibility">
+                            Complete Styling Control
+                          </AnchorHeading>
+                          <p className="text-gray-400 mb-4">
+                            Since components ship with no styles, you have
+                            complete control:
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <h4 className="font-semibold text-white mb-2">
+                                With Tailwind CSS
+                              </h4>
+                              <CodeBlock
+                                code={`<SaveViewModal
+  panelClassName="bg-white rounded-lg shadow-xl"
+  titleClassName="text-xl font-semibold"
+  buttonClassName="px-4 py-2 rounded"
+/>`}
+                                language="tsx"
+                              />
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <h4 className="font-semibold text-white mb-2">
+                                With Custom CSS
+                              </h4>
+                              <CodeBlock
+                                code={`<SaveViewModal
+  panelClassName="my-modal-panel"
+  titleClassName="my-modal-title"
+  buttonClassName="my-button"
+/>`}
+                                language="tsx"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-green-900/20 border border-green-700 rounded-lg p-4">
+                          <p className="text-green-400 text-sm">
+                            <strong>Built-in Benefits:</strong> All components
+                            include proper ARIA attributes, keyboard navigation,
+                            focus management, and screen reader support thanks
+                            to Headless UI.
+                          </p>
                         </div>
                       </div>
                     </div>

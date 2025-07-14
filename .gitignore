@@ -27,6 +27,8 @@ dist-ssr
 # Testing
 coverage
 .vitest-cache
+test-results/
+playwright-report/
 
 # Deployment
 dist-demo
@@ -38,7 +40,8 @@ dist-demo
 ryans_notes/
 
 # Screenshots and temporary files
-# *.png - Removed to allow hero screenshot
+# *.png - Removed to allow hero screenshot in demo assets
+screenshots/
 simple-test.html
 clause copy.md
 clause*.md

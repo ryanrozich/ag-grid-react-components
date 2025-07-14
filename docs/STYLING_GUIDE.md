@@ -4,60 +4,135 @@ This guide covers how to style and customize the AG Grid React Components to mat
 
 ## Overview
 
-The components use a combination of:
+**All components are headless** - they ship with zero CSS. You have complete control over styling:
 
-- CSS Modules for component isolation
-- CSS custom properties (variables) for theming
-- BEM-like class naming for predictable styling
-- Tailwind-compatible class names where appropriate
+- **No built-in styles**: Components have no opinions about appearance
+- **Framework agnostic**: Use any CSS approach (CSS, Sass, Tailwind, CSS-in-JS)
+- **Class-based API**: Components accept className props for styling
+- **Demo uses Tailwind**: Our demo showcases one way to style components
 
-## Global CSS Variables
+## Styling Approaches
 
-The components respect these CSS custom properties that you can override:
+### 1. Tailwind CSS (Recommended for Rapid Development)
+
+Our demo uses Tailwind CSS to style all components:
+
+```tsx
+// Example from demo
+<SaveViewModal panelClassName="bg-gray-900 border border-gray-700/50 rounded-xl shadow-2xl" titleClassName="text-xl font-semibold text-gray-100" inputClassName="w-full px-3 py-2 bg-gray-800/50 border border-gray-700/30 rounded-md" />
+```
+
+See [Tailwind Styling Examples](./TAILWIND_STYLING_EXAMPLES.md) for complete examples.
+
+### 2. Custom CSS Classes
 
 ```css
-:root {
-  /* Primary Colors */
-  --agrc-primary: #2563eb; /* Primary brand color */
-  --agrc-primary-hover: #1d4ed8; /* Primary hover state */
-  --agrc-primary-active: #1e40af; /* Primary active state */
+/* Your custom styles */
+.my-save-modal {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
 
-  /* Neutral Colors */
-  --agrc-border: #e5e7eb; /* Default border color */
-  --agrc-border-hover: #d1d5db; /* Border hover color */
-  --agrc-background: #ffffff; /* Component background */
-  --agrc-background-hover: #f9fafb; /* Hover background */
-  --agrc-text: #111827; /* Primary text color */
-  --agrc-text-secondary: #6b7280; /* Secondary text color */
-
-  /* Status Colors */
-  --agrc-error: #ef4444; /* Error state color */
-  --agrc-success: #10b981; /* Success state color */
-  --agrc-warning: #f59e0b; /* Warning state color */
-
-  /* Spacing */
-  --agrc-spacing-xs: 0.25rem; /* 4px */
-  --agrc-spacing-sm: 0.5rem; /* 8px */
-  --agrc-spacing-md: 1rem; /* 16px */
-  --agrc-spacing-lg: 1.5rem; /* 24px */
-
-  /* Border Radius */
-  --agrc-radius-sm: 0.25rem; /* Small radius */
-  --agrc-radius-md: 0.375rem; /* Medium radius */
-  --agrc-radius-lg: 0.5rem; /* Large radius */
-
-  /* Shadows */
-  --agrc-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --agrc-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --agrc-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+.my-save-modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
 }
 ```
 
-## Component-Specific Styling
+```tsx
+<SaveViewModal panelClassName="my-save-modal" titleClassName="my-save-modal-title" />
+```
+
+### 3. CSS-in-JS (Emotion, styled-components)
+
+```tsx
+import styled from "styled-components";
+
+const StyledModal = styled.div`
+  background: ${(props) => props.theme.colors.background};
+  border-radius: ${(props) => props.theme.radii.lg};
+`;
+
+// Wrap the headless component
+<SaveViewModal panelClassName={styledModalClass} />;
+```
+
+### 4. Headless UI Integration (Better Accessibility)
+
+For complex components, use our Headless UI versions:
+
+```tsx
+import { SaveViewModalHeadlessUI } from "ag-grid-react-components/headless-ui";
+
+<SaveViewModalHeadlessUI
+  // Same props, built-in accessibility
+  panelClassName="bg-white rounded-lg shadow-xl"
+/>;
+```
+
+## Component className Props
+
+All components accept multiple className props for granular styling control:
+
+### SavedViewsDropdown
+
+```tsx
+<SavedViewsDropdown className="saved-views-container" />
+```
+
+### ViewManagementMenu
+
+```tsx
+<ViewManagementMenu className="menu-trigger-custom" />
+```
+
+### ViewManagementModal
+
+```tsx
+<ViewManagementModal className="modal-container" />
+```
+
+### SaveViewModal
+
+```tsx
+<SaveViewModal panelClassName="modal-panel" titleClassName="modal-title" contentClassName="modal-content" fieldClassName="form-field" labelClassName="form-label" inputClassName="form-input" buttonClassName="btn" primaryButtonClassName="btn-primary" />
+```
+
+### CategorySelector
+
+```tsx
+<CategorySelector
+  className="category-container"
+  inputClassName="category-input"
+  dropdownClassName="category-dropdown"
+  optionClassName="category-option"
+  createButtonClassName="create-btn"
+  // ... 15+ className props for full control
+/>
+```
+
+### ActiveFilters
+
+```tsx
+<ActiveFilters className="filters-container" />
+```
+
+### QuickFilterDropdown
+
+```tsx
+<QuickFilterDropdown className="filter-dropdown" />
+```
+
+## Component Class Structure
+
+While components ship without CSS, they do apply semantic class names that you can target:
 
 ### DateFilter Component
 
-The DateFilter component exposes these CSS classes:
+The DateFilter component applies these classes:
 
 ```css
 /* Root container */

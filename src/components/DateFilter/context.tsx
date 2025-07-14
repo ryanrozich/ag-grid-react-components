@@ -70,36 +70,22 @@ export function DateFilterProvider({
   dateParser,
 }: DateFilterProviderProps) {
   // Initialize state from model
-  const [mode, setMode] = useState<DateFilterMode>(() => {
-    if (!model?.dateFrom) return "relative";
-    // Check if it's a relative date expression
-    return model.dateFrom.includes("-") ||
-      model.dateFrom.toLowerCase().includes("today") ||
-      model.dateFrom.toLowerCase().includes("month")
-      ? "relative"
-      : "absolute";
-  });
+  const [mode, setMode] = useState<DateFilterMode>(() =>
+    model?.dateFrom && model.dateFrom.includes("-") ? "relative" : "absolute",
+  );
 
   const [filterType, setFilterType] = useState<DateFilterType>(
     () => model?.filterType || "equals",
   );
 
-  const [relativeValue, setRelativeValue] = useState(() => {
-    if (!model?.dateFrom) return "";
-    const isRelative =
-      model.dateFrom.includes("-") ||
-      model.dateFrom.toLowerCase().includes("today") ||
-      model.dateFrom.toLowerCase().includes("month");
-    return isRelative ? model.dateFrom : "";
-  });
+  const [relativeValue, setRelativeValue] = useState(() =>
+    model?.filterType === "inRange" && model?.dateFrom?.includes("-")
+      ? model.dateFrom
+      : "",
+  );
 
   const [startDate, setStartDate] = useState<Date | null>(() => {
-    if (!model?.dateFrom) return null;
-    const isRelative =
-      model.dateFrom.includes("-") ||
-      model.dateFrom.toLowerCase().includes("today") ||
-      model.dateFrom.toLowerCase().includes("month");
-    if (isRelative) return null;
+    if (!model?.dateFrom || model.dateFrom.includes("-")) return null;
     const date = new Date(model.dateFrom);
     return isNaN(date.getTime()) ? null : date;
   });

@@ -10,6 +10,7 @@ import { LocalStorageLoader } from "../QuickFilterDropdown/loaders/LocalStorageL
 import { ViewManagementMenu } from "../ViewManagementMenu";
 import { ViewManagementModal } from "../ViewManagementModal";
 import { SaveViewModal } from "../SaveViewModal";
+import { resetGrid } from "../../utils/gridReset";
 
 export interface SavedViewsDropdownProps {
   /** AG Grid API instance */
@@ -127,21 +128,14 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
     }
   }, [loader, loadViews]);
 
-  // Convert saved views to quick filter options
-  const quickFilterOptions: QuickFilterOption[] = useMemo(() => {
-    // Add "Clear filters" option
-    const options: QuickFilterOption[] = [
-      {
-        id: "clear-filters",
-        label: "Clear filters",
-        filterModel: {},
-        description: "Remove all active filters",
-      },
-    ];
+  // Group views by category and convert to quick filter options
+  const groupedOptions = useMemo(() => {
+    // Group views by category
+    const groups: Record<string, QuickFilterOption[]> = {};
+    const ungrouped: QuickFilterOption[] = [];
 
-    // Add all saved views as options in the dropdown
     views.forEach((view) => {
-      options.push({
+      const option: QuickFilterOption = {
         id: view.id,
         label: view.label,
         filterModel: view.filterModel || {},
@@ -156,10 +150,38 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
             : view.metadata?.category
               ? "📁"
               : undefined,
-      });
+        category: view.metadata?.category,
+      };
+
+      if (view.metadata?.category) {
+        if (!groups[view.metadata.category]) {
+          groups[view.metadata.category] = [];
+        }
+        groups[view.metadata.category].push(option);
+      } else {
+        ungrouped.push(option);
+      }
     });
 
-    return options;
+    // Convert to grouped structure
+    const result: Array<
+      | { type: "group"; category: string; options: QuickFilterOption[] }
+      | { type: "option"; option: QuickFilterOption }
+    > = [];
+
+    // Add ungrouped options first
+    ungrouped.forEach((option) => {
+      result.push({ type: "option", option });
+    });
+
+    // Add grouped options
+    Object.keys(groups)
+      .sort()
+      .forEach((category) => {
+        result.push({ type: "group", category, options: groups[category] });
+      });
+
+    return result;
   }, [views, defaultViewId]);
 
   // Handle filter change from dropdown
@@ -167,20 +189,12 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
     (option: QuickFilterOption | null) => {
       if (!option) return;
 
-      if (option.id === "clear-filters") {
-        if (api) {
-          api.setFilterModel(null);
-        }
-        setSelectedViewId(null);
-        onViewChange?.(null);
-      } else {
-        const view = views.find((v) => v.id === option.id);
-        if (view) {
-          applyView(view);
-        }
+      const view = views.find((v) => v.id === option.id);
+      if (view) {
+        applyView(view);
       }
     },
-    [api, views, applyView, onViewChange],
+    [views, applyView],
   );
 
   // Save current view
@@ -263,6 +277,43 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
     }
   }, [loader]);
 
+  const handleExportCurrent = useCallback(async () => {
+    if (!api) return;
+
+    try {
+      // Create a view object from current grid state
+      const currentView = {
+        id: `current-${Date.now()}`,
+        label: "Current View",
+        saveType: "full-view" as const,
+        gridState: {
+          columnState: api.getColumnState(),
+          filterModel: api.getFilterModel(),
+          sortModel: api.getSortModel(),
+          columnGroup: api.getColumnGroupState
+            ? api.getColumnGroupState()
+            : undefined,
+        },
+        metadata: {
+          createdAt: new Date().toISOString(),
+        },
+      };
+
+      const json = JSON.stringify(currentView, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `current-view-${new Date().toISOString().split("T")[0] || "unknown"}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error exporting current view:", error);
+    }
+  }, [api]);
+
   const handleImport = useCallback(async () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -293,8 +344,29 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
     return Array.from(cats);
   }, [views]);
 
-  // Don't render until we have the loader initialized
-  if (!loader) {
+  // Handle reset to defaults
+  const handleResetToDefaults = useCallback(async () => {
+    if (!api) return;
+
+    try {
+      const resetType = await resetGrid({
+        api,
+        defaultViewId,
+        loader,
+      });
+
+      // Clear selected view if we did a factory reset
+      if (resetType === "factory") {
+        setSelectedViewId(null);
+        onViewChange?.(null);
+      }
+    } catch (error) {
+      console.error("Error resetting grid:", error);
+    }
+  }, [api, defaultViewId, loader, onViewChange]);
+
+  // Don't render until we have the loader initialized and api
+  if (!loader || !api) {
     return null;
   }
 
@@ -303,20 +375,78 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
       <QuickFilterDropdown
         api={api}
         columnId={columnId}
-        options={quickFilterOptions}
+        options={groupedOptions.flatMap((item) =>
+          item.type === "group" ? item.options : [item.option],
+        )}
         placeholder={placeholder}
         onFilterChange={handleFilterChange}
         className="saved-views-dropdown"
-      />
+        usePortal="always"
+        position="bottom-left"
+      >
+        <QuickFilterDropdown.Root className="saved-views-dropdown">
+          <QuickFilterDropdown.Trigger />
+          <QuickFilterDropdown.Dropdown>
+            {groupedOptions.flatMap((item) =>
+              item.type === "group" ? item.options : [item.option],
+            ).length > 10 && <QuickFilterDropdown.SearchInput />}
+            <QuickFilterDropdown.OptionsList>
+              {groupedOptions.length === 0 ? (
+                <QuickFilterDropdown.EmptyState />
+              ) : (
+                groupedOptions.map((item, groupIndex) => {
+                  if (item.type === "group") {
+                    return (
+                      <QuickFilterDropdown.GroupHeader
+                        key={`group-${item.category}`}
+                        label={item.category}
+                      >
+                        {item.options.map((option, optionIndex) => (
+                          <QuickFilterDropdown.Option
+                            key={option.id}
+                            option={option}
+                            index={groupIndex * 100 + optionIndex} // Ensure unique indices
+                          >
+                            <QuickFilterDropdown.OptionLabel />
+                            {option.description && (
+                              <QuickFilterDropdown.OptionDescription />
+                            )}
+                            <QuickFilterDropdown.OptionCheckmark />
+                          </QuickFilterDropdown.Option>
+                        ))}
+                      </QuickFilterDropdown.GroupHeader>
+                    );
+                  } else {
+                    return (
+                      <QuickFilterDropdown.Option
+                        key={item.option.id}
+                        option={item.option}
+                        index={groupIndex}
+                      >
+                        <QuickFilterDropdown.OptionLabel />
+                        {item.option.description && (
+                          <QuickFilterDropdown.OptionDescription />
+                        )}
+                        <QuickFilterDropdown.OptionCheckmark />
+                      </QuickFilterDropdown.Option>
+                    );
+                  }
+                })
+              )}
+            </QuickFilterDropdown.OptionsList>
+          </QuickFilterDropdown.Dropdown>
+        </QuickFilterDropdown.Root>
+      </QuickFilterDropdown>
 
       {showManagementMenu && (
         <ViewManagementMenu
           api={api}
           onSaveView={handleSaveView}
           onManageViews={() => setIsManageModalOpen(true)}
+          onResetToDefaults={handleResetToDefaults}
           onImport={handleImport}
+          onExportCurrent={handleExportCurrent}
           onExport={handleExportAll}
-          className="saved-views-menu"
         />
       )}
 
@@ -355,9 +485,9 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
               let sortModel: unknown[] = [];
               if (
                 "getSortModel" in api &&
-                typeof api.getSortModel === "function"
+                typeof (api as any).getSortModel === "function"
               ) {
-                sortModel = api.getSortModel() || [];
+                sortModel = (api as any).getSortModel() || [];
               }
 
               gridState = {

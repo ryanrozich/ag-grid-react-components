@@ -1,0 +1,196 @@
+/* Category Selector Styles - Match modal inputs */
+.save-view-modal-category input,
+.view-management-category-selector input {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  background-color: rgb(30, 41, 59, 0.5) !important;
+  border: 1px solid rgb(71, 85, 105, 0.3) !important;
+  border-radius: 0.375rem;
+  color: rgb(226, 232, 240) !important;
+  font-size: 0.875rem;
+  transition: all 0.15s;
+  box-sizing: border-box;
+}
+
+.save-view-modal-category input:focus,
+.view-management-category-selector input:focus {
+  outline: none;
+  border-color: rgb(99, 102, 241);
+  background-color: rgb(30, 41, 59, 0.8);
+  box-shadow: 0 0 0 3px rgb(99, 102, 241, 0.1);
+}
+
+.save-view-modal-category input::placeholder,
+.view-management-category-selector input::placeholder {
+  color: rgb(148, 163, 184);
+}
+
+/* Override any browser autocomplete styling */
+.save-view-modal-category input:-webkit-autofill,
+.save-view-modal-category input:-webkit-autofill:hover,
+.save-view-modal-category input:-webkit-autofill:focus,
+.view-management-category-selector input:-webkit-autofill,
+.view-management-category-selector input:-webkit-autofill:hover,
+.view-management-category-selector input:-webkit-autofill:focus {
+  -webkit-text-fill-color: rgb(226, 232, 240) !important;
+  box-shadow: 0 0 0 1000px rgb(30, 41, 59, 0.5) inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Category dropdown */
+.category-selector-dropdown {
+  background-color: rgb(30, 41, 59) !important;
+  border: 1px solid rgb(71, 85, 105, 0.3);
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgb(0, 0, 0, 0.3);
+  max-height: 16rem;
+  overflow-y: auto;
+  z-index: 999999 !important;
+}
+
+/* Category options */
+.category-selector-option {
+  padding: 0.5rem 0.75rem;
+  color: rgb(226, 232, 240) !important;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+.category-selector-option:hover,
+.category-selector-option.category-selector-highlighted {
+  background-color: rgb(51, 65, 85, 0.5);
+}
+
+.category-selector-option.selected {
+  background-color: rgb(99, 102, 241, 0.2);
+  color: rgb(199, 210, 254);
+}
+
+/* Create new category option */
+.category-selector-create {
+  color: rgb(129, 140, 248) !important;
+  border-bottom: 1px solid rgb(71, 85, 105, 0.3);
+  font-weight: 500;
+}
+
+/* Create category form */
+.category-selector-create-form {
+  padding: 0.75rem;
+}
+
+.category-selector-create-input {
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  background-color: rgb(15, 23, 42, 0.5) !important;
+  border: 1px solid rgb(99, 102, 241);
+  border-radius: 0.25rem;
+  color: rgb(226, 232, 240) !important;
+  font-size: 0.813rem;
+  margin-bottom: 0.5rem;
+}
+
+.category-selector-create-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(99, 102, 241, 0.2);
+}
+
+/* Create actions */
+.category-selector-create-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.category-selector-create-btn,
+.category-selector-cancel-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.category-selector-create-btn {
+  background-color: rgb(99, 102, 241);
+  color: white;
+}
+
+.category-selector-create-btn:hover:not(:disabled) {
+  background-color: rgb(79, 70, 229);
+}
+
+.category-selector-create-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.category-selector-cancel-btn {
+  background-color: transparent;
+  color: rgb(148, 163, 184);
+  border: 1px solid rgb(71, 85, 105, 0.3);
+}
+
+.category-selector-cancel-btn:hover {
+  background-color: rgb(51, 65, 85, 0.3);
+  color: rgb(226, 232, 240);
+}
+
+/* No categories message */
+.category-selector-no-results {
+  padding: 0.75rem;
+  color: rgb(148, 163, 184);
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+/* Error message */
+.category-selector-error {
+  color: rgb(239, 68, 68);
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Dropdown icon */
+.save-view-modal-category [data-testid="dropdown-icon"],
+.view-management-category-selector [data-testid="dropdown-icon"] {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: rgb(148, 163, 184);
+  font-size: 0.75rem;
+  user-select: none;
+}
+
+/* Input wrapper positioning */
+.save-view-modal-category > div:first-child,
+.view-management-category-selector > div:first-child {
+  position: relative;
+  width: 100%;
+}
+
+/* Create icon */
+.category-selector-create > span:first-child {
+  margin-right: 0.5rem;
+  font-weight: bold;
+  color: inherit;
+}
+
+/* Portal container fix */
+#category-selector-portal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  z-index: 999999;
+  pointer-events: none;
+}
+
+#category-selector-portal > * {
+  pointer-events: auto;
+}

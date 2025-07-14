@@ -405,3 +405,23 @@
   color: #64748b;
   font-size: 0.875rem;
 }
+
+/* Group Header Styles */
+[data-component="quick-filter-group-header"] {
+  padding: 0.75rem 0.75rem 0.25rem;
+  border-top: 1px solid rgb(71, 85, 105, 0.3);
+}
+
+[data-component="quick-filter-group-header"]:first-child {
+  border-top: none;
+  padding-top: 0.5rem;
+}
+
+[data-component="quick-filter-group-label"] {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
