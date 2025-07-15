@@ -1,52 +1,89 @@
-# Project Management Scripts
+# Scripts Directory
 
-This directory contains scripts for managing GitHub issues and project synchronization.
+This directory contains various scripts used for development, building, quality assurance, and project management. Scripts are organized by purpose to make them easier to find and maintain.
+
+## Directory Structure
+
+### `/build`
+Build and deployment related scripts:
+- `generate-og-image.js` - Generate Open Graph images for social sharing
+- `generate-version-info.js` - Generate version information for builds
+- `publish-local.sh` - Publish package locally for testing
+
+### `/dev`
+Development workflow scripts:
+- `bootstrap-all.sh` - Bootstrap the entire project
+- `pre-push.sh` - Pre-push git hook (runs all tests)
+- `pre-push-quick.sh` - Quick pre-push hook (skips E2E tests)
+- `test-filter-click.js` - Test filter click functionality
+- `thorough-demo-check.js` - Thorough demo validation
+- `validate-demo.js` - Basic demo validation
+
+### `/quality`
+Code quality and linting scripts:
+- `check-codeql.js` - Check CodeQL analysis results
+- `check-fonts.js` - Validate font usage
+- `check-whitespace.sh` - Check for whitespace issues
+- `fix-whitespace.sh` - Fix whitespace issues
+- `test-code-block-fonts.js` - Test code block font rendering
+
+### `/github`
+GitHub-specific automation and project management:
+- **Label Management:**
+  - `add-missing-labels.js` - Add required labels to issues
+  - `add-new-status-labels.js` - Add new status labels
+  - `create-all-labels.js` - Create all project labels
+  - `create-preview-labels.js` - Create preview-related labels
+  - `sync-labels-to-project.js` - Sync labels to project fields
+  - `update-all-status-labels.js` - Update status labels
+
+- **Project Synchronization:**
+  - `bootstrap-project-sync.js` - Bootstrap project field sync
+  - `bootstrap-project-sync-all.js` - Sync all project fields
+  - `manual-project-sync.js` - Manual project sync
+  - `sync-issue-status.js` - Sync issue status
+
+- **PR Management:**
+  - `sync-pr-labels-from-issues.js` - Sync PR labels from linked issues
+  - `fix-pr-statuses.js` - Fix PR status labels
+  - `fix-all-pr-statuses.js` - Fix all PR statuses
+  - `fix-pr-project-status.js` - Fix PR project status
+  - `cleanup-pr-status-labels.js` - Clean up PR status labels
+  - `cleanup-merged-pr-deployments.js` - Clean up merged PR deployments
+
+- **Milestone Management:**
+  - `create-milestone.js` - Create new milestone
+  - `assign-to-milestone.js` - Assign issues to milestone
+  - `milestone-overview.js` - Show milestone overview
+
+- **Branch Protection:**
+  - `setup-branch-protection.sh` - Setup branch protection rules
+  - `check-branch-protection.sh` - Check branch protection status
+
+### `/release`
+Release management scripts (to be added as needed)
+
+### `/utils`
+Shared utilities:
+- `ensure-project-root.mjs` - Ensure scripts run from project root
+- `run-tsx.js` - Run TypeScript files directly
+
+## Usage
+
+Most scripts are executed through npm scripts defined in `package.json`. For example:
+- `npm run pre-push` - Run pre-push checks
+- `npm run check:whitespace` - Check whitespace
+- `npm run sync:labels` - Sync GitHub labels
 
 ## 🚀 Quick Start
 
-To bootstrap everything at once:
+To bootstrap the project management system:
 
 ```bash
 npm run bootstrap:project
 ```
 
-Or run the shell script directly:
-
-```bash
-./scripts/bootstrap-all.sh
-```
-
-## 📜 Available Scripts
-
-### bootstrap-all.sh
-Complete bootstrap that runs all scripts in the correct order:
-1. Adds missing required labels to issues
-2. Syncs project fields to issue labels
-3. Triggers GitHub Actions for final sync
-
-### add-missing-labels.js
-Ensures all issues have required labels:
-- Adds default type label if missing (enhancement)
-- Adds default priority label if missing (medium)
-- Adds default area label if missing (components)
-- Adds default status label if missing (needs-triage)
-
-```bash
-node scripts/add-missing-labels.js
-```
-
-### bootstrap-project-sync.js
-Syncs all project field values to issue labels:
-- Reads current project field values
-- Updates issue labels to match
-- Removes conflicting labels
-- Handles all field types (Priority, Area, Type, Component, Status)
-
-```bash
-node scripts/bootstrap-project-sync.js
-```
-
-## 🔄 How Sync Works
+## 🔄 How GitHub Sync Works
 
 1. **Project → Labels**: When you change a field in the project, labels update automatically
 2. **Labels → Project**: When you change labels on an issue, project fields update automatically
@@ -85,17 +122,13 @@ gh auth status
 gh auth login --scopes "repo,project"
 ```
 
-### Issues not updating
-1. Check that the issue is in the project
-2. Verify field values are set in the project
-3. Run `gh issue view <number>` to see current labels
+## Adding New Scripts
 
-## 🤖 Automation
-
-After bootstrap, the system maintains itself:
-- GitHub Actions run every 5 minutes
-- Changes sync automatically
-- Manual trigger available in Actions tab
+When adding new scripts:
+1. Place them in the appropriate subdirectory based on their purpose
+2. Update the relevant npm scripts in `package.json`
+3. Add documentation here explaining what the script does
+4. Consider if the script is one-time setup or recurring use
 
 ## 📊 Monitoring
 
