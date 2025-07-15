@@ -86,8 +86,8 @@ describe("ActiveFilters", () => {
         <ActiveFilters api={mockApi as GridApi} filterModel={filterModel} />,
       );
       expect(screen.getByText("DueDate:")).toBeInTheDocument();
-      // Check for the date value - it's displayed as "12/24/2024"
-      expect(screen.getByText("12/24/2024")).toBeInTheDocument();
+      // Check for the date value - it's displayed as "12/25/2024" (UTC date)
+      expect(screen.getByText("12/25/2024")).toBeInTheDocument();
     });
 
     it("should display relative date filter", () => {

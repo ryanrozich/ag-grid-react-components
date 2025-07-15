@@ -81,8 +81,13 @@ function formatDate(dateValue: string | Date): string {
   try {
     const date =
       typeof dateValue === "string" ? new Date(dateValue) : dateValue;
-    // Use UTC to avoid timezone issues in tests
-    return format(date, "M/d/yyyy");
+    // Format using UTC to ensure consistent behavior across timezones
+    const utcDate = new Date(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate(),
+    );
+    return format(utcDate, "M/d/yyyy");
   } catch {
     return String(dateValue);
   }
