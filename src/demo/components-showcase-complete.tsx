@@ -1254,9 +1254,8 @@ const columnDefs = [{
         isSection: true,
       },
       { id: "headless-overview", label: "Overview", indent: true },
-      { id: "headless-architecture", label: "Architecture", indent: true },
-      { id: "headless-customization", label: "Customization", indent: true },
       { id: "headless-examples", label: "Examples", indent: true },
+      { id: "headless-customization", label: "Customization", indent: true },
 
       // References Section
       { id: "references", label: "References", isSection: true },
@@ -4464,7 +4463,7 @@ npm run dev:safe`}
                   </div>
                 )}
 
-                {/* Headless Components Section */}
+                {/* Headless Architecture Main Section */}
                 {activeDocSection === "headless-architecture" && (
                   <div className="space-y-8">
                     <div>
@@ -4477,7 +4476,7 @@ npm run dev:safe`}
                         the powerful filtering logic.
                       </p>
 
-                      <div className="grid md:grid-cols-2 gap-6">
+                      <div className="grid md:grid-cols-2 gap-6 mb-8">
                         <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
                           <h3 className="text-lg font-semibold text-indigo-400 mb-3">
                             🎨 Complete UI Control
@@ -4511,7 +4510,7 @@ npm run dev:safe`}
                         </div>
                       </div>
 
-                      <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-6 mt-6">
+                      <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-6">
                         <h4 className="text-lg font-semibold text-blue-200 mb-3">
                           Available Headless Components
                         </h4>
@@ -4552,10 +4551,8 @@ npm run dev:safe`}
                         Headless Components Overview
                       </AnchorHeading>
                       <p className="text-gray-300 mb-6">
-                        Headless components provide the core functionality
-                        without any UI implementation, allowing you to build
-                        custom interfaces that perfectly match your design
-                        system.
+                        Understanding how headless components are structured and
+                        how to use them effectively.
                       </p>
 
                       <div className="space-y-8">
@@ -4598,6 +4595,95 @@ npm run dev:safe`}
                               </li>
                             </ul>
                           </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="core-concepts">
+                            Core Concepts
+                          </AnchorHeading>
+                          <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                              <h4 className="text-indigo-400 font-semibold mb-3">
+                                Hooks Pattern
+                              </h4>
+                              <p className="text-gray-300 text-sm mb-3">
+                                Each headless component exposes a custom hook
+                                that returns:
+                              </p>
+                              <ul className="space-y-2 text-sm text-gray-300">
+                                <li>• State values</li>
+                                <li>• Event handlers</li>
+                                <li>• Computed properties</li>
+                                <li>• Helper functions</li>
+                              </ul>
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                              <h4 className="text-green-400 font-semibold mb-3">
+                                Context Providers
+                              </h4>
+                              <p className="text-gray-300 text-sm mb-3">
+                                Complex components use React Context for:
+                              </p>
+                              <ul className="space-y-2 text-sm text-gray-300">
+                                <li>• Sharing state between parts</li>
+                                <li>• Performance optimization</li>
+                                <li>• Clean component APIs</li>
+                                <li>• Extensibility</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="implementation-pattern">
+                            Implementation Pattern
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`// 1. Import the headless hook
+import { useDateFilter } from 'ag-grid-react-components/headless';
+
+// 2. Use the hook in your component
+function CustomDateFilter({ column, onFilterChanged }) {
+  const {
+    filterState,
+    validation,
+    handlers,
+    refs
+  } = useDateFilter({
+    column,
+    onFilterChanged,
+    // Optional configuration
+    allowedOperators: ['equals', 'greaterThan', 'lessThan'],
+    defaultOperator: 'equals'
+  });
+
+  // 3. Build your custom UI
+  return (
+    <div className="my-custom-filter">
+      <select 
+        value={filterState.operator} 
+        onChange={handlers.onOperatorChange}
+      >
+        <option value="equals">Equals</option>
+        <option value="greaterThan">After</option>
+        <option value="lessThan">Before</option>
+      </select>
+      
+      <input
+        ref={refs.inputRef}
+        value={filterState.value}
+        onChange={handlers.onValueChange}
+        className={validation.hasError ? 'error' : ''}
+      />
+      
+      {validation.hasError && (
+        <span className="error-message">{validation.error}</span>
+      )}
+    </div>
+  );
+}`}
+                            language="typescript"
+                          />
                         </div>
 
                         <div>
@@ -4715,193 +4801,6 @@ npm run dev:safe`}
                                 </tr>
                               </tbody>
                             </table>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Headless Architecture */}
-                {activeDocSection === "headless-architecture" && (
-                  <div className="space-y-8">
-                    <div>
-                      <AnchorHeading level={1} id="headless-architecture">
-                        Headless Architecture
-                      </AnchorHeading>
-                      <p className="text-gray-300 mb-6">
-                        Understanding how headless components are structured and
-                        how to use them effectively.
-                      </p>
-
-                      <div className="space-y-8">
-                        <div>
-                          <AnchorHeading level={3} id="core-concepts">
-                            Core Concepts
-                          </AnchorHeading>
-                          <div className="grid md:grid-cols-2 gap-6">
-                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
-                              <h4 className="text-indigo-400 font-semibold mb-3">
-                                Hooks Pattern
-                              </h4>
-                              <p className="text-gray-300 text-sm mb-3">
-                                Each headless component exposes a custom hook
-                                that returns:
-                              </p>
-                              <ul className="space-y-2 text-sm text-gray-300">
-                                <li>• State values</li>
-                                <li>• Event handlers</li>
-                                <li>• Computed properties</li>
-                                <li>• Helper functions</li>
-                              </ul>
-                            </div>
-                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
-                              <h4 className="text-green-400 font-semibold mb-3">
-                                Context Providers
-                              </h4>
-                              <p className="text-gray-300 text-sm mb-3">
-                                Complex components use React Context for:
-                              </p>
-                              <ul className="space-y-2 text-sm text-gray-300">
-                                <li>• Sharing state between parts</li>
-                                <li>• Performance optimization</li>
-                                <li>• Clean component APIs</li>
-                                <li>• Extensibility</li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div>
-                          <AnchorHeading level={3} id="implementation-pattern">
-                            Implementation Pattern
-                          </AnchorHeading>
-                          <CodeBlock
-                            code={`// 1. Import the headless hook
-import { useDateFilter } from 'ag-grid-react-components/headless';
-
-// 2. Use the hook in your component
-function CustomDateFilter({ column, onFilterChanged }) {
-  const {
-    filterState,
-    validation,
-    handlers,
-    refs
-  } = useDateFilter({
-    column,
-    onFilterChanged,
-    // Optional configuration
-    allowedOperators: ['equals', 'greaterThan', 'lessThan'],
-    defaultOperator: 'equals'
-  });
-
-  // 3. Build your custom UI
-  return (
-    <div className="my-custom-filter">
-      <select 
-        value={filterState.operator} 
-        onChange={handlers.onOperatorChange}
-      >
-        <option value="equals">Equals</option>
-        <option value="greaterThan">After</option>
-        <option value="lessThan">Before</option>
-      </select>
-      
-      <input
-        ref={refs.inputRef}
-        value={filterState.value}
-        onChange={handlers.onValueChange}
-        className={validation.hasError ? 'error' : ''}
-      />
-      
-      {validation.hasError && (
-        <span className="error-message">{validation.error}</span>
-      )}
-    </div>
-  );
-}`}
-                            language="typescript"
-                          />
-                        </div>
-
-                        <div>
-                          <AnchorHeading level={3} id="hook-api">
-                            Hook API Structure
-                          </AnchorHeading>
-                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
-                            <p className="text-gray-300 mb-4">
-                              All headless hooks follow a consistent API
-                              pattern:
-                            </p>
-                            <CodeBlock
-                              code={`interface HeadlessHookReturn<TState> {
-  // Current state
-  state: TState;
-  
-  // Event handlers
-  handlers: {
-    onChange: (value: any) => void;
-    onReset: () => void;
-    // Component-specific handlers...
-  };
-  
-  // Validation state
-  validation: {
-    isValid: boolean;
-    hasError: boolean;
-    error?: string;
-  };
-  
-  // Refs for DOM elements
-  refs: {
-    containerRef: React.RefObject<HTMLDivElement>;
-    // Component-specific refs...
-  };
-  
-  // Computed values
-  computed: {
-    // Component-specific computed values...
-  };
-  
-  // Helper functions
-  helpers: {
-    // Component-specific helpers...
-  };
-}`}
-                              language="typescript"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <AnchorHeading level={3} id="performance">
-                            Performance Considerations
-                          </AnchorHeading>
-                          <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-6">
-                            <h4 className="text-yellow-200 font-semibold mb-3">
-                              Best Practices
-                            </h4>
-                            <ul className="space-y-2 text-sm text-gray-300">
-                              <li>
-                                <strong>Memoization:</strong> Headless hooks use
-                                React.useMemo and React.useCallback internally
-                                for optimal performance
-                              </li>
-                              <li>
-                                <strong>Event Handlers:</strong> All handlers
-                                are stable references that won't cause
-                                unnecessary re-renders
-                              </li>
-                              <li>
-                                <strong>State Updates:</strong> Batched updates
-                                ensure minimal re-renders when multiple state
-                                changes occur
-                              </li>
-                              <li>
-                                <strong>Context Usage:</strong> Only subscribe
-                                to needed values to prevent unnecessary updates
-                              </li>
-                            </ul>
                           </div>
                         </div>
                       </div>
