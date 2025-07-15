@@ -1,7 +1,7 @@
 import React from "react";
 import { themeQuartz } from "ag-grid-community";
 import type { ColDef, ICellRendererParams } from "ag-grid-community";
-import { RelativeDateFilter } from "../../index";
+import { AGGridFilterWrapper } from "../../components/DateFilter/AGGridFilterWrapper";
 import AvatarCellRenderer from "../components/AvatarCellRenderer";
 import CategoryCellRenderer from "../components/CategoryCellRenderer";
 import PercentBarRenderer from "../components/PercentBarRenderer";
@@ -168,7 +168,7 @@ export const getColumnDefs = (isServerSide = false): ColDef[] => [
     field: "assignee",
     headerName: "Assignee",
     width: 180,
-    cellRenderer: isServerSide ? "avatarRenderer" : undefined,
+    cellRenderer: "avatarRenderer",
     filter: "agTextColumnFilter",
     enableRowGroup: true,
   },
@@ -176,7 +176,7 @@ export const getColumnDefs = (isServerSide = false): ColDef[] => [
     field: "dueDate",
     headerName: "Due Date",
     width: 150,
-    filter: RelativeDateFilter,
+    filter: "agDateColumnFilter",
     valueFormatter: (params) => {
       if (!params.value) return "";
       return new Date(params.value).toLocaleDateString();
@@ -235,6 +235,7 @@ export const components = {
   categoryRenderer: CategoryCellRenderer,
   avatarRenderer: AvatarCellRenderer,
   progressRenderer: PercentBarRenderer,
+  agDateColumnFilter: AGGridFilterWrapper,
 };
 
 // Sidebar configuration (for Enterprise)

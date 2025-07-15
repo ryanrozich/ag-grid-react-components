@@ -40,6 +40,7 @@ import {
   createSideBar,
 } from "./config/gridConfig";
 import { DocumentationPanel } from "./components/DocumentationPanel";
+import { components } from "./config/sharedGridConfig";
 
 // Import the production QuickFilterDropdown component
 import {
@@ -48,9 +49,36 @@ import {
 } from "../components/QuickFilterDropdown";
 import type { QuickFilterOption } from "../components/QuickFilterDropdown";
 
+// Import SavedViewsManager
+import SavedViewsManager from "../components/SavedViewsManager";
+
 // Import demo styles
 import "./styles/demo.css";
 import "./styles/buttons.module.css";
+import "./styles/SavedViewsManager.css";
+
+// Add some basic styles for the demo
+const savedViewsButtonStyles = {
+  padding: "0.5rem 1rem",
+  backgroundColor: "rgb(31 41 55)",
+  border: "1px solid rgb(55 65 81)",
+  borderRadius: "0.375rem",
+  color: "rgb(209 213 219)",
+  display: "flex",
+  alignItems: "center",
+  gap: "0.5rem",
+  cursor: "pointer",
+  transition: "all 0.15s",
+};
+
+const savedViewsPanelStyles = {
+  width: "320px",
+  backgroundColor: "rgb(17 24 39)",
+  border: "1px solid rgb(55 65 81)",
+  borderRadius: "0.5rem",
+  boxShadow:
+    "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)",
+};
 
 // Status Display Component
 const StatusDisplay: React.FC<{ status: string }> = ({ status }) => (
@@ -140,17 +168,117 @@ const App: React.FC = () => {
             <h2 className="controls-title">Quick Date Filters</h2>
             <StatusDisplay status={filterStatus} />
           </div>
-          {gridApi && (
-            <QuickFilterDropdown
-              api={gridApi}
-              columnId="date"
-              options={DATE_FILTER_PRESETS}
-              placeholder="Select date filter"
-              onFilterChange={handleFilterChange}
-              showDescriptions={true}
-              ariaLabel="Quick date filter options"
-            />
-          )}
+          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            {gridApi && (
+              <>
+                <QuickFilterDropdown
+                  api={gridApi}
+                  columnId="date"
+                  options={DATE_FILTER_PRESETS}
+                  placeholder="Select date filter"
+                  onFilterChange={handleFilterChange}
+                  showDescriptions={true}
+                  ariaLabel="Quick date filter options"
+                />
+                <SavedViewsManager
+                  api={gridApi}
+                  storageKey="demo-saved-views-client"
+                >
+                  <SavedViewsManager.Trigger style={savedViewsButtonStyles} />
+
+                  <SavedViewsManager.Panel style={savedViewsPanelStyles}>
+                    <div style={{ padding: "16px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          marginBottom: "16px",
+                        }}
+                      >
+                        <SavedViewsManager.Title
+                          style={{
+                            fontSize: "18px",
+                            fontWeight: "600",
+                            color: "white",
+                            margin: 0,
+                          }}
+                        />
+                        <SavedViewsManager.CloseButton
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "rgb(156 163 175)",
+                            cursor: "pointer",
+                          }}
+                        />
+                      </div>
+
+                      <SavedViewsManager.Actions
+                        style={{
+                          display: "flex",
+                          gap: "8px",
+                          marginBottom: "16px",
+                        }}
+                      >
+                        <button
+                          data-action="save"
+                          style={{
+                            flex: 1,
+                            padding: "6px 12px",
+                            backgroundColor: "rgb(79 70 229)",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            fontSize: "14px",
+                          }}
+                        >
+                          Save Current
+                        </button>
+                        <button
+                          data-action="export"
+                          style={{
+                            padding: "6px 12px",
+                            backgroundColor: "rgb(55 65 81)",
+                            color: "rgb(209 213 219)",
+                            border: "none",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            fontSize: "14px",
+                          }}
+                          title="Export all views"
+                        >
+                          Export
+                        </button>
+                        <button
+                          data-action="import"
+                          style={{
+                            padding: "6px 12px",
+                            backgroundColor: "rgb(55 65 81)",
+                            color: "rgb(209 213 219)",
+                            border: "none",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            fontSize: "14px",
+                          }}
+                          title="Import views"
+                        >
+                          Import
+                        </button>
+                      </SavedViewsManager.Actions>
+
+                      <SavedViewsManager.List
+                        style={{ maxHeight: "384px", overflowY: "auto" }}
+                      />
+                    </div>
+                  </SavedViewsManager.Panel>
+
+                  <SavedViewsManager.Dialog />
+                </SavedViewsManager>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="grid-container ag-theme-quartz">
@@ -170,6 +298,7 @@ const App: React.FC = () => {
             sideBar={sideBar}
             suppressMenuHide={true}
             components={{
+              ...components,
               agDateColumnFilter: DateFilter,
             }}
             // Style the group footer rows

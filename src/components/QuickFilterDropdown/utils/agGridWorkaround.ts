@@ -57,6 +57,44 @@ export async function applyFilterModelWithWorkaround<TData = unknown>(
 
     console.log("[Workaround] Filter instance after await:", filterInstance);
     console.log("[Workaround] Has setModel?", typeof filterInstance?.setModel);
+    console.log(
+      "[Workaround] Has doesFilterPass?",
+      typeof filterInstance?.doesFilterPass,
+    );
+    console.log(
+      "[Workaround] Filter instance keys:",
+      filterInstance ? Object.keys(filterInstance) : "null",
+    );
+    console.log(
+      "[Workaround] Filter instance constructor:",
+      filterInstance?.constructor?.name,
+    );
+    console.log(
+      "[Workaround] Is AGGridDateFilter?",
+      filterInstance?.constructor?.name === "AGGridDateFilter",
+    );
+
+    // Check if we have a React component wrapper
+    if (
+      filterInstance &&
+      !filterInstance.setModel &&
+      (filterInstance as any)._reactInternalInstance
+    ) {
+      console.log(
+        "[Workaround] Detected React wrapper, trying to find actual filter instance",
+      );
+
+      // Try to find the actual filter component instance
+      const actualFilter =
+        (filterInstance as any)._instance ||
+        (filterInstance as any).componentInstance ||
+        (filterInstance as any).filter;
+
+      if (actualFilter && typeof actualFilter.setModel === "function") {
+        console.log("[Workaround] Found actual filter instance:", actualFilter);
+        filterInstance = actualFilter;
+      }
+    }
 
     // Even though the component received the model in props, it might not have
     // applied it to internal state due to React hooks initialization behavior
@@ -77,6 +115,14 @@ export async function applyFilterModelWithWorkaround<TData = unknown>(
       await new Promise((resolve) => setTimeout(resolve, 50));
     } else {
       console.error("[Workaround] No valid filter instance or setModel method");
+
+      // Try alternative approach - set filter model directly then recreate filter
+      console.log("[Workaround] Trying alternative approach");
+      api.setFilterModel({ [columnId]: filterModel });
+
+      // Force the filter to be destroyed and recreated
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      api.onFilterChanged();
     }
 
     // Always call onFilterChanged to trigger re-filtering

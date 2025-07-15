@@ -1,12 +1,12 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0-rc3",
   "git": {
-    "commitHash": "7ff83646d243d65e3efaf30a350d590658765e56",
-    "shortHash": "7ff8364",
-    "branch": "feat/demo-version-info",
-    "commitDate": "2025-07-05 18:18:18 -0500",
-    "latestTag": "v0.1.0",
-    "commitsSinceTag": 33,
+    "commitHash": "cd25358b106508fe0f86319c3495675051a40069",
+    "shortHash": "cd25358",
+    "branch": "release/v0.2.0-rc3",
+    "commitDate": "2025-07-15 08:40:14 -0500",
+    "latestTag": "v0.2.0-rc3-tests-fixed",
+    "commitsSinceTag": 4,
     "isDirty": true
   },
   "deployment": {
@@ -15,7 +15,7 @@
     "isMainBranch": false,
     "deployPath": "ag-grid-react-components"
   },
-  "buildTime": "2025-07-05T23:19:57.932Z",
-  "displayVersion": "v0.1.0+33",
-  "displayLabel": "feat/demo-version-info"
+  "buildTime": "2025-07-15T17:25:50.958Z",
+  "displayVersion": "v0.2.0-rc3+4",
+  "displayLabel": "release/v0.2.0-rc3"
 }

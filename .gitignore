@@ -45,11 +45,7 @@ clause*.md
 
 # Temporary test scripts
 scripts/diagnose-404.js
-scripts/test-filter-click.js
 scripts/test-ultra-minimal.js
-scripts/thorough-demo-check.js
-scripts/loader.js
-scripts/run-tsx.js
 
 # Generated CSS files
 src/combined.css
@@ -97,3 +93,6 @@ TEST_COVERAGE_*.md
 
 # GitHub identity management docs
 GITHUB_IDENTITY_MANAGEMENT.md
+
+# RC3 Migration tracking
+HEADLESS_RC3_MIGRATION_PLAN.md

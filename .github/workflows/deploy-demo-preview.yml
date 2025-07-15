@@ -47,7 +47,7 @@ jobs:
           DEPLOY_PATH: ag-grid-react-components-pr-${{ github.event.pull_request.number }}
         run: |
           # Generate version info
-          node scripts/generate-version-info.js
+          node scripts/build/generate-version-info.js
 
           # Build demo
           PR_NUMBER=${{ github.event.pull_request.number }}

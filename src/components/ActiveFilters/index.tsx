@@ -1,203 +1,97 @@
-import React from "react";
-import type { GridApi, FilterModel } from "ag-grid-community";
-import styles from "./ActiveFilters.module.css";
-import type { DateFilterModel } from "../interfaces";
+import React, { forwardRef, useMemo } from "react";
+import { GridApi } from "ag-grid-community";
+import { ActiveFiltersProvider } from "./context";
+import * as Components from "./components";
 
 export interface ActiveFiltersProps {
   api: GridApi;
-  filterModel: FilterModel;
+  filterModel: Record<string, any>;
   className?: string;
+  children?: React.ReactNode;
 }
 
-interface FilterPill {
-  columnId: string;
-  columnName: string;
-  filterType: string;
-  displayValue: string;
+export interface ActiveFiltersCompound {
+  (props: ActiveFiltersProps): React.ReactElement | null;
+  Root: typeof Components.Root;
+  List: typeof Components.List;
+  Item: typeof Components.Item;
+  ColumnName: typeof Components.ColumnName;
+  FilterValue: typeof Components.FilterValue;
+  RemoveButton: typeof Components.RemoveButton;
+  ClearAllButton: typeof Components.ClearAllButton;
 }
 
-// Union type for different filter model types
-type SingleFilterModel =
-  | DateFilterModel
-  | TextFilterModel
-  | SetFilterModel
-  | NumberFilterModel;
-
-interface TextFilterModel {
-  type?: string;
-  filter?: string | number;
-  filterType?: string;
-}
-
-interface SetFilterModel {
-  type?: string;
-  values?: (string | number)[];
-}
-
-interface NumberFilterModel {
-  type?: string;
-  filter?: number;
-  filterTo?: number;
-}
-
-// Type guards
-function isDateFilterModel(model: SingleFilterModel): model is DateFilterModel {
-  return (
-    "mode" in model ||
-    "dateFrom" in model ||
-    "dateTo" in model ||
-    "expressionFrom" in model
-  );
-}
-
-function isSetFilterModel(model: SingleFilterModel): model is SetFilterModel {
-  return "values" in model && Array.isArray(model.values);
-}
-
-function isTextFilterModel(model: SingleFilterModel): model is TextFilterModel {
-  return "filter" in model && !("filterTo" in model);
-}
-
-function isNumberFilterModel(
-  model: SingleFilterModel,
-): model is NumberFilterModel {
-  return "filter" in model && "filterTo" in model;
-}
-
-function getFilterDisplayValue(model: SingleFilterModel): string {
-  if (!model) return "";
-
-  // Handle date filters
-  if (isDateFilterModel(model)) {
-    if (model.mode === "relative") {
-      const expression =
-        model.expressionFrom || (model as any).expression || "";
-      if (model.type === "inRange") {
-        return `${expression} to ${model.expressionTo || ""}`;
-      }
-      switch (model.type) {
-        case "equals":
-          return expression;
-        case "notEqual":
-          return `not ${expression}`;
-        case "before":
-          return `before ${expression}`;
-        case "after":
-          return `after ${expression}`;
-        default:
-          return expression;
-      }
-    }
-
-    if (model.type === "inRange") {
-      const from = model.dateFrom
-        ? new Date(model.dateFrom).toLocaleDateString()
-        : "";
-      const to = model.dateTo
-        ? new Date(model.dateTo).toLocaleDateString()
-        : "";
-      return `${from} to ${to}`;
-    }
-
-    if (model.dateFrom) {
-      const date = new Date(model.dateFrom).toLocaleDateString();
-      switch (model.type) {
-        case "equals":
-          return date;
-        case "notEqual":
-          return `not ${date}`;
-        case "before":
-          return `before ${date}`;
-        case "after":
-          return `after ${date}`;
-        default:
-          return date;
-      }
-    }
-  }
-
-  // Handle set filters
-  if (isSetFilterModel(model) && model.values) {
-    return model.values.join(", ");
-  }
-
-  // Handle text/number filters
-  if (isTextFilterModel(model) || isNumberFilterModel(model)) {
-    return String(model.filter);
-  }
-
-  return "Active";
-}
-
-export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
-  api,
-  filterModel,
-  className = "",
-}) => {
-  const filterPills: FilterPill[] = React.useMemo(() => {
-    const pills: FilterPill[] = [];
-
-    Object.entries(filterModel).forEach(([columnId, model]) => {
-      const column = api.getColumn(columnId);
-      const columnName = column?.getColDef().headerName || columnId;
-      const displayValue = getFilterDisplayValue(model as SingleFilterModel);
-
-      pills.push({
+const ActiveFiltersComponent = forwardRef<HTMLDivElement, ActiveFiltersProps>(
+  ({ api, filterModel, className, children }, ref) => {
+    // Calculate active filters
+    const activeFilters = useMemo(() => {
+      return Object.entries(filterModel || {}).map(([columnId, filter]) => ({
         columnId,
-        columnName,
-        filterType: (model as SingleFilterModel).type || "custom",
-        displayValue,
-      });
-    });
+        filter,
+        columnName:
+          api.getColumn(columnId)?.getColDef()?.headerName || columnId,
+      }));
+    }, [filterModel, api]);
 
-    return pills;
-  }, [filterModel, api]);
+    // Don't render if no filters
+    if (activeFilters.length === 0) {
+      return null;
+    }
 
-  const removeFilter = (columnId: string) => {
-    const newModel = { ...filterModel };
-    delete newModel[columnId];
-    api.setFilterModel(newModel);
-  };
+    if (!children) {
+      // Default structure for backward compatibility
+      return (
+        <ActiveFiltersProvider
+          api={api}
+          filterModel={filterModel}
+          activeFilters={activeFilters}
+        >
+          <Components.Root ref={ref} className={className}>
+            <Components.List>
+              {activeFilters.map(({ columnId, columnName, filter }) => (
+                <Components.Item key={columnId} columnId={columnId}>
+                  <Components.ColumnName>{columnName}</Components.ColumnName>
+                  <Components.FilterValue filter={filter} />
+                  <Components.RemoveButton columnId={columnId} />
+                </Components.Item>
+              ))}
+            </Components.List>
+            <Components.ClearAllButton />
+          </Components.Root>
+        </ActiveFiltersProvider>
+      );
+    }
 
-  const clearAllFilters = () => {
-    api.setFilterModel({});
-  };
-
-  if (filterPills.length === 0) {
-    return null;
-  }
-
-  return (
-    <div
-      className={`${styles.container} ${className}`}
-      data-testid="active-filters"
-    >
-      <div className={styles.filterPills}>
-        {filterPills.map((pill) => (
-          <div key={pill.columnId} className={styles.filterPill}>
-            <span className={styles.pillLabel}>
-              <span className={styles.columnName}>{pill.columnName}:</span>
-              <span className={styles.filterValue}>{pill.displayValue}</span>
-            </span>
-            <button
-              className={styles.removeButton}
-              onClick={() => removeFilter(pill.columnId)}
-              aria-label={`Remove ${pill.columnName} filter`}
-            >
-              ×
-            </button>
-          </div>
-        ))}
-      </div>
-      <button
-        className={styles.clearAllButton}
-        onClick={clearAllFilters}
-        aria-label="Clear all filters"
+    return (
+      <ActiveFiltersProvider
+        api={api}
+        filterModel={filterModel}
+        activeFilters={activeFilters}
       >
-        Clear all
-      </button>
-    </div>
-  );
-};
+        <div ref={ref} className={className}>
+          {children}
+        </div>
+      </ActiveFiltersProvider>
+    );
+  },
+);
+
+ActiveFiltersComponent.displayName = "ActiveFilters";
+
+// Create the compound component
+const ActiveFilters =
+  ActiveFiltersComponent as unknown as ActiveFiltersCompound;
+
+// Attach all sub-components
+Object.assign(ActiveFilters, {
+  Root: Components.Root,
+  List: Components.List,
+  Item: Components.Item,
+  ColumnName: Components.ColumnName,
+  FilterValue: Components.FilterValue,
+  RemoveButton: Components.RemoveButton,
+  ClearAllButton: Components.ClearAllButton,
+});
 
 export default ActiveFilters;
+export { ActiveFilters };

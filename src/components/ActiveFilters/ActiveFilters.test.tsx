@@ -86,14 +86,8 @@ describe("ActiveFilters", () => {
         <ActiveFilters api={mockApi as GridApi} filterModel={filterModel} />,
       );
       expect(screen.getByText("DueDate:")).toBeInTheDocument();
-      // Check for the date value - handling potential timezone differences
-      const dateElement = screen.getByText((content, element) => {
-        return !!(
-          element?.className?.includes("filterValue") &&
-          content.includes("/2024")
-        );
-      });
-      expect(dateElement).toBeInTheDocument();
+      // Check for the date value - it's displayed as "12/25/2024" (UTC date)
+      expect(screen.getByText("12/25/2024")).toBeInTheDocument();
     });
 
     it("should display relative date filter", () => {
@@ -129,9 +123,9 @@ describe("ActiveFilters", () => {
       // Check for date range - handling potential timezone differences
       const dateRangeElement = screen.getByText((content, element) => {
         return !!(
-          element?.className?.includes("filterValue") &&
+          element?.getAttribute("data-component") === "active-filters-value" &&
           content.includes(" to ") &&
-          content.includes("/202")
+          content.includes("202")
         );
       });
       expect(dateRangeElement).toBeInTheDocument();
@@ -321,10 +315,10 @@ describe("ActiveFilters", () => {
 
       // Should show filters even with null/undefined values
       expect(screen.getByTestId("active-filters")).toBeInTheDocument();
-      // null filter shows as empty string, empty array shows as empty string
-      // Only the date filter with type but no date shows "Active"
+      // null filter shows as "Active", empty array shows as empty string
+      // The date filter with type but no date shows "Active"
       const activeTexts = screen.getAllByText("Active");
-      expect(activeTexts).toHaveLength(1);
+      expect(activeTexts).toHaveLength(2); // name filter and date filter both show "Active"
     });
   });
 

@@ -104,7 +104,7 @@ jobs:
           DEPLOY_PATH: ag-grid-react-components-pr-${{ github.event.pull_request.number }}
         run: |
           # Generate version info
-          node scripts/generate-version-info.js
+          node scripts/build/generate-version-info.js
 
           # Build demo
           PR_NUMBER=${{ github.event.pull_request.number }}
@@ -221,8 +221,8 @@ jobs:
               issue_number: prNumber
             });
 
-            const botComment = comments.data.find(comment => 
-              comment.user.type === 'Bot' && 
+            const botComment = comments.data.find(comment =>
+              comment.user.type === 'Bot' &&
               comment.body.includes('Demo Preview Ready!')
             );
 
@@ -300,10 +300,10 @@ jobs:
                 console.log(`Updating project "${project.title}"`);
 
                 // Find the Preview URL field
-                const previewUrlField = project.fields.nodes.find(f => 
+                const previewUrlField = project.fields.nodes.find(f =>
                   f.name === 'Preview URL' && f.dataType === 'TEXT'
                 );
-                
+
                 if (!previewUrlField) {
                   console.log('Preview URL field not found in project');
                   continue;
@@ -331,7 +331,7 @@ jobs:
                   fieldId: previewUrlField.id,
                   value: { text: previewUrl }
                 });
-                
+
                 console.log(`✅ Updated Preview URL field to: ${previewUrl}`);
               }
             } catch (error) {

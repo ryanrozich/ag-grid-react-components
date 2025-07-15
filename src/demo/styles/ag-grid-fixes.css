@@ -1,0 +1,34 @@
+/* AG Grid z-index fixes */
+
+/* Fix for grand total row overlapping with filter dropdowns (#6) */
+.ag-theme-quartz .ag-filter,
+.ag-theme-quartz-dark .ag-filter,
+.ag-theme-material .ag-filter {
+  z-index: 10;
+}
+
+.ag-theme-quartz .ag-menu,
+.ag-theme-quartz-dark .ag-menu,
+.ag-theme-material .ag-menu {
+  z-index: 10;
+}
+
+.ag-theme-quartz .ag-popup,
+.ag-theme-quartz-dark .ag-popup,
+.ag-theme-material .ag-popup {
+  z-index: 10;
+}
+
+/* Ensure filter wrapper has proper z-index */
+.ag-theme-quartz .ag-filter-wrapper,
+.ag-theme-quartz-dark .ag-filter-wrapper,
+.ag-theme-material .ag-filter-wrapper {
+  z-index: 10;
+}
+
+/* Ensure menu popups render above other elements */
+.ag-theme-quartz .ag-menu-list-wrapper,
+.ag-theme-quartz-dark .ag-menu-list-wrapper,
+.ag-theme-material .ag-menu-list-wrapper {
+  z-index: 10;
+}

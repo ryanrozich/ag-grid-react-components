@@ -14,7 +14,11 @@ import type {
   FilterChangedEvent,
 } from "ag-grid-community";
 import { AllEnterpriseModule, ModuleRegistry } from "ag-grid-enterprise";
-import { ActiveFilters } from "../../index";
+import {
+  ActiveFilters,
+  QuickFilterDropdown,
+  SavedViewsDropdown,
+} from "../../index";
 import {
   darkTheme,
   getColumnDefs,
@@ -24,9 +28,74 @@ import {
   getStatusBarConfig,
 } from "../config/sharedGridConfig";
 import { DemoToolbar, StatsBar } from "../config/commonUIConfig";
+import "../styles/ViewManagementMenu.css";
+import "../styles/ViewManagementModal.css";
+import "../styles/SaveViewModal.css";
+import "../styles/SavedViewsDropdown.css";
 
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);
+
+// Time-based quick filters - same as client-side demo
+const dateQuickFilters = [
+  {
+    id: "all",
+    label: "All Time",
+    filterModel: null,
+    icon: "🌍",
+    description: "Show all records",
+  },
+  {
+    id: "last7days",
+    label: "Last 7 Days",
+    filterModel: {
+      mode: "relative",
+      type: "inRange",
+      expressionFrom: "Today-7d",
+      expressionTo: "Today",
+    },
+    icon: "📅",
+    description: "Records from the past week",
+  },
+  {
+    id: "thisMonth",
+    label: "This Month",
+    filterModel: {
+      mode: "relative",
+      type: "inRange",
+      expressionFrom: "StartOfMonth",
+      expressionTo: "EndOfMonth",
+    },
+    icon: "📆",
+    description: "All records from current month",
+  },
+  {
+    id: "overdue",
+    label: "Overdue",
+    filterModel: null,
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        dueDate: {
+          mode: "relative",
+          type: "before",
+          expressionFrom: "Today",
+        },
+        status: {
+          values: [
+            "Backlog",
+            "Todo",
+            "In Progress",
+            "In Review",
+            "Testing",
+            "Blocked",
+          ],
+        },
+      };
+    },
+    icon: "🚨",
+    description: "Tasks past their due date (not done)",
+  },
+];
 
 // Stats display component - using server data
 const ServerStats: React.FC<{
@@ -71,29 +140,52 @@ const ServerStats: React.FC<{
     fetchStats();
   }, [apiUrl, filterModel, searchText]);
 
-  if (loading || !stats) {
-    return (
-      <div className="border-b border-gray-700/50 bg-gray-900/30">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x divide-gray-700/50">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="px-6 py-5">
-              <div className="flex items-center gap-4">
-                <div className="p-2.5 bg-gray-700/50 rounded-lg animate-pulse">
-                  <div className="w-5 h-5"></div>
-                </div>
-                <div className="flex-1">
-                  <div className="h-3 bg-gray-700 rounded w-1/2 mb-2 animate-pulse"></div>
-                  <div className="h-6 bg-gray-700 rounded animate-pulse"></div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+  // Show stats with loading indicator
+  const displayStats = loading
+    ? {
+        taskCount: "—",
+        totalBudget: "—",
+        avgProgress: "—",
+        budgetRemaining: "—",
+      }
+    : stats || {
+        taskCount: 0,
+        totalBudget: 0,
+        avgProgress: 0,
+        budgetRemaining: 0,
+      };
 
-  return <StatsBar stats={stats} />;
+  return (
+    <div className="relative">
+      <StatsBar stats={displayStats} />
+      {loading && (
+        <div className="absolute inset-0 bg-gray-900/20 backdrop-blur-[1px] flex items-center justify-center">
+          <div className="text-xs text-gray-400 flex items-center gap-2">
+            <svg
+              className="animate-spin h-3 w-3"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            <span>Updating...</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export const ServerSideDemo: React.FC = () => {
@@ -228,6 +320,8 @@ export const ServerSideDemo: React.FC = () => {
 
   const onFilterChanged = useCallback((event: FilterChangedEvent) => {
     setFilterModel(event.api.getFilterModel());
+    // For server-side row model, we need to refresh the data when filters change
+    event.api.refreshServerSide({ purge: true });
   }, []);
 
   return (
@@ -292,12 +386,28 @@ export const ServerSideDemo: React.FC = () => {
           }, 300); // 300ms debounce
         }}
       >
-        <div className="text-sm text-gray-400 flex items-center">
-          {loading && <span className="mr-2">🔍 Searching...</span>}
-          {rowCount !== null && (
-            <span>{rowCount.toLocaleString()} results</span>
-          )}
-        </div>
+        {/* Quick Filters */}
+        {gridApi && (
+          <>
+            <QuickFilterDropdown
+              key="server-date-filter"
+              api={gridApi}
+              columnId="dueDate"
+              options={dateQuickFilters}
+              placeholder="Time period"
+              showDescriptions={false}
+              className="min-w-[140px]"
+              usePortal="always"
+            />
+            <SavedViewsDropdown
+              api={gridApi}
+              columnId="_multi"
+              placeholder="My Views"
+              className="min-w-[160px]"
+              showManagementMenu={true}
+            />
+          </>
+        )}
       </DemoToolbar>
 
       {/* Active Filters */}

@@ -7,6 +7,7 @@ import {
   QuickFilterDropdown,
   ActiveFilters,
   setupGridStatePersistence,
+  SavedViewsDropdown,
 } from "../index";
 import { generateData } from "./data/generator";
 import { CodeBlock } from "./components/CodeBlock";
@@ -27,6 +28,7 @@ import { DemoToolbar, StatsBar } from "./config/commonUIConfig";
 // import { SimpleCodeBlock as CodeBlock } from "./components/SimpleCodeBlock";
 import "./styles/showcase-dark.css";
 import "./styles/code-override.css";
+import "./styles/headless-components.css";
 
 // Register AG Grid Enterprise modules
 ModuleRegistry.registerModules([AllEnterpriseModule]);
@@ -275,6 +277,127 @@ const dateQuickFilters = [
     },
     icon: "⚠️",
     description: "Tasks that should have started",
+  },
+];
+
+// Preset filters - complex filter combinations
+const presetFilters = [
+  {
+    id: "all",
+    label: "All Tasks",
+    icon: "📋",
+    description: "Show all tasks",
+    filterModel: null,
+  },
+  {
+    id: "myOpenTasks",
+    label: "My Open Tasks",
+    icon: "👤",
+    description: "Assigned to me, not completed",
+    buildFilterModel: (_api: GridApi) => {
+      // In a real app, you'd get current user from context
+      const currentUser = "Sam Cassin"; // Example user
+      return {
+        assignee: {
+          values: [currentUser],
+        },
+        status: {
+          values: ["Todo", "In Progress", "In Review", "Testing", "Blocked"],
+        },
+      };
+    },
+  },
+  {
+    id: "criticalOverdue",
+    label: "Critical & Overdue",
+    icon: "🚨",
+    description: "High priority tasks past due date",
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        priority: {
+          values: ["Critical", "High"],
+        },
+        dueDate: {
+          mode: "relative",
+          type: "before",
+          expressionFrom: "Today",
+        },
+        status: {
+          values: [
+            "Backlog",
+            "Todo",
+            "In Progress",
+            "In Review",
+            "Testing",
+            "Blocked",
+          ],
+        },
+      };
+    },
+  },
+  {
+    id: "highPriority",
+    label: "High Priority",
+    icon: "⚡",
+    description: "Critical and high priority items",
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        priority: {
+          values: ["Critical", "High"],
+        },
+      };
+    },
+  },
+  {
+    id: "upcomingDeadlines",
+    label: "Upcoming Deadlines",
+    icon: "⏰",
+    description: "Due in the next 7 days",
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        dueDate: {
+          mode: "relative",
+          type: "inRange",
+          expressionFrom: "Today",
+          expressionTo: "Today+7d",
+        },
+        status: {
+          values: ["Todo", "In Progress", "In Review", "Testing"],
+        },
+      };
+    },
+  },
+  {
+    id: "recentlyCompleted",
+    label: "Recently Completed",
+    icon: "✅",
+    description: "Completed in the last 7 days",
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        status: {
+          values: ["Done"],
+        },
+        completedDate: {
+          mode: "relative",
+          type: "inRange",
+          expressionFrom: "Today-7d",
+          expressionTo: "Today",
+        },
+      };
+    },
+  },
+  {
+    id: "blockedTasks",
+    label: "Blocked Tasks",
+    icon: "🛑",
+    description: "Tasks that are currently blocked",
+    buildFilterModel: (_api: GridApi) => {
+      return {
+        status: {
+          values: ["Blocked"],
+        },
+      };
+    },
   },
 ];
 
@@ -1116,12 +1239,23 @@ const columnDefs = [{
       { id: "relativedatefilter", label: "DateFilter", indent: true },
       { id: "quickfilterdropdown", label: "QuickFilterDropdown", indent: true },
       { id: "activefilters", label: "ActiveFilters", indent: true },
+      { id: "savedviewsdropdown", label: "SavedViewsDropdown", indent: true },
       { id: "urlstate", label: "URL State Persistence", indent: true },
 
       // Demo Guide Section
       { id: "demo-guide", label: "Demo Guide", isSection: true },
       { id: "running-locally", label: "Running Locally", indent: true },
       { id: "demo-features", label: "Demo Features", indent: true },
+
+      // Headless Architecture Section
+      {
+        id: "headless-architecture",
+        label: "Headless Architecture",
+        isSection: true,
+      },
+      { id: "headless-overview", label: "Overview", indent: true },
+      { id: "headless-examples", label: "Examples", indent: true },
+      { id: "headless-customization", label: "Customization", indent: true },
 
       // References Section
       { id: "references", label: "References", isSection: true },
@@ -1699,6 +1833,50 @@ import { setupGridStatePersistence } from 'ag-grid-react-components';`}
                           <AnchorHeading level={2} id="complete-example">
                             Usage Examples
                           </AnchorHeading>
+
+                          {/* Headless Architecture Note */}
+                          <div className="mb-8 bg-blue-900/20 border border-blue-700 rounded-lg p-6">
+                            <h4 className="text-lg font-semibold text-blue-200 mb-3 flex items-center">
+                              <svg
+                                className="w-5 h-5 mr-2"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              💡 Headless by Design
+                            </h4>
+                            <p className="text-gray-300 mb-4">
+                              All components are <strong>headless</strong> -
+                              they come with zero styles and maximum
+                              flexibility. This means you have complete control
+                              over the appearance while getting robust
+                              functionality and accessibility.
+                            </p>
+                            <ul className="text-gray-300 space-y-2">
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                Style with any CSS framework (Tailwind,
+                                Bootstrap, etc.)
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                Use data attributes for styling hooks
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                Compose with compound components pattern
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                Built-in accessibility and keyboard navigation
+                              </li>
+                            </ul>
+                          </div>
 
                           {/* Minimal Example */}
                           <div className="mb-8">
@@ -3263,6 +3441,480 @@ function FilterableGrid() {
                   </div>
                 )}
 
+                {/* SavedViewsDropdown */}
+                {activeDocSection === "savedviewsdropdown" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="saved-views-dropdown">
+                        SavedViewsDropdown
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        The SavedViewsDropdown is a powerful headless component
+                        that enables users to save, manage, and apply custom
+                        grid views. It supports saving either just filters or
+                        the complete grid state including column configuration,
+                        sorting, and filtering.
+                      </p>
+
+                      <div>
+                        <AnchorHeading level={2} id="saved-views-overview">
+                          Overview
+                        </AnchorHeading>
+                        <p className="text-gray-300 mb-4">
+                          SavedViewsDropdown provides a complete solution for
+                          persisting and managing grid configurations:
+                        </p>
+                        <ul className="list-disc list-inside space-y-2 text-gray-300">
+                          <li>
+                            <strong>Save Current View</strong> - Capture the
+                            current grid state as a named view
+                          </li>
+                          <li>
+                            <strong>Apply Saved Views</strong> - Quickly switch
+                            between saved configurations
+                          </li>
+                          <li>
+                            <strong>Manage Views</strong> - Rename, delete,
+                            categorize, and set default views
+                          </li>
+                          <li>
+                            <strong>Import/Export</strong> - Share views between
+                            users or environments
+                          </li>
+                          <li>
+                            <strong>Flexible Storage</strong> - Built-in local
+                            storage support with pluggable architecture for
+                            server persistence
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div className="mt-8">
+                        <AnchorHeading level={2} id="saved-views-basic-usage">
+                          Basic Usage
+                        </AnchorHeading>
+                        <CodeBlock
+                          code={`import { SavedViewsDropdown } from 'ag-grid-react-components';
+
+// Basic usage with local storage
+<SavedViewsDropdown
+  api={gridApi}
+  columnId="_multi"
+  placeholder="My Views"
+/>
+
+// With all features enabled
+<SavedViewsDropdown
+  api={gridApi}
+  columnId="_multi"
+  placeholder="Select a view"
+  showManagementMenu={true}
+  onViewChange={(view) => console.log('View changed:', view)}
+/>`}
+                          language="tsx"
+                        />
+                      </div>
+
+                      <div className="mt-8">
+                        <AnchorHeading
+                          level={2}
+                          id="saved-views-headless-examples"
+                        >
+                          Headless Examples
+                        </AnchorHeading>
+                        <p className="text-gray-300 mb-4">
+                          As a headless component, SavedViewsDropdown provides
+                          the functionality without styling:
+                        </p>
+                        <CodeBlock
+                          code={`// Unstyled - pure functionality
+<SavedViewsDropdown
+  api={gridApi}
+  columnId="_multi"
+/>
+
+// With custom styling via data attributes
+[data-component="quick-filter-dropdown"] {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  background: white;
+}
+
+[data-component="view-management-menu"] {
+  position: relative;
+}
+
+[data-component="view-management-menu-button"] {
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+}
+
+[data-component="view-management-menu-button"]:hover {
+  background: #f3f4f6;
+}`}
+                          language="css"
+                        />
+                      </div>
+
+                      <div className="mt-8">
+                        <AnchorHeading level={2} id="saved-views-api">
+                          API Documentation
+                        </AnchorHeading>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm text-left text-gray-300">
+                            <thead className="text-xs text-gray-400 uppercase bg-gray-800">
+                              <tr>
+                                <th className="px-6 py-3">Prop</th>
+                                <th className="px-6 py-3">Type</th>
+                                <th className="px-6 py-3">Description</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-700">
+                              <tr>
+                                <td className="px-6 py-4">
+                                  <code>api</code>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <code>GridApi | null</code>
+                                </td>
+                                <td className="px-6 py-4">
+                                  AG Grid API instance (required)
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="px-6 py-4">
+                                  <code>columnId</code>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <code>string</code>
+                                </td>
+                                <td className="px-6 py-4">
+                                  Column ID to apply filters to (required)
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="px-6 py-4">
+                                  <code>loader</code>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <code>ViewDropdownLoader</code>
+                                </td>
+                                <td className="px-6 py-4">
+                                  View loader instance (defaults to
+                                  LocalStorageLoader)
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="px-6 py-4">
+                                  <code>placeholder</code>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <code>string</code>
+                                </td>
+                                <td className="px-6 py-4">
+                                  Placeholder text for dropdown (default: "My
+                                  Views")
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="px-6 py-4">
+                                  <code>className</code>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <code>string</code>
+                                </td>
+                                <td className="px-6 py-4">
+                                  Custom CSS class name
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="px-6 py-4">
+                                  <code>showManagementMenu</code>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <code>boolean</code>
+                                </td>
+                                <td className="px-6 py-4">
+                                  Show view management menu (default: true)
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="px-6 py-4">
+                                  <code>onViewChange</code>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <code>
+                                    (view: SavedViewOption | null) =&gt; void
+                                  </code>
+                                </td>
+                                <td className="px-6 py-4">
+                                  Callback when view changes
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      <div className="mt-8">
+                        <AnchorHeading level={2} id="saved-views-local-storage">
+                          Local Storage Example
+                        </AnchorHeading>
+                        <p className="text-gray-300 mb-4">
+                          By default, SavedViewsDropdown uses local storage to
+                          persist views:
+                        </p>
+                        <CodeBlock
+                          code={`import { SavedViewsDropdown, LocalStorageLoader } from 'ag-grid-react-components';
+
+// Uses LocalStorageLoader by default
+<SavedViewsDropdown
+  api={gridApi}
+  columnId="_multi"
+/>
+
+// With custom storage key
+const loader = new LocalStorageLoader({
+  storageKey: 'my-app-saved-views',
+  defaultViewKey: 'my-app-default-view'
+});
+
+<SavedViewsDropdown
+  api={gridApi}
+  columnId="_multi"
+  loader={loader}
+/>`}
+                          language="tsx"
+                        />
+                      </div>
+
+                      <div className="mt-8">
+                        <AnchorHeading
+                          level={2}
+                          id="saved-views-server-persistence"
+                        >
+                          Server Persistence Example
+                        </AnchorHeading>
+                        <p className="text-gray-300 mb-4">
+                          Implement a custom loader for server-side persistence:
+                        </p>
+                        <CodeBlock
+                          code={`// Custom server loader implementation
+class ServerViewLoader implements ViewDropdownLoader {
+  async loadOptions(): Promise<SavedViewOption[]> {
+    const response = await fetch('/api/views');
+    return response.json();
+  }
+
+  async saveOption(option: SavedViewOption): Promise<void> {
+    await fetch('/api/views', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(option)
+    });
+  }
+
+  async deleteOption(id: string): Promise<void> {
+    await fetch(\`/api/views/\${id}\`, { method: 'DELETE' });
+  }
+
+  async updateOption(id: string, updates: Partial<SavedViewOption>): Promise<void> {
+    await fetch(\`/api/views/\${id}\`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates)
+    });
+  }
+
+  // Optional: real-time updates via WebSocket
+  subscribe(callback: () => void): () => void {
+    const ws = new WebSocket('ws://localhost:3000/views');
+    ws.onmessage = () => callback();
+    return () => ws.close();
+  }
+}
+
+// Usage
+const serverLoader = new ServerViewLoader();
+
+<SavedViewsDropdown
+  api={gridApi}
+  columnId="_multi"
+  loader={serverLoader}
+/>`}
+                          language="tsx"
+                        />
+                      </div>
+
+                      <div className="mt-8">
+                        <AnchorHeading
+                          level={2}
+                          id="saved-views-advanced-features"
+                        >
+                          Advanced Features
+                        </AnchorHeading>
+
+                        <div className="space-y-6">
+                          <div>
+                            <AnchorHeading
+                              level={3}
+                              id="saved-views-categories"
+                            >
+                              Categories
+                            </AnchorHeading>
+                            <p className="text-gray-300 mb-4">
+                              Organize views into categories for better
+                              management:
+                            </p>
+                            <CodeBlock
+                              code={`// Views are automatically organized by category in the management modal
+const viewWithCategory: SavedViewOption = {
+  id: 'sales-q4',
+  label: 'Q4 Sales Report',
+  saveType: 'full-view',
+  filterModel: { /* ... */ },
+  metadata: {
+    category: 'Sales Reports',
+    createdAt: new Date().toISOString()
+  }
+};`}
+                              language="tsx"
+                            />
+                          </div>
+
+                          <div>
+                            <AnchorHeading level={3} id="saved-views-icons">
+                              Custom Icons
+                            </AnchorHeading>
+                            <p className="text-gray-300 mb-4">
+                              Add visual indicators to views:
+                            </p>
+                            <CodeBlock
+                              code={`// Default views show a star icon
+// Categories show a folder icon
+// You can also provide custom icons
+const viewWithIcon: SavedViewOption = {
+  id: 'high-priority',
+  label: 'High Priority Items',
+  icon: '🔥', // Custom emoji icon
+  filterModel: { /* ... */ }
+};`}
+                              language="tsx"
+                            />
+                          </div>
+
+                          <div>
+                            <AnchorHeading
+                              level={3}
+                              id="saved-views-save-types"
+                            >
+                              Save Types
+                            </AnchorHeading>
+                            <p className="text-gray-300 mb-4">
+                              Choose what to save with each view:
+                            </p>
+                            <CodeBlock
+                              code={`// Save only filters
+saveType: 'filters-only'
+
+// Save full grid state (columns, sort, filters)
+saveType: 'full-view'
+
+// Full view includes:
+// - Column state (order, width, visibility)
+// - Sort model
+// - Filter model
+// - Row grouping (if applicable)`}
+                              language="tsx"
+                            />
+                          </div>
+
+                          <div>
+                            <AnchorHeading
+                              level={3}
+                              id="saved-views-import-export"
+                            >
+                              Import/Export
+                            </AnchorHeading>
+                            <p className="text-gray-300 mb-4">
+                              Share views between users or backup
+                              configurations:
+                            </p>
+                            <CodeBlock
+                              code={`// Export all views to JSON file
+// Available through the management menu
+
+// Import views from JSON file
+// Merges with existing views, avoiding duplicates
+
+// Export format:
+{
+  "version": "1.0",
+  "views": [
+    {
+      "id": "view-1",
+      "label": "My Custom View",
+      "saveType": "full-view",
+      "filterModel": { /* ... */ },
+      "gridState": { /* ... */ }
+    }
+  ]
+}`}
+                              language="json"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-8">
+                        <AnchorHeading
+                          level={2}
+                          id="saved-views-complete-example"
+                        >
+                          Complete Example
+                        </AnchorHeading>
+                        <CodeBlock
+                          code={`import React, { useState } from 'react';
+import { SavedViewsDropdown } from 'ag-grid-react-components';
+
+function GridWithSavedViews() {
+  const [gridApi, setGridApi] = useState(null);
+  const [currentView, setCurrentView] = useState(null);
+
+  return (
+    <div className="grid-container">
+      <div className="toolbar">
+        <SavedViewsDropdown
+          api={gridApi}
+          columnId="_multi"
+          placeholder="Select a view"
+          showManagementMenu={true}
+          onViewChange={(view) => {
+            setCurrentView(view);
+            console.log('Applied view:', view?.label || 'None');
+          }}
+        />
+        {currentView && (
+          <span className="current-view-label">
+            Current: {currentView.label}
+          </span>
+        )}
+      </div>
+      
+      <AgGridReact
+        onGridReady={(params) => setGridApi(params.api)}
+        // ... other grid props
+      />
+    </div>
+  );
+}`}
+                          language="tsx"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Demo Guide Section */}
                 {activeDocSection === "demo-guide" && (
                   <div className="space-y-8">
@@ -3805,6 +4457,1817 @@ npm run dev:safe`}
                               </div>
                             </li>
                           </ol>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Headless Architecture Main Section */}
+                {activeDocSection === "headless-architecture" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="headless-architecture">
+                        Headless Architecture
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        All components in v2.0 now support headless mode, giving
+                        you complete control over the UI while maintaining all
+                        the powerful filtering logic.
+                      </p>
+
+                      <div className="grid md:grid-cols-2 gap-6 mb-8">
+                        <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                          <h3 className="text-lg font-semibold text-indigo-400 mb-3">
+                            🎨 Complete UI Control
+                          </h3>
+                          <p className="text-gray-300 text-sm mb-4">
+                            Build your own UI components while leveraging our
+                            battle-tested filtering logic.
+                          </p>
+                          <ul className="space-y-2 text-sm text-gray-300">
+                            <li>• Custom styling and animations</li>
+                            <li>• Framework-specific patterns</li>
+                            <li>• Design system integration</li>
+                            <li>• Accessibility customization</li>
+                          </ul>
+                        </div>
+
+                        <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                          <h3 className="text-lg font-semibold text-green-400 mb-3">
+                            🚀 Zero Overhead
+                          </h3>
+                          <p className="text-gray-300 text-sm mb-4">
+                            Headless components add minimal bundle size while
+                            providing maximum flexibility.
+                          </p>
+                          <ul className="space-y-2 text-sm text-gray-300">
+                            <li>• No CSS dependencies</li>
+                            <li>• Tree-shakeable exports</li>
+                            <li>• TypeScript support</li>
+                            <li>• Framework agnostic</li>
+                          </ul>
+                        </div>
+                      </div>
+
+                      <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-6">
+                        <h4 className="text-lg font-semibold text-blue-200 mb-3">
+                          Available Headless Components
+                        </h4>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h5 className="text-white font-medium mb-2">
+                              Core Components
+                            </h5>
+                            <ul className="space-y-1 text-sm text-gray-300">
+                              <li>• DateFilter (headless mode)</li>
+                              <li>• QuickFilterDropdown hooks</li>
+                              <li>• ActiveFilters context</li>
+                              <li>• SavedViewsManager logic</li>
+                            </ul>
+                          </div>
+                          <div>
+                            <h5 className="text-white font-medium mb-2">
+                              Utilities
+                            </h5>
+                            <ul className="space-y-1 text-sm text-gray-300">
+                              <li>• Filter state management</li>
+                              <li>• Date expression parser</li>
+                              <li>• Grid state persistence</li>
+                              <li>• Type-safe builders</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Headless Overview */}
+                {activeDocSection === "headless-overview" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="headless-overview">
+                        Headless Components Overview
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        Understanding how headless components are structured and
+                        how to use them effectively.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="what-are-headless-components"
+                          >
+                            What are Headless Components?
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              Headless components separate the logic from the
+                              presentation layer:
+                            </p>
+                            <ul className="space-y-3 text-gray-300">
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <div>
+                                  <strong>Logic Only:</strong> Components
+                                  provide state management, event handlers, and
+                                  business logic without rendering any UI
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <div>
+                                  <strong>Flexible UI:</strong> You control 100%
+                                  of the rendered output using your preferred
+                                  styling solution
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <div>
+                                  <strong>Framework Agnostic:</strong> Works
+                                  with any React-based framework or styling
+                                  library
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="core-concepts">
+                            Core Concepts
+                          </AnchorHeading>
+                          <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                              <h4 className="text-indigo-400 font-semibold mb-3">
+                                Hooks Pattern
+                              </h4>
+                              <p className="text-gray-300 text-sm mb-3">
+                                Each headless component exposes a custom hook
+                                that returns:
+                              </p>
+                              <ul className="space-y-2 text-sm text-gray-300">
+                                <li>• State values</li>
+                                <li>• Event handlers</li>
+                                <li>• Computed properties</li>
+                                <li>• Helper functions</li>
+                              </ul>
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                              <h4 className="text-green-400 font-semibold mb-3">
+                                Context Providers
+                              </h4>
+                              <p className="text-gray-300 text-sm mb-3">
+                                Complex components use React Context for:
+                              </p>
+                              <ul className="space-y-2 text-sm text-gray-300">
+                                <li>• Sharing state between parts</li>
+                                <li>• Performance optimization</li>
+                                <li>• Clean component APIs</li>
+                                <li>• Extensibility</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="implementation-pattern">
+                            Implementation Pattern
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`// 1. Import the headless hook
+import { useDateFilter } from 'ag-grid-react-components/headless';
+
+// 2. Use the hook in your component
+function CustomDateFilter({ column, onFilterChanged }) {
+  const {
+    filterState,
+    validation,
+    handlers,
+    refs
+  } = useDateFilter({
+    column,
+    onFilterChanged,
+    // Optional configuration
+    allowedOperators: ['equals', 'greaterThan', 'lessThan'],
+    defaultOperator: 'equals'
+  });
+
+  // 3. Build your custom UI
+  return (
+    <div className="my-custom-filter">
+      <select 
+        value={filterState.operator} 
+        onChange={handlers.onOperatorChange}
+      >
+        <option value="equals">Equals</option>
+        <option value="greaterThan">After</option>
+        <option value="lessThan">Before</option>
+      </select>
+      
+      <input
+        ref={refs.inputRef}
+        value={filterState.value}
+        onChange={handlers.onValueChange}
+        className={validation.hasError ? 'error' : ''}
+      />
+      
+      {validation.hasError && (
+        <span className="error-message">{validation.error}</span>
+      )}
+    </div>
+  );
+}`}
+                            language="typescript"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="benefits">
+                            Benefits
+                          </AnchorHeading>
+                          <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                              <h4 className="text-indigo-400 font-semibold mb-3">
+                                For Developers
+                              </h4>
+                              <ul className="space-y-2 text-sm text-gray-300">
+                                <li>
+                                  • Complete control over markup and styling
+                                </li>
+                                <li>• No CSS conflicts or overrides needed</li>
+                                <li>
+                                  • Easier testing with separated concerns
+                                </li>
+                                <li>
+                                  • Better performance with custom renders
+                                </li>
+                              </ul>
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                              <h4 className="text-green-400 font-semibold mb-3">
+                                For Teams
+                              </h4>
+                              <ul className="space-y-2 text-sm text-gray-300">
+                                <li>
+                                  • Consistent with existing design systems
+                                </li>
+                                <li>• Reduced bundle size (no CSS)</li>
+                                <li>• Easier code reviews and maintenance</li>
+                                <li>• Framework-specific optimizations</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="comparison">
+                            Standard vs Headless
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b border-gray-700">
+                                  <th className="text-left py-3 px-4 text-gray-300">
+                                    Feature
+                                  </th>
+                                  <th className="text-left py-3 px-4 text-gray-300">
+                                    Standard
+                                  </th>
+                                  <th className="text-left py-3 px-4 text-gray-300">
+                                    Headless
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3 px-4 text-gray-400">
+                                    UI Included
+                                  </td>
+                                  <td className="py-3 px-4 text-green-400">
+                                    ✓ Yes
+                                  </td>
+                                  <td className="py-3 px-4 text-yellow-400">
+                                    ✗ BYO
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3 px-4 text-gray-400">
+                                    Styling
+                                  </td>
+                                  <td className="py-3 px-4 text-gray-300">
+                                    Pre-built CSS
+                                  </td>
+                                  <td className="py-3 px-4 text-gray-300">
+                                    Your choice
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3 px-4 text-gray-400">
+                                    Bundle Size
+                                  </td>
+                                  <td className="py-3 px-4 text-gray-300">
+                                    ~30-50KB
+                                  </td>
+                                  <td className="py-3 px-4 text-gray-300">
+                                    ~10-20KB
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3 px-4 text-gray-400">
+                                    Setup Time
+                                  </td>
+                                  <td className="py-3 px-4 text-green-400">
+                                    Quick
+                                  </td>
+                                  <td className="py-3 px-4 text-yellow-400">
+                                    Moderate
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="py-3 px-4 text-gray-400">
+                                    Customization
+                                  </td>
+                                  <td className="py-3 px-4 text-yellow-400">
+                                    Limited
+                                  </td>
+                                  <td className="py-3 px-4 text-green-400">
+                                    Unlimited
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Headless Customization */}
+                {activeDocSection === "headless-customization" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="headless-customization">
+                        Customizing Headless Components
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        Learn how to build custom UIs using headless components
+                        while maintaining all the powerful functionality.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="styling-approaches">
+                            Styling Approaches
+                          </AnchorHeading>
+                          <div className="grid md:grid-cols-3 gap-4">
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <h4 className="text-indigo-400 font-semibold mb-2">
+                                Tailwind CSS
+                              </h4>
+                              <p className="text-gray-300 text-sm">
+                                Use utility classes for rapid development and
+                                consistent styling.
+                              </p>
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <h4 className="text-green-400 font-semibold mb-2">
+                                CSS-in-JS
+                              </h4>
+                              <p className="text-gray-300 text-sm">
+                                Styled-components, Emotion, or other runtime
+                                styling solutions.
+                              </p>
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <h4 className="text-yellow-400 font-semibold mb-2">
+                                CSS Modules
+                              </h4>
+                              <p className="text-gray-300 text-sm">
+                                Scoped styles with compile-time optimization.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="custom-date-filter">
+                            Example: Custom Date Filter
+                          </AnchorHeading>
+                          <div className="space-y-4">
+                            <p className="text-gray-300">
+                              Here's a complete example of building a custom
+                              date filter with Tailwind CSS:
+                            </p>
+                            <CodeBlock
+                              code={`import { useDateFilter } from 'ag-grid-react-components/headless';
+import { Calendar, ChevronDown } from 'lucide-react';
+
+function CustomDateFilter({ column, onFilterChanged }) {
+  const {
+    filterState,
+    validation,
+    handlers,
+    computed,
+    refs
+  } = useDateFilter({
+    column,
+    onFilterChanged,
+    enableDatePicker: true
+  });
+
+  return (
+    <div className="p-4 bg-white rounded-lg shadow-lg">
+      {/* Operator Selector */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Filter Type
+        </label>
+        <div className="relative">
+          <select
+            value={filterState.operator}
+            onChange={handlers.onOperatorChange}
+            className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-md 
+                     focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                     appearance-none bg-white"
+          >
+            <option value="equals">Equals</option>
+            <option value="notEqual">Not Equal</option>
+            <option value="greaterThan">After</option>
+            <option value="lessThan">Before</option>
+            <option value="inRange">Between</option>
+          </select>
+          <ChevronDown className="absolute right-2 top-3 w-4 h-4 text-gray-400 pointer-events-none" />
+        </div>
+      </div>
+
+      {/* Date Input */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Date
+        </label>
+        <div className="relative">
+          <input
+            ref={refs.dateFromRef}
+            type="text"
+            value={filterState.dateFrom || ''}
+            onChange={handlers.onDateFromChange}
+            placeholder="Enter date or expression..."
+            className={\`w-full pl-10 pr-3 py-2 border rounded-md
+                     focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                     \${validation.dateFromError ? 'border-red-500' : 'border-gray-300'}\`}
+          />
+          <Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+          {computed.showDatePicker && (
+            <button
+              onClick={handlers.toggleDatePicker}
+              className="absolute right-2 top-2 p-1 hover:bg-gray-100 rounded"
+            >
+              <Calendar className="w-4 h-4 text-gray-600" />
+            </button>
+          )}
+        </div>
+        {validation.dateFromError && (
+          <p className="mt-1 text-sm text-red-600">{validation.dateFromError}</p>
+        )}
+      </div>
+
+      {/* Date To (for range) */}
+      {filterState.operator === 'inRange' && (
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            To Date
+          </label>
+          <div className="relative">
+            <input
+              ref={refs.dateToRef}
+              type="text"
+              value={filterState.dateTo || ''}
+              onChange={handlers.onDateToChange}
+              placeholder="Enter end date..."
+              className={\`w-full pl-10 pr-3 py-2 border rounded-md
+                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                       \${validation.dateToError ? 'border-red-500' : 'border-gray-300'}\`}
+            />
+            <Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+          </div>
+          {validation.dateToError && (
+            <p className="mt-1 text-sm text-red-600">{validation.dateToError}</p>
+          )}
+        </div>
+      )}
+
+      {/* Quick Options */}
+      {computed.showQuickOptions && (
+        <div className="mb-4">
+          <p className="text-sm font-medium text-gray-700 mb-2">Quick Select</p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => handlers.applyQuickFilter('Today')}
+              className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+            >
+              Today
+            </button>
+            <button
+              onClick={() => handlers.applyQuickFilter('Yesterday')}
+              className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+            >
+              Yesterday
+            </button>
+            <button
+              onClick={() => handlers.applyQuickFilter('Last7Days')}
+              className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+            >
+              Last 7 Days
+            </button>
+            <button
+              onClick={() => handlers.applyQuickFilter('ThisMonth')}
+              className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+            >
+              This Month
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Action Buttons */}
+      <div className="flex gap-2">
+        <button
+          onClick={handlers.onApply}
+          disabled={!validation.isValid}
+          className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md
+                   hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed
+                   transition-colors"
+        >
+          Apply Filter
+        </button>
+        <button
+          onClick={handlers.onClear}
+          className="px-4 py-2 border border-gray-300 rounded-md
+                   hover:bg-gray-50 transition-colors"
+        >
+          Clear
+        </button>
+      </div>
+    </div>
+  );
+}`}
+                              language="typescript"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="design-system-integration"
+                          >
+                            Design System Integration
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              Integrate headless components with your existing
+                              design system:
+                            </p>
+                            <CodeBlock
+                              code={`// Using your design system components
+import { Button, Select, Input, Card } from '@your-company/design-system';
+import { useDateFilter } from 'ag-grid-react-components/headless';
+
+function BrandedDateFilter(props) {
+  const { filterState, handlers, validation } = useDateFilter(props);
+
+  return (
+    <Card>
+      <Card.Header>Date Filter</Card.Header>
+      <Card.Body>
+        <Select
+          value={filterState.operator}
+          onChange={handlers.onOperatorChange}
+          options={[
+            { value: 'equals', label: 'Equals' },
+            { value: 'greaterThan', label: 'After' },
+            { value: 'lessThan', label: 'Before' }
+          ]}
+        />
+        
+        <Input
+          value={filterState.dateFrom}
+          onChange={handlers.onDateFromChange}
+          error={validation.dateFromError}
+          placeholder="Enter date..."
+        />
+        
+        <Button.Group>
+          <Button 
+            variant="primary" 
+            onClick={handlers.onApply}
+            disabled={!validation.isValid}
+          >
+            Apply
+          </Button>
+          <Button variant="secondary" onClick={handlers.onClear}>
+            Clear
+          </Button>
+        </Button.Group>
+      </Card.Body>
+    </Card>
+  );
+}`}
+                              language="typescript"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Headless Examples */}
+                {activeDocSection === "headless-examples" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="headless-examples">
+                        Headless Component Examples
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        Real-world examples of headless components in action,
+                        showing different UI frameworks and styling approaches.
+                      </p>
+
+                      <div className="space-y-8">
+                        {/* Live Examples - Unstyled vs Styled */}
+                        <div>
+                          <AnchorHeading
+                            level={2}
+                            id="live-examples-unstyled-vs-styled"
+                          >
+                            Live Examples - Unstyled vs Styled
+                          </AnchorHeading>
+                          <p className="text-gray-300 mb-6">
+                            See the components in action. These are actual
+                            working components that demonstrate how the same
+                            functionality can be presented with different
+                            styling approaches.
+                          </p>
+
+                          {/* DateFilter Examples */}
+                          <div className="mb-12">
+                            <AnchorHeading
+                              level={3}
+                              id="datefilter-live-examples"
+                            >
+                              DateFilter Component
+                            </AnchorHeading>
+
+                            <div className="grid md:grid-cols-3 gap-6 mb-8">
+                              {/* Unstyled DateFilter */}
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-400 mb-3">
+                                  Unstyled (Raw HTML)
+                                </h4>
+                                <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                                  <div className="headless-datefilter-unstyled">
+                                    <select
+                                      style={{
+                                        marginBottom: "8px",
+                                        width: "100%",
+                                      }}
+                                    >
+                                      <option value="equals">Equals</option>
+                                      <option value="greaterThan">After</option>
+                                      <option value="lessThan">Before</option>
+                                      <option value="inRange">Between</option>
+                                    </select>
+                                    <input
+                                      type="text"
+                                      placeholder="Enter date or expression"
+                                      style={{
+                                        marginBottom: "8px",
+                                        width: "100%",
+                                      }}
+                                    />
+                                    <div>
+                                      <button>Apply</button>
+                                      <button style={{ marginLeft: "4px" }}>
+                                        Clear
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Tailwind Styled DateFilter */}
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-400 mb-3">
+                                  With Tailwind CSS
+                                </h4>
+                                <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                                  <div className="headless-datefilter-tailwind">
+                                    <select className="w-full mb-3 px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                      <option value="equals">Equals</option>
+                                      <option value="greaterThan">After</option>
+                                      <option value="lessThan">Before</option>
+                                      <option value="inRange">Between</option>
+                                    </select>
+                                    <input
+                                      type="text"
+                                      placeholder="Enter date or expression"
+                                      className="w-full mb-3 px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <div className="flex gap-2">
+                                      <button className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors">
+                                        Apply
+                                      </button>
+                                      <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium rounded-md transition-colors">
+                                        Clear
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Custom CSS DateFilter */}
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-400 mb-3">
+                                  With Custom CSS
+                                </h4>
+                                <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                                  <div className="headless-datefilter-custom">
+                                    <select className="custom-select">
+                                      <option value="equals">Equals</option>
+                                      <option value="greaterThan">After</option>
+                                      <option value="lessThan">Before</option>
+                                      <option value="inRange">Between</option>
+                                    </select>
+                                    <input
+                                      type="text"
+                                      placeholder="Enter date or expression"
+                                      className="custom-input"
+                                    />
+                                    <div className="custom-buttons">
+                                      <button className="custom-btn custom-btn-primary">
+                                        Apply
+                                      </button>
+                                      <button className="custom-btn custom-btn-secondary">
+                                        Clear
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Code example for DateFilter */}
+                            <details className="bg-gray-900 rounded-lg border border-gray-800">
+                              <summary className="p-4 cursor-pointer text-gray-300 hover:text-white">
+                                View implementation code
+                              </summary>
+                              <div className="p-4 pt-0">
+                                <CodeBlock
+                                  code={`// Unstyled version
+<div className="headless-datefilter-unstyled">
+  <select style={{ marginBottom: '8px', width: '100%' }}>
+    <option value="equals">Equals</option>
+    <option value="greaterThan">After</option>
+    <option value="lessThan">Before</option>
+    <option value="inRange">Between</option>
+  </select>
+  <input type="text" placeholder="Enter date or expression" style={{ marginBottom: '8px', width: '100%' }} />
+  <div>
+    <button>Apply</button>
+    <button style={{ marginLeft: '4px' }}>Clear</button>
+  </div>
+</div>
+
+// Tailwind version
+<div className="headless-datefilter-tailwind">
+  <select className="w-full mb-3 px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+    {/* options */}
+  </select>
+  <input className="w-full mb-3 px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+  <div className="flex gap-2">
+    <button className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors">Apply</button>
+    <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium rounded-md transition-colors">Clear</button>
+  </div>
+</div>
+
+// Custom CSS
+.custom-select {
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border: 1px solid #475569;
+  border-radius: 8px;
+  color: #e2e8f0;
+}
+
+.custom-input {
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  color: #e2e8f0;
+}
+
+.custom-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.custom-btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+}
+
+.custom-btn-secondary {
+  background: #475569;
+  color: #e2e8f0;
+  margin-left: 8px;
+}`}
+                                  language="css"
+                                />
+                              </div>
+                            </details>
+                          </div>
+
+                          {/* QuickFilterDropdown Examples */}
+                          <div className="mb-12">
+                            <AnchorHeading
+                              level={3}
+                              id="quickfilterdropdown-live-examples"
+                            >
+                              QuickFilterDropdown Component
+                            </AnchorHeading>
+
+                            <div className="grid md:grid-cols-3 gap-6 mb-8">
+                              {/* Unstyled QuickFilterDropdown */}
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-400 mb-3">
+                                  Unstyled (Raw HTML)
+                                </h4>
+                                <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                                  <div className="headless-dropdown-unstyled">
+                                    <select style={{ width: "100%" }}>
+                                      <option>All Time</option>
+                                      <option>Last 7 Days</option>
+                                      <option>This Month</option>
+                                      <option>This Year</option>
+                                    </select>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Tailwind Styled QuickFilterDropdown */}
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-400 mb-3">
+                                  With Tailwind CSS
+                                </h4>
+                                <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                                  <div className="headless-dropdown-tailwind">
+                                    <div className="relative">
+                                      <button className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md text-gray-200 flex items-center justify-between hover:bg-gray-700 transition-colors">
+                                        <span className="flex items-center gap-2">
+                                          <span>📅</span>
+                                          <span>Last 7 Days</span>
+                                        </span>
+                                        <svg
+                                          className="w-4 h-4"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M19 9l-7 7-7-7"
+                                          />
+                                        </svg>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Custom CSS QuickFilterDropdown */}
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-400 mb-3">
+                                  With Custom CSS
+                                </h4>
+                                <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                                  <div className="headless-dropdown-custom">
+                                    <button className="custom-dropdown-trigger">
+                                      <span className="custom-dropdown-icon">
+                                        🗓️
+                                      </span>
+                                      <span className="custom-dropdown-text">
+                                        This Month
+                                      </span>
+                                      <span className="custom-dropdown-arrow">
+                                        ▼
+                                      </span>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Code example for QuickFilterDropdown */}
+                            <details className="bg-gray-900 rounded-lg border border-gray-800">
+                              <summary className="p-4 cursor-pointer text-gray-300 hover:text-white">
+                                View implementation code
+                              </summary>
+                              <div className="p-4 pt-0">
+                                <CodeBlock
+                                  code={`// Custom CSS for dropdown
+.custom-dropdown-trigger {
+  width: 100%;
+  padding: 10px 16px;
+  background: #1e293b;
+  border: 2px solid #4a5568;
+  border-radius: 10px;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.custom-dropdown-trigger:hover {
+  background: #2d3748;
+  border-color: #5a67d8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.custom-dropdown-trigger::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.custom-dropdown-trigger:hover::before {
+  left: 100%;
+}
+
+.custom-dropdown-icon {
+  font-size: 1.2em;
+  margin-right: 8px;
+}
+
+.custom-dropdown-arrow {
+  font-size: 0.8em;
+  transition: transform 0.3s;
+}
+
+.custom-dropdown-trigger:hover .custom-dropdown-arrow {
+  transform: rotate(180deg);
+}`}
+                                  language="css"
+                                />
+                              </div>
+                            </details>
+                          </div>
+
+                          {/* ActiveFilters Examples */}
+                          <div className="mb-12">
+                            <AnchorHeading
+                              level={3}
+                              id="activefilters-live-examples"
+                            >
+                              ActiveFilters Component
+                            </AnchorHeading>
+
+                            <div className="grid md:grid-cols-3 gap-6 mb-8">
+                              {/* Unstyled ActiveFilters */}
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-400 mb-3">
+                                  Unstyled (Raw HTML)
+                                </h4>
+                                <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                                  <div className="headless-filters-unstyled">
+                                    <div style={{ marginBottom: "4px" }}>
+                                      <span>Status: </span>
+                                      <span>Active</span>
+                                      <button style={{ marginLeft: "4px" }}>
+                                        ×
+                                      </button>
+                                    </div>
+                                    <div style={{ marginBottom: "4px" }}>
+                                      <span>Priority: </span>
+                                      <span>High</span>
+                                      <button style={{ marginLeft: "4px" }}>
+                                        ×
+                                      </button>
+                                    </div>
+                                    <button style={{ marginTop: "8px" }}>
+                                      Clear All
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Tailwind Styled ActiveFilters */}
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-400 mb-3">
+                                  With Tailwind CSS
+                                </h4>
+                                <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                                  <div className="headless-filters-tailwind">
+                                    <div className="flex flex-wrap gap-2 mb-3">
+                                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-900/50 text-blue-200 rounded-full text-sm">
+                                        Status: Active
+                                        <button className="hover:text-blue-100">
+                                          <svg
+                                            className="w-3 h-3"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                          >
+                                            <path
+                                              fillRule="evenodd"
+                                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                              clipRule="evenodd"
+                                            />
+                                          </svg>
+                                        </button>
+                                      </span>
+                                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-900/50 text-purple-200 rounded-full text-sm">
+                                        Priority: High
+                                        <button className="hover:text-purple-100">
+                                          <svg
+                                            className="w-3 h-3"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                          >
+                                            <path
+                                              fillRule="evenodd"
+                                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                              clipRule="evenodd"
+                                            />
+                                          </svg>
+                                        </button>
+                                      </span>
+                                    </div>
+                                    <button className="text-gray-400 hover:text-gray-200 text-sm">
+                                      Clear all filters
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Custom CSS ActiveFilters */}
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-400 mb-3">
+                                  With Custom CSS
+                                </h4>
+                                <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                                  <div className="headless-filters-custom">
+                                    <div className="custom-filter-tags">
+                                      <div className="custom-filter-tag">
+                                        <span className="custom-filter-label">
+                                          Status:
+                                        </span>
+                                        <span className="custom-filter-value">
+                                          Active
+                                        </span>
+                                        <button className="custom-filter-remove">
+                                          ×
+                                        </button>
+                                      </div>
+                                      <div className="custom-filter-tag custom-filter-tag-priority">
+                                        <span className="custom-filter-label">
+                                          Priority:
+                                        </span>
+                                        <span className="custom-filter-value">
+                                          High
+                                        </span>
+                                        <button className="custom-filter-remove">
+                                          ×
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <button className="custom-clear-all">
+                                      Clear All Filters
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Code example for ActiveFilters */}
+                            <details className="bg-gray-900 rounded-lg border border-gray-800">
+                              <summary className="p-4 cursor-pointer text-gray-300 hover:text-white">
+                                View implementation code
+                              </summary>
+                              <div className="p-4 pt-0">
+                                <CodeBlock
+                                  code={`// Custom CSS for active filters
+.custom-filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.custom-filter-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  border: 1px solid #4a5568;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  color: #e2e8f0;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.custom-filter-tag-priority {
+  background: linear-gradient(135deg, #553c9a 0%, #44337a 100%);
+  border-color: #6b46c1;
+}
+
+.custom-filter-label {
+  font-weight: 500;
+  margin-right: 4px;
+  opacity: 0.8;
+}
+
+.custom-filter-value {
+  margin-right: 8px;
+}
+
+.custom-filter-remove {
+  background: none;
+  border: none;
+  color: currentColor;
+  font-size: 1.2em;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.custom-filter-remove:hover {
+  opacity: 1;
+}
+
+.custom-clear-all {
+  background: none;
+  border: 1px dashed #4a5568;
+  color: #a0aec0;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.custom-clear-all:hover {
+  border-color: #e53e3e;
+  color: #fc8181;
+  background: rgba(229, 62, 62, 0.1);
+}`}
+                                  language="css"
+                                />
+                              </div>
+                            </details>
+                          </div>
+
+                          {/* CSS Styles for Custom Examples */}
+                          <style
+                            dangerouslySetInnerHTML={{
+                              __html: `
+                            .custom-select {
+                              width: 100%;
+                              padding: 8px 12px;
+                              margin-bottom: 12px;
+                              background: linear-gradient(
+                                135deg,
+                                #1e293b 0%,
+                                #334155 100%
+                              );
+                              border: 1px solid #475569;
+                              border-radius: 8px;
+                              color: #e2e8f0;
+                              cursor: pointer;
+                            }
+
+                            .custom-input {
+                              width: 100%;
+                              padding: 8px 12px;
+                              margin-bottom: 12px;
+                              background: #1e293b;
+                              border: 1px solid #475569;
+                              border-radius: 8px;
+                              color: #e2e8f0;
+                            }
+
+                            .custom-input::placeholder {
+                              color: #64748b;
+                            }
+
+                            .custom-buttons {
+                              display: flex;
+                              gap: 8px;
+                            }
+
+                            .custom-btn {
+                              padding: 8px 16px;
+                              border: none;
+                              border-radius: 8px;
+                              font-weight: 500;
+                              cursor: pointer;
+                              transition: all 0.2s;
+                            }
+
+                            .custom-btn-primary {
+                              background: linear-gradient(
+                                135deg,
+                                #3b82f6 0%,
+                                #2563eb 100%
+                              );
+                              color: white;
+                              flex: 1;
+                            }
+
+                            .custom-btn-primary:hover {
+                              background: linear-gradient(
+                                135deg,
+                                #2563eb 0%,
+                                #1d4ed8 100%
+                              );
+                              transform: translateY(-1px);
+                              box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+                            }
+
+                            .custom-btn-secondary {
+                              background: #475569;
+                              color: #e2e8f0;
+                            }
+
+                            .custom-btn-secondary:hover {
+                              background: #64748b;
+                            }
+
+                            .custom-dropdown-trigger {
+                              width: 100%;
+                              padding: 10px 16px;
+                              background: #1e293b;
+                              border: 2px solid #4a5568;
+                              border-radius: 10px;
+                              color: #e2e8f0;
+                              display: flex;
+                              align-items: center;
+                              justify-content: space-between;
+                              cursor: pointer;
+                              transition: all 0.3s;
+                              position: relative;
+                              overflow: hidden;
+                            }
+
+                            .custom-dropdown-trigger:hover {
+                              background: #2d3748;
+                              border-color: #5a67d8;
+                              transform: translateY(-1px);
+                              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                            }
+
+                            .custom-dropdown-trigger::before {
+                              content: "";
+                              position: absolute;
+                              top: 0;
+                              left: -100%;
+                              width: 100%;
+                              height: 100%;
+                              background: linear-gradient(
+                                90deg,
+                                transparent,
+                                rgba(255, 255, 255, 0.1),
+                                transparent
+                              );
+                              transition: left 0.5s;
+                            }
+
+                            .custom-dropdown-trigger:hover::before {
+                              left: 100%;
+                            }
+
+                            .custom-dropdown-icon {
+                              font-size: 1.2em;
+                              margin-right: 8px;
+                            }
+
+                            .custom-dropdown-text {
+                              flex: 1;
+                              text-align: left;
+                            }
+
+                            .custom-dropdown-arrow {
+                              font-size: 0.8em;
+                              transition: transform 0.3s;
+                            }
+
+                            .custom-dropdown-trigger:hover
+                              .custom-dropdown-arrow {
+                              transform: rotate(180deg);
+                            }
+
+                            .custom-filter-tags {
+                              display: flex;
+                              flex-wrap: wrap;
+                              gap: 8px;
+                              margin-bottom: 12px;
+                            }
+
+                            .custom-filter-tag {
+                              display: inline-flex;
+                              align-items: center;
+                              padding: 6px 12px;
+                              background: linear-gradient(
+                                135deg,
+                                #2d3748 0%,
+                                #1a202c 100%
+                              );
+                              border: 1px solid #4a5568;
+                              border-radius: 20px;
+                              font-size: 0.875rem;
+                              color: #e2e8f0;
+                              animation: slideIn 0.3s ease-out;
+                            }
+
+                            @keyframes slideIn {
+                              from {
+                                opacity: 0;
+                                transform: translateX(-10px);
+                              }
+                              to {
+                                opacity: 1;
+                                transform: translateX(0);
+                              }
+                            }
+
+                            .custom-filter-tag-priority {
+                              background: linear-gradient(
+                                135deg,
+                                #553c9a 0%,
+                                #44337a 100%
+                              );
+                              border-color: #6b46c1;
+                            }
+
+                            .custom-filter-label {
+                              font-weight: 500;
+                              margin-right: 4px;
+                              opacity: 0.8;
+                            }
+
+                            .custom-filter-value {
+                              margin-right: 8px;
+                            }
+
+                            .custom-filter-remove {
+                              background: none;
+                              border: none;
+                              color: currentColor;
+                              font-size: 1.2em;
+                              line-height: 1;
+                              cursor: pointer;
+                              opacity: 0.6;
+                              transition: opacity 0.2s;
+                            }
+
+                            .custom-filter-remove:hover {
+                              opacity: 1;
+                            }
+
+                            .custom-clear-all {
+                              background: none;
+                              border: 1px dashed #4a5568;
+                              color: #a0aec0;
+                              padding: 4px 12px;
+                              border-radius: 4px;
+                              font-size: 0.875rem;
+                              cursor: pointer;
+                              transition: all 0.2s;
+                            }
+
+                            .custom-clear-all:hover {
+                              border-color: #e53e3e;
+                              color: #fc8181;
+                              background: rgba(229, 62, 62, 0.1);
+                            }
+                          `,
+                            }}
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="material-ui-example">
+                            Material-UI Integration
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`import { TextField, MenuItem, Button, Paper, Box } from '@mui/material';
+import { useDateFilter } from 'ag-grid-react-components/headless';
+
+function MaterialUIDateFilter(props) {
+  const { filterState, handlers, validation } = useDateFilter(props);
+
+  return (
+    <Paper sx={{ p: 2 }}>
+      <Box sx={{ mb: 2 }}>
+        <TextField
+          select
+          fullWidth
+          label="Filter Type"
+          value={filterState.operator}
+          onChange={handlers.onOperatorChange}
+        >
+          <MenuItem value="equals">Equals</MenuItem>
+          <MenuItem value="greaterThan">After</MenuItem>
+          <MenuItem value="lessThan">Before</MenuItem>
+          <MenuItem value="inRange">Between</MenuItem>
+        </TextField>
+      </Box>
+
+      <Box sx={{ mb: 2 }}>
+        <TextField
+          fullWidth
+          label="Date"
+          value={filterState.dateFrom || ''}
+          onChange={(e) => handlers.onDateFromChange(e)}
+          error={!!validation.dateFromError}
+          helperText={validation.dateFromError}
+          placeholder="e.g., Today, 2024-01-01, -7d"
+        />
+      </Box>
+
+      {filterState.operator === 'inRange' && (
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            label="To Date"
+            value={filterState.dateTo || ''}
+            onChange={(e) => handlers.onDateToChange(e)}
+            error={!!validation.dateToError}
+            helperText={validation.dateToError}
+          />
+        </Box>
+      )}
+
+      <Box sx={{ display: 'flex', gap: 1 }}>
+        <Button
+          variant="contained"
+          onClick={handlers.onApply}
+          disabled={!validation.isValid}
+          fullWidth
+        >
+          Apply
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={handlers.onClear}
+        >
+          Clear
+        </Button>
+      </Box>
+    </Paper>
+  );
+}`}
+                            language="typescript"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="ant-design-example">
+                            Ant Design Integration
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`import { Select, Input, Button, Space, Card, Form } from 'antd';
+import { CalendarOutlined } from '@ant-design/icons';
+import { useDateFilter } from 'ag-grid-react-components/headless';
+
+const { Option } = Select;
+
+function AntDesignDateFilter(props) {
+  const { filterState, handlers, validation } = useDateFilter(props);
+
+  return (
+    <Card size="small" style={{ width: 300 }}>
+      <Form layout="vertical">
+        <Form.Item label="Filter Type">
+          <Select
+            value={filterState.operator}
+            onChange={(value) => handlers.onOperatorChange({ target: { value } })}
+            style={{ width: '100%' }}
+          >
+            <Option value="equals">Equals</Option>
+            <Option value="notEqual">Not Equal</Option>
+            <Option value="greaterThan">After</Option>
+            <Option value="lessThan">Before</Option>
+            <Option value="inRange">Between</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item 
+          label="Date"
+          validateStatus={validation.dateFromError ? 'error' : ''}
+          help={validation.dateFromError}
+        >
+          <Input
+            prefix={<CalendarOutlined />}
+            value={filterState.dateFrom || ''}
+            onChange={(e) => handlers.onDateFromChange(e)}
+            placeholder="Enter date or expression"
+          />
+        </Form.Item>
+
+        {filterState.operator === 'inRange' && (
+          <Form.Item 
+            label="To Date"
+            validateStatus={validation.dateToError ? 'error' : ''}
+            help={validation.dateToError}
+          >
+            <Input
+              prefix={<CalendarOutlined />}
+              value={filterState.dateTo || ''}
+              onChange={(e) => handlers.onDateToChange(e)}
+              placeholder="End date"
+            />
+          </Form.Item>
+        )}
+
+        <Form.Item>
+          <Space style={{ width: '100%' }}>
+            <Button
+              type="primary"
+              onClick={handlers.onApply}
+              disabled={!validation.isValid}
+              block
+            >
+              Apply Filter
+            </Button>
+            <Button onClick={handlers.onClear}>
+              Clear
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </Card>
+  );
+}`}
+                            language="typescript"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="chakra-ui-example">
+                            Chakra UI Integration
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`import {
+  Box,
+  Select,
+  Input,
+  Button,
+  VStack,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  HStack,
+  InputGroup,
+  InputLeftElement,
+  Card,
+  CardBody
+} from '@chakra-ui/react';
+import { CalendarIcon } from '@chakra-ui/icons';
+import { useDateFilter } from 'ag-grid-react-components/headless';
+
+function ChakraUIDateFilter(props) {
+  const { filterState, handlers, validation } = useDateFilter(props);
+
+  return (
+    <Card maxW="sm">
+      <CardBody>
+        <VStack spacing={4}>
+          <FormControl>
+            <FormLabel>Filter Type</FormLabel>
+            <Select
+              value={filterState.operator}
+              onChange={(e) => handlers.onOperatorChange(e)}
+            >
+              <option value="equals">Equals</option>
+              <option value="notEqual">Not Equal</option>
+              <option value="greaterThan">After</option>
+              <option value="lessThan">Before</option>
+              <option value="inRange">Between</option>
+            </Select>
+          </FormControl>
+
+          <FormControl isInvalid={!!validation.dateFromError}>
+            <FormLabel>Date</FormLabel>
+            <InputGroup>
+              <InputLeftElement pointerEvents="none">
+                <CalendarIcon color="gray.300" />
+              </InputLeftElement>
+              <Input
+                pl="2.5rem"
+                value={filterState.dateFrom || ''}
+                onChange={(e) => handlers.onDateFromChange(e)}
+                placeholder="Enter date or expression"
+              />
+            </InputGroup>
+            <FormErrorMessage>{validation.dateFromError}</FormErrorMessage>
+          </FormControl>
+
+          {filterState.operator === 'inRange' && (
+            <FormControl isInvalid={!!validation.dateToError}>
+              <FormLabel>To Date</FormLabel>
+              <InputGroup>
+                <InputLeftElement pointerEvents="none">
+                  <CalendarIcon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  pl="2.5rem"
+                  value={filterState.dateTo || ''}
+                  onChange={(e) => handlers.onDateToChange(e)}
+                  placeholder="End date"
+                />
+              </InputGroup>
+              <FormErrorMessage>{validation.dateToError}</FormErrorMessage>
+            </FormControl>
+          )}
+
+          <HStack spacing={2} width="100%">
+            <Button
+              colorScheme="blue"
+              onClick={handlers.onApply}
+              isDisabled={!validation.isValid}
+              flex={1}
+            >
+              Apply
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handlers.onClear}
+            >
+              Clear
+            </Button>
+          </HStack>
+        </VStack>
+      </CardBody>
+    </Card>
+  );
+}`}
+                            language="typescript"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="minimal-example">
+                            Minimal Custom Implementation
+                          </AnchorHeading>
+                          <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-6 mb-4">
+                            <p className="text-yellow-200 text-sm">
+                              This example shows the absolute minimum UI needed
+                              for a functional filter:
+                            </p>
+                          </div>
+                          <CodeBlock
+                            code={`import { useDateFilter } from 'ag-grid-react-components/headless';
+
+function MinimalDateFilter(props) {
+  const { filterState, handlers } = useDateFilter(props);
+
+  return (
+    <div style={{ padding: '8px' }}>
+      <select 
+        value={filterState.operator} 
+        onChange={handlers.onOperatorChange}
+        style={{ marginBottom: '4px', width: '100%' }}
+      >
+        <option value="equals">=</option>
+        <option value="greaterThan">&gt;</option>
+        <option value="lessThan">&lt;</option>
+      </select>
+      
+      <input
+        value={filterState.dateFrom || ''}
+        onChange={handlers.onDateFromChange}
+        placeholder="Date..."
+        style={{ marginBottom: '4px', width: '100%' }}
+      />
+      
+      <div>
+        <button onClick={handlers.onApply}>✓</button>
+        <button onClick={handlers.onClear}>✗</button>
+      </div>
+    </div>
+  );
+}`}
+                            language="typescript"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="advanced-features">
+                            Advanced Features Example
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`import { useDateFilter } from 'ag-grid-react-components/headless';
+import { motion, AnimatePresence } from 'framer-motion';
+
+function AdvancedDateFilter(props) {
+  const { 
+    filterState, 
+    handlers, 
+    validation, 
+    computed,
+    helpers 
+  } = useDateFilter({
+    ...props,
+    enableDatePicker: true,
+    enableExpressionParsing: true,
+    enableQuickFilters: true
+  });
+
+  const [showHelp, setShowHelp] = React.useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="filter-container"
+    >
+      {/* Filter UI with animations */}
+      <AnimatePresence>
+        {showHelp && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="help-panel"
+          >
+            <h4>Expression Examples:</h4>
+            <ul>
+              <li>Today, Yesterday</li>
+              <li>StartOfMonth, EndOfYear</li>
+              <li>Today-7d (7 days ago)</li>
+              <li>StartOfMonth+1w (week after month start)</li>
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Main filter controls */}
+      <div className="filter-controls">
+        {/* ... your custom UI ... */}
+      </div>
+
+      {/* Real-time expression preview */}
+      {computed.parsedExpression && (
+        <div className="expression-preview">
+          <small>
+            Resolves to: {helpers.formatDate(computed.parsedExpression)}
+          </small>
+        </div>
+      )}
+    </motion.div>
+  );
+}`}
+                            language="typescript"
+                          />
                         </div>
                       </div>
                     </div>
@@ -6495,170 +8958,166 @@ const handleFilterSelect = async (option) => {
   }
 
   // Demo page - real application layout
-  if (currentPage !== "demo") {
-    // Return empty div with navigation for non-demo pages
-    // This should not happen as hero and docs are handled above
+  if (currentPage === "demo") {
     return (
       <div className="h-screen bg-gray-950 text-white flex flex-col overflow-hidden">
         <Navigation currentPage={currentPage} />
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-gray-400">Page not found</p>
+
+        {/* Main Content - fills remaining height */}
+        <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6">
+            {/* Compact Header Section */}
+            <div className="mb-4">
+              {/* Title Row */}
+              <div className="mb-4">
+                <h1 className="text-2xl font-semibold text-white">
+                  Project Tasks
+                </h1>
+                <p className="text-sm text-gray-400 mt-1">
+                  Manage and track your team&apos;s progress
+                </p>
+              </div>
+
+              {/* Demo Tabs */}
+              <div className="border-b border-gray-700 mb-4">
+                <nav className="-mb-px flex space-x-8">
+                  <button
+                    onClick={() => setActiveDemoTab("client")}
+                    className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeDemoTab === "client"
+                        ? "border-indigo-500 text-white"
+                        : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
+                    }`}
+                  >
+                    Client-Side Data
+                  </button>
+                  <button
+                    onClick={() => setActiveDemoTab("server")}
+                    className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeDemoTab === "server"
+                        ? "border-indigo-500 text-white"
+                        : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
+                    }`}
+                  >
+                    Server-Side Data
+                    <span className="ml-2 px-2 py-0.5 text-xs bg-indigo-600 text-white rounded-full">
+                      API
+                    </span>
+                  </button>
+                </nav>
+              </div>
+            </div>
+
+            {/* Client-Side Demo */}
+            {activeDemoTab === "client" && (
+              <div key="client-demo" className="flex-1 flex flex-col">
+                {/* Integrated Toolbar */}
+                <DemoToolbar
+                  searchPlaceholder="Search tasks..."
+                  onSearchChange={(value) => {
+                    if (gridApi) {
+                      gridApi.setGridOption("quickFilterText", value);
+                    }
+                  }}
+                >
+                  {/* Quick Filters */}
+                  {gridApi && (
+                    <>
+                      <QuickFilterDropdown
+                        key={`${activeDemoTab}-date-filter`}
+                        api={gridApi}
+                        columnId="dueDate"
+                        options={dateQuickFilters}
+                        placeholder="Time period"
+                        showDescriptions={false}
+                        className="min-w-[140px]"
+                        usePortal="always"
+                      />
+                      <SavedViewsDropdown
+                        api={gridApi}
+                        columnId="_multi"
+                        placeholder="My Views"
+                        className="min-w-[160px]"
+                        showManagementMenu={true}
+                      />
+                    </>
+                  )}
+                </DemoToolbar>
+
+                {/* Active Filters Row (when present) */}
+                {gridApi && Object.keys(filterModel).length > 0 && (
+                  <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg mt-3">
+                    <div className="border-t border-gray-700/50 bg-gray-800/20 p-3">
+                      <ActiveFilters api={gridApi} filterModel={filterModel} />
+                    </div>
+                  </div>
+                )}
+
+                {/* Grid Container - fills remaining height */}
+                <div className="flex-1 bg-gray-900/50 rounded-xl border border-gray-800 flex flex-col mt-4">
+                  {/* Hero Stats Bar */}
+                  <StatsBar stats={stats} />
+
+                  {/* AG Grid - fills remaining height */}
+                  <div
+                    className="flex-1 relative overflow-hidden"
+                    style={{ minHeight: "400px", height: "100%" }}
+                  >
+                    <AgGridReact
+                      theme={darkTheme}
+                      columnDefs={columnDefs}
+                      defaultColDef={defaultColDef}
+                      rowData={rowData}
+                      animateRows={true}
+                      pagination={false}
+                      suppressMenuHide={true}
+                      cellSelection={true}
+                      grandTotalRow="bottom"
+                      rowSelection={{
+                        mode: "multiRow",
+                        enableClickSelection: false,
+                      }}
+                      suppressCellFocus={false}
+                      statusBar={getStatusBarConfig(false)}
+                      enableCellTextSelection={true}
+                      ensureDomOrder={true}
+                      getRowStyle={(params) => {
+                        if (params.node.footer) {
+                          return {
+                            fontWeight: "bold",
+                            backgroundColor: "rgba(59, 130, 246, 0.1)",
+                          };
+                        }
+                        return undefined;
+                      }}
+                      onGridReady={onGridReady}
+                      domLayout="normal"
+                      components={components}
+                      sideBar={sideBarConfig}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Server-Side Demo */}
+            {activeDemoTab === "server" && (
+              <div className="flex-1 flex flex-col">
+                <ServerSideDemo />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
   }
 
+  // Fallback for unhandled pages
   return (
     <div className="h-screen bg-gray-950 text-white flex flex-col overflow-hidden">
       <Navigation currentPage={currentPage} />
-
-      {/* Main Content - fills remaining height */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 flex flex-col mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6">
-          {/* Compact Header Section */}
-          <div className="mb-4">
-            {/* Title Row */}
-            <div className="mb-4">
-              <h1 className="text-2xl font-semibold text-white">
-                Project Tasks
-              </h1>
-              <p className="text-sm text-gray-400 mt-1">
-                Manage and track your team&apos;s progress
-              </p>
-            </div>
-
-            {/* Demo Tabs */}
-            <div className="border-b border-gray-700 mb-4">
-              <nav className="-mb-px flex space-x-8">
-                <button
-                  onClick={() => setActiveDemoTab("client")}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    activeDemoTab === "client"
-                      ? "border-indigo-500 text-white"
-                      : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
-                  }`}
-                >
-                  Client-Side Data
-                </button>
-                <button
-                  onClick={() => setActiveDemoTab("server")}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    activeDemoTab === "server"
-                      ? "border-indigo-500 text-white"
-                      : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
-                  }`}
-                >
-                  Server-Side Data
-                  <span className="ml-2 px-2 py-0.5 text-xs bg-indigo-600 text-white rounded-full">
-                    API
-                  </span>
-                </button>
-              </nav>
-            </div>
-          </div>
-
-          {/* Client-Side Demo */}
-          {activeDemoTab === "client" && (
-            <div key="client-demo" className="flex-1 flex flex-col">
-              {/* Integrated Toolbar */}
-              <DemoToolbar
-                searchPlaceholder="Search tasks..."
-                onSearchChange={(value) => {
-                  if (gridApi) {
-                    gridApi.setGridOption("quickFilterText", value);
-                  }
-                }}
-              >
-                {/* Quick Filters */}
-                {gridApi && (
-                  <>
-                    <QuickFilterDropdown
-                      key={`${activeDemoTab}-date-filter`}
-                      api={gridApi}
-                      columnId="dueDate"
-                      options={dateQuickFilters}
-                      placeholder="Time period"
-                      showDescriptions={false}
-                      className="min-w-[140px]"
-                      usePortal="always"
-                    />
-                    <QuickFilterDropdown
-                      key={`${activeDemoTab}-task-filter`}
-                      api={gridApi}
-                      columnId="_multi"
-                      options={taskTypeFilters}
-                      placeholder="Task type"
-                      showDescriptions={false}
-                      className="min-w-[140px]"
-                      usePortal="always"
-                    />
-                  </>
-                )}
-              </DemoToolbar>
-
-              {/* Active Filters Row (when present) */}
-              {gridApi && Object.keys(filterModel).length > 0 && (
-                <div className="bg-gray-900/40 backdrop-blur-sm border border-gray-800 rounded-lg mt-3">
-                  <div className="border-t border-gray-700/50 bg-gray-800/20 p-3">
-                    <ActiveFilters api={gridApi} filterModel={filterModel} />
-                  </div>
-                </div>
-              )}
-
-              {/* Grid Container - fills remaining height */}
-              <div className="flex-1 bg-gray-900/50 rounded-xl border border-gray-800 flex flex-col mt-4">
-                {/* Hero Stats Bar */}
-                <StatsBar stats={stats} />
-
-                {/* AG Grid - fills remaining height */}
-                <div
-                  className="flex-1 relative overflow-hidden"
-                  style={{ minHeight: "400px", height: "100%" }}
-                >
-                  <AgGridReact
-                    theme={darkTheme}
-                    columnDefs={columnDefs}
-                    defaultColDef={defaultColDef}
-                    rowData={rowData}
-                    animateRows={true}
-                    pagination={false}
-                    suppressMenuHide={true}
-                    cellSelection={true}
-                    grandTotalRow="bottom"
-                    rowSelection={{
-                      mode: "multiRow",
-                      enableClickSelection: false,
-                    }}
-                    suppressCellFocus={false}
-                    statusBar={getStatusBarConfig(false)}
-                    enableCellTextSelection={true}
-                    ensureDomOrder={true}
-                    getRowStyle={(params) => {
-                      if (params.node.footer) {
-                        return {
-                          fontWeight: "bold",
-                          backgroundColor: "rgba(59, 130, 246, 0.1)",
-                        };
-                      }
-                      return undefined;
-                    }}
-                    onGridReady={onGridReady}
-                    domLayout="normal"
-                    components={components}
-                    sideBar={sideBarConfig}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Server-Side Demo */}
-          {activeDemoTab === "server" && (
-            <div className="flex-1 flex flex-col">
-              <ServerSideDemo />
-            </div>
-          )}
-        </div>
+      <div className="flex-1 flex items-center justify-center">
+        <p className="text-gray-400">Page not found</p>
       </div>
     </div>
   );

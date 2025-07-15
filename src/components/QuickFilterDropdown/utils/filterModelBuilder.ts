@@ -252,9 +252,8 @@ export const DATE_FILTER_PRESETS: QuickFilterOption[] = [
     description: "Items with today's date",
     icon: "📆",
     filterModel: {
-      mode: "relative",
-      type: "equals",
-      expressionFrom: "Today",
+      filterType: "equals",
+      dateFrom: "today",
     },
   },
   {
@@ -263,9 +262,8 @@ export const DATE_FILTER_PRESETS: QuickFilterOption[] = [
     description: "Items from yesterday",
     icon: "📆",
     filterModel: {
-      mode: "relative",
-      type: "equals",
-      expressionFrom: "Today-1d",
+      filterType: "equals",
+      dateFrom: "-1d",
     },
   },
   {
@@ -274,10 +272,9 @@ export const DATE_FILTER_PRESETS: QuickFilterOption[] = [
     description: "Items from the current week",
     icon: "📅",
     filterModel: {
-      mode: "relative",
-      type: "inRange",
-      expressionFrom: "Today-6d",
-      expressionTo: "Today+1d",
+      filterType: "inRange",
+      dateFrom: "-6d",
+      dateTo: "today",
     },
   },
   {
@@ -286,10 +283,9 @@ export const DATE_FILTER_PRESETS: QuickFilterOption[] = [
     description: "Items from the previous week",
     icon: "📅",
     filterModel: {
-      mode: "relative",
-      type: "inRange",
-      expressionFrom: "Today-13d",
-      expressionTo: "Today-6d",
+      filterType: "inRange",
+      dateFrom: "-13d",
+      dateTo: "-7d",
     },
   },
   {
@@ -298,10 +294,9 @@ export const DATE_FILTER_PRESETS: QuickFilterOption[] = [
     description: "Items from the current month",
     icon: "📅",
     filterModel: {
-      mode: "relative",
-      type: "inRange",
-      expressionFrom: "StartOfMonth",
-      expressionTo: "EndOfMonth",
+      filterType: "inRange",
+      dateFrom: "startOfMonth",
+      dateTo: "endOfMonth",
     },
   },
   {
@@ -310,10 +305,9 @@ export const DATE_FILTER_PRESETS: QuickFilterOption[] = [
     description: "Items from the previous month",
     icon: "📅",
     filterModel: {
-      mode: "relative",
-      type: "inRange",
-      expressionFrom: "StartOfMonth-1M",
-      expressionTo: "EndOfMonth-1M",
+      filterType: "inRange",
+      dateFrom: "startOfLastMonth",
+      dateTo: "endOfLastMonth",
     },
   },
   {
@@ -322,10 +316,9 @@ export const DATE_FILTER_PRESETS: QuickFilterOption[] = [
     description: "Items from the past week",
     icon: "7️⃣",
     filterModel: {
-      mode: "relative",
-      type: "inRange",
-      expressionFrom: "Today-7d",
-      expressionTo: "Today",
+      filterType: "inRange",
+      dateFrom: "-7d",
+      dateTo: "today",
     },
   },
   {
@@ -334,10 +327,9 @@ export const DATE_FILTER_PRESETS: QuickFilterOption[] = [
     description: "Items from the past month",
     icon: "📅",
     filterModel: {
-      mode: "relative",
-      type: "inRange",
-      expressionFrom: "Today-30d",
-      expressionTo: "Today",
+      filterType: "inRange",
+      dateFrom: "-30d",
+      dateTo: "today",
     },
   },
   {
@@ -346,9 +338,8 @@ export const DATE_FILTER_PRESETS: QuickFilterOption[] = [
     description: "Items with future dates",
     icon: "🔮",
     filterModel: {
-      mode: "relative",
-      type: "after",
-      expressionFrom: "Today",
+      filterType: "after",
+      dateFrom: "today",
     },
   },
   {
@@ -357,9 +348,18 @@ export const DATE_FILTER_PRESETS: QuickFilterOption[] = [
     description: "Items with past dates",
     icon: "🕐",
     filterModel: {
-      mode: "relative",
-      type: "before",
-      expressionFrom: "Today",
+      filterType: "before",
+      dateFrom: "today",
+    },
+  },
+  {
+    id: "overdue",
+    label: "Overdue",
+    description: "Items past their due date",
+    icon: "⚠️",
+    filterModel: {
+      filterType: "before",
+      dateFrom: "today",
     },
   },
 ];
