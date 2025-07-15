@@ -1239,12 +1239,24 @@ const columnDefs = [{
       { id: "relativedatefilter", label: "DateFilter", indent: true },
       { id: "quickfilterdropdown", label: "QuickFilterDropdown", indent: true },
       { id: "activefilters", label: "ActiveFilters", indent: true },
+      { id: "savedviewsdropdown", label: "SavedViewsDropdown", indent: true },
       { id: "urlstate", label: "URL State Persistence", indent: true },
 
       // Demo Guide Section
       { id: "demo-guide", label: "Demo Guide", isSection: true },
       { id: "running-locally", label: "Running Locally", indent: true },
       { id: "demo-features", label: "Demo Features", indent: true },
+
+      // Headless Components Section
+      {
+        id: "headless-components",
+        label: "Headless Components",
+        isSection: true,
+      },
+      { id: "headless-overview", label: "Overview", indent: true },
+      { id: "headless-architecture", label: "Architecture", indent: true },
+      { id: "headless-customization", label: "Customization", indent: true },
+      { id: "headless-examples", label: "Examples", indent: true },
 
       // References Section
       { id: "references", label: "References", isSection: true },
@@ -3972,6 +3984,1125 @@ npm run dev:safe`}
                               </div>
                             </li>
                           </ol>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Headless Components Section */}
+                {activeDocSection === "headless-components" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="headless-components">
+                        Headless Components
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        All components in v2.0 now support headless mode, giving
+                        you complete control over the UI while maintaining all
+                        the powerful filtering logic.
+                      </p>
+
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                          <h3 className="text-lg font-semibold text-indigo-400 mb-3">
+                            🎨 Complete UI Control
+                          </h3>
+                          <p className="text-gray-300 text-sm mb-4">
+                            Build your own UI components while leveraging our
+                            battle-tested filtering logic.
+                          </p>
+                          <ul className="space-y-2 text-sm text-gray-300">
+                            <li>• Custom styling and animations</li>
+                            <li>• Framework-specific patterns</li>
+                            <li>• Design system integration</li>
+                            <li>• Accessibility customization</li>
+                          </ul>
+                        </div>
+
+                        <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                          <h3 className="text-lg font-semibold text-green-400 mb-3">
+                            🚀 Zero Overhead
+                          </h3>
+                          <p className="text-gray-300 text-sm mb-4">
+                            Headless components add minimal bundle size while
+                            providing maximum flexibility.
+                          </p>
+                          <ul className="space-y-2 text-sm text-gray-300">
+                            <li>• No CSS dependencies</li>
+                            <li>• Tree-shakeable exports</li>
+                            <li>• TypeScript support</li>
+                            <li>• Framework agnostic</li>
+                          </ul>
+                        </div>
+                      </div>
+
+                      <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-6 mt-6">
+                        <h4 className="text-lg font-semibold text-blue-200 mb-3">
+                          Available Headless Components
+                        </h4>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h5 className="text-white font-medium mb-2">
+                              Core Components
+                            </h5>
+                            <ul className="space-y-1 text-sm text-gray-300">
+                              <li>• DateFilter (headless mode)</li>
+                              <li>• QuickFilterDropdown hooks</li>
+                              <li>• ActiveFilters context</li>
+                              <li>• SavedViewsManager logic</li>
+                            </ul>
+                          </div>
+                          <div>
+                            <h5 className="text-white font-medium mb-2">
+                              Utilities
+                            </h5>
+                            <ul className="space-y-1 text-sm text-gray-300">
+                              <li>• Filter state management</li>
+                              <li>• Date expression parser</li>
+                              <li>• Grid state persistence</li>
+                              <li>• Type-safe builders</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Headless Overview */}
+                {activeDocSection === "headless-overview" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="headless-overview">
+                        Headless Components Overview
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        Headless components provide the core functionality
+                        without any UI implementation, allowing you to build
+                        custom interfaces that perfectly match your design
+                        system.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="what-are-headless-components"
+                          >
+                            What are Headless Components?
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              Headless components separate the logic from the
+                              presentation layer:
+                            </p>
+                            <ul className="space-y-3 text-gray-300">
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <div>
+                                  <strong>Logic Only:</strong> Components
+                                  provide state management, event handlers, and
+                                  business logic without rendering any UI
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <div>
+                                  <strong>Flexible UI:</strong> You control 100%
+                                  of the rendered output using your preferred
+                                  styling solution
+                                </div>
+                              </li>
+                              <li className="flex items-start">
+                                <span className="text-green-400 mr-2">✓</span>
+                                <div>
+                                  <strong>Framework Agnostic:</strong> Works
+                                  with any React-based framework or styling
+                                  library
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="benefits">
+                            Benefits
+                          </AnchorHeading>
+                          <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                              <h4 className="text-indigo-400 font-semibold mb-3">
+                                For Developers
+                              </h4>
+                              <ul className="space-y-2 text-sm text-gray-300">
+                                <li>
+                                  • Complete control over markup and styling
+                                </li>
+                                <li>• No CSS conflicts or overrides needed</li>
+                                <li>
+                                  • Easier testing with separated concerns
+                                </li>
+                                <li>
+                                  • Better performance with custom renders
+                                </li>
+                              </ul>
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                              <h4 className="text-green-400 font-semibold mb-3">
+                                For Teams
+                              </h4>
+                              <ul className="space-y-2 text-sm text-gray-300">
+                                <li>
+                                  • Consistent with existing design systems
+                                </li>
+                                <li>• Reduced bundle size (no CSS)</li>
+                                <li>• Easier code reviews and maintenance</li>
+                                <li>• Framework-specific optimizations</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="comparison">
+                            Standard vs Headless
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b border-gray-700">
+                                  <th className="text-left py-3 px-4 text-gray-300">
+                                    Feature
+                                  </th>
+                                  <th className="text-left py-3 px-4 text-gray-300">
+                                    Standard
+                                  </th>
+                                  <th className="text-left py-3 px-4 text-gray-300">
+                                    Headless
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3 px-4 text-gray-400">
+                                    UI Included
+                                  </td>
+                                  <td className="py-3 px-4 text-green-400">
+                                    ✓ Yes
+                                  </td>
+                                  <td className="py-3 px-4 text-yellow-400">
+                                    ✗ BYO
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3 px-4 text-gray-400">
+                                    Styling
+                                  </td>
+                                  <td className="py-3 px-4 text-gray-300">
+                                    Pre-built CSS
+                                  </td>
+                                  <td className="py-3 px-4 text-gray-300">
+                                    Your choice
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3 px-4 text-gray-400">
+                                    Bundle Size
+                                  </td>
+                                  <td className="py-3 px-4 text-gray-300">
+                                    ~30-50KB
+                                  </td>
+                                  <td className="py-3 px-4 text-gray-300">
+                                    ~10-20KB
+                                  </td>
+                                </tr>
+                                <tr className="border-b border-gray-800">
+                                  <td className="py-3 px-4 text-gray-400">
+                                    Setup Time
+                                  </td>
+                                  <td className="py-3 px-4 text-green-400">
+                                    Quick
+                                  </td>
+                                  <td className="py-3 px-4 text-yellow-400">
+                                    Moderate
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="py-3 px-4 text-gray-400">
+                                    Customization
+                                  </td>
+                                  <td className="py-3 px-4 text-yellow-400">
+                                    Limited
+                                  </td>
+                                  <td className="py-3 px-4 text-green-400">
+                                    Unlimited
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Headless Architecture */}
+                {activeDocSection === "headless-architecture" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="headless-architecture">
+                        Headless Architecture
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        Understanding how headless components are structured and
+                        how to use them effectively.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="core-concepts">
+                            Core Concepts
+                          </AnchorHeading>
+                          <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                              <h4 className="text-indigo-400 font-semibold mb-3">
+                                Hooks Pattern
+                              </h4>
+                              <p className="text-gray-300 text-sm mb-3">
+                                Each headless component exposes a custom hook
+                                that returns:
+                              </p>
+                              <ul className="space-y-2 text-sm text-gray-300">
+                                <li>• State values</li>
+                                <li>• Event handlers</li>
+                                <li>• Computed properties</li>
+                                <li>• Helper functions</li>
+                              </ul>
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                              <h4 className="text-green-400 font-semibold mb-3">
+                                Context Providers
+                              </h4>
+                              <p className="text-gray-300 text-sm mb-3">
+                                Complex components use React Context for:
+                              </p>
+                              <ul className="space-y-2 text-sm text-gray-300">
+                                <li>• Sharing state between parts</li>
+                                <li>• Performance optimization</li>
+                                <li>• Clean component APIs</li>
+                                <li>• Extensibility</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="implementation-pattern">
+                            Implementation Pattern
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`// 1. Import the headless hook
+import { useDateFilter } from 'ag-grid-react-components/headless';
+
+// 2. Use the hook in your component
+function CustomDateFilter({ column, onFilterChanged }) {
+  const {
+    filterState,
+    validation,
+    handlers,
+    refs
+  } = useDateFilter({
+    column,
+    onFilterChanged,
+    // Optional configuration
+    allowedOperators: ['equals', 'greaterThan', 'lessThan'],
+    defaultOperator: 'equals'
+  });
+
+  // 3. Build your custom UI
+  return (
+    <div className="my-custom-filter">
+      <select 
+        value={filterState.operator} 
+        onChange={handlers.onOperatorChange}
+      >
+        <option value="equals">Equals</option>
+        <option value="greaterThan">After</option>
+        <option value="lessThan">Before</option>
+      </select>
+      
+      <input
+        ref={refs.inputRef}
+        value={filterState.value}
+        onChange={handlers.onValueChange}
+        className={validation.hasError ? 'error' : ''}
+      />
+      
+      {validation.hasError && (
+        <span className="error-message">{validation.error}</span>
+      )}
+    </div>
+  );
+}`}
+                            language="typescript"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="hook-api">
+                            Hook API Structure
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              All headless hooks follow a consistent API
+                              pattern:
+                            </p>
+                            <CodeBlock
+                              code={`interface HeadlessHookReturn<TState> {
+  // Current state
+  state: TState;
+  
+  // Event handlers
+  handlers: {
+    onChange: (value: any) => void;
+    onReset: () => void;
+    // Component-specific handlers...
+  };
+  
+  // Validation state
+  validation: {
+    isValid: boolean;
+    hasError: boolean;
+    error?: string;
+  };
+  
+  // Refs for DOM elements
+  refs: {
+    containerRef: React.RefObject<HTMLDivElement>;
+    // Component-specific refs...
+  };
+  
+  // Computed values
+  computed: {
+    // Component-specific computed values...
+  };
+  
+  // Helper functions
+  helpers: {
+    // Component-specific helpers...
+  };
+}`}
+                              language="typescript"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="performance">
+                            Performance Considerations
+                          </AnchorHeading>
+                          <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-6">
+                            <h4 className="text-yellow-200 font-semibold mb-3">
+                              Best Practices
+                            </h4>
+                            <ul className="space-y-2 text-sm text-gray-300">
+                              <li>
+                                <strong>Memoization:</strong> Headless hooks use
+                                React.useMemo and React.useCallback internally
+                                for optimal performance
+                              </li>
+                              <li>
+                                <strong>Event Handlers:</strong> All handlers
+                                are stable references that won't cause
+                                unnecessary re-renders
+                              </li>
+                              <li>
+                                <strong>State Updates:</strong> Batched updates
+                                ensure minimal re-renders when multiple state
+                                changes occur
+                              </li>
+                              <li>
+                                <strong>Context Usage:</strong> Only subscribe
+                                to needed values to prevent unnecessary updates
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Headless Customization */}
+                {activeDocSection === "headless-customization" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="headless-customization">
+                        Customizing Headless Components
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        Learn how to build custom UIs using headless components
+                        while maintaining all the powerful functionality.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="styling-approaches">
+                            Styling Approaches
+                          </AnchorHeading>
+                          <div className="grid md:grid-cols-3 gap-4">
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <h4 className="text-indigo-400 font-semibold mb-2">
+                                Tailwind CSS
+                              </h4>
+                              <p className="text-gray-300 text-sm">
+                                Use utility classes for rapid development and
+                                consistent styling.
+                              </p>
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <h4 className="text-green-400 font-semibold mb-2">
+                                CSS-in-JS
+                              </h4>
+                              <p className="text-gray-300 text-sm">
+                                Styled-components, Emotion, or other runtime
+                                styling solutions.
+                              </p>
+                            </div>
+                            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+                              <h4 className="text-yellow-400 font-semibold mb-2">
+                                CSS Modules
+                              </h4>
+                              <p className="text-gray-300 text-sm">
+                                Scoped styles with compile-time optimization.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="custom-date-filter">
+                            Example: Custom Date Filter
+                          </AnchorHeading>
+                          <div className="space-y-4">
+                            <p className="text-gray-300">
+                              Here's a complete example of building a custom
+                              date filter with Tailwind CSS:
+                            </p>
+                            <CodeBlock
+                              code={`import { useDateFilter } from 'ag-grid-react-components/headless';
+import { Calendar, ChevronDown } from 'lucide-react';
+
+function CustomDateFilter({ column, onFilterChanged }) {
+  const {
+    filterState,
+    validation,
+    handlers,
+    computed,
+    refs
+  } = useDateFilter({
+    column,
+    onFilterChanged,
+    enableDatePicker: true
+  });
+
+  return (
+    <div className="p-4 bg-white rounded-lg shadow-lg">
+      {/* Operator Selector */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Filter Type
+        </label>
+        <div className="relative">
+          <select
+            value={filterState.operator}
+            onChange={handlers.onOperatorChange}
+            className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-md 
+                     focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                     appearance-none bg-white"
+          >
+            <option value="equals">Equals</option>
+            <option value="notEqual">Not Equal</option>
+            <option value="greaterThan">After</option>
+            <option value="lessThan">Before</option>
+            <option value="inRange">Between</option>
+          </select>
+          <ChevronDown className="absolute right-2 top-3 w-4 h-4 text-gray-400 pointer-events-none" />
+        </div>
+      </div>
+
+      {/* Date Input */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Date
+        </label>
+        <div className="relative">
+          <input
+            ref={refs.dateFromRef}
+            type="text"
+            value={filterState.dateFrom || ''}
+            onChange={handlers.onDateFromChange}
+            placeholder="Enter date or expression..."
+            className={\`w-full pl-10 pr-3 py-2 border rounded-md
+                     focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                     \${validation.dateFromError ? 'border-red-500' : 'border-gray-300'}\`}
+          />
+          <Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+          {computed.showDatePicker && (
+            <button
+              onClick={handlers.toggleDatePicker}
+              className="absolute right-2 top-2 p-1 hover:bg-gray-100 rounded"
+            >
+              <Calendar className="w-4 h-4 text-gray-600" />
+            </button>
+          )}
+        </div>
+        {validation.dateFromError && (
+          <p className="mt-1 text-sm text-red-600">{validation.dateFromError}</p>
+        )}
+      </div>
+
+      {/* Date To (for range) */}
+      {filterState.operator === 'inRange' && (
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            To Date
+          </label>
+          <div className="relative">
+            <input
+              ref={refs.dateToRef}
+              type="text"
+              value={filterState.dateTo || ''}
+              onChange={handlers.onDateToChange}
+              placeholder="Enter end date..."
+              className={\`w-full pl-10 pr-3 py-2 border rounded-md
+                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                       \${validation.dateToError ? 'border-red-500' : 'border-gray-300'}\`}
+            />
+            <Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+          </div>
+          {validation.dateToError && (
+            <p className="mt-1 text-sm text-red-600">{validation.dateToError}</p>
+          )}
+        </div>
+      )}
+
+      {/* Quick Options */}
+      {computed.showQuickOptions && (
+        <div className="mb-4">
+          <p className="text-sm font-medium text-gray-700 mb-2">Quick Select</p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => handlers.applyQuickFilter('Today')}
+              className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+            >
+              Today
+            </button>
+            <button
+              onClick={() => handlers.applyQuickFilter('Yesterday')}
+              className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+            >
+              Yesterday
+            </button>
+            <button
+              onClick={() => handlers.applyQuickFilter('Last7Days')}
+              className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+            >
+              Last 7 Days
+            </button>
+            <button
+              onClick={() => handlers.applyQuickFilter('ThisMonth')}
+              className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
+            >
+              This Month
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Action Buttons */}
+      <div className="flex gap-2">
+        <button
+          onClick={handlers.onApply}
+          disabled={!validation.isValid}
+          className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md
+                   hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed
+                   transition-colors"
+        >
+          Apply Filter
+        </button>
+        <button
+          onClick={handlers.onClear}
+          className="px-4 py-2 border border-gray-300 rounded-md
+                   hover:bg-gray-50 transition-colors"
+        >
+          Clear
+        </button>
+      </div>
+    </div>
+  );
+}`}
+                              language="typescript"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <AnchorHeading
+                            level={3}
+                            id="design-system-integration"
+                          >
+                            Design System Integration
+                          </AnchorHeading>
+                          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                            <p className="text-gray-300 mb-4">
+                              Integrate headless components with your existing
+                              design system:
+                            </p>
+                            <CodeBlock
+                              code={`// Using your design system components
+import { Button, Select, Input, Card } from '@your-company/design-system';
+import { useDateFilter } from 'ag-grid-react-components/headless';
+
+function BrandedDateFilter(props) {
+  const { filterState, handlers, validation } = useDateFilter(props);
+
+  return (
+    <Card>
+      <Card.Header>Date Filter</Card.Header>
+      <Card.Body>
+        <Select
+          value={filterState.operator}
+          onChange={handlers.onOperatorChange}
+          options={[
+            { value: 'equals', label: 'Equals' },
+            { value: 'greaterThan', label: 'After' },
+            { value: 'lessThan', label: 'Before' }
+          ]}
+        />
+        
+        <Input
+          value={filterState.dateFrom}
+          onChange={handlers.onDateFromChange}
+          error={validation.dateFromError}
+          placeholder="Enter date..."
+        />
+        
+        <Button.Group>
+          <Button 
+            variant="primary" 
+            onClick={handlers.onApply}
+            disabled={!validation.isValid}
+          >
+            Apply
+          </Button>
+          <Button variant="secondary" onClick={handlers.onClear}>
+            Clear
+          </Button>
+        </Button.Group>
+      </Card.Body>
+    </Card>
+  );
+}`}
+                              language="typescript"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Headless Examples */}
+                {activeDocSection === "headless-examples" && (
+                  <div className="space-y-8">
+                    <div>
+                      <AnchorHeading level={1} id="headless-examples">
+                        Headless Component Examples
+                      </AnchorHeading>
+                      <p className="text-gray-300 mb-6">
+                        Real-world examples of headless components in action,
+                        showing different UI frameworks and styling approaches.
+                      </p>
+
+                      <div className="space-y-8">
+                        <div>
+                          <AnchorHeading level={3} id="material-ui-example">
+                            Material-UI Integration
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`import { TextField, MenuItem, Button, Paper, Box } from '@mui/material';
+import { useDateFilter } from 'ag-grid-react-components/headless';
+
+function MaterialUIDateFilter(props) {
+  const { filterState, handlers, validation } = useDateFilter(props);
+
+  return (
+    <Paper sx={{ p: 2 }}>
+      <Box sx={{ mb: 2 }}>
+        <TextField
+          select
+          fullWidth
+          label="Filter Type"
+          value={filterState.operator}
+          onChange={handlers.onOperatorChange}
+        >
+          <MenuItem value="equals">Equals</MenuItem>
+          <MenuItem value="greaterThan">After</MenuItem>
+          <MenuItem value="lessThan">Before</MenuItem>
+          <MenuItem value="inRange">Between</MenuItem>
+        </TextField>
+      </Box>
+
+      <Box sx={{ mb: 2 }}>
+        <TextField
+          fullWidth
+          label="Date"
+          value={filterState.dateFrom || ''}
+          onChange={(e) => handlers.onDateFromChange(e)}
+          error={!!validation.dateFromError}
+          helperText={validation.dateFromError}
+          placeholder="e.g., Today, 2024-01-01, -7d"
+        />
+      </Box>
+
+      {filterState.operator === 'inRange' && (
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            label="To Date"
+            value={filterState.dateTo || ''}
+            onChange={(e) => handlers.onDateToChange(e)}
+            error={!!validation.dateToError}
+            helperText={validation.dateToError}
+          />
+        </Box>
+      )}
+
+      <Box sx={{ display: 'flex', gap: 1 }}>
+        <Button
+          variant="contained"
+          onClick={handlers.onApply}
+          disabled={!validation.isValid}
+          fullWidth
+        >
+          Apply
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={handlers.onClear}
+        >
+          Clear
+        </Button>
+      </Box>
+    </Paper>
+  );
+}`}
+                            language="typescript"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="ant-design-example">
+                            Ant Design Integration
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`import { Select, Input, Button, Space, Card, Form } from 'antd';
+import { CalendarOutlined } from '@ant-design/icons';
+import { useDateFilter } from 'ag-grid-react-components/headless';
+
+const { Option } = Select;
+
+function AntDesignDateFilter(props) {
+  const { filterState, handlers, validation } = useDateFilter(props);
+
+  return (
+    <Card size="small" style={{ width: 300 }}>
+      <Form layout="vertical">
+        <Form.Item label="Filter Type">
+          <Select
+            value={filterState.operator}
+            onChange={(value) => handlers.onOperatorChange({ target: { value } })}
+            style={{ width: '100%' }}
+          >
+            <Option value="equals">Equals</Option>
+            <Option value="notEqual">Not Equal</Option>
+            <Option value="greaterThan">After</Option>
+            <Option value="lessThan">Before</Option>
+            <Option value="inRange">Between</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item 
+          label="Date"
+          validateStatus={validation.dateFromError ? 'error' : ''}
+          help={validation.dateFromError}
+        >
+          <Input
+            prefix={<CalendarOutlined />}
+            value={filterState.dateFrom || ''}
+            onChange={(e) => handlers.onDateFromChange(e)}
+            placeholder="Enter date or expression"
+          />
+        </Form.Item>
+
+        {filterState.operator === 'inRange' && (
+          <Form.Item 
+            label="To Date"
+            validateStatus={validation.dateToError ? 'error' : ''}
+            help={validation.dateToError}
+          >
+            <Input
+              prefix={<CalendarOutlined />}
+              value={filterState.dateTo || ''}
+              onChange={(e) => handlers.onDateToChange(e)}
+              placeholder="End date"
+            />
+          </Form.Item>
+        )}
+
+        <Form.Item>
+          <Space style={{ width: '100%' }}>
+            <Button
+              type="primary"
+              onClick={handlers.onApply}
+              disabled={!validation.isValid}
+              block
+            >
+              Apply Filter
+            </Button>
+            <Button onClick={handlers.onClear}>
+              Clear
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </Card>
+  );
+}`}
+                            language="typescript"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="chakra-ui-example">
+                            Chakra UI Integration
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`import {
+  Box,
+  Select,
+  Input,
+  Button,
+  VStack,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  HStack,
+  InputGroup,
+  InputLeftElement,
+  Card,
+  CardBody
+} from '@chakra-ui/react';
+import { CalendarIcon } from '@chakra-ui/icons';
+import { useDateFilter } from 'ag-grid-react-components/headless';
+
+function ChakraUIDateFilter(props) {
+  const { filterState, handlers, validation } = useDateFilter(props);
+
+  return (
+    <Card maxW="sm">
+      <CardBody>
+        <VStack spacing={4}>
+          <FormControl>
+            <FormLabel>Filter Type</FormLabel>
+            <Select
+              value={filterState.operator}
+              onChange={(e) => handlers.onOperatorChange(e)}
+            >
+              <option value="equals">Equals</option>
+              <option value="notEqual">Not Equal</option>
+              <option value="greaterThan">After</option>
+              <option value="lessThan">Before</option>
+              <option value="inRange">Between</option>
+            </Select>
+          </FormControl>
+
+          <FormControl isInvalid={!!validation.dateFromError}>
+            <FormLabel>Date</FormLabel>
+            <InputGroup>
+              <InputLeftElement pointerEvents="none">
+                <CalendarIcon color="gray.300" />
+              </InputLeftElement>
+              <Input
+                pl="2.5rem"
+                value={filterState.dateFrom || ''}
+                onChange={(e) => handlers.onDateFromChange(e)}
+                placeholder="Enter date or expression"
+              />
+            </InputGroup>
+            <FormErrorMessage>{validation.dateFromError}</FormErrorMessage>
+          </FormControl>
+
+          {filterState.operator === 'inRange' && (
+            <FormControl isInvalid={!!validation.dateToError}>
+              <FormLabel>To Date</FormLabel>
+              <InputGroup>
+                <InputLeftElement pointerEvents="none">
+                  <CalendarIcon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  pl="2.5rem"
+                  value={filterState.dateTo || ''}
+                  onChange={(e) => handlers.onDateToChange(e)}
+                  placeholder="End date"
+                />
+              </InputGroup>
+              <FormErrorMessage>{validation.dateToError}</FormErrorMessage>
+            </FormControl>
+          )}
+
+          <HStack spacing={2} width="100%">
+            <Button
+              colorScheme="blue"
+              onClick={handlers.onApply}
+              isDisabled={!validation.isValid}
+              flex={1}
+            >
+              Apply
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handlers.onClear}
+            >
+              Clear
+            </Button>
+          </HStack>
+        </VStack>
+      </CardBody>
+    </Card>
+  );
+}`}
+                            language="typescript"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="minimal-example">
+                            Minimal Custom Implementation
+                          </AnchorHeading>
+                          <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-6 mb-4">
+                            <p className="text-yellow-200 text-sm">
+                              This example shows the absolute minimum UI needed
+                              for a functional filter:
+                            </p>
+                          </div>
+                          <CodeBlock
+                            code={`import { useDateFilter } from 'ag-grid-react-components/headless';
+
+function MinimalDateFilter(props) {
+  const { filterState, handlers } = useDateFilter(props);
+
+  return (
+    <div style={{ padding: '8px' }}>
+      <select 
+        value={filterState.operator} 
+        onChange={handlers.onOperatorChange}
+        style={{ marginBottom: '4px', width: '100%' }}
+      >
+        <option value="equals">=</option>
+        <option value="greaterThan">&gt;</option>
+        <option value="lessThan">&lt;</option>
+      </select>
+      
+      <input
+        value={filterState.dateFrom || ''}
+        onChange={handlers.onDateFromChange}
+        placeholder="Date..."
+        style={{ marginBottom: '4px', width: '100%' }}
+      />
+      
+      <div>
+        <button onClick={handlers.onApply}>✓</button>
+        <button onClick={handlers.onClear}>✗</button>
+      </div>
+    </div>
+  );
+}`}
+                            language="typescript"
+                          />
+                        </div>
+
+                        <div>
+                          <AnchorHeading level={3} id="advanced-features">
+                            Advanced Features Example
+                          </AnchorHeading>
+                          <CodeBlock
+                            code={`import { useDateFilter } from 'ag-grid-react-components/headless';
+import { motion, AnimatePresence } from 'framer-motion';
+
+function AdvancedDateFilter(props) {
+  const { 
+    filterState, 
+    handlers, 
+    validation, 
+    computed,
+    helpers 
+  } = useDateFilter({
+    ...props,
+    enableDatePicker: true,
+    enableExpressionParsing: true,
+    enableQuickFilters: true
+  });
+
+  const [showHelp, setShowHelp] = React.useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="filter-container"
+    >
+      {/* Filter UI with animations */}
+      <AnimatePresence>
+        {showHelp && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="help-panel"
+          >
+            <h4>Expression Examples:</h4>
+            <ul>
+              <li>Today, Yesterday</li>
+              <li>StartOfMonth, EndOfYear</li>
+              <li>Today-7d (7 days ago)</li>
+              <li>StartOfMonth+1w (week after month start)</li>
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Main filter controls */}
+      <div className="filter-controls">
+        {/* ... your custom UI ... */}
+      </div>
+
+      {/* Real-time expression preview */}
+      {computed.parsedExpression && (
+        <div className="expression-preview">
+          <small>
+            Resolves to: {helpers.formatDate(computed.parsedExpression)}
+          </small>
+        </div>
+      )}
+    </motion.div>
+  );
+}`}
+                            language="typescript"
+                          />
                         </div>
                       </div>
                     </div>

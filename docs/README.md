@@ -29,10 +29,17 @@ Welcome to the comprehensive documentation for AG Grid React Components. This di
   - Accessibility features
 
 - **[Grid State Persistence API](./GRIDSTATE_API.md)** - URL state management with compression
+
   - Automatic URL synchronization
   - Manual state capture/restore
   - Compression adapters
   - Server-side persistence
+
+- **[SavedViewsDropdown API](./SAVEDVIEWSDROPDOWN_API.md)** - Complete view management solution
+  - Save filters, columns, and sort states
+  - Local storage and server persistence
+  - Headless architecture
+  - Import/export functionality
 
 ### Feature Guides
 
@@ -73,7 +80,8 @@ Welcome to the comprehensive documentation for AG Grid React Components. This di
 1. **Installation**: Start with the [main README](../README.md)
 2. **Basic Usage**: Check the code examples in the README
 3. **Date Expressions**: Learn about [relative date syntax](./DATE_EXPRESSIONS.md)
-4. **Styling**: Customize components using the [Styling Guide](./STYLING_GUIDE.md)
+4. **View Management**: Save and restore grid states with [SavedViewsDropdown](./SAVEDVIEWSDROPDOWN_API.md)
+5. **Styling**: Customize components using the [Styling Guide](./STYLING_GUIDE.md)
 
 ## 🤝 Contributing
 
