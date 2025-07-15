@@ -1,6 +1,6 @@
 {
   "name": "ag-grid-react-components",
-  "version": "0.1.0",
+  "version": "0.2.0-rc3",
   "description": "Give your users the date filtering they deserve. Relative date queries, quick filters, and shareable views for AG Grid.",
   "type": "module",
   "packageManager": "npm@10.2.0",
