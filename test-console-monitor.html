@@ -1,0 +1,254 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Console Monitor for Infinite Loop</title>
+    <style>
+      body {
+        font-family: monospace;
+        margin: 0;
+        display: flex;
+        height: 100vh;
+      }
+      #controls {
+        width: 300px;
+        padding: 20px;
+        background: #f0f0f0;
+        overflow-y: auto;
+      }
+      #console {
+        flex: 1;
+        padding: 20px;
+        background: #1e1e1e;
+        color: #d4d4d4;
+        overflow-y: auto;
+        white-space: pre-wrap;
+      }
+      .log-entry {
+        margin: 2px 0;
+        padding: 2px;
+      }
+      .save {
+        color: #f14c4c;
+        font-weight: bold;
+      }
+      .load {
+        color: #4c9aff;
+        font-weight: bold;
+      }
+      .error {
+        color: #ff6b6b;
+      }
+      .warning {
+        color: #ffd93d;
+      }
+      button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        cursor: pointer;
+      }
+      #stats {
+        background: white;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+      }
+      .high-rate {
+        color: red;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="controls">
+      <h2>Console Monitor</h2>
+      <button onclick="openDemo()">Open Demo in New Window</button>
+      <button onclick="clearLogs()">Clear Logs</button>
+      <button onclick="pauseLogging()">Pause/Resume</button>
+
+      <div id="stats">
+        <h3>Statistics</h3>
+        <div>Status: <span id="status">Not Connected</span></div>
+        <div>Grid Saves: <span id="saveCount">0</span></div>
+        <div>Grid Loads: <span id="loadCount">0</span></div>
+        <div>Save Rate: <span id="saveRate">0</span>/sec</div>
+        <div>Time: <span id="elapsed">0</span>s</div>
+      </div>
+
+      <div>
+        <h3>Filters</h3>
+        <label
+          ><input type="checkbox" id="showSaves" checked /> Show Saves</label
+        ><br />
+        <label
+          ><input type="checkbox" id="showLoads" checked /> Show Loads</label
+        ><br />
+        <label><input type="checkbox" id="showOthers" /> Show Other Logs</label>
+      </div>
+    </div>
+
+    <div id="console">
+      <div class="log-entry">Waiting for demo to open...</div>
+    </div>
+
+    <script>
+      let demoWindow = null;
+      let isPaused = false;
+      let startTime = null;
+      let saveCount = 0;
+      let loadCount = 0;
+      let saveTimes = [];
+      let logBuffer = [];
+      const maxLogs = 1000;
+
+      function log(message, type = "info") {
+        if (isPaused) return;
+
+        const timestamp = startTime
+          ? ((Date.now() - startTime) / 1000).toFixed(2)
+          : "0.00";
+        const entry = {
+          time: timestamp,
+          message: message,
+          type: type,
+        };
+
+        logBuffer.push(entry);
+        if (logBuffer.length > maxLogs) {
+          logBuffer.shift();
+        }
+
+        // Check filters
+        const showSaves = document.getElementById("showSaves").checked;
+        const showLoads = document.getElementById("showLoads").checked;
+        const showOthers = document.getElementById("showOthers").checked;
+
+        if (
+          (type === "save" && !showSaves) ||
+          (type === "load" && !showLoads) ||
+          (type === "info" && !showOthers)
+        ) {
+          return;
+        }
+
+        const consoleDiv = document.getElementById("console");
+        const div = document.createElement("div");
+        div.className = `log-entry ${type}`;
+        div.textContent = `[${timestamp}s] ${message}`;
+        consoleDiv.appendChild(div);
+
+        // Auto scroll
+        consoleDiv.scrollTop = consoleDiv.scrollHeight;
+
+        // Keep only last 500 visible entries
+        while (consoleDiv.children.length > 500) {
+          consoleDiv.removeChild(consoleDiv.firstChild);
+        }
+      }
+
+      function updateStats() {
+        if (!startTime) return;
+
+        const elapsed = (Date.now() - startTime) / 1000;
+        document.getElementById("elapsed").textContent = elapsed.toFixed(1);
+        document.getElementById("saveCount").textContent = saveCount;
+        document.getElementById("loadCount").textContent = loadCount;
+
+        // Calculate save rate over last 5 seconds
+        const fiveSecsAgo = Date.now() - 5000;
+        const recentSaves = saveTimes.filter((t) => t > fiveSecsAgo).length;
+        const rate = (recentSaves / 5).toFixed(1);
+
+        const rateElement = document.getElementById("saveRate");
+        rateElement.textContent = rate;
+
+        if (parseFloat(rate) > 5) {
+          rateElement.className = "high-rate";
+          if (saveCount > 10 && parseFloat(rate) > 10) {
+            log(
+              "⚠️ HIGH SAVE RATE DETECTED - POSSIBLE INFINITE LOOP!",
+              "error",
+            );
+          }
+        } else {
+          rateElement.className = "";
+        }
+      }
+
+      function openDemo() {
+        if (demoWindow && !demoWindow.closed) {
+          demoWindow.focus();
+          return;
+        }
+
+        log("Opening demo window...", "info");
+        demoWindow = window.open(
+          "http://localhost:5173/",
+          "demo",
+          "width=1400,height=900",
+        );
+
+        if (!demoWindow) {
+          log("Failed to open window - popup blocked?", "error");
+          return;
+        }
+
+        document.getElementById("status").textContent = "Connecting...";
+        startTime = Date.now();
+        saveCount = 0;
+        loadCount = 0;
+        saveTimes = [];
+
+        // Try to hook into console
+        setTimeout(() => {
+          try {
+            if (demoWindow && !demoWindow.closed && demoWindow.console) {
+              const originalLog = demoWindow.console.log;
+              demoWindow.console.log = function (...args) {
+                originalLog.apply(demoWindow.console, args);
+
+                const message = args.join(" ");
+                if (message.includes("Grid state saved to URL")) {
+                  saveCount++;
+                  saveTimes.push(Date.now());
+                  log(`SAVE #${saveCount}: ${message}`, "save");
+                } else if (message.includes("Grid state loaded from URL")) {
+                  loadCount++;
+                  log(`LOAD #${loadCount}: ${message}`, "load");
+                } else if (document.getElementById("showOthers").checked) {
+                  log(message, "info");
+                }
+              };
+
+              document.getElementById("status").textContent = "Connected";
+              log("Successfully hooked into demo console", "info");
+            }
+          } catch (e) {
+            document.getElementById("status").textContent = "Error";
+            log("Could not hook console: " + e.message, "error");
+          }
+        }, 1000);
+
+        // Start stats update
+        setInterval(updateStats, 100);
+      }
+
+      function clearLogs() {
+        document.getElementById("console").innerHTML =
+          '<div class="log-entry">Logs cleared</div>';
+        logBuffer = [];
+      }
+
+      function pauseLogging() {
+        isPaused = !isPaused;
+        log(isPaused ? "Logging paused" : "Logging resumed", "warning");
+      }
+
+      // Auto-open demo on load
+      window.addEventListener("load", () => {
+        setTimeout(openDemo, 500);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Direct Infinite Loop Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      .instructions {
+        background: #f0f0f0;
+        padding: 15px;
+        margin: 20px 0;
+      }
+      code {
+        background: #e0e0e0;
+        padding: 2px 4px;
+      }
+      iframe {
+        width: 100%;
+        height: 600px;
+        border: 2px solid #333;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Direct Test for Infinite Loop</h1>
+
+    <div class="instructions">
+      <h2>Instructions:</h2>
+      <ol>
+        <li>
+          Open your browser's Developer Console (press <code>F12</code> or
+          <code>Cmd+Option+I</code>)
+        </li>
+        <li>Make sure you're on the "Console" tab in DevTools</li>
+        <li>The demo will load below in an iframe</li>
+        <li>
+          Watch the console for repeated messages like
+          <code>Grid state saved to URL</code>
+        </li>
+      </ol>
+
+      <h3>What to look for:</h3>
+      <ul>
+        <li>
+          ✅ <strong>Normal:</strong> 1-5 "Grid state saved to URL" messages
+          when the page loads
+        </li>
+        <li>
+          🚨 <strong>Infinite Loop:</strong> Continuous stream of "Grid state
+          saved to URL" messages that never stop
+        </li>
+      </ul>
+    </div>
+
+    <h2>Demo (loading below):</h2>
+    <iframe src="http://localhost:5173/demo" id="demoFrame"></iframe>
+
+    <script>
+      // Try to capture console logs from iframe (may not work due to same-origin policy)
+      window.addEventListener("load", () => {
+        const iframe = document.getElementById("demoFrame");
+
+        console.log(
+          "%c=== MONITORING CONSOLE FOR INFINITE LOOP ===",
+          "color: blue; font-weight: bold",
+        );
+        console.log('Watch for repeated "Grid state saved to URL" messages...');
+
+        // Also monitor our own console
+        const originalLog = console.log;
+        let saveCount = 0;
+        const startTime = Date.now();
+
+        console.log = function (...args) {
+          originalLog.apply(console, args);
+
+          const message = args.join(" ");
+          if (message.includes("Grid state saved to URL")) {
+            saveCount++;
+            const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+            originalLog(
+              `%c[${elapsed}s] Save #${saveCount}`,
+              "color: red; font-weight: bold",
+            );
+
+            if (saveCount > 20) {
+              originalLog(
+                "%c🚨 INFINITE LOOP DETECTED! More than 20 saves!",
+                "color: red; font-size: 16px; font-weight: bold",
+              );
+            }
+          }
+        };
+      });
+    </script>
+  </body>
+</html>

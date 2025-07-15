@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Infinite Loop Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background: #1a1a1a;
+        color: #fff;
+      }
+      .log-container {
+        background: #2a2a2a;
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+      .log-entry {
+        padding: 4px 0;
+        font-family: monospace;
+        font-size: 14px;
+      }
+      .log-entry.save {
+        color: #4ade80;
+      }
+      .log-entry.load {
+        color: #60a5fa;
+      }
+      .log-entry.error {
+        color: #f87171;
+      }
+      .stats {
+        background: #374151;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+      }
+      button {
+        background: #4f46e5;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+      button:hover {
+        background: #4338ca;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Infinite Loop Detection Test</h1>
+    <p>
+      This page monitors the demo app for infinite loops in grid state
+      persistence.
+    </p>
+
+    <div>
+      <button onclick="openDemo()">Open Demo in New Tab</button>
+      <button onclick="clearLogs()">Clear Logs</button>
+      <button onclick="stopMonitoring()">Stop Monitoring</button>
+    </div>
+
+    <div class="stats" id="stats">
+      <div>Status: <span id="status">Not Connected</span></div>
+      <div>Total Saves: <span id="saveCount">0</span></div>
+      <div>Total Loads: <span id="loadCount">0</span></div>
+      <div>Save Rate: <span id="saveRate">0</span> saves/second</div>
+      <div>Time Running: <span id="timeRunning">0</span> seconds</div>
+    </div>
+
+    <div class="log-container" id="logs">
+      <div class="log-entry">Waiting for demo to open...</div>
+    </div>
+
+    <script>
+      let logs = [];
+      let saveCount = 0;
+      let loadCount = 0;
+      let startTime = null;
+      let demoWindow = null;
+      let monitoring = false;
+      let saveTimestamps = [];
+
+      function addLog(message, type = "info") {
+        const timestamp = new Date().toLocaleTimeString();
+        const entry = { timestamp, message, type };
+        logs.push(entry);
+
+        const logDiv = document.getElementById("logs");
+        const logEntry = document.createElement("div");
+        logEntry.className = `log-entry ${type}`;
+        logEntry.textContent = `[${timestamp}] ${message}`;
+        logDiv.appendChild(logEntry);
+        logDiv.scrollTop = logDiv.scrollHeight;
+
+        // Keep only last 100 logs
+        if (logs.length > 100) {
+          logs.shift();
+          logDiv.removeChild(logDiv.firstChild);
+        }
+      }
+
+      function updateStats() {
+        document.getElementById("saveCount").textContent = saveCount;
+        document.getElementById("loadCount").textContent = loadCount;
+
+        if (startTime) {
+          const elapsed = (Date.now() - startTime) / 1000;
+          document.getElementById("timeRunning").textContent =
+            elapsed.toFixed(1);
+
+          // Calculate save rate over last 5 seconds
+          const fiveSecondsAgo = Date.now() - 5000;
+          const recentSaves = saveTimestamps.filter(
+            (t) => t > fiveSecondsAgo,
+          ).length;
+          const saveRate = (recentSaves / 5).toFixed(2);
+          document.getElementById("saveRate").textContent = saveRate;
+
+          // Detect potential infinite loop
+          if (saveRate > 10) {
+            document.getElementById("saveRate").style.color = "#f87171";
+            addLog(
+              `⚠️ HIGH SAVE RATE DETECTED: ${saveRate} saves/second`,
+              "error",
+            );
+          } else {
+            document.getElementById("saveRate").style.color = "inherit";
+          }
+        }
+      }
+
+      function openDemo() {
+        if (demoWindow && !demoWindow.closed) {
+          demoWindow.focus();
+          return;
+        }
+
+        demoWindow = window.open(
+          "http://localhost:5173/",
+          "demo",
+          "width=1200,height=800",
+        );
+
+        if (!demoWindow) {
+          addLog("Failed to open demo window - popup may be blocked", "error");
+          return;
+        }
+
+        document.getElementById("status").textContent = "Connecting...";
+        monitoring = true;
+        startTime = Date.now();
+
+        // Monitor the demo window
+        const checkInterval = setInterval(() => {
+          if (!monitoring || !demoWindow || demoWindow.closed) {
+            clearInterval(checkInterval);
+            document.getElementById("status").textContent = "Disconnected";
+            monitoring = false;
+            return;
+          }
+
+          try {
+            // Inject monitoring script
+            if (demoWindow.console && !demoWindow._monitored) {
+              demoWindow._monitored = true;
+              document.getElementById("status").textContent = "Connected";
+
+              // Override console.log in the demo window
+              const originalLog = demoWindow.console.log;
+              demoWindow.console.log = function (...args) {
+                originalLog.apply(demoWindow.console, args);
+
+                const message = args.join(" ");
+                if (message.includes("Grid state saved to URL")) {
+                  saveCount++;
+                  saveTimestamps.push(Date.now());
+                  addLog(message, "save");
+                } else if (message.includes("Grid state loaded from URL")) {
+                  loadCount++;
+                  addLog(message, "load");
+                }
+              };
+
+              addLog("Successfully connected to demo window", "load");
+            }
+          } catch (e) {
+            // Cross-origin restrictions may prevent access
+            if (
+              document.getElementById("status").textContent !==
+              "Connected (Limited)"
+            ) {
+              document.getElementById("status").textContent =
+                "Connected (Limited)";
+              addLog(
+                "Connected with limited access due to browser security",
+                "error",
+              );
+            }
+          }
+
+          updateStats();
+        }, 100);
+      }
+
+      function clearLogs() {
+        logs = [];
+        saveCount = 0;
+        loadCount = 0;
+        saveTimestamps = [];
+        startTime = Date.now();
+        document.getElementById("logs").innerHTML =
+          '<div class="log-entry">Logs cleared</div>';
+        updateStats();
+      }
+
+      function stopMonitoring() {
+        monitoring = false;
+        if (demoWindow && !demoWindow.closed) {
+          demoWindow.close();
+        }
+        document.getElementById("status").textContent = "Stopped";
+        addLog("Monitoring stopped", "error");
+      }
+
+      // Update stats every second
+      setInterval(updateStats, 1000);
+    </script>
+  </body>
+</html>

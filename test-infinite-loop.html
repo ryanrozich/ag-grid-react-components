@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test Infinite Loop</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      .info {
+        background: #f0f0f0;
+        padding: 10px;
+        margin: 10px 0;
+      }
+      .step {
+        margin: 10px 0;
+      }
+      code {
+        background: #e0e0e0;
+        padding: 2px 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Manual Test for Infinite Loop</h1>
+
+    <div class="info">
+      <p>
+        <strong>Current Directory:</strong>
+        /Users/ryan/code-repos/github/ryanrozich/ag-grid-react-components-worktrees/feat/v2-headless-components
+      </p>
+      <p><strong>Branch:</strong> feat/headless-refactor</p>
+    </div>
+
+    <h2>Steps to Test:</h2>
+
+    <div class="step">
+      <h3>1. Open Developer Console</h3>
+      <p>
+        Press <code>F12</code> or <code>Cmd+Option+I</code> to open the
+        browser's developer console.
+      </p>
+    </div>
+
+    <div class="step">
+      <h3>2. Navigate to the Demo</h3>
+      <p>
+        Click this link to open the demo in a new tab:
+        <a href="http://localhost:5173/" target="_blank">Open Demo</a>
+      </p>
+    </div>
+
+    <div class="step">
+      <h3>3. Monitor Console Output</h3>
+      <p>Watch the console for messages like:</p>
+      <ul>
+        <li><code>Grid state saved to URL: ...</code></li>
+        <li><code>Grid state loaded from URL: ...</code></li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <h3>4. What to Look For</h3>
+      <ul>
+        <li>
+          <strong>Normal:</strong> 1-5 "Grid state saved" messages on initial
+          load
+        </li>
+        <li>
+          <strong>Infinite Loop:</strong> Continuous stream of "Grid state
+          saved" messages that don't stop
+        </li>
+        <li>
+          <strong>Check Timing:</strong> If saves happen faster than 1 per
+          second continuously, it's a loop
+        </li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <h3>5. Report Results</h3>
+      <p>After observing for 10-15 seconds, note:</p>
+      <ul>
+        <li>How many "Grid state saved to URL" messages appeared?</li>
+        <li>Did they stop after initial load or continue indefinitely?</li>
+        <li>What was the time gap between messages?</li>
+        <li>Any error messages in the console?</li>
+      </ul>
+    </div>
+
+    <div class="info" style="background: #ffe0e0">
+      <h3>Known Issue</h3>
+      <p>
+        There appears to be an infinite loop where the grid continuously saves
+        state to the URL. This happens because:
+      </p>
+      <ol>
+        <li>Grid state persistence loads state from URL</li>
+        <li>This triggers a filterChanged event</li>
+        <li>The filterChanged handler updates the filter model</li>
+        <li>This triggers another state save</li>
+        <li>Loop continues...</li>
+      </ol>
+    </div>
+
+    <div class="info" style="background: #e0ffe0">
+      <h3>Expected Fix</h3>
+      <p>
+        The fix adds an <code>isLoadingState</code> flag to prevent the
+        filterChanged handler from running during state loading.
+      </p>
+    </div>
+  </body>
+</html>
