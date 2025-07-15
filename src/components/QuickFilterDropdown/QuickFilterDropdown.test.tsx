@@ -485,7 +485,7 @@ describe("QuickFilterDropdown", () => {
       fireEvent.click(trigger);
 
       const dropdown = screen.getByRole("listbox");
-      expect(dropdown.className).toMatch(/positionBottomLeft/);
+      expect(dropdown.getAttribute("data-position")).toBe("bottom-left");
     });
 
     it("applies correct position class for bottom-right", () => {
@@ -495,7 +495,7 @@ describe("QuickFilterDropdown", () => {
       fireEvent.click(trigger);
 
       const dropdown = screen.getByRole("listbox");
-      expect(dropdown.className).toMatch(/positionBottomRight/);
+      expect(dropdown.getAttribute("data-position")).toBe("bottom-right");
     });
 
     it("applies correct position class for top-left", () => {
@@ -505,7 +505,7 @@ describe("QuickFilterDropdown", () => {
       fireEvent.click(trigger);
 
       const dropdown = screen.getByRole("listbox");
-      expect(dropdown.className).toMatch(/positionTopLeft/);
+      expect(dropdown.getAttribute("data-position")).toBe("top-left");
     });
 
     it("applies correct position class for top-right", () => {
@@ -515,7 +515,7 @@ describe("QuickFilterDropdown", () => {
       fireEvent.click(trigger);
 
       const dropdown = screen.getByRole("listbox");
-      expect(dropdown.className).toMatch(/positionTopRight/);
+      expect(dropdown.getAttribute("data-position")).toBe("top-right");
     });
   });
 

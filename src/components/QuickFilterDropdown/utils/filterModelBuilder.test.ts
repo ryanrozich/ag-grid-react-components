@@ -183,7 +183,7 @@ describe("filterModelBuilder", () => {
 
   describe("DATE_FILTER_PRESETS", () => {
     it("contains expected preset options", () => {
-      expect(DATE_FILTER_PRESETS).toHaveLength(11);
+      expect(DATE_FILTER_PRESETS).toHaveLength(12);
 
       const presetIds = DATE_FILTER_PRESETS.map((p) => p.id);
       expect(presetIds).toContain("all");
@@ -200,19 +200,17 @@ describe("filterModelBuilder", () => {
     it("has correct filter models for presets", () => {
       const todayPreset = DATE_FILTER_PRESETS.find((p) => p.id === "today");
       expect(todayPreset?.filterModel).toEqual({
-        mode: "relative",
-        type: "equals",
-        expressionFrom: "Today",
+        filterType: "equals",
+        dateFrom: "today",
       });
 
       const thisWeekPreset = DATE_FILTER_PRESETS.find(
         (p) => p.id === "this-week",
       );
       expect(thisWeekPreset?.filterModel).toEqual({
-        mode: "relative",
-        type: "inRange",
-        expressionFrom: "Today-6d",
-        expressionTo: "Today+1d",
+        filterType: "inRange",
+        dateFrom: "-6d",
+        dateTo: "today",
       });
 
       const allPreset = DATE_FILTER_PRESETS.find((p) => p.id === "all");
