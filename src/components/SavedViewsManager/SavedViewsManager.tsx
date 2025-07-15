@@ -617,7 +617,7 @@ const List: React.FC<ListProps> = ({ children, ...props }: ListProps) => {
       onDeleteView={deleteView}
       onSetDefault={setDefaultView}
     >
-      {children}
+      {typeof children === "function" ? children : undefined}
     </SavedViewsList>
   );
 };
@@ -659,7 +659,7 @@ const Dialog: React.FC<DialogProps> = ({
       currentSortModel={currentState.sortModel}
       portalId={portalId}
     >
-      {children}
+      {typeof children === "function" ? children : undefined}
     </SaveViewDialog>
   );
 };

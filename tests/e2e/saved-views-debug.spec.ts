@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 
 test.describe("SavedViewsManager Debug", () => {
   test("debug saved views elements", async ({ page }) => {

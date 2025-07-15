@@ -16,7 +16,7 @@ test.describe("Server-Side Date Filter", () => {
       if (request.url().includes("/api/tasks")) {
         apiCalls.push({
           url: request.url(),
-          body: request.postData() ? JSON.parse(request.postData()) : null,
+          body: request.postData() ? JSON.parse(request.postData()!) : null,
         });
       }
     });

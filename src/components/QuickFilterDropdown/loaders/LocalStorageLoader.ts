@@ -3,8 +3,6 @@ import type { ViewDropdownLoader, SavedViewOption } from "./types";
 export interface LocalStorageLoaderConfig {
   /** Storage key prefix */
   storageKey?: string;
-  /** Whether to auto-save on changes */
-  autoSave?: boolean;
 }
 
 /**
@@ -13,12 +11,10 @@ export interface LocalStorageLoaderConfig {
  */
 export class LocalStorageLoader implements ViewDropdownLoader {
   private storageKey: string;
-  private autoSave: boolean;
   private subscribers: Set<() => void> = new Set();
 
   constructor(config: LocalStorageLoaderConfig = {}) {
     this.storageKey = config.storageKey || "quickfilter-saved-views";
-    this.autoSave = config.autoSave ?? true;
   }
 
   async loadOptions(): Promise<SavedViewOption[]> {

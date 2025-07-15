@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import type { GridApi } from "ag-grid-community";
+import type { GridApi, ColumnState } from "ag-grid-community";
 import { QuickFilterDropdown } from "../QuickFilterDropdown";
 import type { QuickFilterOption } from "../QuickFilterDropdown/types";
 import type {
@@ -65,7 +65,7 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
 
           if (view.gridState.columnState) {
             api.applyColumnState({
-              state: view.gridState.columnState as unknown[],
+              state: view.gridState.columnState as ColumnState[],
               applyOrder: true,
             });
           }
@@ -146,7 +146,7 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
         label: view.label,
         filterModel: view.filterModel || {},
         description:
-          view.metadata?.description ||
+          view.description ||
           (view.saveType === "full-view"
             ? "Full view (columns, sort, filters)"
             : "Filters only"),
@@ -298,6 +298,10 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
     return null;
   }
 
+  if (!api) {
+    return null;
+  }
+
   return (
     <div className={`saved-views-dropdown-container ${className || ""}`}>
       <QuickFilterDropdown
@@ -371,13 +375,13 @@ export const SavedViewsDropdown: React.FC<SavedViewsDropdownProps> = ({
             const newView: SavedViewOption = {
               id,
               label: viewData.label,
+              description: viewData.description,
               saveType: viewData.saveType,
               filterModel,
               gridState:
                 viewData.saveType === "full-view" ? gridState : undefined,
               metadata: {
                 category: viewData.category,
-                description: viewData.description,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
               },

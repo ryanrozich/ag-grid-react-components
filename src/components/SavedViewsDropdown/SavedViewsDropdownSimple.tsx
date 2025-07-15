@@ -31,6 +31,10 @@ export const SavedViewsDropdownSimple: React.FC<
     }
   };
 
+  if (!api) {
+    return null;
+  }
+
   return (
     <QuickFilterDropdown
       api={api}

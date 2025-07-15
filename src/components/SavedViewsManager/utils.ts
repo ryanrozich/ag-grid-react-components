@@ -67,8 +67,7 @@ export function mergeImportedData(
   currentCategories: SavedViewCategory[],
   importData: ExportData,
 ): { views: SavedView[]; categories: SavedViewCategory[] } {
-  // Create maps for efficient lookups
-  const viewMap = new Map(currentViews.map((v) => [v.id, v]));
+  // Create map for efficient category lookup
   const categoryMap = new Map(currentCategories.map((c) => [c.id, c]));
 
   // Merge categories (don't duplicate)
