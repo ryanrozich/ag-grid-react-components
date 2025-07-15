@@ -11,8 +11,14 @@ export type DateFilterMode = "absolute" | "relative";
 
 export interface DateFilterModel {
   filterType: DateFilterType;
-  dateFrom?: string;
-  dateTo?: string;
+  type?: DateFilterType; // Alias for filterType for backward compatibility
+  mode?: DateFilterMode;
+  dateFrom?: string | Date;
+  dateTo?: string | Date;
+  expressionFrom?: string;
+  expressionTo?: string;
+  fromInclusive?: boolean;
+  toInclusive?: boolean;
 }
 
 export interface DateFilterParams extends IFilterParams {

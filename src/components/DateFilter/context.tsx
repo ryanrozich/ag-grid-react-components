@@ -70,37 +70,37 @@ export function DateFilterProvider({
   dateParser,
 }: DateFilterProviderProps) {
   // Initialize state from model
-  const [mode, setMode] = useState<DateFilterMode>(() => {
-    if (!model?.dateFrom) return "relative";
-    // Check if it's a relative date expression
-    return model.dateFrom.includes("-") ||
-      model.dateFrom.toLowerCase().includes("today") ||
-      model.dateFrom.toLowerCase().includes("month")
+  const [mode, setMode] = useState<DateFilterMode>(() =>
+    model?.dateFrom &&
+    typeof model.dateFrom === "string" &&
+    model.dateFrom.includes("-")
       ? "relative"
-      : "absolute";
-  });
+      : "absolute",
+  );
 
   const [filterType, setFilterType] = useState<DateFilterType>(
     () => model?.filterType || "equals",
   );
 
-  const [relativeValue, setRelativeValue] = useState(() => {
-    if (!model?.dateFrom) return "";
-    const isRelative =
-      model.dateFrom.includes("-") ||
-      model.dateFrom.toLowerCase().includes("today") ||
-      model.dateFrom.toLowerCase().includes("month");
-    return isRelative ? model.dateFrom : "";
-  });
+  const [relativeValue, setRelativeValue] = useState(() =>
+    model?.filterType === "inRange" &&
+    model?.dateFrom &&
+    typeof model.dateFrom === "string" &&
+    model.dateFrom.includes("-")
+      ? model.dateFrom
+      : "",
+  );
 
   const [startDate, setStartDate] = useState<Date | null>(() => {
-    if (!model?.dateFrom) return null;
-    const isRelative =
-      model.dateFrom.includes("-") ||
-      model.dateFrom.toLowerCase().includes("today") ||
-      model.dateFrom.toLowerCase().includes("month");
-    if (isRelative) return null;
-    const date = new Date(model.dateFrom);
+    if (
+      !model?.dateFrom ||
+      (typeof model.dateFrom === "string" && model.dateFrom.includes("-"))
+    )
+      return null;
+    const date =
+      model.dateFrom instanceof Date
+        ? model.dateFrom
+        : new Date(model.dateFrom);
     return isNaN(date.getTime()) ? null : date;
   });
 
@@ -116,7 +116,7 @@ export function DateFilterProvider({
   const isValid = useMemo(() => {
     if (mode === "relative") {
       if (!relativeValue) return false;
-      const parsed = parseRelativeDate(relativeValue);
+      const parsed = parseRelativeDate(relativeValue as string);
       return parsed !== null;
     } else {
       if (filterType === "inRange") {
@@ -200,7 +200,7 @@ export function DateFilterProvider({
     setMode,
     filterType,
     setFilterType,
-    relativeValue,
+    relativeValue: relativeValue as string,
     setRelativeValue,
     startDate,
     setStartDate,
