@@ -28,33 +28,9 @@ export function parseRelativeDate(expression: string): Date | null {
     case "next week":
       return startOfWeek(addWeeks(now, 1));
     case "this month":
-    case "startofmonth":
       return startOfMonth(now);
-    case "endofmonth":
-      return new Date(
-        now.getFullYear(),
-        now.getMonth() + 1,
-        0,
-        23,
-        59,
-        59,
-        999,
-      );
     case "last month":
       return startOfMonth(addMonths(now, -1));
-    case "startoflastmonth":
-      return startOfMonth(addMonths(now, -1));
-    case "endoflastmonth":
-      const lastMonth = addMonths(now, -1);
-      return new Date(
-        lastMonth.getFullYear(),
-        lastMonth.getMonth() + 1,
-        0,
-        23,
-        59,
-        59,
-        999,
-      );
     case "next month":
       return startOfMonth(addMonths(now, 1));
     case "this year":
