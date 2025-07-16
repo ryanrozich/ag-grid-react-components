@@ -1,5 +1,4 @@
 import React from "react";
-import styles from "./FilterActions.module.css";
 
 interface FilterActionsProps {
   onReset: () => void;
@@ -15,9 +14,9 @@ const FilterActionsComponent: React.FC<FilterActionsProps> = ({
   className = "",
 }) => {
   return (
-    <div className={`${styles.filterButtons} ${className}`}>
+    <div className={`ag-filter-apply-panel ${className}`}>
       <button
-        className={`${styles.filterButton} ${styles.resetButton}`}
+        className="ag-button ag-standard-button ag-filter-apply-panel-button"
         onClick={onReset}
         type="button"
         data-testid="clear-button"
@@ -32,7 +31,7 @@ const FilterActionsComponent: React.FC<FilterActionsProps> = ({
         Reset
       </button>
       <button
-        className={`${styles.filterButton} ${styles.applyButton}`}
+        className="ag-button ag-standard-button ag-filter-apply-panel-button"
         onClick={onApply}
         disabled={!isValid}
         type="button"
@@ -54,7 +53,7 @@ const FilterActionsComponent: React.FC<FilterActionsProps> = ({
       </button>
       <div
         id="apply-button-status"
-        className={styles.screenReaderOnly}
+        className="ag-hidden"
         aria-live="polite"
       >
         {isValid

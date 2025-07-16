@@ -18,7 +18,7 @@ import { useFilterState, useFilterValidation } from "./hooks";
 import { useDebouncedValidation } from "./hooks/useDebouncedValidation";
 import { withErrorBoundary, useErrorHandler } from "./utils/withErrorBoundary";
 
-import styles from "./DateFilter.module.css";
+// Removed CSS module import - using AG Grid classes for v33+ theming
 
 const DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
@@ -432,9 +432,22 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
         getModel: callbacks.getModel,
         setModel: callbacks.setModel,
         isFilterActive: callbacks.isFilterActive,
-        afterGuiAttached: () => {
+        afterGuiAttached: (params?: { ePopup?: HTMLElement }) => {
           // Method called after the filter is attached to the DOM
           // This helps AG Grid position popups correctly
+          
+          // For AG Grid v33+, ensure the popup inherits the theme
+          if (params?.ePopup) {
+            // The popup needs to have the theme applied for styling to work
+            const gridWrapper = document.querySelector('.ag-root-wrapper');
+            if (gridWrapper) {
+              // Copy theme-related classes to the popup
+              const themeClass = Array.from(gridWrapper.classList).find(c => c.startsWith('ag-theme-'));
+              if (themeClass && !params.ePopup.classList.contains(themeClass)) {
+                params.ePopup.classList.add(themeClass);
+              }
+            }
+          }
         },
       }),
       [callbacks],
@@ -443,10 +456,10 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
     return (
       <div
         ref={filterRef}
-        className={`ag-filter ag-date-filter ${styles.dateFilter} ${
+        className={`ag-filter ag-date-filter ${
           filterState.filterType === "inRange"
-            ? styles.dateFilterRange
-            : styles.dateFilterNormal
+            ? "ag-date-filter-range"
+            : "ag-date-filter-normal"
         }`}
         data-testid={props.testId}
         role="form"
@@ -462,7 +475,7 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
           onModeChange={filterState.toggleFilterMode}
         />
 
-        <div className={`date-inputs-section ${styles.dateInputsSection}`}>
+        <div className="ag-filter-body-wrapper">
           {filterState.filterMode === "absolute" ? (
             <TextDateInput
               filterType={filterState.filterType}

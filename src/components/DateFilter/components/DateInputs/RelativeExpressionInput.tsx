@@ -1,7 +1,6 @@
 import React, { useCallback, useState, useRef, useEffect } from "react";
 import { format } from "date-fns";
 import { DateFilterType } from "../../types";
-import styles from "./DateInputs.module.css";
 
 // Common relative date expressions for autocomplete
 const EXPRESSION_SUGGESTIONS = [

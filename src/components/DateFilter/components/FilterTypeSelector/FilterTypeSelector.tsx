@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { DateFilterType } from "../../types";
-import styles from "./FilterTypeSelector.module.css";
 
 interface FilterTypeSelectorProps {
   filterType: DateFilterType;
@@ -21,13 +20,13 @@ const FilterTypeSelectorComponent: React.FC<FilterTypeSelectorProps> = ({
   );
 
   return (
-    <div className={`${styles.filterTypeSection} ${className}`}>
-      <label htmlFor="filter-type-select" className={styles.filterLabel}>
+    <div className={`ag-filter-condition ${className}`}>
+      <label htmlFor="filter-type-select" className="ag-label">
         Filter Type
       </label>
       <select
         id="filter-type-select"
-        className={styles.filterTypeSelect}
+        className="ag-select"
         value={filterType}
         onChange={handleChange}
         aria-label="Select filter type"
@@ -41,7 +40,7 @@ const FilterTypeSelectorComponent: React.FC<FilterTypeSelectorProps> = ({
       </select>
       <div
         id="filter-type-description"
-        className={styles.screenReaderOnly}
+        className="ag-hidden"
         aria-live="polite"
       >
         Choose how to filter dates: equals a specific date, not equal to a date,

@@ -1,7 +1,6 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { parse, isValid, format } from "date-fns";
 import { DateFilterType } from "../../types";
-import styles from "./DateInputs.module.css";
 
 interface TextDateInputProps {
   filterType: DateFilterType;
@@ -172,20 +171,20 @@ const TextDateInputComponent: React.FC<TextDateInputProps> = ({
 
   return (
     <div
-      className={`${styles.dateInputsContainer} ${className}`}
+      className={`ag-filter-body ${className}`}
       data-testid="date-input"
     >
-      <label htmlFor="date-input-from" className={styles.inputLabel}>
+      <label htmlFor="date-input-from" className="ag-label">
         {filterType === "inRange" ? "Date Range" : "Date"}
       </label>
       <div
         className={
-          filterType === "inRange" ? styles.inputRow : styles.inputGroup
+          filterType === "inRange" ? "ag-filter-date-range" : "ag-filter-date"
         }
       >
-        <div className={styles.inputWrapper}>
+        <div className="ag-filter-date-from">
           {filterType === "inRange" && (
-            <span className={styles.inputLabel}>From:</span>
+            <span className="ag-label">From:</span>
           )}
           <input
             id="date-input-from"
@@ -194,20 +193,20 @@ const TextDateInputComponent: React.FC<TextDateInputProps> = ({
             onChange={handleFromChange}
             onKeyDown={handleKeyDown}
             placeholder={dateFormat}
-            className={`${styles.dateInput} ${fromError ? styles.inputError : ""}`}
+            className={`ag-input-field-input ag-text-field-input ${fromError ? "ag-invalid" : ""}`}
             aria-label={filterType === "inRange" ? "Start date" : "Date"}
             aria-describedby={fromError ? "from-error" : "date-format-hint"}
             aria-invalid={!!fromError}
           />
           {fromError && (
-            <div id="from-error" className={styles.errorText}>
+            <div id="from-error" className="ag-validation-message">
               {fromError}
             </div>
           )}
         </div>
         {filterType === "inRange" && (
-          <div className={styles.inputWrapper}>
-            <label htmlFor="date-input-to" className={styles.inputLabel}>
+          <div className="ag-filter-date-to">
+            <label htmlFor="date-input-to" className="ag-label">
               To:
             </label>
             <input
@@ -217,20 +216,20 @@ const TextDateInputComponent: React.FC<TextDateInputProps> = ({
               onChange={handleToChange}
               onKeyDown={handleKeyDown}
               placeholder={dateFormat}
-              className={`${styles.dateInput} ${toError ? styles.inputError : ""}`}
+              className={`ag-input-field-input ag-text-field-input ${toError ? "ag-invalid" : ""}`}
               aria-label="End date"
               aria-describedby={toError ? "to-error" : "date-format-hint"}
               aria-invalid={!!toError}
             />
             {toError && (
-              <div id="to-error" className={styles.errorText}>
+              <div id="to-error" className="ag-validation-message">
                 {toError}
               </div>
             )}
           </div>
         )}
       </div>
-      <div id="date-format-hint" className={styles.formatHint}>
+      <div id="date-format-hint" className="ag-filter-hint">
         Format: {dateFormat}
       </div>
     </div>
