@@ -173,8 +173,7 @@ export type {
   UsePresetFromUrlResult,
 } from "./hooks/usePresetFromUrl";
 
-// Import CSS
-import "./styles.css";
+// No CSS imports - this is a headless component library
 
 // For AG Grid v33 compatibility
 // @ts-expect-error - Add metadata for AG Grid to properly recognize components

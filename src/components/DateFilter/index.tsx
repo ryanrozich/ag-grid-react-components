@@ -435,14 +435,42 @@ const DateFilterComponent = React.forwardRef<IFilter, DateFilterParams>(
         afterGuiAttached: (params?: { ePopup?: HTMLElement }) => {
           // Method called after the filter is attached to the DOM
           // This helps AG Grid position popups correctly
-          
+
           // For AG Grid v33+, ensure the popup inherits the theme
           if (params?.ePopup) {
-            // The popup needs to have the theme applied for styling to work
-            const gridWrapper = document.querySelector('.ag-root-wrapper');
+            // Copy CSS variables from the grid to the popup for proper theming
+            const gridWrapper = document.querySelector(".ag-root-wrapper");
             if (gridWrapper) {
-              // Copy theme-related classes to the popup
-              const themeClass = Array.from(gridWrapper.classList).find(c => c.startsWith('ag-theme-'));
+              const computedStyle = getComputedStyle(gridWrapper);
+              
+              // Copy all AG Grid CSS variables to the popup
+              const agVars = [
+                '--ag-background-color',
+                '--ag-foreground-color',
+                '--ag-border-color',
+                '--ag-secondary-foreground-color',
+                '--ag-control-panel-background-color',
+                '--ag-font-family',
+                '--ag-font-size',
+                '--ag-border-radius',
+                '--ag-row-hover-color',
+                '--ag-selected-row-background-color',
+                '--ag-material-primary-color',
+                '--ag-alpine-active-color',
+                '--ag-invalid-color',
+              ];
+              
+              agVars.forEach(varName => {
+                const value = computedStyle.getPropertyValue(varName);
+                if (value) {
+                  params.ePopup.style.setProperty(varName, value);
+                }
+              });
+              
+              // Also copy any theme class for additional styling
+              const themeClass = Array.from(gridWrapper.classList).find((c) =>
+                c.startsWith("ag-theme-"),
+              );
               if (themeClass && !params.ePopup.classList.contains(themeClass)) {
                 params.ePopup.classList.add(themeClass);
               }
