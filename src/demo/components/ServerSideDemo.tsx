@@ -274,6 +274,9 @@ export const ServerSideDemo: React.FC = () => {
                 filterModel: params.request.filterModel,
                 sortModel: params.request.sortModel,
                 searchText: searchTextRef.current,
+                // Pass grouping information for server-side grouping
+                rowGroupCols: params.request.rowGroupCols,
+                groupKeys: params.request.groupKeys,
               }),
             });
 
@@ -349,12 +352,18 @@ export const ServerSideDemo: React.FC = () => {
             </svg>
           </button>
           <h3 className="text-blue-400 font-semibold mb-2">
-            🚀 Server-Side Row Model Demo
+            🚀 Server-Side Row Model Demo with Grouping
           </h3>
           <p className="text-gray-300 text-sm pr-8">
             This demo uses AG Grid's Server-Side Row Model with a real API
-            backend. Data is fetched on-demand as you scroll, filter, and sort.
-            The API endpoint is{" "}
+            backend. Data is fetched on-demand as you scroll, filter, sort, and
+            group.
+            <strong className="text-blue-300">
+              {" "}
+              Server-side grouping with aggregations is now enabled!
+            </strong>
+            Drag columns to the grouping panel above to see server-calculated
+            aggregations. The API endpoint is{" "}
             <code className="bg-gray-800 px-2 py-1 rounded text-xs">
               {apiUrl}/tasks
             </code>
@@ -439,6 +448,8 @@ export const ServerSideDemo: React.FC = () => {
             columnDefs={columnDefs}
             defaultColDef={defaultColDef}
             rowModelType="serverSide"
+            serverSideEnableClientSideSort={false}
+            serverSideOnlyRefreshFilteredGroups={true}
             cacheBlockSize={100}
             maxBlocksInCache={10}
             onGridReady={onGridReady}
@@ -455,6 +466,19 @@ export const ServerSideDemo: React.FC = () => {
             sideBar={sideBarConfig}
             statusBar={statusBarConfig}
             domLayout="normal"
+            // Enable row grouping
+            rowGroupPanelShow="always"
+            suppressAggFuncInHeader={true}
+            groupDisplayType="singleColumn"
+            autoGroupColumnDef={{
+              headerName: "Group",
+              minWidth: 220,
+              cellRendererParams: {
+                suppressCount: false,
+                checkbox: false,
+              },
+              filter: false,
+            }}
             pinnedBottomRowData={
               aggregations
                 ? [
