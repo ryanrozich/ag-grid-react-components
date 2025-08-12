@@ -229,6 +229,141 @@ function applySearchText(data, searchText) {
   });
 }
 
+// Helper function to create group rows with aggregations
+function createGroupRow(groupKey, groupValue, children, level, groupColumns) {
+  // Calculate aggregations for the group
+  const totalValue = children.reduce(
+    (sum, child) => sum + (child.value || 0),
+    0,
+  );
+  const totalAmountDelivered = children.reduce(
+    (sum, child) => sum + (child.amountDelivered || 0),
+    0,
+  );
+  const avgPercentDelivered =
+    children.length > 0
+      ? children.reduce(
+          (sum, child) => sum + (child.percentDelivered || 0),
+          0,
+        ) / children.length
+      : 0;
+  const totalEstimatedHours = children.reduce(
+    (sum, child) => sum + (child.estimatedHours || 0),
+    0,
+  );
+  const totalActualHours = children.reduce(
+    (sum, child) => sum + (child.actualHours || 0),
+    0,
+  );
+
+  const groupRow = {
+    // AG Grid group row properties
+    group: true,
+    groupKey: groupKey || "",
+
+    // Aggregated values
+    value: totalValue,
+    amountDelivered: totalAmountDelivered,
+    remaining: totalValue - totalAmountDelivered,
+    percentDelivered: Math.round(avgPercentDelivered),
+    estimatedHours: totalEstimatedHours,
+    actualHours: totalActualHours,
+
+    // Group metadata
+    childCount: children.length,
+    expanded: false,
+    level: level,
+  };
+
+  // Add the group field dynamically if we have valid column info
+  if (groupColumns && groupColumns[level]) {
+    groupRow[groupColumns[level]] = groupValue;
+  }
+
+  return groupRow;
+}
+
+// Function to perform server-side grouping
+function performGrouping(data, rowGroupCols, groupKeys) {
+  // Normalize rowGroupCols - it might be an array of objects or strings
+  const groupColumns = Array.isArray(rowGroupCols)
+    ? rowGroupCols.map((col) =>
+        typeof col === "string" ? col : col.field || col.id,
+      )
+    : [];
+
+  if (groupColumns.length === 0) {
+    return data; // No grouping requested
+  }
+
+  // If we have group keys, we're fetching children of a specific group
+  if (groupKeys && groupKeys.length > 0) {
+    // Filter data to match all group keys
+    let filteredData = data;
+    for (let i = 0; i < groupKeys.length; i++) {
+      const groupCol = groupColumns[i];
+      const groupValue = groupKeys[i];
+      filteredData = filteredData.filter((row) => row[groupCol] === groupValue);
+    }
+
+    // If we've reached the deepest level, return leaf nodes
+    if (groupKeys.length === groupColumns.length) {
+      return filteredData;
+    }
+
+    // Otherwise, group by the next column
+    const nextGroupCol = groupColumns[groupKeys.length];
+    const groups = {};
+
+    filteredData.forEach((row) => {
+      const groupValue = row[nextGroupCol];
+      if (!groups[groupValue]) {
+        groups[groupValue] = [];
+      }
+      groups[groupValue].push(row);
+    });
+
+    // Create group rows
+    const groupRows = [];
+    Object.entries(groups).forEach(([groupValue, children]) => {
+      const groupKey = [...groupKeys, groupValue].join("|");
+      groupRows.push(
+        createGroupRow(
+          groupKey,
+          groupValue,
+          children,
+          groupKeys.length,
+          groupColumns,
+        ),
+      );
+    });
+
+    return groupRows;
+  }
+
+  // Top level grouping - group by first column
+  const firstGroupCol = groupColumns[0];
+  const groups = {};
+
+  data.forEach((row) => {
+    const groupValue = row[firstGroupCol];
+    if (!groups[groupValue]) {
+      groups[groupValue] = [];
+    }
+    groups[groupValue].push(row);
+  });
+
+  // Create top-level group rows
+  const groupRows = [];
+  Object.entries(groups).forEach(([groupValue, children]) => {
+    groupRows.push(
+      createGroupRow(groupValue, groupValue, children, 0, groupColumns),
+    );
+  });
+
+  return groupRows;
+}
+
 // Main function to process data request
 export function processDataRequest({
   startRow = 0,
@@ -248,21 +383,21 @@ export function processDataRequest({
   // Apply filters
   data = applyFilters(data, filterModel);
 
-  // Apply sorting
-  data = applySorting(data, sortModel);
-
   // Handle row grouping if enabled
   if (rowGroupCols && rowGroupCols.length > 0) {
-    // TODO: Implement proper grouping logic
-    // For now, just return flat data
-    console.log(
-      "Row grouping requested but not fully implemented:",
-      rowGroupCols,
-      groupKeys,
-    );
+    // Perform server-side grouping with aggregations
+    data = performGrouping(data, rowGroupCols, groupKeys);
+
+    // Apply sorting to grouped data
+    if (sortModel && sortModel.length > 0) {
+      data = applySorting(data, sortModel);
+    }
+  } else {
+    // Apply sorting to flat data
+    data = applySorting(data, sortModel);
   }
 
-  // Get total after filtering
+  // Get total after filtering and grouping
   const totalRows = data.length;
 
   // Apply pagination
